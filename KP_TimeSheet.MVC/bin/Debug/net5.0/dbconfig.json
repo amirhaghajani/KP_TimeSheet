@@ -1,0 +1,5 @@
+{
+    "ConnectionStrings": {
+      "DefaultConnection": "Server=192.168.0.4;Database=SupplySystem;Trusted_Connection=True;MultipleActiveResultSets=true"
+    }
+  }

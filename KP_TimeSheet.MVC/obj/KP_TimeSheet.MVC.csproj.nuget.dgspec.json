@@ -1,0 +1,191 @@
+{
+  "format": 1,
+  "restore": {
+    "D:\\p_NaftKish\\KP_TimeSheet\\KP_TimeSheet.MVC\\KP_TimeSheet.MVC.csproj": {}
+  },
+  "projects": {
+    "D:\\p_NaftKish\\KP_TimeSheet\\KP.TimeSheets.Domain\\KP.TimeSheets.Domain.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\p_NaftKish\\KP_TimeSheet\\KP.TimeSheets.Domain\\KP.TimeSheets.Domain.csproj",
+        "projectName": "KP.TimeSheets.Domain",
+        "projectPath": "D:\\p_NaftKish\\KP_TimeSheet\\KP.TimeSheets.Domain\\KP.TimeSheets.Domain.csproj",
+        "packagesPath": "C:\\Users\\Alireza\\.nuget\\packages\\",
+        "outputPath": "D:\\p_NaftKish\\KP_TimeSheet\\KP.TimeSheets.Domain\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Alireza\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net5.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net5.0": {
+            "targetAlias": "net5.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net5.0": {
+          "targetAlias": "net5.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.100\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "D:\\p_NaftKish\\KP_TimeSheet\\KP.TimeSheets.Persistance\\KP.TimeSheets.Persistance.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\p_NaftKish\\KP_TimeSheet\\KP.TimeSheets.Persistance\\KP.TimeSheets.Persistance.csproj",
+        "projectName": "KP.TimeSheets.Persistance",
+        "projectPath": "D:\\p_NaftKish\\KP_TimeSheet\\KP.TimeSheets.Persistance\\KP.TimeSheets.Persistance.csproj",
+        "packagesPath": "C:\\Users\\Alireza\\.nuget\\packages\\",
+        "outputPath": "D:\\p_NaftKish\\KP_TimeSheet\\KP.TimeSheets.Persistance\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Alireza\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net5.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net5.0": {
+            "targetAlias": "net5.0",
+            "projectReferences": {
+              "D:\\p_NaftKish\\KP_TimeSheet\\KP.TimeSheets.Domain\\KP.TimeSheets.Domain.csproj": {
+                "projectPath": "D:\\p_NaftKish\\KP_TimeSheet\\KP.TimeSheets.Domain\\KP.TimeSheets.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net5.0": {
+          "targetAlias": "net5.0",
+          "dependencies": {
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[5.0.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.100\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "D:\\p_NaftKish\\KP_TimeSheet\\KP_TimeSheet.MVC\\KP_TimeSheet.MVC.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\p_NaftKish\\KP_TimeSheet\\KP_TimeSheet.MVC\\KP_TimeSheet.MVC.csproj",
+        "projectName": "KP_TimeSheet.MVC",
+        "projectPath": "D:\\p_NaftKish\\KP_TimeSheet\\KP_TimeSheet.MVC\\KP_TimeSheet.MVC.csproj",
+        "packagesPath": "C:\\Users\\Alireza\\.nuget\\packages\\",
+        "outputPath": "D:\\p_NaftKish\\KP_TimeSheet\\KP_TimeSheet.MVC\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Alireza\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net5.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net5.0": {
+            "targetAlias": "net5.0",
+            "projectReferences": {
+              "D:\\p_NaftKish\\KP_TimeSheet\\KP.TimeSheets.Persistance\\KP.TimeSheets.Persistance.csproj": {
+                "projectPath": "D:\\p_NaftKish\\KP_TimeSheet\\KP.TimeSheets.Persistance\\KP.TimeSheets.Persistance.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net5.0": {
+          "targetAlias": "net5.0",
+          "dependencies": {
+            "Microsoft.EntityFrameworkCore.InMemory": {
+              "target": "Package",
+              "version": "[5.0.0, )"
+            },
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[5.0.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.100\\RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

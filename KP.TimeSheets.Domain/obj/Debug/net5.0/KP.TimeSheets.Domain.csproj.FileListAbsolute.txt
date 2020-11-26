@@ -1,0 +1,12 @@
+D:\p_NaftKish\KP_TimeSheet\KP.TimeSheets.Domain\bin\Debug\net5.0\KP.TimeSheets.Domain.deps.json
+D:\p_NaftKish\KP_TimeSheet\KP.TimeSheets.Domain\bin\Debug\net5.0\KP.TimeSheets.Domain.dll
+D:\p_NaftKish\KP_TimeSheet\KP.TimeSheets.Domain\bin\Debug\net5.0\ref\KP.TimeSheets.Domain.dll
+D:\p_NaftKish\KP_TimeSheet\KP.TimeSheets.Domain\bin\Debug\net5.0\KP.TimeSheets.Domain.pdb
+D:\p_NaftKish\KP_TimeSheet\KP.TimeSheets.Domain\obj\Debug\net5.0\KP.TimeSheets.Domain.csprojAssemblyReference.cache
+D:\p_NaftKish\KP_TimeSheet\KP.TimeSheets.Domain\obj\Debug\net5.0\KP.TimeSheets.Domain.GeneratedMSBuildEditorConfig.editorconfig
+D:\p_NaftKish\KP_TimeSheet\KP.TimeSheets.Domain\obj\Debug\net5.0\KP.TimeSheets.Domain.AssemblyInfoInputs.cache
+D:\p_NaftKish\KP_TimeSheet\KP.TimeSheets.Domain\obj\Debug\net5.0\KP.TimeSheets.Domain.AssemblyInfo.cs
+D:\p_NaftKish\KP_TimeSheet\KP.TimeSheets.Domain\obj\Debug\net5.0\KP.TimeSheets.Domain.csproj.CoreCompileInputs.cache
+D:\p_NaftKish\KP_TimeSheet\KP.TimeSheets.Domain\obj\Debug\net5.0\KP.TimeSheets.Domain.dll
+D:\p_NaftKish\KP_TimeSheet\KP.TimeSheets.Domain\obj\Debug\net5.0\ref\KP.TimeSheets.Domain.dll
+D:\p_NaftKish\KP_TimeSheet\KP.TimeSheets.Domain\obj\Debug\net5.0\KP.TimeSheets.Domain.pdb

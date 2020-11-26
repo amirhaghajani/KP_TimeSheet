@@ -1,0 +1,15 @@
+D:\p_NaftKish\KP_TimeSheet\KP.TimeSheets.Persistance\bin\Debug\net5.0\KP.TimeSheets.Persistance.deps.json
+D:\p_NaftKish\KP_TimeSheet\KP.TimeSheets.Persistance\bin\Debug\net5.0\KP.TimeSheets.Persistance.dll
+D:\p_NaftKish\KP_TimeSheet\KP.TimeSheets.Persistance\bin\Debug\net5.0\ref\KP.TimeSheets.Persistance.dll
+D:\p_NaftKish\KP_TimeSheet\KP.TimeSheets.Persistance\bin\Debug\net5.0\KP.TimeSheets.Persistance.pdb
+D:\p_NaftKish\KP_TimeSheet\KP.TimeSheets.Persistance\bin\Debug\net5.0\KP.TimeSheets.Domain.dll
+D:\p_NaftKish\KP_TimeSheet\KP.TimeSheets.Persistance\bin\Debug\net5.0\KP.TimeSheets.Domain.pdb
+D:\p_NaftKish\KP_TimeSheet\KP.TimeSheets.Persistance\obj\Debug\net5.0\KP.TimeSheets.Persistance.csprojAssemblyReference.cache
+D:\p_NaftKish\KP_TimeSheet\KP.TimeSheets.Persistance\obj\Debug\net5.0\KP.TimeSheets.Persistance.GeneratedMSBuildEditorConfig.editorconfig
+D:\p_NaftKish\KP_TimeSheet\KP.TimeSheets.Persistance\obj\Debug\net5.0\KP.TimeSheets.Persistance.AssemblyInfoInputs.cache
+D:\p_NaftKish\KP_TimeSheet\KP.TimeSheets.Persistance\obj\Debug\net5.0\KP.TimeSheets.Persistance.AssemblyInfo.cs
+D:\p_NaftKish\KP_TimeSheet\KP.TimeSheets.Persistance\obj\Debug\net5.0\KP.TimeSheets.Persistance.csproj.CoreCompileInputs.cache
+D:\p_NaftKish\KP_TimeSheet\KP.TimeSheets.Persistance\obj\Debug\net5.0\KP.TimeSheets.Persistance.csproj.CopyComplete
+D:\p_NaftKish\KP_TimeSheet\KP.TimeSheets.Persistance\obj\Debug\net5.0\KP.TimeSheets.Persistance.dll
+D:\p_NaftKish\KP_TimeSheet\KP.TimeSheets.Persistance\obj\Debug\net5.0\ref\KP.TimeSheets.Persistance.dll
+D:\p_NaftKish\KP_TimeSheet\KP.TimeSheets.Persistance\obj\Debug\net5.0\KP.TimeSheets.Persistance.pdb
