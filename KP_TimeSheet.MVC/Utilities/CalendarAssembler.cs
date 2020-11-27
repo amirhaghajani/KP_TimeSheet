@@ -10,10 +10,8 @@ namespace KP.TimeSheets.MVC
 {
     public class CalendarAssembler
     {
-        public static CalendarJson ToJson(Calendar calendar)
+        public static CalendarJson ToJson(Calendar calendar, IUnitOfWork uow )
         {
-
-            UnitOfWork uow = new UnitOfWork();
             ProjectManager projectManager = new ProjectManager(uow);
             var json = new CalendarJson();
             json.ID = calendar.ID;
@@ -31,11 +29,11 @@ namespace KP.TimeSheets.MVC
         }
 
 
-        public static List<CalendarJson> ToJsons(IEnumerable<Calendar> calendars)
+        public static List<CalendarJson> ToJsons(IEnumerable<Calendar> calendars, IUnitOfWork uow)
         {
             var jsons = new List<CalendarJson>();
             foreach (var calendar in calendars)
-                jsons.Add(ToJson(calendar));
+                jsons.Add(ToJson(calendar, uow));
 
             return jsons;
         }

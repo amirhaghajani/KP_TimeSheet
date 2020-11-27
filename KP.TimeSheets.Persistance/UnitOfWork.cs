@@ -1,9 +1,20 @@
 ﻿using KP.TimeSheets.Domain;
+using Microsoft.EntityFrameworkCore;
 
 namespace KP.TimeSheets.Persistance
 {
     public class UnitOfWork : IUnitOfWork
     {
+
+        #region Constructors
+
+        public UnitOfWork(RASContext context){
+            this._Context = context;
+            _PWAConnString = context.Database.GetDbConnection().ConnectionString;
+
+        }
+
+        #endregion
 
         #region Attributes & Properties
         
@@ -196,22 +207,11 @@ namespace KP.TimeSheets.Persistance
 
         #endregion
 
-        #region Constructors
-
-        public UnitOfWork()
-        {
-           
-               
-                // _PWAConnString = ConfigurationManager.ConnectionStrings["PWAConnectionString"].ConnectionString.ToString();
-               
-                // _Context = new RASContext();
-               
-          
-        }
+        
 
     
 
-        #endregion
+        
 
         #region Public Methods
 

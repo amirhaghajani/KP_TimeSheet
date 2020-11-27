@@ -10,14 +10,13 @@ namespace KP.TimeSheets.MVC
     public class DisplayPeriodUtilities
     {
 
-        public static DisplayPeriod ConvertPeriodNumberDateJsonToDisplayPeriod(PeriodNumberDateJson json)
+        public static DisplayPeriod ConvertPeriodNumberDateJsonToDisplayPeriod(PeriodNumberDateJson json, IUnitOfWork uow)
         {
            
-            UnitOfWork uow = new UnitOfWork();
             DisplayPeriodManager dpm = new DisplayPeriodManager(uow);
             UserManager userManager = new UserManager(uow);
             DisplayPeriod result = new DisplayPeriod();
-            var currUser = new UserHelper().GetCurrent();
+            var currUser = new UserHelper().GetCurrent(uow);
             result = dpm.GetDisplayPeriod(currUser);
             result.IsWeekly = json.IsWeekly;
             result.NumOfDays = json.Days;

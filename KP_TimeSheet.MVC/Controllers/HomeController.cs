@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using KP_TimeSheet.MVC.Models;
 using KP.TimeSheets.Persistance;
+using Microsoft.EntityFrameworkCore;
 
 namespace KP_TimeSheet.MVC.Controllers
 {
@@ -22,7 +23,8 @@ namespace KP_TimeSheet.MVC.Controllers
                 ID=Guid.NewGuid(),
                 Title="Task1"
             });
-            _db.SaveChanges();
+
+            //_db.SaveChanges();
             _logger = logger;
         }
 

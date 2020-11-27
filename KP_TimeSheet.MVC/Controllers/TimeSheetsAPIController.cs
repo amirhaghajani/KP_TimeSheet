@@ -9,32 +9,34 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace KP.TimeSheets.MVC
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class TimeSheetsAPIController : ControllerBase
     {
+        IUnitOfWork _uow;
+        public TimeSheetsAPIController(IUnitOfWork uow){
+            this._uow = uow;
+        }
+        
         #region Register Methods
 
-
-
-        [HttpPost]
+        [HttpPost("[action]")]
         public IEnumerable<WorkHourHistoryJson> GetHistoryWorkHour(WorkHourJson WorkHourJson)
         {
             var result = new List<WorkHourHistoryJson>();
-            UnitOfWork uow = new UnitOfWork();
-            UserManager userManager = new UserManager(uow);
-            WorkHourHistoryManager historyManagerh = new WorkHourHistoryManager(uow);
-            User currUser = new UserHelper().GetCurrent();
+            UserManager userManager = new UserManager(this._uow);
+            WorkHourHistoryManager historyManagerh = new WorkHourHistoryManager(this._uow);
+            User currUser = new UserHelper().GetCurrent(this._uow);
             result = new WorkHourHistoryAssembler().ToJsons(historyManagerh.GetByWorkHourID(WorkHourJson.ID)).ToList();
             return result;
         }
 
-        [HttpGet]
+        [HttpGet("[action]")]
         public IEnumerable<TimeSheetJson> ChangeDisplayPeriodToWeekly()
         {
-
-            UnitOfWork uow = new UnitOfWork();
-            UserManager um = new UserManager(uow);
-            var currentUser = new UserHelper().GetCurrent();
-            DisplayPeriodManager dpm = new DisplayPeriodManager(uow);
+            UserManager um = new UserManager(this._uow);
+            var currentUser = new UserHelper().GetCurrent(this._uow);
+            DisplayPeriodManager dpm = new DisplayPeriodManager(this._uow);
             DisplayPeriod dp = new DisplayPeriod();
             dp = dpm.GetDisplayPeriod(currentUser);
             dp.IsWeekly = true;
@@ -42,18 +44,17 @@ namespace KP.TimeSheets.MVC
             return GetTimeSheets();
         }
 
-        [HttpPost]
+        [HttpPost("[action]")]
         public IEnumerable<TimeSheetJson> GetTimeSheetsByDateAndNumberOfDay(PeriodNumberDateJson period)
         {
             List<TimeSheetJson> result = new List<TimeSheetJson>();
-            UnitOfWork uow = new UnitOfWork();
-            UserManager userManager = new UserManager(uow);
-            ProjectManager projectManager = new Domain.ProjectManager(uow);
-            TimeSheetManager timeSheetManager = new TimeSheetManager(uow);
-            DisplayPeriodManager displayPeriodMnager = new DisplayPeriodManager(uow);
-            var displayPeriod = DisplayPeriodUtilities.ConvertPeriodNumberDateJsonToDisplayPeriod(period);
+            UserManager userManager = new UserManager(this._uow);
+            ProjectManager projectManager = new Domain.ProjectManager(this._uow);
+            TimeSheetManager timeSheetManager = new TimeSheetManager(this._uow);
+            DisplayPeriodManager displayPeriodMnager = new DisplayPeriodManager(this._uow);
+            var displayPeriod = DisplayPeriodUtilities.ConvertPeriodNumberDateJsonToDisplayPeriod(period,this._uow);
             //SyncWithPWA(uow);
-            User currUser = new UserHelper().GetCurrent();
+            User currUser = new UserHelper().GetCurrent(this._uow);
             displayPeriodMnager.Save(displayPeriod);
             DateTime fromDate = displayPeriod.StartDate;
             DateTime toDate = fromDate.AddDays(displayPeriod.NumOfDays);
@@ -64,50 +65,46 @@ namespace KP.TimeSheets.MVC
             return result;
         }
 
-        [HttpPost]
+        [HttpPost("[action]")]
         public IEnumerable<WorkHourJson> GetCurrentPeriodSentWorkHours(List<TimeSheetValueJson> workHourJsons)
         {
-            UnitOfWork uow = new UnitOfWork();
-            UserManager userManager = new UserManager(uow);
-            TimeSheetManager timeSheetManager = new TimeSheetManager(uow);
-            User currUser = new UserHelper().GetCurrent();
+            UserManager userManager = new UserManager(this._uow);
+            TimeSheetManager timeSheetManager = new TimeSheetManager(this._uow);
+            User currUser = new UserHelper().GetCurrent(this._uow);
             DateTime fromDate = workHourJsons[0].Date;
             DateTime toDate = workHourJsons[workHourJsons.Count() - 1].Date;
             return new WorkHourAssembler().ToJsons(timeSheetManager.GetSentWorkHours(currUser.UserName).Where(x => x.Date >= fromDate && x.Date <= toDate).OrderBy(c => c.Date));
 
         }
 
-        [HttpPost]
+        [HttpPost("[action]")]
         public IEnumerable<WorkHourJson> GetWorkHoursByDate(WorkHourJson WorkHourJson)
         {
             var result = new List<WorkHourJson>();
-            UnitOfWork uow = new UnitOfWork();
-            UserManager userManager = new UserManager(uow);
-            TimeSheetManager timeSheetManager = new TimeSheetManager(uow);
-            User currUser = new UserHelper().GetCurrent();
+            UserManager userManager = new UserManager(this._uow);
+            TimeSheetManager timeSheetManager = new TimeSheetManager(this._uow);
+            User currUser = new UserHelper().GetCurrent(this._uow);
             result = new WorkHourAssembler().ToJsons(timeSheetManager.GetWorkHoursByUser(currUser, WorkHourJson.Date, WorkHourJson.Date)).ToList();
             return result;
         }
 
-        [HttpGet]
+        [HttpGet("[action]")]
         public IEnumerable<WorkHourJson> GetSentWorkHours()
         {
             var userName = User.Identity.Name;
-            UnitOfWork uow = new UnitOfWork();
-            TimeSheetManager timeSheetManager = new TimeSheetManager(uow);
+            TimeSheetManager timeSheetManager = new TimeSheetManager(this._uow);
             return new WorkHourAssembler().ToJsons(timeSheetManager.GetSentWorkHours(userName).OrderBy(c => c.Date));
         }
 
-        [HttpGet]
+        [HttpGet("[action]")]
         public IEnumerable<TimeSheetJson> GetTimeSheets()
         {
             List<TimeSheetJson> result = new List<TimeSheetJson>();
-            UnitOfWork uow = new UnitOfWork();
-            UserManager userManager = new UserManager(uow);
-            ProjectManager projectManager = new Domain.ProjectManager(uow);
-            TimeSheetManager timeSheetManager = new TimeSheetManager(uow);
-            DisplayPeriodManager displayPeriodMnager = new DisplayPeriodManager(uow);
-            User currUser = new UserHelper().GetCurrent();
+            UserManager userManager = new UserManager(this._uow);
+            ProjectManager projectManager = new Domain.ProjectManager(this._uow);
+            TimeSheetManager timeSheetManager = new TimeSheetManager(this._uow);
+            DisplayPeriodManager displayPeriodMnager = new DisplayPeriodManager(this._uow);
+            User currUser = new UserHelper().GetCurrent(this._uow);
             DateTime fromDate;
             DateTime toDate = DateTime.MaxValue;
             DisplayPeriod displayPeriod = displayPeriodMnager.GetDisplayPeriod(currUser);
@@ -135,15 +132,14 @@ namespace KP.TimeSheets.MVC
             return result;
         }
 
-        [HttpPost]
+        [HttpPost("[action]")]
         public IEnumerable<WorkHourOnProjecstJson> GetThisMonthProjects(TimeSheetValueJson json)
         {
             List<WorkHourOnProjecstJson> result = new List<WorkHourOnProjecstJson>();
-            UnitOfWork uow = new UnitOfWork();
-            UserManager userManager = new UserManager(uow);
-            TimeSheetManager timeSheetManager = new TimeSheetManager(uow);
+            UserManager userManager = new UserManager(this._uow);
+            TimeSheetManager timeSheetManager = new TimeSheetManager(this._uow);
             //SyncWithPWA(uow);
-            User currUser = new UserHelper().GetCurrent();
+            User currUser = new UserHelper().GetCurrent(this._uow);
 
             var all = timeSheetManager.GetWorkHoursByUser(currUser.ID, json.Date);
             foreach (var item in all.GroupBy(x => x.ProjectId).Select(y => y.FirstOrDefault()).ToList())
@@ -158,20 +154,19 @@ namespace KP.TimeSheets.MVC
             return result;
         }
 
-        [HttpPost]
+        [HttpPost("[action]")]
         public string GetCurrentUser()
         {
             return User.Identity.Name;
         }
 
-        [HttpPost]
+        [HttpPost("[action]")]
         public IEnumerable<TimeSheetJson> GetCurrentPeriod(List<TimeSheetValueJson> workHourJsons)
         {
             List<TimeSheetJson> result = new List<TimeSheetJson>();
-            UnitOfWork uow = new UnitOfWork();
-            UserManager userManager = new UserManager(uow);
-            TimeSheetManager timeSheetManager = new TimeSheetManager(uow);
-            User currUser = new UserHelper().GetCurrent();
+            UserManager userManager = new UserManager(this._uow);
+            TimeSheetManager timeSheetManager = new TimeSheetManager(this._uow);
+            User currUser = new UserHelper().GetCurrent(this._uow);
             DateTime fromDate = workHourJsons[0].Date;
             DateTime toDate = workHourJsons[workHourJsons.Count() - 1].Date;
             IEnumerable<PresenceHour> presHours = timeSheetManager.GetPresHoursByUser(currUser, fromDate, toDate);
@@ -180,7 +175,7 @@ namespace KP.TimeSheets.MVC
             return result;
         }
 
-        [HttpPost]
+        [HttpPost("[action]")]
         public IEnumerable<TimeSheetJson> GetNextPeriod(TimeSheetValueJson workHourJson)
         {
 
@@ -192,12 +187,11 @@ namespace KP.TimeSheets.MVC
 
             }
 
-            UnitOfWork uow = new UnitOfWork();
-            UserManager userManager = new UserManager(uow);
-            TimeSheetManager timeSheetManager = new TimeSheetManager(uow);
-            DisplayPeriodManager displayPeriodMnager = new DisplayPeriodManager(uow);
+            UserManager userManager = new UserManager(this._uow);
+            TimeSheetManager timeSheetManager = new TimeSheetManager(this._uow);
+            DisplayPeriodManager displayPeriodMnager = new DisplayPeriodManager(this._uow);
             //SyncWithPWA(uow);
-            User currUser = new UserHelper().GetCurrent();
+            User currUser = new UserHelper().GetCurrent(this._uow);
             DisplayPeriod displayPeriod = displayPeriodMnager.GetDisplayPeriod(currUser);
             DateTime toDate = workHourJson.Date.AddDays(1);
 
@@ -254,7 +248,7 @@ namespace KP.TimeSheets.MVC
             return result;
         }
 
-        [HttpPost]
+        [HttpPost("[action]")]
         public IEnumerable<TimeSheetJson> GetPreviousPeriod(WorkHourJson workHourJson)
         {
             List<TimeSheetJson> result = new List<TimeSheetJson>();
@@ -264,13 +258,13 @@ namespace KP.TimeSheets.MVC
                 workHourJson.Date = DateTime.Now;
             }
             var startDate = workHourJson.Date;
-            UnitOfWork uow = new UnitOfWork();
-            UserManager userManager = new UserManager(uow);
-            ProjectManager projectManager = new Domain.ProjectManager(uow);
-            TimeSheetManager timeSheetManager = new TimeSheetManager(uow);
-            DisplayPeriodManager displayPeriodMnager = new DisplayPeriodManager(uow);
+
+            UserManager userManager = new UserManager(this._uow);
+            ProjectManager projectManager = new Domain.ProjectManager(this._uow);
+            TimeSheetManager timeSheetManager = new TimeSheetManager(this._uow);
+            DisplayPeriodManager displayPeriodMnager = new DisplayPeriodManager(this._uow);
             //SyncWithPWA(uow);
-            User currUser = new UserHelper().GetCurrent();
+            User currUser = new UserHelper().GetCurrent(this._uow);
             DisplayPeriod displayPeriod = displayPeriodMnager.GetDisplayPeriod(currUser);
 
             var dt = startDate.AddDays(-1);
@@ -307,7 +301,7 @@ namespace KP.TimeSheets.MVC
             return result;
         }
 
-        [HttpPost]
+        [HttpPost("[action]")]
         public List<string> SaveWorkHours(WorkHourJson workHourJson)
         {
 
@@ -315,13 +309,12 @@ namespace KP.TimeSheets.MVC
 
             try
             {
-                UnitOfWork uow = new UnitOfWork();
-                UserManager userManager = new UserManager(uow);
-                TaskManager taskManager = new TaskManager(uow);
-                ProjectManager prjManager = new ProjectManager(uow);
-                TimeSheetManager tsManager = new TimeSheetManager(uow);
+                UserManager userManager = new UserManager(this._uow);
+                TaskManager taskManager = new TaskManager(this._uow);
+                ProjectManager prjManager = new ProjectManager(this._uow);
+                TimeSheetManager tsManager = new TimeSheetManager(this._uow);
                 Validations validate = new Validations();
-                User currUser = new UserHelper().GetCurrent();
+                User currUser = new UserHelper().GetCurrent(this._uow);
                 WorkHour workHour = workHourJson.ToWorkHour();
                 workHour.Task = taskManager.GetByID(workHour.TaskID);
                 workHour.TaskID = workHour.Task.ID;
@@ -329,11 +322,11 @@ namespace KP.TimeSheets.MVC
                 workHour.ProjectId = workHour.Project.ID;
                 workHour.EmployeeID = currUser.ID;
                 workHour.Employee = userManager.GetByID(currUser.ID);
-                workHour.WorkflowStage = new WorkflowManager(uow).FirstStage();
+                workHour.WorkflowStage = new WorkflowManager(this._uow).FirstStage();
                 workHour.WorkflowStageID = workHour.WorkflowStage.ID;
                 workHour.Description = workHourJson.Description;
                  tsManager.SaveWorkHour(workHour);
-                 HistoryUtilities.RegisterSaveHistory(workHour);
+                 HistoryUtilities.RegisterSaveHistory(workHour,this._uow);
             }
 
             catch (ValidationException ex)
@@ -344,13 +337,12 @@ namespace KP.TimeSheets.MVC
             return result;
         }
 
-        [HttpPost]
+        [HttpPost("[action]")]
         public List<string> SendWorkHour(WorkHourJson workHourJson)//JObject jsonObject
         {
-            UnitOfWork uow = new UnitOfWork();
-            UserManager userManager = new UserManager(uow);
-            TimeSheetManager WHM = new TimeSheetManager(uow);
-            User currUser = new UserHelper().GetCurrent();
+            UserManager userManager = new UserManager(this._uow);
+            TimeSheetManager WHM = new TimeSheetManager(this._uow);
+            User currUser = new UserHelper().GetCurrent(this._uow);
             Validations validate = new Validations();
             var WorkHour = WHM.GetByID(workHourJson.ID);
             List<string> result = new List<string>();
@@ -361,7 +353,7 @@ namespace KP.TimeSheets.MVC
                 if (WorkHour.WorkflowStage.IsFirst)
                 {
                     WHM.SendWorkHour(WorkHour);
-                    HistoryUtilities.RegisterSendHistory(WorkHour);
+                    HistoryUtilities.RegisterSendHistory(WorkHour,this._uow);
                     result.Add("ارسال کارکرد با موفقیت انجام گردید");
                 }
             }
@@ -369,14 +361,12 @@ namespace KP.TimeSheets.MVC
             return result;
         }
 
-        [HttpPost]
+        [HttpPost("[action]")]
         public List<string> SendWorkHours(WorkHourJson workHourJson)//JObject jsonObject
         {
-
-            UnitOfWork uow = new UnitOfWork();
-            UserManager userManager = new UserManager(uow);
-            TimeSheetManager WHM = new TimeSheetManager(uow);
-            User currUser = new UserHelper().GetCurrent();
+            UserManager userManager = new UserManager(this._uow);
+            TimeSheetManager WHM = new TimeSheetManager(this._uow);
+            User currUser = new UserHelper().GetCurrent(this._uow);
             Validations validate = new Validations();
             var WorkHours = WHM.GetBydateAndUserId(workHourJson.Date, currUser.ID);
             List<string> result = new List<string>();
@@ -390,7 +380,7 @@ namespace KP.TimeSheets.MVC
                         return result;
 
                     WHM.SendWorkHour(wh);
-                    HistoryUtilities.RegisterSendHistory(wh);
+                    HistoryUtilities.RegisterSendHistory(wh,this._uow);
                     result.Add("عملیات ارسال کارکرد ها با موفقیت انجام گردید");
                 }
             }
@@ -398,56 +388,50 @@ namespace KP.TimeSheets.MVC
             return result;
         }
 
-        [HttpPost]
+        [HttpPost("[action]")]
         public IEnumerable<WorkHourJson> GetUnConfirmedWorkHours(WorkHourJson workHourJson)//JObject jsonObject)
         {
-            UnitOfWork uow = new UnitOfWork();
-            TimeSheetManager WHM = new TimeSheetManager(uow);
-            User currUser = new UserHelper().GetCurrent();
+            TimeSheetManager WHM = new TimeSheetManager(this._uow);
+            User currUser = new UserHelper().GetCurrent(this._uow);
             return new WorkHourAssembler().ToJsons(WHM.GetUnConfirmedWorkHours(workHourJson.Date, currUser.ID));
         }
 
-        [HttpPost]
+        [HttpPost("[action]")]
         public PresenceHour GetPresenceHourByDate(WorkHourJson workHourJson)//JObject jsonObject)
         {
-            UnitOfWork uow = new UnitOfWork();
-            TimeSheetManager WHM = new TimeSheetManager(uow);
-            User currUser = new UserHelper().GetCurrent();
+            TimeSheetManager WHM = new TimeSheetManager(this._uow);
+            User currUser = new UserHelper().GetCurrent(this._uow);
             return WHM.GetPresenceHourByUserIdAndDate(currUser.ID, workHourJson.Date);
         }
 
-        [HttpPost]
+        [HttpPost("[action]")]
         public IEnumerable<WorkHourJson> GetConfirmedWorkHours(WorkHourJson workHourJson)//JObject jsonObject)
         {
-            UnitOfWork uow = new UnitOfWork();
-            TimeSheetManager WHM = new TimeSheetManager(uow);
-            User currUser = new UserHelper().GetCurrent();
+            TimeSheetManager WHM = new TimeSheetManager(this._uow);
+            User currUser = new UserHelper().GetCurrent(this._uow);
             return new WorkHourAssembler().ToJsons(WHM.GetConfirmedWorkHours(workHourJson.Date, currUser.ID));
         }
 
-        [HttpPost]
+        [HttpPost("[action]")]
         public bool DeleteWorkHours(WorkHourJson workHourJson)//JObject jsonObject)
         {
-            UnitOfWork uow = new UnitOfWork();
-            TimeSheetManager WHM = new TimeSheetManager(uow);
+            TimeSheetManager WHM = new TimeSheetManager(this._uow);
             WHM.DeleteWorkHour(workHourJson.ID);
             return true;
         }
 
-        [HttpPost]
+        [HttpPost("[action]")]
         public string CurrentUser()//JObject jsonObject)
         {
             string UserName = User.Identity.Name;
             return UserName;
         }
 
-        [HttpGet]
+        [HttpGet("[action]")]
         public AllEntityJson GetYesterdayData()
         {
-
-            UnitOfWork uow = new UnitOfWork();
-            TimeSheetManager timesheetManager = new Domain.TimeSheetManager(uow);
-            User currUser = new UserHelper().GetCurrent();
+            TimeSheetManager timesheetManager = new Domain.TimeSheetManager(this._uow);
+            User currUser = new UserHelper().GetCurrent(this._uow);
             var presenceour = timesheetManager.GetyesterdayPresencHoursByUserId(currUser.ID);
             var workours = timesheetManager.GetyesterdayworkHoursByUserId(currUser.ID);
             return new HomeEntityAssembler().ToJson(presenceour, workours, User.Identity.Name);
@@ -455,36 +439,33 @@ namespace KP.TimeSheets.MVC
         }
 
 
-        [HttpGet]
+        [HttpGet("[action]")]
         public AllEntityJson GetThisMonthDataForHomePage()
         {
-            UnitOfWork uow = new UnitOfWork();
-            TimeSheetManager timesheetManager = new Domain.TimeSheetManager(uow);
-            User currUser = new UserHelper().GetCurrent();
+            TimeSheetManager timesheetManager = new Domain.TimeSheetManager(this._uow);
+            User currUser = new UserHelper().GetCurrent(this._uow);
             var presenceours = timesheetManager.GetThisMonthPresencHoursByUserId(currUser.ID, DateTime.Now);
             var workours = timesheetManager.GetWorkHoursByUser(currUser.ID, DateTime.Now);
             return new HomeEntityAssembler().ToJson(presenceours, workours);
         }
 
-        [HttpPost]
+        [HttpPost("[action]")]
         public AllEntityJson GetThisMonthData(TimeSheetValueJson workHourJson)
         {
-            UnitOfWork uow = new UnitOfWork();
-            TimeSheetManager timesheetManager = new Domain.TimeSheetManager(uow);
-            User currUser = new UserHelper().GetCurrent();
+            TimeSheetManager timesheetManager = new Domain.TimeSheetManager(this._uow);
+            User currUser = new UserHelper().GetCurrent(this._uow);
             var presenceours = timesheetManager.GetThisMonthPresencHoursByUserId(currUser.ID, workHourJson.Date);
             var workours = timesheetManager.GetWorkHoursByUser(currUser.ID, workHourJson.Date);
             return new HomeEntityAssembler().ToJson(presenceours, workours);
         }
 
-        [HttpPost]
+        [HttpPost("[action]")]
         public IEnumerable<WorkHourOnProjecstJson> GetThisPeriodProjects(List<TimeSheetValueJson> workHourJsons)
         {
             List<WorkHourOnProjecstJson> result = new List<WorkHourOnProjecstJson>();
-            UnitOfWork uow = new UnitOfWork();
-            TimeSheetManager timeSheetManager = new TimeSheetManager(uow);
-            DisplayPeriodManager displayPeriodMnager = new DisplayPeriodManager(uow);
-            User currUser = new UserHelper().GetCurrent();
+            TimeSheetManager timeSheetManager = new TimeSheetManager(this._uow);
+            DisplayPeriodManager displayPeriodMnager = new DisplayPeriodManager(this._uow);
+            User currUser = new UserHelper().GetCurrent(this._uow);
             DisplayPeriod displayPeriod = displayPeriodMnager.GetDisplayPeriod(currUser);
             DateTime fromDate = workHourJsons[0].Date;
             DateTime toDate = workHourJsons[workHourJsons.Count() - 1].Date;
@@ -502,14 +483,12 @@ namespace KP.TimeSheets.MVC
             return result;
         }
 
-        [HttpPost]
+        [HttpPost("[action]")]
         public AllEntityJson GetThisPeriodData(List<TimeSheetValueJson> workHourJsons)
         {
-
-            UnitOfWork uow = new UnitOfWork();
-            User currUser = new UserHelper().GetCurrent();
-            TimeSheetManager timesheetManager = new Domain.TimeSheetManager(uow);
-            DisplayPeriodManager displayPeriodMnager = new DisplayPeriodManager(uow);
+            User currUser = new UserHelper().GetCurrent(this._uow);
+            TimeSheetManager timesheetManager = new Domain.TimeSheetManager(this._uow);
+            DisplayPeriodManager displayPeriodMnager = new DisplayPeriodManager(this._uow);
             DisplayPeriod displayPeriod = displayPeriodMnager.GetDisplayPeriod(currUser);
             DateTime fromDate = workHourJsons[0].Date;
             DateTime toDate = workHourJsons[workHourJsons.Count() - 1].Date;
@@ -518,14 +497,13 @@ namespace KP.TimeSheets.MVC
             return new HomeEntityAssembler().ToJson(presenceours, workours);
         }
 
-        [HttpPost]
+        [HttpPost("[action]")]
         public IEnumerable<WorkHourOnProjecstJson> GetThisPeriodProjectsByUserId(GetThisMonthDataByUserJson json)
         {
             List<WorkHourOnProjecstJson> result = new List<WorkHourOnProjecstJson>();
-            UnitOfWork uow = new UnitOfWork();
-            UserManager userManager = new UserManager(uow);
-            TimeSheetManager timeSheetManager = new TimeSheetManager(uow);
-            DisplayPeriodManager displayPeriodMnager = new DisplayPeriodManager(uow);
+            UserManager userManager = new UserManager(this._uow);
+            TimeSheetManager timeSheetManager = new TimeSheetManager(this._uow);
+            DisplayPeriodManager displayPeriodMnager = new DisplayPeriodManager(this._uow);
             User currUser = userManager.GetByID(Guid.Parse(json.userid));
             DisplayPeriod displayPeriod = displayPeriodMnager.GetDisplayPeriod(currUser);
 
@@ -546,15 +524,13 @@ namespace KP.TimeSheets.MVC
             return result;
         }
 
-        [HttpPost]
+        [HttpPost("[action]")]
         public AllEntityJson GetThisPeriodDataByUserId(GetThisMonthDataByUserJson json)
         {
-
-            UnitOfWork uow = new UnitOfWork();
-            UserManager userManager = new UserManager(uow);
+            UserManager userManager = new UserManager(this._uow);
             User currUser = userManager.GetByID(Guid.Parse(json.userid));
-            TimeSheetManager timesheetManager = new Domain.TimeSheetManager(uow);
-            DisplayPeriodManager displayPeriodMnager = new DisplayPeriodManager(uow);
+            TimeSheetManager timesheetManager = new Domain.TimeSheetManager(this._uow);
+            DisplayPeriodManager displayPeriodMnager = new DisplayPeriodManager(this._uow);
             DisplayPeriod displayPeriod = displayPeriodMnager.GetDisplayPeriod(currUser);
 
             DateTime fromDate = json.values[0].Date;
@@ -566,13 +542,11 @@ namespace KP.TimeSheets.MVC
 
         }
 
-        [HttpPost]
+        [HttpPost("[action]")]
         public AllEntityJson GetThisMonthDataByUser(GetThisMonthDataByUserJson json)
         {
-
-            UnitOfWork uow = new UnitOfWork();
-            UserManager userManager = new UserManager(uow);
-            TimeSheetManager timesheetManager = new Domain.TimeSheetManager(uow);
+            UserManager userManager = new UserManager(this._uow);
+            TimeSheetManager timesheetManager = new Domain.TimeSheetManager(this._uow);
             User currUser = userManager.GetByID(Guid.Parse(json.userid.ToString()));
             var presenceours = timesheetManager.GetThisMonthPresencHoursByUserId(currUser.ID, json.value.Date);
             var workours = timesheetManager.GetWorkHoursByUser(currUser.ID, json.value.Date);
@@ -580,13 +554,12 @@ namespace KP.TimeSheets.MVC
 
         }
 
-        [HttpPost]
+        [HttpPost("[action]")]
         public IEnumerable<WorkHourOnProjecstJson> GetThisMonthProjectsByUserID(GetThisMonthDataByUserJson json)
         {
             List<WorkHourOnProjecstJson> result = new List<WorkHourOnProjecstJson>();
-            UnitOfWork uow = new UnitOfWork();
-            UserManager userManager = new UserManager(uow);
-            TimeSheetManager timeSheetManager = new TimeSheetManager(uow);
+            UserManager userManager = new UserManager(this._uow);
+            TimeSheetManager timeSheetManager = new TimeSheetManager(this._uow);
             //SyncWithPWA(uow);
             User User = userManager.GetByID(Guid.Parse(json.userid));
             var all = timeSheetManager.GetWorkHoursByUser(User.ID, json.value.Date);
@@ -605,26 +578,25 @@ namespace KP.TimeSheets.MVC
 
         #region Confirm Methods
 
-        [HttpGet]
+        [HttpGet("[action]")]
         public IEnumerable<UserJson> GetUsersInCurrentUserOrganisation()
         {
-            var manager = new UserManager(new UnitOfWork());
-            var user = new UserHelper().GetCurrent();
+            var manager = new UserManager(this._uow);
+            var user = new UserHelper().GetCurrent(this._uow);
             var result = manager.GetMyEmployees(user);
             return new UserAssembler().ToJsons(result);
         }
 
 
-        [HttpGet]
+        [HttpGet("[action]")]
         public IEnumerable<TimeSheetJson> GetTimeSheetsByUserIdForFirstTime(Guid userID)
         {
             List<TimeSheetJson> result = new List<TimeSheetJson>();
-            UnitOfWork uow = new UnitOfWork();
-            UserManager userManager = new UserManager(uow);
-            ProjectManager projectManager = new Domain.ProjectManager(uow);
-            TimeSheetManager timeSheetManager = new TimeSheetManager(uow);
-            DisplayPeriodManager displayPeriodMnager = new DisplayPeriodManager(uow);
-            User currentUser = new UserHelper().GetCurrent();
+            UserManager userManager = new UserManager(this._uow);
+            ProjectManager projectManager = new Domain.ProjectManager(this._uow);
+            TimeSheetManager timeSheetManager = new TimeSheetManager(this._uow);
+            DisplayPeriodManager displayPeriodMnager = new DisplayPeriodManager(this._uow);
+            User currentUser = new UserHelper().GetCurrent(this._uow);
             User user = userManager.GetByID(userID);
             DisplayPeriod displayPeriod = displayPeriodMnager.GetDisplayPeriod(currentUser);
 
@@ -648,22 +620,21 @@ namespace KP.TimeSheets.MVC
             IEnumerable<WorkHour> workHours = timeSheetManager.GetWorkHoursByUser(user, fromDate, toDate);
             IEnumerable<PresenceHour> presHours = timeSheetManager.GetPresHoursByUser(user, fromDate, toDate);
 
-            result = TimeSheetAssembler.ToJsonsForConfirm(presHours, workHours, user);
+            result = TimeSheetAssembler.ToJsonsForConfirm(presHours, workHours, user,this._uow);
             return result;
 
         }
 
 
-        [HttpPost]
+        [HttpPost("[action]")]
         public IEnumerable<TimeSheetJson> GetTimeSheetsByUserId(GetThisMonthDataByUserJson json)
         {
             List<TimeSheetJson> result = new List<TimeSheetJson>();
-            UnitOfWork uow = new UnitOfWork();
-            UserManager userManager = new UserManager(uow);
-            ProjectManager projectManager = new Domain.ProjectManager(uow);
-            TimeSheetManager timeSheetManager = new TimeSheetManager(uow);
-            DisplayPeriodManager displayPeriodMnager = new DisplayPeriodManager(uow);
-            User currentUser = new UserHelper().GetCurrent();
+            UserManager userManager = new UserManager(this._uow);
+            ProjectManager projectManager = new Domain.ProjectManager(this._uow);
+            TimeSheetManager timeSheetManager = new TimeSheetManager(this._uow);
+            DisplayPeriodManager displayPeriodMnager = new DisplayPeriodManager(this._uow);
+            User currentUser = new UserHelper().GetCurrent(this._uow);
             User user = userManager.GetByID(Guid.Parse(json.userid.ToString()));
             DisplayPeriod displayPeriod = displayPeriodMnager.GetDisplayPeriod(currentUser);
             DateTime fromDate = DateTime.Now.AddDays(-7);
@@ -691,18 +662,17 @@ namespace KP.TimeSheets.MVC
             IEnumerable<WorkHour> workHours = timeSheetManager.GetWorkHoursByUser(user, fromDate, toDate);
             IEnumerable<PresenceHour> presHours = timeSheetManager.GetPresHoursByUser(user, fromDate, toDate);
 
-            result = TimeSheetAssembler.ToJsonsForConfirm(presHours, workHours, user);
+            result = TimeSheetAssembler.ToJsonsForConfirm(presHours, workHours, user,this._uow);
             return result;
 
         }
 
-        [HttpPost]
+        [HttpPost("[action]")]
         public string ApproveWorkHour(ApproveAndDenyJson data)
         {
             IEnumerable<WorkHour> result;
-            UnitOfWork uow = new UnitOfWork();
 
-            TimeSheetManager timeSheetManager = new TimeSheetManager(uow);
+            TimeSheetManager timeSheetManager = new TimeSheetManager(this._uow);
             result = timeSheetManager.GetByDateAndTaskId(data.date, Guid.Parse(data.id)).ToList();
 
 
@@ -713,13 +683,13 @@ namespace KP.TimeSheets.MVC
                     for (int i = 0; i < 2; i++)
                     {
                         timeSheetManager.ApproveWorkHour(item);
-                        HistoryUtilities.RegisterApproveHistory(data, item);
+                        HistoryUtilities.RegisterApproveHistory(data, item,this._uow);
                     }
                 }
                 else
                 {
                     timeSheetManager.ApproveWorkHour(item);
-                    HistoryUtilities.RegisterApproveHistory(data, item);
+                    HistoryUtilities.RegisterApproveHistory(data, item,this._uow);
                 }
 
             }
@@ -728,18 +698,17 @@ namespace KP.TimeSheets.MVC
             return "عملیات تایید با موفقیت انجام گردید";
         }
 
-        [HttpPost]
+        [HttpPost("[action]")]
         public string DenyWorkHour(ApproveAndDenyJson data)
         {
             IEnumerable<WorkHour> result;
-            UnitOfWork uow = new UnitOfWork();
-            TimeSheetManager timeSheetManager = new TimeSheetManager(uow);
+            TimeSheetManager timeSheetManager = new TimeSheetManager(this._uow);
 
             result = timeSheetManager.GetByDateAndTaskId(data.date, Guid.Parse(data.id)).ToList();
             foreach (var item in result)
             {
                 timeSheetManager.DenyWorkHour(item);
-                HistoryUtilities.RegisterDenyHistory(data, item);
+                HistoryUtilities.RegisterDenyHistory(data, item,this._uow);
 
             }
 
@@ -747,13 +716,12 @@ namespace KP.TimeSheets.MVC
             return "عملیات رد با موفقیت انجام گردید";
         }
 
-        [HttpPost]
+        [HttpPost("[action]")]
         public IEnumerable<WorkHourJson> GetRegistereCurrentPerioddWorkHours(List<TimeSheetValueJson> workHourJsons)
         {
-            UnitOfWork uow = new UnitOfWork();
-            UserManager userManager = new UserManager(uow);
-            TimeSheetManager timeSheetManager = new TimeSheetManager(uow);
-            User currUser = new UserHelper().GetCurrent();
+            UserManager userManager = new UserManager(this._uow);
+            TimeSheetManager timeSheetManager = new TimeSheetManager(this._uow);
+            User currUser = new UserHelper().GetCurrent(this._uow);
             DateTime fromDate = workHourJsons[0].Date;
             DateTime toDate = workHourJsons[workHourJsons.Count() - 1].Date;
             var result = timeSheetManager.GetRegisteredWorkHours(currUser.ID)
@@ -763,28 +731,25 @@ namespace KP.TimeSheets.MVC
         }
 
 
-        [HttpGet]
+        [HttpGet("[action]")]
         public IEnumerable<WorkHourJson> GetRegisteredWorkHours()
         {
-            UnitOfWork uow = new UnitOfWork();
-
-            TimeSheetManager timeSheetManager = new TimeSheetManager(uow);
-            var currentUser = new UserHelper().GetCurrent();
+            TimeSheetManager timeSheetManager = new TimeSheetManager(this._uow);
+            var currentUser = new UserHelper().GetCurrent(this._uow);
             return new WorkHourAssembler().ToJsons(timeSheetManager.GetRegisteredWorkHours(currentUser.ID).OrderBy(c => c.Date));
         }
 
-        [HttpPost]
+        [HttpPost("[action]")]
         public IEnumerable<TimeSheetJson> GetTimeSheetsByDateAndNumberOfDayConfirm(PeriodNumberDateJson period)
         {
             List<TimeSheetJson> result = new List<TimeSheetJson>();
-            UnitOfWork uow = new UnitOfWork();
-            UserManager userManager = new UserManager(uow);
-            ProjectManager projectManager = new Domain.ProjectManager(uow);
-            TimeSheetManager timeSheetManager = new TimeSheetManager(uow);
-            DisplayPeriodManager displayPeriodMnager = new DisplayPeriodManager(uow);
-            var displayPeriod = DisplayPeriodUtilities.ConvertPeriodNumberDateJsonToDisplayPeriod(period);
+            UserManager userManager = new UserManager(this._uow);
+            ProjectManager projectManager = new Domain.ProjectManager(this._uow);
+            TimeSheetManager timeSheetManager = new TimeSheetManager(this._uow);
+            DisplayPeriodManager displayPeriodMnager = new DisplayPeriodManager(this._uow);
+            var displayPeriod = DisplayPeriodUtilities.ConvertPeriodNumberDateJsonToDisplayPeriod(period,this._uow);
             //SyncWithPWA(uow);
-            User currUser = new UserHelper().GetCurrent();
+            User currUser = new UserHelper().GetCurrent(this._uow);
             User user = userManager.GetByID(Guid.Parse(period.UserId));
             displayPeriodMnager.Save(displayPeriod);
 
@@ -792,12 +757,12 @@ namespace KP.TimeSheets.MVC
             DateTime toDate = fromDate.AddDays(displayPeriod.NumOfDays);
             IEnumerable<PresenceHour> presHours = timeSheetManager.GetPresHoursByUser(user, fromDate, toDate);
             IEnumerable<WorkHour> workHours = timeSheetManager.GetWorkHoursByUser(user, fromDate, toDate);
-            result = TimeSheetAssembler.ToJsonsForConfirm(presHours, workHours, user);
+            result = TimeSheetAssembler.ToJsonsForConfirm(presHours, workHours, user,this._uow);
 
             return result;
         }
 
-        [HttpPost]
+        [HttpPost("[action]")]
         public IEnumerable<TimeSheetJson> GetNextPeriodConfirm(TimeSheetValueJson workHourJson)
         {
 
@@ -811,12 +776,11 @@ namespace KP.TimeSheets.MVC
 
             }
 
-            UnitOfWork uow = new UnitOfWork();
-            UserManager userManager = new UserManager(uow);
-            TimeSheetManager timeSheetManager = new TimeSheetManager(uow);
-            DisplayPeriodManager displayPeriodMnager = new DisplayPeriodManager(uow);
+            UserManager userManager = new UserManager(this._uow);
+            TimeSheetManager timeSheetManager = new TimeSheetManager(this._uow);
+            DisplayPeriodManager displayPeriodMnager = new DisplayPeriodManager(this._uow);
             //SyncWithPWA(uow);
-            User currUser = new UserHelper().GetCurrent();
+            User currUser = new UserHelper().GetCurrent(this._uow);
             User user = userManager.GetByID(Guid.Parse(workHourJson.UserId));
             DisplayPeriod displayPeriod = displayPeriodMnager.GetDisplayPeriod(currUser);
             DateTime toDate = workHourJson.Date.AddDays(1);
@@ -836,7 +800,7 @@ namespace KP.TimeSheets.MVC
                         IEnumerable<PresenceHour> presHours = timeSheetManager.GetPresHoursByUser(currUser, fromDate, toDate);
                         IEnumerable<WorkHour> workHours = timeSheetManager.GetWorkHoursByUser(currUser, fromDate, toDate);
 
-                        result = TimeSheetAssembler.ToJsonsForConfirm(presHours, workHours, user);
+                        result = TimeSheetAssembler.ToJsonsForConfirm(presHours, workHours, user,this._uow);
                     }
                     else
                     {
@@ -845,7 +809,7 @@ namespace KP.TimeSheets.MVC
                         toDate = DateTime.Now.EndOfWeek(DayOfWeek.Friday);
                         IEnumerable<PresenceHour> presHours = timeSheetManager.GetPresHoursByUser(currUser, fromDate, toDate);
                         IEnumerable<WorkHour> workHours = timeSheetManager.GetWorkHoursByUser(currUser, fromDate, toDate);
-                        result = TimeSheetAssembler.ToJsonsForConfirm(presHours, workHours, user);
+                        result = TimeSheetAssembler.ToJsonsForConfirm(presHours, workHours, user,this._uow);
                     }
 
                 }
@@ -860,7 +824,7 @@ namespace KP.TimeSheets.MVC
                         presHours = timeSheetManager.GetPresHoursByUser(currUser, fromDate, toDate);
                     }
                     IEnumerable<WorkHour> workHours = timeSheetManager.GetWorkHoursByUser(currUser, fromDate, toDate);
-                    result = TimeSheetAssembler.ToJsonsForConfirm(presHours, workHours, user);
+                    result = TimeSheetAssembler.ToJsonsForConfirm(presHours, workHours, user,this._uow);
                 }
             }
             else
@@ -869,7 +833,7 @@ namespace KP.TimeSheets.MVC
                 toDate = DateTime.Now.EndOfWeek(DayOfWeek.Friday);
                 IEnumerable<PresenceHour> presHours = timeSheetManager.GetPresHoursByUser(currUser, fromDate, toDate);
                 IEnumerable<WorkHour> workHours = timeSheetManager.GetWorkHoursByUser(currUser, fromDate, toDate);
-                result = TimeSheetAssembler.ToJsonsForConfirm(presHours, workHours, user);
+                result = TimeSheetAssembler.ToJsonsForConfirm(presHours, workHours, user,this._uow);
 
 
 
@@ -891,18 +855,16 @@ namespace KP.TimeSheets.MVC
 
         }
 
-        [HttpPost]
+        [HttpPost("[action]")]
         public IEnumerable<TimeSheetJson> GetCurrentPeriodConfirm(List<TimeSheetValueJson> workHourJsons)
         {
             List<TimeSheetJson> result = new List<TimeSheetJson>();
 
-
-            UnitOfWork uow = new UnitOfWork();
-            UserManager userManager = new UserManager(uow);
-            TimeSheetManager timeSheetManager = new TimeSheetManager(uow);
-            DisplayPeriodManager displayPeriodMnager = new DisplayPeriodManager(uow);
+            UserManager userManager = new UserManager(this._uow);
+            TimeSheetManager timeSheetManager = new TimeSheetManager(this._uow);
+            DisplayPeriodManager displayPeriodMnager = new DisplayPeriodManager(this._uow);
             //SyncWithPWA(uow);
-            User currUser = new UserHelper().GetCurrent();
+            User currUser = new UserHelper().GetCurrent(this._uow);
             User user = userManager.GetByID(Guid.Parse(workHourJsons[0].UserId));
 
 
@@ -912,7 +874,7 @@ namespace KP.TimeSheets.MVC
 
             IEnumerable<PresenceHour> presHours = timeSheetManager.GetPresHoursByUser(currUser, fromDate, toDate);
             IEnumerable<WorkHour> workHours = timeSheetManager.GetWorkHoursByUser(currUser, fromDate, toDate);
-            result = TimeSheetAssembler.ToJsonsForConfirm(presHours, workHours, user);
+            result = TimeSheetAssembler.ToJsonsForConfirm(presHours, workHours, user,this._uow);
 
             return result;
 
@@ -923,7 +885,7 @@ namespace KP.TimeSheets.MVC
 
         }
 
-        [HttpPost]
+        [HttpPost("[action]")]
         public IEnumerable<TimeSheetJson> GetPreviousPeriodConfirm(WorkHourJson workHourJson)
         {
             List<TimeSheetJson> result = new List<TimeSheetJson>();
@@ -933,13 +895,12 @@ namespace KP.TimeSheets.MVC
                 workHourJson.Date = DateTime.Now;
             }
             var startDate = workHourJson.Date;
-            UnitOfWork uow = new UnitOfWork();
-            UserManager userManager = new UserManager(uow);
-            ProjectManager projectManager = new Domain.ProjectManager(uow);
-            TimeSheetManager timeSheetManager = new TimeSheetManager(uow);
-            DisplayPeriodManager displayPeriodMnager = new DisplayPeriodManager(uow);
+            UserManager userManager = new UserManager(this._uow);
+            ProjectManager projectManager = new Domain.ProjectManager(this._uow);
+            TimeSheetManager timeSheetManager = new TimeSheetManager(this._uow);
+            DisplayPeriodManager displayPeriodMnager = new DisplayPeriodManager(this._uow);
             //SyncWithPWA(uow);
-            User currUser = new UserHelper().GetCurrent();
+            User currUser = new UserHelper().GetCurrent(this._uow);
             DisplayPeriod displayPeriod = displayPeriodMnager.GetDisplayPeriod(currUser);
             User user = userManager.GetByID(Guid.Parse(workHourJson.UserId));
             var dt = startDate.AddDays(-1);
@@ -954,7 +915,7 @@ namespace KP.TimeSheets.MVC
 
                 IEnumerable<PresenceHour> presHours = timeSheetManager.GetPresHoursByUser(currUser, fromDate, toDate);
                 IEnumerable<WorkHour> workHours = timeSheetManager.GetWorkHoursByUser(currUser, fromDate, toDate);
-                result = TimeSheetAssembler.ToJsonsForConfirm(presHours, workHours, user);
+                result = TimeSheetAssembler.ToJsonsForConfirm(presHours, workHours, user,this._uow);
 
             }
             else
@@ -968,7 +929,7 @@ namespace KP.TimeSheets.MVC
                     toDate = fromDate.AddDays(displayPeriod.NumOfDays);
                     presHours = timeSheetManager.GetPresHoursByUser(currUser, fromDate, toDate);
                 }
-                result = TimeSheetAssembler.ToJsonsForConfirm(presHours, workHours, user);
+                result = TimeSheetAssembler.ToJsonsForConfirm(presHours, workHours, user,this._uow);
             }
 
             return result;
@@ -977,15 +938,14 @@ namespace KP.TimeSheets.MVC
 
         }
 
-        [HttpGet]
+        [HttpGet("[action]")]
         public IEnumerable<TimeSheetJson> ChangeDisplayPeriodToWeeklyConfirm(Guid UserId)
         {
-            UnitOfWork uow = new UnitOfWork();
-            UserManager um = new UserManager(uow);
+            UserManager um = new UserManager(this._uow);
             var user = um.GetByID(UserId);
 
-            var currentUser = new UserHelper().GetCurrent();
-            DisplayPeriodManager dpm = new DisplayPeriodManager(uow);
+            var currentUser = new UserHelper().GetCurrent(this._uow);
+            DisplayPeriodManager dpm = new DisplayPeriodManager(this._uow);
             DisplayPeriod dp = new DisplayPeriod();
             dp = dpm.GetDisplayPeriod(currentUser);
             dp.IsWeekly = true;

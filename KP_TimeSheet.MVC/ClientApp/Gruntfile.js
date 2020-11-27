@@ -7,11 +7,15 @@ module.exports = function (grunt) {
     'myConfig': {
       'srcArray':[
         'src/layout/sideBar.js',
+        'src/layout/site.js',
+        'src/registerTimeSheet/RegisterTimeSheets.js',
         'src/index.js', 
         'src/index2.js'
       ],
       'targetArray':[
-        '../wwwroot/js/layout/sideBar.js', 
+        '../wwwroot/js/sideBar.js', 
+        '../wwwroot/js/site.js', 
+        '../wwwroot/js/RegisterTimeSheets.js', 
         '../wwwroot/js/app.js', 
         '../wwwroot/js/app2.js'
       ],

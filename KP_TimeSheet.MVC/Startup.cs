@@ -28,15 +28,15 @@ namespace KP_TimeSheet.MVC
         {
             if (this.WebHostEnvironment.IsDevelopment())
             {
-                services.AddDbContext<KP.TimeSheets.Persistance.RASContext>(opt =>
-                                               opt.UseInMemoryDatabase("RASContext"));
+                services.AddDbContext<KP.TimeSheets.Persistance.RASContext>(
+                options => options.UseSqlServer(Configuration.GetConnectionString("DevelopmentConnection")));
             }
             else
             {
                 services.AddDbContext<KP.TimeSheets.Persistance.RASContext>(
-                options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
-            );
+                options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             }
+            services.AddScoped<KP.TimeSheets.Domain.IUnitOfWork,KP.TimeSheets.Persistance.UnitOfWork>();
             services.AddControllersWithViews();
         }
 

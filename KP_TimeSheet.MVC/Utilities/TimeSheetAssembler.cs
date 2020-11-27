@@ -202,9 +202,9 @@ namespace KP.TimeSheets.MVC
         }
 
 
-        public static List<TimeSheetJson> ToJsonsForConfirm(IEnumerable<PresenceHour> presenceHours, IEnumerable<WorkHour> workHours,User user )
+        public static List<TimeSheetJson> ToJsonsForConfirm(IEnumerable<PresenceHour> presenceHours, IEnumerable<WorkHour> workHours
+            ,User user, IUnitOfWork uow  )
         {
-            UnitOfWork uow = new UnitOfWork();
             TimeSheetManager timesheetMnager = new TimeSheetManager(uow);
             var result = new List<TimeSheetJson>();
             int timeSheetID = 1;
@@ -218,11 +218,11 @@ namespace KP.TimeSheets.MVC
 
             foreach (var item in workHours)
             {
-                if (timesheetMnager.ApprovementStatus(item,new UserHelper().GetCurrent().UserName) == "Approve")
+                if (timesheetMnager.ApprovementStatus(item,new UserHelper().GetCurrent(uow).UserName) == "Approve")
                 {
                     approveItems.Add(item);
                 }
-                if (timesheetMnager.ApprovementStatus(item, new UserHelper().GetCurrent().UserName) == "NotApprove")
+                if (timesheetMnager.ApprovementStatus(item, new UserHelper().GetCurrent(uow).UserName) == "NotApprove")
                 {
                     notApproveItems.Add(item);
                 }
@@ -311,7 +311,7 @@ namespace KP.TimeSheets.MVC
                 var counter = 0;
                 foreach (var worktask in groupingTasksApprove)
                 {
-                    if (timesheetMnager.ApprovementStatus(worktask,new UserHelper().GetCurrent().UserName) == "Approve" &&
+                    if (timesheetMnager.ApprovementStatus(worktask,new UserHelper().GetCurrent(uow).UserName) == "Approve" &&
                         projectApprove.ProjectId == worktask.ProjectId)
                     {
                         if (counter == 0)
@@ -359,7 +359,7 @@ namespace KP.TimeSheets.MVC
                 var timesheetIdapproveaskt = timeSheetID;
                 foreach (var w in groupingTasksNotApprove)
                 {
-                    if (timesheetMnager.ApprovementStatus(w, new UserHelper().GetCurrent().UserName) == "NotApprove"
+                    if (timesheetMnager.ApprovementStatus(w, new UserHelper().GetCurrent(uow).UserName) == "NotApprove"
                    
                     && item.ProjectId == w.ProjectId)
                     {

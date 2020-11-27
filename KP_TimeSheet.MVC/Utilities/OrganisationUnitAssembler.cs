@@ -35,13 +35,13 @@ namespace KP.TimeSheets.MVC
         }
 
 
-        public IEnumerable<OrganizationUnit> ToEntities(IEnumerable<OrganisationUnitJson> orgjsons)
+        public IEnumerable<OrganizationUnit> ToEntities(IEnumerable<OrganisationUnitJson> orgjsons, IUnitOfWork uow)
         {
             List<OrganizationUnit> result = new List<OrganizationUnit>();
 
             foreach (var orgjson in orgjsons)
             {
-                result.Add(ToEntity(orgjson));
+                result.Add(ToEntity(orgjson,uow));
             }
 
             return result;
@@ -49,9 +49,8 @@ namespace KP.TimeSheets.MVC
 
 
 
-        public OrganizationUnit ToEntity(OrganisationUnitJson orgjson)
+        public OrganizationUnit ToEntity(OrganisationUnitJson orgjson, IUnitOfWork uow )
         {
-            UnitOfWork uow = new UnitOfWork();
             UserManager um = new UserManager(uow);
             OrganizationUnit result = new OrganizationUnit();
             result.Employees = new List<User>();

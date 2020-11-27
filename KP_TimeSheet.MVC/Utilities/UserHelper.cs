@@ -10,13 +10,16 @@ namespace KP.TimeSheets.MVC
     public class UserHelper
     {
 
-        public User GetCurrent()
+        public User GetCurrent(IUnitOfWork uow)
         {
-            UnitOfWork uow = new UnitOfWork();
             var userManager = new UserManager(uow);
             var UserName = System.Environment.UserName; // HttpContext.Current.User.Identity.Name;
-            string[] test = UserName.ToString().Split('\\');
-            UserName = test[0] + @"\" + test[1];
+            if (UserName.Contains('\\'))
+            {
+                string[] test = UserName.ToString().Split('\\');
+                UserName = test[0] + @"\" + test[1];
+            }
+
             return userManager.GetByUserName(UserName);
         }
     }
