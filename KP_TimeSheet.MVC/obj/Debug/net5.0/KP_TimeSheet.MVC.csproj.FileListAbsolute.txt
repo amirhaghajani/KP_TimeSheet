@@ -72,3 +72,5 @@ D:\p_NaftKish\KP_TimeSheet\KP_TimeSheet.MVC\bin\Debug\net5.0\KP.TimeSheets.Persi
 D:\p_NaftKish\KP_TimeSheet\KP_TimeSheet.MVC\bin\Debug\net5.0\KP.TimeSheets.Persistance.pdb
 D:\p_NaftKish\KP_TimeSheet\KP_TimeSheet.MVC\bin\Debug\net5.0\KP.TimeSheets.Domain.pdb
 D:\p_NaftKish\KP_TimeSheet\KP_TimeSheet.MVC\bin\Debug\net5.0\dbconfig.json
+D:\p_NaftKish\KP_TimeSheet\KP_TimeSheet.MVC\bin\Debug\net5.0\ClientApp\package-lock.json
+D:\p_NaftKish\KP_TimeSheet\KP_TimeSheet.MVC\bin\Debug\net5.0\ClientApp\package.json
