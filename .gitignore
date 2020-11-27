@@ -1,1 +1,3 @@
 KP_TimeSheet.MVC/ClientApp/node_modules/
+KP_TimeSheet.MVC/bin/*
+KP_TimeSheet.MVC/obj/*

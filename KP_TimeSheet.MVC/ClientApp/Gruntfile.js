@@ -5,25 +5,13 @@ module.exports = function (grunt) {
 
   grunt.initConfig({
     'myConfig': {
-      'vendor_modules': [
-        'jquery',
-        'bootstrap',
-        // 'bootstrap-sass',
-        // 'angular-route',
-        // 'angular-sanitize',
-        // 'restangular',
-        // 'jquery.cookie',
-        // 'lodash',
-        // 'underscore.string',
-        // 'lodash-deep'
-      ],
       'srcArray':[
         'src/layout/sideBar.js',
         'src/index.js', 
         'src/index2.js'
       ],
       'targetArray':[
-        '../wwwroot/js/sideBar.js', 
+        '../wwwroot/js/layout/sideBar.js', 
         '../wwwroot/js/app.js', 
         '../wwwroot/js/app2.js'
       ],
@@ -126,12 +114,7 @@ module.exports = function (grunt) {
         fs.writeFileSync(target, data);
       };
 
-      var vendorModules = grunt.config.get('myConfig.vendor_modules') || [];
-      vendorModules.forEach(function (vm) {
-        grunt.log.writelns('Excluding module from application bundle: %s', vm);
-        browserify1.exclude(vm);
-      });
-
+     
       browserify1.bundle(compile);
 
     });
@@ -170,12 +153,7 @@ module.exports = function (grunt) {
         fs.writeFileSync(target, data);
       };
 
-      var vendorModules = grunt.config.get('myConfig.vendor_modules') || [];
-      vendorModules.forEach(function (vm) {
-        grunt.log.writelns('Excluding module from application bundle: %s', vm);
-        browserify1.exclude(vm);
-      });
-
+      
       browserify1.bundle(compile);
 
       browserify1.on('update', function () {
