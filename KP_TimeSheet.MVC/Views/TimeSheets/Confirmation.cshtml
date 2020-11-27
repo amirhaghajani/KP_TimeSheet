@@ -1,0 +1,235 @@
+﻿
+@{
+    ViewBag.Title = "Confirmation";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/Content/DatePicker/datepicker-theme.css" rel="stylesheet" />
+<link href="~/Content/DatePicker/daterangepicker.css" rel="stylesheet" />
+<script src="~/Scripts/DatePicker/html5shiv.js"></script>
+<script src="~/Scripts/DatePicker/respond.min.js"></script>
+<script src="~/Scripts/DatePicker/moment.min.js"></script>
+<script src="~/Scripts/DatePicker/moment-jalaali.js"></script>
+<script src="~/Scripts/DatePicker/daterangepicker-fa-ex.js"></script>
+<script src="~/Scripts/DatePicker/daterangepicker.js"></script>
+<link href="~/Content/Kendo2018.3.1/kendo.common.min.css" rel="stylesheet" />
+<link href="~/Content/Kendo2018.3.1/kendo.default.min.css" rel="stylesheet" />
+<link href="~/Content/Kendo2018.3.1/kendo.default.mobile.min.css" rel="stylesheet" />
+<link href="~/Content/Kendo2018.3.1/kendo.rtl.min.css" rel="stylesheet" />
+<script src="~/Scripts/Kendo2018.3.1/kendo.all.min.js"></script>
+<script src="~/Tools/ExpotTool/libs/FileSaver/FileSaver.min.js"></script>
+<script src="~/Tools/ExpotTool/libs/jsPDF/jspdf.min.js"></script>
+<script src="~/Tools/ExpotTool/libs/jsPDF-AutoTable/jspdf.plugin.autotable.js"></script>
+<script src="~/Tools/ExpotTool/libs/html2canvas/html2canvas.min.js"></script>
+<script src="~/Tools/ExpotTool/tableExport.js"></script>
+
+
+
+
+<div class="carousel slide" data-ride="carousel">
+    <div class="carousel-inner">
+        <div class="item active">
+            <img class="img-responsive " style="width:100%" src="~/Images/Headers/insert Time sheet.jpg" />
+        </div>
+    </div>
+    <div class="carousel-caption" style="top:-10px">
+        <h3 style="font-size:1.5vw;">ارسال کارکرد</h3>
+    </div>
+</div>
+
+
+<nav class="navbar navbar-default text-center" style="margin-top:5px;justify-content:center;align-content:center">
+
+    <div class="col-md-8  pull-right" style="margin-top:5px;">
+        <label class="form-inline">
+            <span title="انتخاب کاربر" id="kddlUsers"> </span>
+        </label>
+    </div>
+
+    <div class="pull-left" style="margin-top:5px;display:none" id="PeriodPanle">
+        <nav class="form-inline">
+            <button id="btnpreviousPeriodconfirm" onclick="GetPreviousPeriodconfirm()" class="btn btn-info" style="margin-left:5px" title="دوره قبلی"><i class="glyphicon glyphicon-forward"></i></button>
+            <button id="btnSelectPeriodconfirm" class="btn btn-primary" style="margin-left:5px" title="اتخاب دوره" onclick="WNDSelectPeriod_OnOpen()"> انتخاب دوره</button>
+            <button id="btnNextPeriodconfirm" onclick="GetNextPeriodconfirm()" class="btn btn-info" style="margin-right:5px" title="دوره بعدی"> <i class="glyphicon glyphicon-backward"></i></button>
+        </nav>
+    </div>
+
+</nav>
+
+
+
+
+
+
+<div id="divMainContentconfirm" class="container-fluid" style="padding-top:4px; ">
+    <div class="row">
+        <div id="KTLContainerRegisterConfirm" class="col-md k-rtl">
+            <nav class="nav ras-exportbar" id="ExportNavConfirm" style="display:none">
+                <div class="form-inline">
+                    <a title="خروجی اکسل" href="#" onClick="doExport('#ktrlTimeSheetsConfirm', {type: 'excel'});"><img src="~/Images/icons/xls.png" alt="XLS" style="width:24px"></a>
+                    <a title="خروجی وورد" style="margin:5px" href="#" onClick="doExport('#ktrlTimeSheetsConfirm', { type: 'doc' });"> <img src='~/Images/icons/word.png' alt="Word" style="width:24px"> </a>
+                </div>
+            </nav>
+            <div id="ktrlTimeSheetsConfirm"></div>
+        </div>
+    </div>
+
+    <div id="WndDeny" class="k-rtl" style="display:none">
+        <div class="carousel slide" data-ride="carousel">
+            <!-- Indicators -->
+            <!-- Wrapper for slides -->
+            <div class="carousel-inner">
+                <div class="item active">
+                    <img src="~/Images/Headers/insert Time sheet.jpg" />
+                </div>
+            </div>
+
+            <div class="carousel-caption" style="top:-30px">
+                <h3 style="font-size:0.8vw;">رد کارکرد</h3>
+            </div>
+        </div>
+        <div class="row jumbotron jumbotron-fluid shadow" style="margin-right:10px; margin-top:10px;margin-left:10px;min-height:200px">
+            <div class="form-group">
+                <label for="comment">دلیل رد کارکرد</label>
+                <textarea class="form-control" rows="5" id="comment" name="text"></textarea>
+            </div>
+            <div class="form-group pull-right">
+                <button id="btnDeny" type="button" class="btn btn-warning btn-sm" onclick="FinalDeny()"> تایید رد کارکرد</button>
+                <button id="btnDiscardDeny" type="button" class="btn btn-danger btn-sm" onclick="WndDeny_OnClose()">انصراف</button>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="kwndSelectTimePeriodConfirm" class="k-rtl" style="display:none; background-color:transparent">
+        <div class="carousel slide" data-ride="carousel">
+            <!-- Indicators -->
+            <!-- Wrapper for slides -->
+            <div class="carousel-inner">
+                <div class="item active">
+                    <img src="~/Images/Headers/insert Time sheet.jpg" />
+                </div>
+            </div>
+            <div class="carousel-caption" style="top:-30px">
+                <h3 style="font-size:0.8vw;">انتخاب دوره</h3>
+            </div>
+
+
+        </div>
+
+        <div class="row jumbotron jumbotron-fluid shadow" style="margin-right:10px; margin-top:10px;margin-left:10px">
+            <div class="col-md-1"></div>
+            <div class="col-md-8">
+                <div class="form-group" id="weeklyconfirm">
+                    <label class=" checkbox-inline"><input id="chkweeklyconfirm" type="radio" name="optradioconfirm" value="weekly" checked> نمایش به صورت هفتگی </label>
+                </div>
+                <div id="periodicallyconfirm">
+                    <div class="form-inline">
+                        <label class=" checkbox-inline">
+                            <input id="chkperiodlyconfirm" type="radio" name="optradioconfirm" value="periodically">  نمایش به صورت روزانه در دوره های
+                            <input style="width:20px;height:10px" class="form-control" id="numberDaysconfirm" disabled>
+                            <span>روزه</span>
+                        </label>
+                    </div>
+                    <div class="form-group" style="margin-top:15px">
+                        <span>
+                            <small for="startDate">
+                                شروع تاریخ از
+                                <input disabled style="width:130px;height:10px; display:inline-block" type="text" class="form-control jalali-datepicker" id="startDateconfirm" placeholder="انتخاب تاریخ...">
+                            </small>
+                        </span>
+                    </div>
+                </div>
+                <br />
+
+                <div class="form-group pull-right">
+                    <button id="btnSendPeriodconfirm" type="button" class="btn btn-success btn-sm" onclick="btnSendPeriodsconfirm_Onclick()">تایید</button>
+                    <button id="btnCancelconfirm" type="button" class="btn btn-danger btn-sm" onclick="WNDSelectPeriod_OnClose()">انصراف</button>
+                </div>
+            </div>
+            <div class="col-md-1"></div>
+        </div>
+
+
+    </div>
+    <table id="DownSideTabsConfirm" class="row" style="margin-top:10px; border:none;width:100%; padding-right:1.7%;display:none">
+
+
+        <tbody>
+            <tr>
+
+
+                <td class="raspanel shadow ">
+
+                    <h4 class="text-center">ماه جاری</h4>
+                    <hr />
+                    <div class="row" style="margin-top:5px">
+                        <div class="col-xs-2">حضور</div>
+                        <div class=" col-xs-6">
+                            <div class="progress" style="margin-right:5px;">
+                                <div id="MonthlyPresenceconfirm" class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="0"
+                                     aria-valuemin="0" aria-valuemax="100" style="width:70%">
+                                    <span class="sr-only"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="MonthlyPresenceconfirmProgress" class="col-xs-3"></div>
+                    </div>
+                    <div class="row" style="margin-top:5px">
+                        <div class="col-xs-2">کارکرد</div>
+                        <div class=" col-xs-6">
+                            <div class="progress">
+                                <div id="MonthlyWorkHourconfirm" class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0"
+                                     aria-valuemin="0" aria-valuemax="100" style="width:70%">
+                                    <span class="sr-only">70% Complete</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="MonthlyWorkHourconfirmProgress" class="col-xs-3"></div>
+                    </div>
+
+                    <div id="tblcurrmonthconfirm" style="margin-top:5px"></div>
+
+                </td>
+                <td style="color:transparent;">
+                    ____
+                </td>
+                <td class="raspanel shadow ">
+
+                    <h4 class="text-center">دوره جاری</h4>
+                    <hr />
+                    <div class="row" style="margin-top:5px">
+                        <div class="col-xs-2">حضور</div>
+                        <div class=" col-xs-6">
+                            <div class="progress" style="margin-right:5px">
+                                <div id="PeriodicallyPresenceconfirm" class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="0"
+                                     aria-valuemin="0" aria-valuemax="100" style="width:70%">
+                                    <span class="sr-only"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="PeriodicallyPresenceconfirmProgress" class="col-xs-3">10:45</div>
+                    </div>
+                    <div class="row" style="margin-top:5px">
+                        <div class="col-xs-2">کارکرد</div>
+                        <div class=" col-xs-6">
+                            <div class="progress" style="margin-right:5px">
+                                <div id="PeriodicallyWorkHourconfirm" class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0"
+                                     aria-valuemin="0" aria-valuemax="100" style="width:70%">
+                                    <span class="sr-only">70% Complete</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="PeriodicallyWorkHourconfirmProgress" class="col-xs-3">10:40</div>
+                    </div>
+
+                    <div id="tblcurrperiodconfirm" style="margin-top:5px"></div>
+
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+
+
+</div>
+<script src="~/Scripts/ConfirmTimeSheets.js"></script>
