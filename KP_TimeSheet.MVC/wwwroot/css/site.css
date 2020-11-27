@@ -1,73 +1,800 @@
 ﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
 for details on configuring this project to bundle and minify static web assets. */
 
-@import 'bootstrap.min.css';
+@import 'bootstrap/bootstrap.min.css';
+@import 'bootstrap/bootstrap-rtl.css';
+@import 'themify-icons/themify-icons.css';
+@import 'material-design-iconic-font/css/material-design-iconic-font.min.css';
+@import 'RasSideBar.css';
 
-a.navbar-brand {
+@font-face {
+  font-family: 'IRANSansWeb';
+  src: url('../fonts/IRANSansWeb.eot') format('embedded-opentype'), url('../fonts/IRANSansWeb.woff') format('woff'), url('../fonts/IRANSansWeb.woff2') format('woff2'), url('../fonts/IRANSansWeb_Bold.eot') format('embedded-opentype'), url('../fonts/IRANSansWeb_Bold.woff') format('woff'), url('../fonts/IRANSansWeb_Bold.woff2') format('woff2'), url('../fonts/IRANSansWeb_Light.eot') format('embedded-opentype'), url('../fonts/IRANSansWeb_Light.woff') format('woff'), url('../fonts/IRANSansWeb_Light.woff2') format('woff2'), url('../fonts/IRANSansWeb_Medium.eot') format('embedded-opentype'), url('../fonts/IRANSansWeb_Medium.woff') format('woff'), url('../fonts/IRANSansWeb_Medium.woff2') format('woff2'), url('../fonts/IRANSansWeb_UltraLight.eot') format('embedded-opentype'), url('../fonts/IRANSansWeb_UltraLight.woff') format('woff'), url('../fonts/IRANSansWeb_UltraLight.woff2') format('woff2'), url('../fonts/irsans.ttf') format('truetype'), url('../fonts/irsansb.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'fontawesome-webfont';
+  src: url('../fonts/fontawesome-webfont.eot') format('embedded-opentype'), url('../fonts/fontawesome-webfont.svg') format('svg'), url('../fonts/fontawesome-webfont.ttf') format('truetype'), url('../fonts/fontawesome-webfont.woff') format('woff'), url('../fonts/fontawesome-webfont.woff2') format('woff2'), url('../fonts/FontAwesome.otf') format('opentype');
+}
+
+body{
+  font-family:IRANSansWeb !important;
+  height: 100vh;
+  width: 100vw;
+}
+
+table, th, td {
+  border: 1px solid #d0d0d0;
+  font-size : 13px;
+}
+
+div[disabled] {
+  pointer-events: none;
+  opacity: 0.7;
+  font-size: 13px;
+}
+div {
+  font-size: 13px;
+}
+.k-dialog .k-window-titlebar .k-dialog-title {
+  visibility: hidden;
+}
+/* Set padding to keep content from hitting the edges */
+.body-content {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+.dropbtnme {
+         
+          border: none;
+          cursor: pointer;
+      }
+
+          .dropbtnme:hover, .dropbtn:focus {
+              background-color: #2980B9;
+          }
+
+      .dropdownme {
+          position: relative;
+          display: inline-block;
+      }
+
+      .dropdown-content {
+          display: none;
+          position: absolute;
+          background-color: #f1f1f1;
+          min-width: 160px;
+          overflow: auto;
+          box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+          z-index: 1;
+      }
+
+          .dropdown-content a {
+              color: black;
+              padding: 12px 16px;
+              text-decoration: none;
+              display: block;
+          }
+
+      .dropdownme a:hover {
+          background-color: #ddd;
+      }
+
+      .show {
+          display: block;
+      }
+
+/* Override the default bootstrap behavior where horizontal description lists 
+ will truncate terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt {
   white-space: normal;
-  text-align: center;
-  word-break: break-all;
 }
 
-/* Provide sufficient contrast against white background */
-a {
-  color: #0366d6;
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea {
+  max-width: 280px;
 }
 
-.btn-primary {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
+.shadow {
+  -moz-box-shadow: 1px 2px 4px rgba(0, 0, 0,0.5);
+  -webkit-box-shadow: 1px 2px 4px rgba(0, 0, 0, .5);
+  box-shadow: 1px 2px 4px rgba(0, 0, 0, .5);
+
+  
 }
 
-.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
+.glass {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+  opacity: 0.5;
+  background: #d0d0d0;
 }
 
-/* Sticky footer styles
--------------------------------------------------- */
-html {
-  font-size: 14px;
-}
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
 
-.border-top {
-  border-top: 1px solid #e5e5e5;
-}
-.border-bottom {
-  border-bottom: 1px solid #e5e5e5;
-}
-
-.box-shadow {
-  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
-}
-
-button.accept-policy {
-  font-size: 1rem;
-  line-height: inherit;
-}
-
-/* Sticky footer styles
--------------------------------------------------- */
-html {
+.chk {
+  display: block;
   position: relative;
-  min-height: 100%;
+  padding-left: 0px;
+  margin-bottom: 12px;
+
+  font-size: 22px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  cursor: pointer;
+}
+
+.daterangepicker.dropdown-menu {
+  font-family: IRANSansWeb;
+  padding-top: 50px;
+  padding-bottom: 20px;
+  z-index: 10020 !important;
+}
+
+
+  /* Hide the browser's default checkbox */
+  .chk input {
+      position: absolute;
+      opacity: 0;
+   
+      height: 0;
+      width: 0;
+  }
+.text-center {
+  text-align:center;
+   align-content:center;
+   
+}
+/* Create a custom checkbox */
+.checkmark {
+  position: absolute;
+  height: 18px;
+  width: 18px;
+  background-color: #ffffff;
+
+  -moz-box-shadow: 1px 1px 1px rgba(0, 0, 0,0.5);
+  -webkit-box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+  box-shadow: 1px 2px 2px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+
+/* On mouse-over, add a grey background color */
+.chk :hover input ~ .checkmark {
+  background-color: #ccc;
+}
+
+/* When the checkbox is checked, add a blue background */
+.chk input:checked ~ .checkmark {
+  background-color: #2196F3;
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+/* Show the checkmark when checked */
+.chk input:checked ~ .checkmark:after {
+  display: block;
+}
+
+/* Style the checkmark/indicator */
+.chk .checkmark:after {
+  left: 9px;
+  top: 5px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+
+
+.sidebar-content{
+  width:90%;
+}
+
+
+.side-header {
+  background-image: url('../Images/SideBar-Back.jpg');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+ 
+}
+
+.header-section {
+
+  background-image: url('../Images/HeaderBar.jpg');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+}
+
+
+.side-header-sub-menu li.active > a, .side-header-sub-menu li:hover > a{
+  color : white;
+}
+.side-header-menu > ul > li.active > a, .side-header-menu > ul > li:hover > a {
+  color: white;
+}
+.side-header-menu > ul > li > a {
+  color:white;
+}
+
+.side-header-sub-menu li a{
+  color:white;
+}
+
+.k-dropdown-wrap{
+  max-height:33px;
+}
+.raspanel{
+ 
+  background-color:#f1f1f1 !important;
+  border:1px;
+  border-color:rgba(0,0,0,0.2);  
+  padding : 5px;
+}
+
+
+.ras-center{
+ 
+  margin-left: auto;
+   margin-right: auto;
+    width: 15em
+}
+
+
+.ras-listbox{
+  
+  min-height:300px!important;
+  min-width:300px!important;
+}
+
+
+
+select[multiple]{
+  height:200px;
+  width:300px;
+}
+
+.ras-margin-top-10{
+  margin-top:10px !important;
+}
+.ras-margin-top-15 {
+  margin-top: 15px !important;
+}
+
+.ras-margin-top-20 {
+  margin-top: 20px !important;
+}
+
+
+
+
+
+/* Set padding to keep content from hitting the edges */
+
+
+
+.ras-alias {
+  cursor: alias;
+}
+
+.ras-all-scroll {
+  cursor: all-scroll;
+}
+
+.ras-auto {
+  cursor: auto;
+}
+
+.ras-cell {
+  cursor: cell;
+}
+
+.ras-context-menu {
+  cursor: context-menu;
+}
+
+.ras-col-resize {
+  cursor: col-resize;
+}
+
+.ras-copy {
+  cursor: copy;
+}
+
+.ras-crosshair {
+  cursor: crosshair;
+}
+
+.ras-default {
+  cursor: default;
+}
+
+.ras-e-resize {
+  cursor: e-resize;
+}
+
+.ras-ew-resize {
+  cursor: ew-resize;
+}
+
+.ras-grab {
+  cursor: -webkit-grab;
+  cursor: grab;
+}
+
+.ras-grabbing {
+  cursor: -webkit-grabbing;
+  cursor: grabbing;
+}
+
+.ras-help {
+  cursor: help;
+}
+
+.ras-move {
+  cursor: move;
+}
+
+.ras-n-resize {
+  cursor: n-resize;
+}
+
+.ras-ne-resize {
+  cursor: ne-resize;
+}
+
+.ras-nesw-resize {
+  cursor: nesw-resize;
+}
+
+.ras-ns-resize {
+  cursor: ns-resize;
+}
+
+.ras-nw-resize {
+  cursor: nw-resize;
+}
+
+.ras-nwse-resize {
+  cursor: nwse-resize;
+}
+
+.ras-no-drop {
+  cursor: no-drop;
+}
+
+.ras-none {
+  cursor: none;
+}
+
+.ras-not-allowed {
+  cursor: not-allowed;
+}
+
+.ras-pointer {
+  cursor: pointer;
+}
+
+.ras-progress {
+  cursor: progress;
+}
+
+.ras-row-resize {
+  cursor: row-resize;
+}
+
+.ras-s-resize {
+  cursor: s-resize;
+}
+
+.ras-se-resize {
+  cursor: se-resize;
+}
+
+.ras-sw-resize {
+  cursor: sw-resize;
+}
+
+.ras-text {
+  cursor: text;
+}
+
+.ras-url {
+  cursor: url(myBall.cur),auto;
+}
+
+.ras-w-resize {
+  cursor: w-resize;
+}
+
+.ras-wait {
+  cursor: wait;
+}
+
+.ras-zoom-in {
+  cursor: zoom-in;
+}
+
+.ras-zoom-out {
+  cursor: zoom-out;
+}
+
+
+
+.shadow {
+  -moz-box-shadow: 1px 2px 4px rgba(0, 0, 0,0.5);
+  -webkit-box-shadow: 1px 2px 4px rgba(0, 0, 0, .5);
+  box-shadow: 1px 2px 4px rgba(0, 0, 0, .5);
+}
+
+.glass {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+  opacity: 0.5;
+  background: #d0d0d0;
+}
+
+
+.chk {
+  display: block;
+  position: relative;
+  padding-left: 0px;
+  margin-bottom: 12px;
+  font-size: 22px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  cursor: pointer;
+}
+
+.daterangepicker.dropdown-menu {
+  font-family: IRANSansWeb;
+  padding-top: 50px;
+  padding-bottom: 20px;
+  z-index: 10020 !important;
+}
+
+
+/* Hide the browser's default checkbox */
+.chk input {
+  position: absolute;
+  opacity: 0;
+  height: 0;
+  width: 0;
+}
+
+.text-center {
+  text-align: center;
+  align-content: center;
+}
+/* Create a custom checkbox */
+.checkmark {
+  position: absolute;
+  height: 18px;
+  width: 18px;
+  background-color: #ffffff;
+  -moz-box-shadow: 1px 1px 1px rgba(0, 0, 0,0.5);
+  -webkit-box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+  box-shadow: 1px 2px 2px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+
+/* On mouse-over, add a grey background color */
+.chk :hover input ~ .checkmark {
+  background-color: #ccc;
+}
+
+/* When the checkbox is checked, add a blue background */
+.chk input:checked ~ .checkmark {
+  background-color: #2196F3;
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+/* Show the checkmark when checked */
+.chk input:checked ~ .checkmark:after {
+  display: block;
+}
+
+/* Style the checkmark/indicator */
+.chk .checkmark:after {
+  left: 9px;
+  top: 5px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+
+
+.rasSidebar-content {
+  width: 90%;
+}
+
+
+.side-header {
+  /* background-image: url('../../Images/rasSidebar-Back.jpg'); */
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+
+.header-section {
+  height: 100px;
+  background-image: url('../../Images/HeaderBar.jpg');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+}
+
+
+.side-header-sub-menu li.active > a, .side-header-sub-menu li:hover > a {
+  color: white;
+}
+
+.side-header-menu > ul > li.active > a, .side-header-menu > ul > li:hover > a {
+  color: white;
+}
+
+.side-header-menu > ul > li > a {
+  color: white;
+}
+
+.custom-scroll {
+  overflow:auto;
+}
+
+
+.side-header-sub-menu li a {
+  color: white;
+}
+
+.k-dropdown-wrap {
+  max-height: 33px;
+}
+
+.raspanel {
+  background-color: #f1f1f1 !important;
+  border: 1px;
+  border-color: rgba(0,0,0,0.2);
+}
+
+
+.ras-center {
+  margin-left: auto;
+  margin-right: auto;
+  width: 15em
+}
+
+
+.ras-listbox {
+  min-height: 300px !important;
+  min-width: 300px !important;
+}
+
+
+
+select[multiple] {
+  height: 200px;
+  width: 300px;
+}
+
+.ras-margin-top-10 {
+  margin-top: 10px !important;
+}
+
+.ras-margin-top-15 {
+  margin-top: 15px !important;
+}
+
+.ras-margin-top-20 {
+  margin-top: 20px !important;
+}
+
+
+
+
+@font-face {
+  font-family: 'IRANSansWeb';
+  src: url('../fonts/IRANSansWeb.eot') format('embedded-opentype'), url('../fonts/IRANSansWeb.woff') format('woff'), url('../fonts/IRANSansWeb.woff2') format('woff2'), url('../fonts/IRANSansWeb_Bold.eot') format('embedded-opentype'), url('../fonts/IRANSansWeb_Bold.woff') format('woff'), url('../fonts/IRANSansWeb_Bold.woff2') format('woff2'), url('../fonts/IRANSansWeb_Light.eot') format('embedded-opentype'), url('../fonts/IRANSansWeb_Light.woff') format('woff'), url('../fonts/IRANSansWeb_Light.woff2') format('woff2'), url('../fonts/IRANSansWeb_Medium.eot') format('embedded-opentype'), url('../fonts/IRANSansWeb_Medium.woff') format('woff'), url('../fonts/IRANSansWeb_Medium.woff2') format('woff2'), url('../fonts/IRANSansWeb_UltraLight.eot') format('embedded-opentype'), url('../fonts/IRANSansWeb_UltraLight.woff') format('woff'), url('../fonts/IRANSansWeb_UltraLight.woff2') format('woff2'), url('../fonts/irsans.ttf') format('truetype'), url('../fonts/irsansb.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'fontawesome-webfont';
+  src: url('../fonts/fontawesome-webfont.eot') format('embedded-opentype'), url('../fonts/fontawesome-webfont.svg') format('svg'), url('../fonts/fontawesome-webfont.ttf') format('truetype'), url('../fonts/fontawesome-webfont.woff') format('woff'), url('../fonts/fontawesome-webfont.woff2') format('woff2'), url('../fonts/FontAwesome.otf') format('opentype');
 }
 
 body {
-  /* Margin bottom by footer height */
-  margin-bottom: 60px;
+  font-family: IRANSansWeb !important;
 }
-.footer {
+
+table, th, td {
+  border: 1px solid #d0d0d0;
+}
+
+div[disabled] {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.k-dialog .k-window-titlebar .k-dialog-title {
+  visibility: hidden;
+}
+/* Set padding to keep content from hitting the edges */
+.dropbtnme {
+  border: none;
+  cursor: pointer;
+}
+
+  .dropbtnme:hover, .dropbtn:focus {
+      background-color: #2980B9;
+  }
+
+.dropdownme {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
   position: absolute;
-  bottom: 0;
-  width: 100%;
-  white-space: nowrap;
-  line-height: 60px; /* Vertically center the text there */
+  background-color: #f1f1f1;
+  min-width: 160px;
+  overflow: auto;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+  .dropdown-content a {
+      color: black;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+  }
+
+.dropdownme a:hover {
+  background-color: #ddd;
+}
+
+.show {
+  display: block;
+}
+
+/* Override the default bootstrap behavior where horizontal description lists 
+ will truncate terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt {
+  white-space: normal;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea {
+  max-width: 280px;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+@font-face {
+  font-family: 'IRANSansWeb';
+  src: url('../../fonts/IRANSansWeb.woff') format('woff'), url('../../fonts/IRANSansWeb.eot') format('embedded-opentype');
+}
+
+html {
+  font-family: 'IRANSansWeb';
+  line-height: 1.15;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  -ms-overflow-style: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@-ms-viewport {
+  width: device-width;
+}
+
+article, aside, figcaption, figure, footer, header, hgroup, main, nav, section {
+  display: block;
+}
+
+body {
+  margin: 0;
+  font-family: 'IRANSansWeb',-apple-system,BlinkMacSystemFont,segoe ui,Roboto,helvetica neue,Arial,sans-serif,apple color emoji,segoe ui emoji,segoe ui symbol,noto color emoji;
+  font-size: .875rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #23282c;
+  text-align: right;
+  background-color: #e4e5e6;
+}
+
+.app-header, .app-footer, .rasSidebar, .main, .aside-menu {
+  transition: margin-left .25s,margin-right .25s,width .25s,flex .25s;
+  transition: margin-left .25s,margin-right .25s,width .25s,flex .25s,-ms-flex .25s;
+}
+
+.ras-inline {
+  display: inline-block;
+}
+
+.content-body {
+  margin-top:110px;
+  padding: 30px;
+  -webkit-transition: all 0.3s ease 0s;
+  -o-transition: all 0.3s ease 0s;
+  transition: all 0.3s ease 0s;
+  left: 0;
+  right: 0;
+  overflow: auto !important;
+}
+
+html {
+  overflow: auto;
+}
+
+body {
+  position: relative;
+  overflow: auto;
+}
+
+
+.ras-lable-100px {
+  text-align: right;
+  font-size: 12px;
+  width: 100px !important;
+}
+
+
+.ras-input-200px {
+  text-align: right;
+  font-size: 12px;
+  width: 200px !important;
+}
+
+
+
+.ras-sidebar-li {
+  margin-right: 55px;
+  font-size:12px !important;
+  color:#e4e5e6 !important;
+}
+
+
+.ras-sidebar-ul {
+  margin-right: 30px;
+}
+
+.menu-item{
+  margin-top:0px;
 }

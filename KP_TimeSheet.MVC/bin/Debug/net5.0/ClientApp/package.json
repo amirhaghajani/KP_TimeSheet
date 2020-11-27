@@ -8,7 +8,9 @@
     },
     "dependencies": {
         "@coreui/icons": "^2.0.0-rc.0",
-        "bootstrap": "^4.5.3",
-        "jquery": "^3.5.1"
+        "bootstrap": "^3.3.7",
+        "bootstrap-rtl": "^3.3.4",
+        "jquery": "^3.5.1",
+        "themify-icons": "^1.0.0"
     }
 }

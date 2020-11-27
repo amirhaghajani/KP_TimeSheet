@@ -3,45 +3,228 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - KP_TimeSheet.MVC</title>
-    @* <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" /> *@
+    <title>سیستم مدیریت برگه زمانی</title>
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">KP_TimeSheet.MVC</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+<body dir="rtl">
+    
+    <div id="Loader" class="glass" style="display:none;">
+        <div style="position:absolute; right:45%; top:40% "><img style="width:200px; z-index:11000" class="img-responsive" src="~/Images/Cube.gif" /></div>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2020 - KP_TimeSheet.MVC - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <div class="main-wrapper">
+        <div class="header-section navbar navbar-fixed-top">
+            <div class="row">
+                <div class="col-xs-5 ">
+                    <div class="row">
+                        <div class="col-xs-5" style="margin-top:15px">
+                            <a href="@Url.Action("Index","Home")" title="خانه">
+                                <img src="~/Images/KPE/KPE.png" style="height:50px;display:inline-block;margin-right:30px"
+                                     class="image img-responsive" />
+                            </a>
+                            <a id="onclickOpenName" title="منوی اصلی" class="ras-pointer" style="color:white; background-color:transparent;margin-right :20px;margin-top:15px; font-size:30px;display:inline-block;"><i class="ti-view-list"></i></a>
+                        </div>
+                        <div class="col-xs-6">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-4"></div>
+                <div class="col-xs-2" style="text-align:left;">
+                    <div onclick="ShowAndHideUserMenu()" style="top:20px;" class="ras-dropdown ras-border-menu ras-pointer ">
+                        <div style="color:white;" class="form-inline">
+                            <img class="image img-circle img-responsive " style="max-height:30px;left:-50px ;position:absolute" src="~/Images/User.png" />
+                            <div style="margin-top:6px"><b style="font-size:15px">@User.Identity.Name  کاربر</b></div>
+                        </div>
+
+                        <div class="ras-dropdown-content" style="margin-left:5px;">
+                            <div class="panel panel-info">
+                                <div class="panel-heading">
+                                    <h5 style="margin-right:38%">  @User.Identity.Name </h5>
+                                    <h4 style="margin-right:25px"> به سیستم خوش آمدید</h4>
+                                </div>
+                                <div class="panel-body">
+                                    <ul style="margin-top:20px">
+                                        <li>
+                                            <a href="@Url.Action("LoginOtherUser","Home")" style="font-size:15px">
+                                                <i style="font-size:50px" class="zmdi zmdi-accounts-alt">
+                                                </i>    ورود با کاربر دیگر
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <hr />
+                                        </li>
+                                        <li>
+                                            <span>
+                                                <i style="font-size:40px " class="zmdi zmdi-lock-open text-danger"></i>
+                                                <a style="font-size:15px" class="text-danger" href="@Url.Action("Logout","Home")">
+                                                    خروج
+                                                </a>
+                                            </span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+        <div id="mySidebar" class="rasrasSidebar">
+            <div class="side-header">
+                <div class="side-header-inner custom-scroll"  style="margin-top:-50px">
+                    <nav class="side-header-menu" id="side-header-menu">
+                         
+                        <div id="accordion">
+                            <a style="color:white" class="ras-sidebar-ul" href="@Url.Action("Index","Home")">
+                                <i title="خانه" class="ti-home pull-left ras-sidebar-left-logo" style="font-size:24px ; margin-left:-15px;color:white"></i>
+                                <i class="ti-home"></i> <span>خانه</span>
+
+                            </a>
+                            <div class="menu-item">
+                                <a style="color:white" class="ras-sidebar-ul" data-toggle="collapse" data-parent="#accordion" href="#collapse1">
+                                    <i title="برگه زمانی" class="ti-alarm-clock pull-left ras-sidebar-left-logo" style="font-size:24px ; margin-left:-15px;color:white"></i>
+                                    <i class="ti-alarm-clock"></i>
+                                    برگه زمانی
+                                </a>
+                                <div id="collapse1" class="panel-collapse collapse">
+                                    <a style="color:white" class="ras-sidebar-li" href="@Url.Action("Register","TimeSheets")">
+                                        <i title="ثبت برگه زمانی" class="ti-pencil pull-left ras-sidebar-left-logo" style="font-size:18px ; margin-left:-15px;color:#808080"></i>
+                                        <i class="ti-pencil" style="font-size:16px;"></i>
+                                        <span>ثبت برگه زمانی</span>
+                                    </a>
+
+                                </div>
+                            </div>
+
+                            <div class="menu-item">
+                                <a style="color:white" class="ras-sidebar-ul" data-toggle="collapse" data-parent="#accordion" href="#collapse2">
+                                    <i title="برگه زمانی" class="ti-check-box pull-left ras-sidebar-left-logo" style="font-size:24px ; margin-left:-15px;color:white"></i>
+                                    <i class="ti-check-box"></i>
+                                    تاییدات برگه زمانی
+                                </a>
+                                <div id="collapse2" class="panel-collapse collapse">
+                                    <a style="color:white" class="ras-sidebar-li" href="@Url.Action("Confirmation","TimeSheets")">
+                                        <i title="تایید برگه زمانی" class="ti-check pull-left ras-sidebar-left-logo" style="font-size:18px ; margin-left:-15px;color:#808080"></i>
+                                        <i class="ti-check" style="font-size:16px;"></i>
+                                        <span>تایید برگه زمانی</span>
+                                    </a>
+
+                                </div>
+                            </div>
+                            <div class="menu-item">
+                                <a style="color:white" class="ras-sidebar-ul" data-toggle="collapse" data-parent="#accordion" href="#collapse3">
+                                    <i title="ثبت مرخصی و ماموریت" class="ti-car pull-left ras-sidebar-left-logo" style="font-size:24px ; margin-left:-15px;color:white"></i>
+                                    <i class="ti-car"></i>
+                                    ثبت مرخصی و ماموریت
+                                </a>
+                                <div id="collapse3" class="panel-collapse collapse">
+                                    <a style="color:white" class="ras-sidebar-li" href="@Url.Action("Index","DailyLeaves")">
+                                        <i title="تایید برگه زمانی" class="ti-marker-alt pull-left ras-sidebar-left-logo" style="font-size:18px ; margin-left:-15px;color:#808080"></i>
+                                        <i class="ti-marker-alt" style="font-size:16px;"></i>
+                                        <span>ثبت مرخصی روزانه</span>
+                                    </a>
+                                    <a style="color:white" class="ras-sidebar-li" href="@Url.Action("Index","HourlyLeaves")">
+                                        <i title="تایید برگه زمانی" class="ti-pencil-alt pull-left ras-sidebar-left-logo" style="font-size:18px ; margin-left:-15px;color:#808080"></i>
+                                        <i class="ti-pencil-alt" style="font-size:16px;"></i>
+                                        <span>ثبت مرخصی ساعتی</span>
+                                    </a>
+                                    <a style="color:white" class="ras-sidebar-li" href="@Url.Action("Index","HourlyMissions")">
+                                        <i title="تایید برگه زمانی" class="ti-pencil pull-left ras-sidebar-left-logo" style="font-size:18px ; margin-left:-15px;color:#808080"></i>
+                                        <i class="ti-pencil" style="font-size:16px;"></i>
+                                        <span>ثبت ماموریت ساعتی</span>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div class="menu-item">
+                                <a style="color:white" class="ras-sidebar-ul" data-toggle="collapse" data-parent="#accordion" href="#collapse4">
+                                    <i title=" تاییدات مرخصی و ماموریت" class="zmdi zmdi-check-all pull-left ras-sidebar-left-logo" style="font-size:24px ; margin-left:-15px;color:white"></i>
+                                    <i class="zmdi zmdi-check-all"></i>
+                                    تاییدات مرخصی و ماموریت
+                                </a>
+                                <div id="collapse4" class="panel-collapse collapse">
+                                    <a style="color:white" class="ras-sidebar-li" href="@Url.Action("ApproveIndex","DailyLeaves")">
+                                        <span>تایید مرخصی روزانه</span>
+                                    </a>
+                                    <a style="color:white" class="ras-sidebar-li" href="@Url.Action("ApproveIndex","HourlyLeaves")">
+                                        <span>تایید مرخصی ساعتی</span>
+                                    </a>
+                                    <a style="color:white" class="ras-sidebar-li" href="@Url.Action("ApproveIndex","HourlyMissions")">
+                                        <span>تایید ماموریت ساعتی</span>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div class="menu-item">
+                                <a style="color:white" class="ras-sidebar-ul" data-toggle="collapse" data-parent="#accordion" href="#collapse5">
+                                    <i title=" تنظیمات" class="ti-settings pull-left ras-sidebar-left-logo" style="font-size:24px ; margin-left:-15px;color:white"></i>
+                                    <i class="ti-settings"></i>
+                                    تنظیمات
+                                </a>
+                                <div id="collapse5" class="panel-collapse collapse">
+                                    <a style="color:white" class="ras-sidebar-li" href="@Url.Action("Calendar", "Settings") ">
+                                        <span>تقویم سازمانی</span>
+                                    </a>
+                                    <a style="color:white" class="ras-sidebar-li" href="@Url.Action("Departments","Settings")">
+                                        <span>واحد های سازمانی</span>
+                                    </a>
+                                    <a style="color:white" class="ras-sidebar-li" href="@Url.Action("Sync","Home")">
+                                        <span>همگام سازی PWA</span>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div class="menu-item">
+                                <a style="color:white" class="ras-sidebar-ul" data-toggle="collapse" data-parent="#accordion" href="#collapse6">
+                                    <i title=" گزارشات" class="ti-bar-chart-alt pull-left ras-sidebar-left-logo" style="font-size:24px ; margin-left:-15px;color:white"></i>
+                                    <i class="ti-bar-chart-alt"></i>
+                                    گزارشات
+                                </a>
+                                <div id="collapse6" class="panel-collapse collapse">
+                                    <a style="color:white" class="ras-sidebar-li" href="@Url.Action("BreakingProjectsByMonth","Reports")">
+                                        <span>گزارش پروژه ها به تفکیک ماه</span>
+                                    </a>
+                                    <a style="color:white" class="ras-sidebar-li" href="@Url.Action("BreakingProjectByMonth","Reports")">
+                                        <span>گزارش یک پروژه به تفکیک ماه</span>
+                                    </a>
+                                    <a style="color:white" class="ras-sidebar-li" href="@Url.Action("PersonelsAndProjects", "Reports")">
+                                        <span>گزارش ماتریسی پرسنل و پروژه ها</span>
+                                    </a>
+                                    <a style="color:white" class="ras-sidebar-li" href="@Url.Action("TotalWorkHoursOnProjects", "Reports")">
+                                        <span>گزارش کلی پروژه ها</span>
+                                    </a>
+                                    <a style="color:white" class="ras-sidebar-li" href="@Url.Action("DailyOnProjects", "Reports")">
+                                        <span>گزارش روزانه پروژه ها</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-body" style="overflow:auto!important">
+            @RenderBody()
+        </div>
+
+    </div>
+
+    @* <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script> *@
+
+    <script src="~/js/vendor/jquery.min.js" asp-append-version="true"></script>
+    <script src="~/js/vendor/bootstrap.min.js" asp-append-version="true"></script>
+    <script src="~/js/vendor/popper.min.js" asp-append-version="true"></script>
+    <script src="~/js/vendor/bootstrap.notify.min.js" asp-append-version="true"></script>
+
+    <script src="~/js/sideBar.js" asp-append-version="true"></script>
+    @* <script src="~/js/sideBar.min.js" asp-append-version="true"></script> *@
+
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

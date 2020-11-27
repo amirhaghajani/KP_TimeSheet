@@ -7,7 +7,7 @@ module.exports = function (grunt) {
     'myConfig': {
       'vendor_modules': [
         'jquery',
-        // 'angular',
+        'bootstrap',
         // 'bootstrap-sass',
         // 'angular-route',
         // 'angular-sanitize',
@@ -18,26 +18,36 @@ module.exports = function (grunt) {
         // 'lodash-deep'
       ],
       'srcArray':[
+        'src/layout/sideBar.js',
         'src/index.js', 
         'src/index2.js'
       ],
       'targetArray':[
+        '../wwwroot/js/sideBar.js', 
         '../wwwroot/js/app.js', 
         '../wwwroot/js/app2.js'
       ],
       'srcCSS':[
-        'node_modules/bootstrap/dist/css/bootstrap.min.css'
+        'node_modules/bootstrap/dist/css/bootstrap.min.css',
+        'node_modules/bootstrap/dist/css/bootstrap.min.css.map',
+        'node_modules/bootstrap-rtl/dist/css/bootstrap-rtl.css',
+        'node_modules/bootstrap-rtl/dist/css/bootstrap-rtl.css.map',
       ],
       'targetCSS':[
-       '../wwwroot/css/bootstrap.min.css'
+       '../wwwroot/css/bootstrap/bootstrap.min.css',
+       '../wwwroot/css/bootstrap/bootstrap.min.css.map',
+       '../wwwroot/css/bootstrap/bootstrap-rtl.css',
+       '../wwwroot/css/bootstrap/bootstrap-rtl.css.map',
       ]
     },
     uglify: {
       dist: {
         files: {
+          '../wwwroot/js/sideBar.min.js': '../wwwroot/js/sideBar.js',
           '../wwwroot/js/app.min.js': '../wwwroot/js/app.js',
           '../wwwroot/js/app2.min.js': '../wwwroot/js/app2.js',
-          '../wwwroot/js/vendor.min.js': '../wwwroot/js/vendor.js',
+          '../wwwroot/js/vendor/jquery.min.js': '../wwwroot/js/vendor/jquery.js',
+          '../wwwroot/js/vendor/bootstrap.min.js': '../wwwroot/js/vendor/bootstrap.js',
         }
       }
     }
@@ -51,17 +61,37 @@ module.exports = function (grunt) {
   grunt.registerTask('copyCss', function () {
     var done = this.async();
     var fs = require('fs');
+    const path = require("path");
 
     var srcArray = grunt.config.get('myConfig.srcCSS') || []; 
     var targetArray = grunt.config.get('myConfig.targetCSS') || []; 
 
+
+    var copyRecursiveSync = function(src, dest) {
+      var exists = fs.existsSync(src);
+      var stats = exists && fs.statSync(src);
+      var isDirectory = exists && stats.isDirectory();
+      if (isDirectory) {
+        
+        fs.readdirSync(src).forEach(function(childItemName) {
+
+          grunt.log.writelns('readdirSync: %s - %s', src, childItemName);
+
+          var exists = fs.existsSync(dest);
+          if(!exists) fs.mkdirSync(dest);
+          
+          copyRecursiveSync(path.join(src, childItemName),
+                            path.join(dest, childItemName));
+        });
+      } else {
+        fs.copyFileSync(src, dest);
+      }
+    };
+
     srcArray.map((src,index)=>{
       var target = targetArray[index];
 
-      fs.copyFile(src, target, (err) => {
-        if (err) throw err;
-        console.log('%s was copied to %s',src,target);
-      });
+      copyRecursiveSync(src,target);
     })
 
     
@@ -111,30 +141,7 @@ module.exports = function (grunt) {
 
   });
 
-  //----------------------------------------------------------
-  grunt.registerTask('browserify-vendor', function () {
-    var done = this.async();
-    var path = require('path');
-    var fs = require('fs');
-    var target = path.join('../wwwroot/js', 'vendor.js');
-    var vendorModules = grunt.config.get('myConfig.vendor_modules') || [];
-    var browserify = require('browserify')({
-      'paths': ['.'],
-      'fullPaths': true
-    });
-    vendorModules.forEach(function (vm) {
-      browserify.require(vm);
-    });
-    browserify.bundle(function (err, data) {
-      if (err) return grunt.fail.fatal(err);
-      grunt.file.mkdir(path.join('dist'));
-      fs.writeFileSync(target, data);
-      done();
-    });
-
-    grunt.task.run('uglify');
-  });
-
+  
   //----------------------------------------------------------
   grunt.registerTask('watchify', function () {
     var done = this.async();

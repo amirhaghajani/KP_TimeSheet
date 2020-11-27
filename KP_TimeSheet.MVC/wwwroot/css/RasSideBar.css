@@ -1,0 +1,108 @@
+﻿body {
+  font-family: "Lato", sans-serif;
+
+}
+
+.rasrasSidebar {
+    height: calc(100vh - 100px);
+    width: 300px;
+    margin-right: -250px;
+    position: fixed;
+    z-index: 1;
+    top: 100px;
+    background-image: url('../Images/SideBar-Back.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-color: #111;
+    overflow-x: auto;
+    transition: 0.3s;
+    padding-top: 60px;
+    -webkit-transition: all 0.3s ease;
+    -moz-transition: all 0.3s ease;
+    -o-transition: all 0.3s ease;
+    -ms-transition: all 0.3s ease;
+    transition: all 0.3s ease;
+    right: 0;
+}
+
+.rasrasSidebar a {
+  padding: 8px 8px 8px 32px;
+  text-decoration: none;
+  font-size: 15px;
+  color: #818181;
+  display: block;
+  transition: 0.3s;
+   list-style:none;
+   font-weight:bold
+}
+
+li{
+     list-style:none;
+}
+
+ul{
+     list-style:none;
+}
+
+.rasrasSidebar a:hover {
+
+}
+
+.rasrasSidebar .closebtn {
+  position: absolute;
+  top: 0;
+  right: 25px;
+  font-size: 36px;
+  margin-left: 50px;
+}
+
+.side-header-toggle {
+  font-size: 20px;
+  cursor: pointer;
+  background-color: #111;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+}
+
+.content-body {
+  transition: margin-right .3s;
+  margin-right:50px;
+  /* width:100%; */
+ 
+}
+
+@media screen and (max-height: 450px) {
+  .rasrasSidebar {padding-top: 15px;}
+  .rasrasSidebar a {font-size: 18px;}
+}
+
+.menu-expand{
+    float:left;
+}
+
+
+.ras-dropdown {
+      position: relative;
+  display: inline-block;
+
+
+}
+
+
+.ras-dropdown-content {
+   left:-120px;
+  top:60px;
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 300px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  padding: 12px 16px;
+  z-index: 1;
+
+}
+
+.ras-border-menu{
+    border:1px;
+}
