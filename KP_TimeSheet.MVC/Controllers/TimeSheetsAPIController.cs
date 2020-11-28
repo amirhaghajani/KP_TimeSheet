@@ -1,9 +1,6 @@
-﻿using Newtonsoft.Json.Linq;
-using KP.TimeSheets.Domain;
-using KP.TimeSheets.Persistance;
+﻿using KP.TimeSheets.Domain;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 

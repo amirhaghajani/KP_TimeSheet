@@ -5,18 +5,57 @@ module.exports = {
     },
     'LoaderHide':function(){
         $("#Loader").fadeOut(500);
+    },'Notify':function(messege, type) {
+   
+    
+        $.notify({
+            //icon: 'glyphicon glyphicon-warning-sign',
+            //title: 'Bootstrap notify',
+            message:"<strong >"+ messege +"</strong>",
+            //url: 'https://github.com/mouse0270/bootstrap-notify',
+            //target: '_blank'
+        }, {
+                // settings
+                //element: 'body',
+                //position: null,
+                type: type,
+                allow_dismiss: false,
+                //newest_on_top: false,
+                //showProgressbar: true,
+                placement: {
+                    from: "top",
+                    align: "left"
+                },
+                offset: 20,
+                spacing: 10,
+                z_index: 10100,
+                delay: 1000,
+                timer: 1000,
+                //url_target: '_blank',
+                //mouse_over: null,
+                animate: {
+                    enter: 'animated fadeInDown',
+                   exit: 'animated fadeOutUp'
+               },
+                //onShow: null,
+                //onShown: null,
+                //onClose: null,
+                //onClosed: null,
+                //icon_type: 'class',
+               // template: "<div style='height:15px;width:20%' class='shadow' >" + messege + "</div>"
+            });
     }
 };
 
 },{}],2:[function(require,module,exports){
-const loader = require('../common/loader');
+const common = require('../common/common');
 
 var _YesterdayData = [];
 var _ThisMonthData = [];
-loader.LoaderShow();
+common.LoaderShow();
 
 $(document).ready(function () {
-    loader.LoaderShow();
+    common.LoaderShow();
     GetHomeData();
 });
 function adjustSize() {
@@ -114,7 +153,7 @@ function Page_OnInitThisMonth(response) {
     $("#PresenceThisMonthpercent").width(response.Presencepercent );
     $("#workThisMonthpercent").width(response.Workpercent );
     $("#differentThisMonthpercent").width(response.Defferencepercent );
-    loader.LoaderHide()
+    common.LoaderHide()
 
 }
 
@@ -135,46 +174,7 @@ function ShowNotification(id, message, color) {
     $("#" + id).getKendoNotification().show(message, color);
 }
 
-function Notify(messege, type) {
-   
-    
-    $.notify({
-        //icon: 'glyphicon glyphicon-warning-sign',
-        //title: 'Bootstrap notify',
-        message:"<strong >"+ messege +"</strong>",
-        //url: 'https://github.com/mouse0270/bootstrap-notify',
-        //target: '_blank'
-    }, {
-            // settings
-            //element: 'body',
-            //position: null,
-            type: type,
-            allow_dismiss: false,
-            //newest_on_top: false,
-            //showProgressbar: true,
-            placement: {
-                from: "top",
-                align: "left"
-            },
-            offset: 20,
-            spacing: 10,
-            z_index: 10100,
-            delay: 1000,
-            timer: 1000,
-            //url_target: '_blank',
-            //mouse_over: null,
-            animate: {
-                enter: 'animated fadeInDown',
-               exit: 'animated fadeOutUp'
-           },
-            //onShow: null,
-            //onShown: null,
-            //onClose: null,
-            //onClosed: null,
-            //icon_type: 'class',
-           // template: "<div style='height:15px;width:20%' class='shadow' >" + messege + "</div>"
-        });
-}
+
 /* When the user clicks on the button,
            toggle between hiding and showing the dropdown content */
 function DDLUserAccount() {
@@ -244,4 +244,4 @@ function DoOnCellHtmlData(cell, row, col, data) {
 //  textColor: '#555'
   
 //});
-},{"../common/loader":1}]},{},[2]);
+},{"../common/common":1}]},{},[2]);
