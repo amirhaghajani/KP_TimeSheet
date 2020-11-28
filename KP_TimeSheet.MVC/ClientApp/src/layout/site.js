@@ -1,9 +1,11 @@
+const loader = require('../common/loader');
+
 var _YesterdayData = [];
 var _ThisMonthData = [];
-LoaderShow();
+loader.LoaderShow();
 
 $(document).ready(function () {
-    LoaderShow();
+    loader.LoaderShow();
     GetHomeData();
 });
 function adjustSize() {
@@ -101,18 +103,11 @@ function Page_OnInitThisMonth(response) {
     $("#PresenceThisMonthpercent").width(response.Presencepercent );
     $("#workThisMonthpercent").width(response.Workpercent );
     $("#differentThisMonthpercent").width(response.Defferencepercent );
-    LoaderHide()
+    loader.LoaderHide()
 
 }
 
-function LoaderShow() {
-    
-    $("#Loader").fadeIn(500)
-}
 
-function LoaderHide() {
-    $("#Loader").fadeOut(500)
-}
 
 //info error success
 function ShowNotification(id, message, color) {
