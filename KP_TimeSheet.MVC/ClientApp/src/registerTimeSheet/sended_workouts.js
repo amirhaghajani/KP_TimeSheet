@@ -1,7 +1,18 @@
 const data = require('./data');
+const history=require('./history');
+const common_register = require('./common');
 
 //______________________نمایش کارکرد های ارسال شده
 
+function init(){
+	$('#btnMonitorSent').off().on('click',function(){
+        GetWorkHours_MonitorSentWorkHour();
+	});
+	
+	$('#GrdMonitorSentWorkHour_Hide').off().on('click',function(){
+        Close_WndMonitorSentWorkHours();
+    });
+}
 
 function Close_WndMonitorSentWorkHours() {
 	$("#WndMonitorSentWorkHours").data("kendoWindow").close()
@@ -35,8 +46,8 @@ function GetWorkHours_MonitorSentWorkHour() {
 
 function Init_GrdMonitorSentWorkHour() {
 
-	Create_GrdHistory();
-	HideHistory();
+	history.Create_GrdHistory();
+	history.HideHistory();
 	$("#WndMonitorSentWorkHours").kendoWindow({
 		width: "1000px",
 		height: "600px",
@@ -120,7 +131,7 @@ function Refresh_GrdMonitorSentWorkHour() {
 
 function ShowCurrentDaySendWorkHours(SaveWHsIdx) {
 	common.LoaderShow();
-	Create_GrdHistory();
+	history.Create_GrdHistory();
 
 	var ktrlTimeSheets = $("#ktrlTimeSheets").data('kendoTreeList').dataItem($("#" + SaveWHsIdx.id).closest("tr"));
 	_SelDate = ktrlTimeSheets.values[parseInt($("#" + SaveWHsIdx.id).attr('dayindex')) - 3];
@@ -157,5 +168,6 @@ function ShowCurrentDaySendWorkHours(SaveWHsIdx) {
 
 module.exports = {
 	'Refresh_GrdMonitorSentWorkHour': Refresh_GrdMonitorSentWorkHour,
-	'Init_GrdMonitorSentWorkHour': Init_GrdMonitorSentWorkHour
+	'Init_GrdMonitorSentWorkHour': Init_GrdMonitorSentWorkHour,
+	'init':init
 }

@@ -5,6 +5,7 @@ const mainGrid = require('./mainGrid');
 const monthlyGrid = require('./monthlyGrid');
 const sended_workouts =require('./sended_workouts');
 const priodlyGrid = require('./priodlyGrid');
+const editWindow = require('./editWindow');
 
 //_________صفحه بعد و قبل 
 function init(){
@@ -19,6 +20,16 @@ function init(){
     $('#btnNextPeriod').off().on('click',function(){
         GetNextPeriod();
     });
+
+    //دو تا دکمه تایید و کنسل در فرمی که تعداد روزهای صفحه را مشخص می کنه
+    $('#btnSendPeriod_determinPeriod').off().on('click',function(){
+        btnSendPeriods_Onclick();
+    });
+
+    $('#btnCancel_determinPeriod').off().on('click',function(){
+        kwndSelectPeriod_OnClose();
+    });
+
 }
 
 function GetNextPeriod() {
@@ -36,7 +47,7 @@ function GetNextPeriod() {
             data.timeSheetData_set(response);
             common_register.removeAndRecreateTreelisDiv();
             mainGrid.Init_TimeSheetTreeList();
-            monthlyGrid.Refresh_GrdEditWorkHour();
+            editWindow.Refresh_GrdEditWorkHour();
             sended_workouts.Refresh_GrdMonitorSentWorkHour();
             priodlyGrid.InitPeriodlyByProjectsGrid();
             monthlyGrid.InitMonthlyByProjectsGrid();
@@ -64,7 +75,7 @@ function GetPreviousPeriod() {
             data.timeSheetData_set(response);
             common_register.removeAndRecreateTreelisDiv();
             mainGrid.Init_TimeSheetTreeList();
-            monthlyGrid.Refresh_GrdEditWorkHour();
+            editWindow.Refresh_GrdEditWorkHour();
             sended_workouts.Refresh_GrdMonitorSentWorkHour();
             priodlyGrid.InitPeriodlyByProjectsGrid();
             monthlyGrid.InitMonthlyByProjectsGrid();
@@ -96,7 +107,7 @@ function GetCurrentPeriod() {
             data.timeSheetData_set(response);
             common_register.removeAndRecreateTreelisDiv();
             mainGrid.Init_TimeSheetTreeList();
-            monthlyGrid.Refresh_GrdEditWorkHour();
+            editWindow.Refresh_GrdEditWorkHour();
             sended_workouts.Refresh_GrdMonitorSentWorkHour();
             priodlyGrid.InitPeriodlyByProjectsGrid();
             monthlyGrid.InitMonthlyByProjectsGrid();
@@ -131,6 +142,62 @@ function kwndSelectPeriod_OnInit() {
 
 function kwndSelectPeriod_OnClose() {
     $("#kwndSelectTimePeriod").data("kendoWindow").close()
+}
+
+/////----------------- دکمه تایید تعداد روزهای دوره که باید نشان بده 
+
+function btnSendPeriods_Onclick() {
+    common.LoaderShow();
+    kwndSelectPeriod_OnClose();
+
+
+    if ($('#chkweekly').is(':checked')) {
+        $.ajax({
+            type: "Get",
+            url: "/api/TimeSheetsAPI/ChangeDisplayPeriodToWeekly",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                data.timeSheetData_set(response);
+                common_register.removeAndRecreateTreelisDiv();
+                mainGrid.Init_TimeSheetTreeList();
+                editWindow.Refresh_GrdEditWorkHour();
+                sended_workouts.Refresh_GrdMonitorSentWorkHour();
+                common.LoaderHide();
+            },
+            error: function (e) {
+
+            }
+        });
+
+    }
+    else {
+        var PeriodJson = {
+            Date: $("#startDate").val(),
+            Days: $("#numberDays").val(),
+            IsWeekly: false
+        };
+
+        var prmData = JSON.stringify(PeriodJson);
+
+        $.ajax({
+            type: "Post",
+            url: "/api/TimeSheetsAPI/GetTimeSheetsByDateAndNumberOfDay",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: prmData,
+            success: function (response) {
+                data.timeSheetData_set(response);
+                common_register.removeAndRecreateTreelisDiv();
+                mainGrid.Init_TimeSheetTreeList();
+                common.LoaderHide();
+            },
+            error: function (e) {
+
+            }
+        });
+    }
+
 }
 
 

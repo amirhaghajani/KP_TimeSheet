@@ -6,15 +6,20 @@ const data = require('./data');
 const common_register = require('./common');
 const period_next_pervious = require('./period_next_pervious');
 const sended_workouts =require('./sended_workouts');
+const editWindow=require('./editWindow');
 
 //_____ متغیر ها و Document Ready__________
 
 $(document).ready(function () {
+    data.init();
+    
     mainGrid.GetTimeSheets(function(){
         priodlyGrid.InitPeriodlyByProjectsGrid();
         monthlyGrid.InitMonthlyByProjectsGrid();
         common.LoaderHide();
         period_next_pervious.init();
+        editWindow.init();
+        sended_workouts.init();
     });
 });
 
@@ -375,99 +380,7 @@ function Refresh_GRDSendWorkHour() {
 //_________________________
 
 
-//____________ویرایش
 
-
-function WndEditWorkHours_OnInit() {
-    GetWorkHours_GrdEditWorkHour();
-
-    var kwndSaveWHs = $("#WndEditWorkHours");
-    kwndSaveWHs.kendoWindow({
-        width: "900px",
-        height: "650",
-
-        scrollable: false,
-        visible: false,
-        modal: true,
-        actions: [
-            "Pin",
-            "Minimize",
-            "Maximize",
-            "Close"
-        ],
-        open: common_register.adjustSize,
-    }).data("kendoWindow").center().open();
-}
-
-function Close_WndEditWorkHours() {
-    $("#WndEditWorkHours").data("kendoWindow").close()
-}
-
-function GetWorkHours_GrdEditWorkHour() {
-
-    var prmData = JSON.stringify(data.timeSheetData_get()[0].values);
-
-    $.ajax({
-        type: "Post",
-        url: "/api/TimeSheetsAPI/GetRegistereCurrentPerioddWorkHours",
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        data: prmData,
-        success: function (response) {
-            _WorkHours = response;
-            Init_GrdEditWorkHour();
-        },
-        error: function (e) {
-
-        }
-    });
-}
-
-function Init_GrdEditWorkHour() {
-
-    $("#GrdEditWorkHour").kendoGrid({
-        dataSource: {
-            transport: {
-                read: function (e) {
-                    e.success(_WorkHours)
-                }
-            },
-            pageSize: 10
-        },
-        height: 520,
-        pageable: true,
-        filterable: true,
-
-        selectable: true,
-
-        columns: [{
-            field: "PersianDate",
-            title: "تاریخ"
-        },
-        {
-            field: "ProjectTitle",
-            title: "پروژه"
-        }, {
-            field: "TaskTitle",
-            title: "وظیفه"
-        }, {
-            field: "Hours",
-            title: "ساعت کار ثبت شده    "
-        },
-
-
-        {
-            title: "حذف ",
-            template: "<button  onclick='DeleteWorkHourEditGrid(this)' type='button' class='btn btn-danger btn-sm' name='info' title='حذف' > حذف</button>",
-            headerTemplate: "<label class='text-center'> حذف </label>",
-            filterable: false,
-            sortable: false,
-            width: 100
-        },
-        ]
-
-    });
-}
 
 
 
@@ -502,99 +415,7 @@ function exportTableToExcel(tableID, filename ){
     }
 }
 
-//_________________________________________ناریخچه___________________________________
 
-function Init_GRDHistory(e) {
-    common.LoaderShow();
-    
-    var grid = $("#GrdMonitorSentWorkHour").data("kendoGrid");
-    var dataItem = grid.dataItem($(e).closest("tr"));
-    var prmData = JSON.stringify(dataItem);
-    $.ajax({
-        type: "Post",
-        url: "/api/TimeSheetsAPI/GetHistoryWorkHour",
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        data: prmData,
-        success: function (response) {
-            
-            _TodayHistorys = response;
-            $("#WorkHourHistory").data("kendoGrid").dataSource.read();
-            ShowHistory();
-            common.LoaderHide();
-        },
-        error: function (e) {
-
-        }
-    });
-
-
-}
-
-function Create_GrdHistory() {
-
-    $("#WorkHourHistory").kendoGrid({
-        dataSource: {
-            transport: {
-                read: function (e) {
-                    e.success(_TodayHistorys)
-                }
-            },
-            pageSize: 10
-        },
-        height: 450,
-        pageable: true,
-        filterable: true,
-        selectable: true,
-
-        columns: [{
-            field: "PersianDate",
-            title: "تاریخ",
-            width: 80
-        },
-        {
-            field: "Time",
-            title: "ساعت",
-            width: 80
-        },
-        {
-            field: "ManagerName",
-            title: "نام مدیر",
-            width: 200
-        }, {
-            field: "Action",
-            title: "عملیات",
-            width: 120
-        }, {
-            field: "StageTitle",
-            title: "مرحله",
-            width: 120
-
-        }, {
-            field: "Description",
-            title: "توضیحات",
-            width: 400
-
-        }
-        ]
-
-    });
-}
-
-function ShowHistory() {
-
-    $("#PanelMonitorWorkHour").fadeOut(400);
-    $("#PanelHistory").fadeIn(400);
-
-
-}
-
-function HideHistory() {
-    $("#PanelMonitorWorkHour").fadeIn(400);
-    $("#PanelHistory").fadeOut(400);
-
-
-}
 
 
 
@@ -646,7 +467,7 @@ function DeleteWorkHourEditGrid(e) {
         dataType: "json",
         data: prmData,
         success: function (response) {
-            monthlyGrid.Refresh_GrdEditWorkHour();
+            editWindow.Refresh_GrdEditWorkHour();
 
             RefreshTimeSheet();
             common.LoaderHide();
@@ -659,67 +480,6 @@ function DeleteWorkHourEditGrid(e) {
 
 
 }
-
-
-
-/////----------------- ارسال دوره و تایید آن 
-
-function btnSendPeriods_Onclick() {
-    common.LoaderShow();
-    kwndSelectPeriod_OnClose();
-
-
-    if ($('#chkweekly').is(':checked')) {
-        $.ajax({
-            type: "Get",
-            url: "/api/TimeSheetsAPI/ChangeDisplayPeriodToWeekly",
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            success: function (response) {
-                data.timeSheetData_set(response);
-                common_register.removeAndRecreateTreelisDiv();
-                mainGrid.Init_TimeSheetTreeList();
-                monthlyGrid.Refresh_GrdEditWorkHour();
-                sended_workouts.Refresh_GrdMonitorSentWorkHour();
-                common.LoaderHide();
-            },
-            error: function (e) {
-
-            }
-        });
-
-    }
-    else {
-        var PeriodJson = {
-            Date: $("#startDate").val(),
-            Days: $("#numberDays").val(),
-            IsWeekly: false
-        };
-
-        var prmData = JSON.stringify(PeriodJson);
-
-        $.ajax({
-            type: "Post",
-            url: "/api/TimeSheetsAPI/GetTimeSheetsByDateAndNumberOfDay",
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            data: prmData,
-            success: function (response) {
-                data.timeSheetData_set(response);
-                common_register.removeAndRecreateTreelisDiv();
-                mainGrid.Init_TimeSheetTreeList();
-                common.LoaderHide();
-            },
-            error: function (e) {
-
-            }
-        });
-    }
-
-}
-
-
-
 
 
 function EnableAndDisableSendPeriodRadioButton() {

@@ -11,7 +11,7 @@ function InitMonthlyByProjectsGrid() {
         dataType: "json",
         data: prmData,
         success: function (response) {
-            _thisMonthdata = response;
+            data.thisMonthdata_set(response);
             $("#MonthlyPresence").text(response.Presence);
             $("#MonthlyWorkHour").text(response.Work);
             $("#MonthlyDefference").text(response.Defference);
@@ -61,25 +61,9 @@ function KGRDMonthly_OnInit(response) {
 }
 
 
-function Refresh_GrdEditWorkHour() {
-    var prmData = JSON.stringify(data.timeSheetData_get()[0].values);
-    $.ajax({
-        type: "Post",
-        url: "/api/TimeSheetsAPI/GetRegistereCurrentPerioddWorkHours",
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        data: prmData,
-        success: function (response) {
-            _WorkHours = response;
-            var g = $("#GrdEditWorkHour").data("kendoGrid");
-            if(g) g.dataSource.read();
-        },
-        error: function (e) {
-        }
-    });
-}
+
 
 module.exports ={
     'InitMonthlyByProjectsGrid':InitMonthlyByProjectsGrid,
-    'Refresh_GrdEditWorkHour':Refresh_GrdEditWorkHour
+    
 }

@@ -30,8 +30,8 @@
 <nav class="navbar navbar-default text-center" style="margin-top:5px;justify-content:center;align-content:center">
     <div class="col-md-8" style="margin-top:5px;">
         <nav class="form-inline">
-            <button id="btnEditWorkHour" onclick="WndEditWorkHours_OnInit()" class="btn btn-warning " style="margin-right:5px;" title="ویرایش ساعات کاری وارد شده">ویرایش دوره جاری <i class="glyphicon glyphicon-edit"></i></button>
-            <button id="btnMonitorSent" onclick="GetWorkHours_MonitorSentWorkHour()" class="btn btn-success " style="margin-right:5px;" title="ویرایش ساعات کاری وارد شده">ارسال شده دوره جاری <i style="margin-right:10px" class="fa fa-tv"></i></button>
+            <button id="btnEditWorkHour" class="btn btn-warning " style="margin-right:5px;" title="ویرایش ساعات کاری وارد شده">ویرایش دوره جاری <i class="glyphicon glyphicon-edit"></i></button>
+            <button id="btnMonitorSent" class="btn btn-success " style="margin-right:5px;" title="ویرایش ساعات کاری وارد شده">ارسال شده دوره جاری <i style="margin-right:10px" class="fa fa-tv"></i></button>
         </nav>
     </div>
     <div class="pull-left" style="margin-top:5px;">
@@ -71,7 +71,7 @@
             </div>
         </div>
         <div id="GrdEditWorkHour" style="margin-top:10px"></div>
-        <button class="btn btn-danger  " style="margin-top:5px;" onclick="Close_WndEditWorkHours()">انصراف</button>
+        <button class="btn btn-danger" id="btn_Close_WndEditWorkHours" style="margin-top:5px;">انصراف</button>
     </div>
 
     <div id="WndMonitorSentWorkHours" class="k-rtl" style="display:none; background-color:transparent">
@@ -89,11 +89,11 @@
         </div>
         <div id="PanelMonitorWorkHour">
             <div id="GrdMonitorSentWorkHour" style="margin-top:10px"></div>
-            <button class="btn btn-danger  " style="margin-top:5px;" onclick="Close_WndMonitorSentWorkHours()">انصراف</button>
+            <button class="btn btn-danger" id="GrdMonitorSentWorkHour_Hide" style="margin-top:5px;">انصراف</button>
         </div>
         <div id="PanelHistory">
             <div id="WorkHourHistory" style="margin-top:10px"></div>
-            <button class="btn btn-warning  " style="margin-top:5px;" onclick="HideHistory();">بازگشت</button>
+            <button class="btn btn-warning" id="btnWorkHoureHistory_hide" style="margin-top:5px;">بازگشت</button>
         </div>
 
     </div>
@@ -188,8 +188,8 @@
                 <br />
 
                 <div class="form-group pull-right">
-                    <button id="btnSendPeriod" type="button" class="btn btn-success btn-sm" onclick="btnSendPeriods_Onclick()">تایید</button>
-                    <button id="btnCancel" type="button" class="btn btn-danger btn-sm" onclick="kwndSelectPeriod_OnClose()">انصراف</button>
+                    <button id="btnSendPeriod_determinPeriod" type="button" class="btn btn-success btn-sm">تایید</button>
+                    <button id="btnCancel_determinPeriod" type="button" class="btn btn-danger btn-sm">انصراف</button>
                 </div>
             </div>
             <div class="col-md-1"></div>
