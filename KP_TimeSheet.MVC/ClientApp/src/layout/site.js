@@ -135,18 +135,7 @@ function DDLUserAccount() {
 
 
 
-function doExport(selector, params) {
-    var options = {
-        //ignoreRow: [1,11,12,-2],
-        //ignoreColumn: [0,-1],
-        tableName: 'Countries',
-        worksheetName: 'Countries by population'
-    };
 
-    $.extend(true, options, params);
-
-    $(selector).tableExport(options);
-}
 
 function DoOnCellHtmlData(cell, row, col, data) {
     var result = "";

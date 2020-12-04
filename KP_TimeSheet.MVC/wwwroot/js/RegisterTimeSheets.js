@@ -1,50 +1,68 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+
+function doExport(selector, params) {
+    var options = {
+        //ignoreRow: [1,11,12,-2],
+        //ignoreColumn: [0,-1],
+        tableName: 'Countries',
+        worksheetName: 'Countries by population'
+    };
+
+    $.extend(true, options, params);
+
+    $(selector).tableExport(options);
+}
+
+function notify(messege, type) {
+   
+    
+    $.notify({
+        //icon: 'glyphicon glyphicon-warning-sign',
+        //title: 'Bootstrap notify',
+        message:"<strong >"+ messege +"</strong>",
+        //url: 'https://github.com/mouse0270/bootstrap-notify',
+        //target: '_blank'
+    }, {
+            // settings
+            //element: 'body',
+            //position: null,
+            type: type,
+            allow_dismiss: false,
+            //newest_on_top: false,
+            //showProgressbar: true,
+            placement: {
+                from: "top",
+                align: "left"
+            },
+            offset: 20,
+            spacing: 10,
+            z_index: 10100,
+            delay: 1000,
+            timer: 1000,
+            //url_target: '_blank',
+            //mouse_over: null,
+            animate: {
+                enter: 'animated fadeInDown',
+               exit: 'animated fadeOutUp'
+           },
+            //onShow: null,
+            //onShown: null,
+            //onClose: null,
+            //onClosed: null,
+            //icon_type: 'class',
+           // template: "<div style='height:15px;width:20%' class='shadow' >" + messege + "</div>"
+        });
+    }
+
 module.exports = {
     'LoaderShow': function () {
         $("#Loader").fadeIn(500);
     },
     'LoaderHide':function(){
         $("#Loader").fadeOut(500);
-    },'Notify':function(messege, type) {
-   
-    
-        $.notify({
-            //icon: 'glyphicon glyphicon-warning-sign',
-            //title: 'Bootstrap notify',
-            message:"<strong >"+ messege +"</strong>",
-            //url: 'https://github.com/mouse0270/bootstrap-notify',
-            //target: '_blank'
-        }, {
-                // settings
-                //element: 'body',
-                //position: null,
-                type: type,
-                allow_dismiss: false,
-                //newest_on_top: false,
-                //showProgressbar: true,
-                placement: {
-                    from: "top",
-                    align: "left"
-                },
-                offset: 20,
-                spacing: 10,
-                z_index: 10100,
-                delay: 1000,
-                timer: 1000,
-                //url_target: '_blank',
-                //mouse_over: null,
-                animate: {
-                    enter: 'animated fadeInDown',
-                   exit: 'animated fadeOutUp'
-               },
-                //onShow: null,
-                //onShown: null,
-                //onClose: null,
-                //onClosed: null,
-                //icon_type: 'class',
-               // template: "<div style='height:15px;width:20%' class='shadow' >" + messege + "</div>"
-            });
-    }
+    },
+    'Notify':notify,
+    'doExport':doExport
 };
 
 },{}],2:[function(require,module,exports){
@@ -61,7 +79,15 @@ const editWindow=require('./editWindow');
 //_____ متغیر ها و Document Ready__________
 
 $(document).ready(function () {
+    
     data.init();
+
+    $('#registerTiemSheet_exportToExcel').off().on('click',function(){
+        common.doExport('#ktrlTimeSheets', {type: 'excel'});
+    });
+    $('#registerTiemSheet_exportToDoc').off().on('click',function(){
+        common.doExport('#ktrlTimeSheets', { type: 'doc' });
+    });
     
     mainGrid.GetTimeSheets(function(){
         priodlyGrid.InitPeriodlyByProjectsGrid();
@@ -134,298 +160,6 @@ function ktrlTimeSheets_OnRefresh(response) {
 
 
 
-// ________________ارسال تایم شیت
-
-function wndSendWorkHour_OnClose() {
-    $("#wndSendWorkHour").data("kendoWindow").close()
-}
-
-function GRDSendWorkHours_onInit(sendItem) {
-
-    var ktrlTimeSheetsSend = $("#ktrlTimeSheets").data('kendoTreeList').dataItem($("#" + sendItem.id).closest("tr"));
-    _SelDate = ktrlTimeSheetsSend.values[parseInt($("#" + sendItem.id).attr('dayindex')) - 3];
-
-    $("#SenddateTitle").text(_SelDate.PersianDate);
-
-    var workHourJson = {
-        ID: null,
-        Date: _SelDate.Date,
-    };
-    var prmData = JSON.stringify(workHourJson);
-    $.ajax({
-        type: "Post",
-        url: "/api/TimeSheetsAPI/GetUnConfirmedWorkHours",
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        data: prmData,
-        success: function (response) {
-            _AllReadyForSent = 0
-            for (var i = 0; i < response.length; i++) {
-                _AllReadyForSent = _AllReadyForSent + response[i].Hours
-            }
-            $("#SumReadyForSentWorkHours").text(_AllReadyForSent);
-
-            $.ajax({
-                type: "Post",
-                url: "/api/TimeSheetsAPI/GetPresenceHourByDate",
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                data: prmData,
-                success: function (response) {
-                    _presenceHour = response.Hours
-
-                    $("#presenceHour").text(_presenceHour);
-
-                },
-                error: function (e) {
-
-                }
-            });
-            $.ajax({
-                type: "Post",
-                url: "/api/TimeSheetsAPI/GetConfirmedWorkHours",
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                data: prmData,
-                success: function (response) {
-                    _AllSentCount = 0
-                    for (var i = 0; i < response.length; i++) {
-                        _AllSentCount = _AllSentCount + response[i].Hours
-                    }
-                    $("#SumSentWorkHours").text(_AllSentCount);
-                    $("#GRDSendWorkHours").data("kendoGrid").dataSource.read();
-                },
-                error: function (e) {
-
-                }
-            });
-            _SendWorkHourGrid = response;
-
-            $("#GRDSendWorkHours").kendoGrid({
-                dataSource: {
-                    transport: {
-                        read: function (e) {
-                            e.success(_SendWorkHourGrid)
-                        }
-                    },
-                    pageSize: 20
-                },
-                height: 400,
-                pageable: true,
-                columns: [{
-                    field: "PersianDate",
-                    title: "تاریخ"
-                },
-                {
-                    field: "ProjectTitle",
-                    title: "پروژه"
-                }, {
-                    field: "TaskTitle",
-                    title: "وظیفه"
-                }, {
-                    field: "Hours",
-                    title: "ساعت کار ثبت شده    "
-                },
-
-
-                {
-                    title: "ارسال ",
-                    template: "<button   onclick='SendWorkHour_OnClick(this)' type='button' class='btn btn-success btn-sm' name='info' title='ارسال' > ارسال</button>",
-                    headerTemplate: "<label class='text-center'> ارسال </label>",
-                    filterable: false,
-                    sortable: false,
-                    width: 100
-                },
-                {
-                    title: "حذف ",
-                    template: "<button  onclick='DeleteWorkHourSendGrid(this)' type='button' class='btn btn-danger btn-sm' name='info' title='حذف' > حذف</button>",
-                    headerTemplate: "<label class='text-center'> حذف </label>",
-                    filterable: false,
-                    sortable: false,
-                    width: 100
-                },
-                ]
-
-            });
-        },
-        error: function (e) {
-
-        }
-    });
-}
-
-function wndSendWorkHour_OnInit(SendWHsIdx) {
-
-    _SendItem = SendWHsIdx
-    var wndSendWorkHour = $("#wndSendWorkHour");
-    wndSendWorkHour.kendoWindow({
-        width: "750px",
-        height: "670",
-
-        scrollable: false,
-        visible: false,
-        modal: true,
-        actions: [
-            "Pin",
-            "Minimize",
-            "Maximize",
-            "Close"
-        ],
-        open: common_register.adjustSize,
-    }).data("kendoWindow").center().open();
-
-    GRDSendWorkHours_onInit(_SendItem);
-}
-
-function SendAllWorkHours_OnClick() {
-    ;
-    var ktrlTimeSheetsSend = $("#ktrlTimeSheets").data('kendoTreeList').dataItem($("#" + _SendItem.id).closest("tr"));
-    _SelDate = ktrlTimeSheetsSend.values[parseInt($("#" + _SendItem.id).attr('dayindex')) - 3];
-
-    var workHourJson = {
-        ID: null,
-        Date: _SelDate.Date,
-    };
-    var prmData = JSON.stringify(workHourJson);
-    $.ajax({
-        type: "Post",
-        url: "/api/TimeSheetsAPI/SendWorkHours",
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        data: prmData,
-        success: function (response) {
-            _AllSentCount = 0
-
-            for (var i = 0; i < response.length; i++) {
-                _AllSentCount = _AllSentCount + response[i].Hours
-            }
-            $("#SumSentWorkHours").text(_AllSentCount);
-            for (var i = 0; i < response.length; i++) {
-                if (response[0] == "عملیات ارسال کارکرد ها با موفقیت انجام گردید") {
-                    common.Notify(response[i], "success");
-                } else {
-                    common.Notify(response[i], "danger");
-                }
-            }
-
-            wndSendWorkHour_OnClose();
-
-        },
-        error: function (e) {
-
-        }
-    });
-
-
-
-    //kendo.confirm("  از ارسال ساعت کار خود در تاریخ" + _SelDate.title + " اطمینان دارید ").then(function () {
-
-    //}, function () {
-
-    //});
-
-
-}
-
-function SendWorkHour_OnClick(e) {
-
-    var grid = $("#GRDSendWorkHours").data("kendoGrid");
-    var dataItem = grid.dataItem($(e).closest("tr"));
-
-
-    var workHourJson = {
-        ID: dataItem.ID,
-        Date: _SelDate.Date,
-    };
-
-    var prmData = JSON.stringify(workHourJson);
-    $.ajax({
-        type: "Post",
-        url: "/api/TimeSheetsAPI/SendWorkHour",
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        data: prmData,
-        success: function () {
-            //wndSendWorkHour_OnClose();
-            Refresh_GRDSendWorkHour();
-            common.Notify("انجام عملیات  ارسال با موفقیت به انجام رسید.", "success");
-        },
-        error: function (e) {
-
-        }
-    });
-
-}
-
-function Refresh_GRDSendWorkHour() {
-    var workHourJson = {
-        ID: null,
-        Date: _SelDate.Date,
-    };
-
-    var prmData = JSON.stringify(workHourJson);
-
-    $.ajax({
-        type: "Post",
-        url: "/api/TimeSheetsAPI/GetUnConfirmedWorkHours",
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        data: prmData,
-        success: function (response) {
-            _AllReadyForSent = 0
-
-            for (var i = 0; i < response.length; i++) {
-                _AllReadyForSent = _AllReadyForSent + response[i].Hours
-            }
-            $("#SumReadyForSentWorkHours").text(_AllReadyForSent);
-            $.ajax({
-                type: "Post",
-                url: "/api/TimeSheetsAPI/GetPresenceHourByDate",
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                data: prmData,
-                success: function (response) {
-                    _presenceHour = response.Hour
-
-                    $("#presenceHour").text(_presenceHour);
-
-                },
-                error: function (e) {
-
-                }
-            });
-            $.ajax({
-                type: "Post",
-                url: "/api/TimeSheetsAPI/GetConfirmedWorkHours",
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                data: prmData,
-                success: function (response) {
-                    _AllSentCount = 0
-                    for (var i = 0; i < response.length; i++) {
-                        _AllSentCount = _AllSentCount + response[i].Hours
-                    }
-                    $("#SumSentWorkHours").text(_AllSentCount);
-                    $("#GRDSendWorkHours").data("kendoGrid").dataSource.read();
-                },
-                error: function (e) {
-
-                }
-            });
-            _SendWorkHourGrid = response;
-            $("#GRDSendWorkHours").data("kendoGrid").dataSource.read();
-        },
-        error: function (e) {
-
-        }
-    });
-
-
-
-
-
-
-}
 
 //_________________________
 
@@ -546,7 +280,7 @@ function EnableAndDisableSendPeriodRadioButton() {
 }
 
 
-},{"../common/common":1,"./common":3,"./data":4,"./editWindow":5,"./mainGrid":7,"./monthlyGrid":8,"./period_next_pervious":9,"./priodlyGrid":10,"./sended_workouts":12}],3:[function(require,module,exports){
+},{"../common/common":1,"./common":3,"./data":4,"./editWindow":5,"./mainGrid":7,"./monthlyGrid":8,"./period_next_pervious":9,"./priodlyGrid":10,"./sended_workouts":13}],3:[function(require,module,exports){
 function adjustSize() {
     // For small screens, maximize the window when it is shown.
     // You can also make the check again in $(window).resize if you want to
@@ -605,6 +339,9 @@ module.exports={
 
     'workHours_get':function(){ return this._WorkHours;},
     'workHours_set':function(data){this._WorkHours = data;},
+
+    'sendItem_get':function(){ return this._SendItem;},
+    'sendItem_set':function(data){this._SendItem = data;},
 }
 },{}],5:[function(require,module,exports){
 const data = require('./data');
@@ -839,6 +576,8 @@ module.exports = {
 },{"./data":4}],7:[function(require,module,exports){
 const data=require('./data');
 const saveWindow=require('./saveWindow');
+const sended_workouts = require('./sended_workouts');
+const sendWorkHour=require('./sendWorkHour');
 
 function KTRColumn() {
   this.field = "";
@@ -976,41 +715,29 @@ function ktrlTimeSheets_DataBound(e) {
         var semlId = 'SendWorkHours' + childIdx;
         var sendId = 'ShowSent' + childIdx;
 
-        if (childElm.innerText == "True True") {
-
-          childElm.innerHTML = "<button title='ثبت ساعت کارکرد' id='" + emlId +
-            "' class='btn btn-success btn-xs' style='width:10px;height:15px'" +
-            " onclick='kwndSaveWHs_OnInit(\"" + emlId + "\")' dayIndex='" + childIdx + "' >+</button>";
-
-
-          childElm.innerHTML = childElm.innerHTML + "<button title='ارسال ساعت کارکرد' id='" +
-            semlId + "'  class='btn btn-warning btn-xs' style='width:10px;height:15px;margin-right:10px;'" +
-            " onclick='wndSendWorkHour_OnInit(" + semlId + ")' dayIndex='" + childIdx + "' ><b>↑</b></button>";
-
-          childElm.innerHTML = childElm.innerHTML + "<button title='نمایش کارکردهای این روز' id='" +
-            sendId + "'  class='btn btn-info btn-xs' style='width:10px;height:15px;margin-right:10px;'" +
-            " onclick='ShowCurrentDaySendWorkHours(" + sendId + ")' dayIndex='" +
-            childIdx + "' ><i class='fa fa-tv'></i></button>";
-
-
-        }
-
-        if (childElm.innerText == "False False") {
+        var inner = childElm.innerText;
+        if (inner == "False False") {
           childElm.innerHTML = "<label title=' ' class='text-warning' ><i class='glyphicon glyphicon-ban-circle'></i> </label>"
         }
 
-        if (childElm.innerText == "True False") {
-          var emlId = 'SaveWorkHours' + childIdx;
+        if (inner == "True False" || inner == "True True") {
+
           childElm.innerHTML = `<button title='ثبت ساعت کارکرد' id='${emlId}' 
                         class='btn btn-success btn-xs forFound_kwndSaveWHs_OnInit' style='width:10px;height:15px'
                          dayIndex='${childIdx}' data-eml-id='${emlId}'>+</button>`;
 
-          childElm.innerHTML = childElm.innerHTML + `<button title='نمایش کارکردهای این روز' id='${sendId}'  
+          childElm.innerHTML += `<button title='نمایش کارکردهای این روز' id='${sendId}'  
             class='btn btn-info btn-xs forFound_ShowCurrentDaySendWorkHours' style='width:10px;height:15px;margin-right:10px;' 
-              data-send-id='"${sendId}"' dayIndex='${childIdx}' ><i class='fa fa-tv'></i></button>`;
+              data-send-id='${sendId}' dayIndex='${childIdx}' ><i class='fa fa-tv'></i></button>`;
         }
+        
+        if (inner == "True True") {
 
+          childElm.innerHTML += `<button title='ارسال ساعت کارکرد' id='${semlId}'
+            class='btn btn-warning btn-xs forFound_wndSendWorkHour_OnInit' style='width:10px;height:15px;margin-right:10px;'
+            data-seml-id='${semlId}' dayIndex='${childIdx}' ><b>↑</b></button>`;
 
+        }
       });
     }
   });
@@ -1022,7 +749,12 @@ function ktrlTimeSheets_DataBound(e) {
 
   $('.forFound_ShowCurrentDaySendWorkHours').off().on('click',function(){
     var sendId = $(this).data("sendId");
-    howCurrentDaySendWorkHours(sendId);
+    sended_workouts.ShowCurrentDaySendWorkHours(sendId);
+  });
+
+  $('.forFound_wndSendWorkHour_OnInit').off().on('click',function(){
+    var semlId = $(this).data("semlId");
+    sendWorkHour.wndSendWorkHour_OnInit(semlId);
   });
 
 }
@@ -1033,7 +765,7 @@ module.exports = {
   'Init_TimeSheetTreeList': Init_TimeSheetTreeList
 
 };
-},{"./data":4,"./saveWindow":11}],8:[function(require,module,exports){
+},{"./data":4,"./saveWindow":11,"./sendWorkHour":12,"./sended_workouts":13}],8:[function(require,module,exports){
 const data = require('./data');
 
 //___________جدول پایین صفحه ماهانه
@@ -1310,7 +1042,7 @@ function btnSendPeriods_Onclick() {
 module.exports={
     "init":init
 }
-},{"../common/common":1,"./common":3,"./data":4,"./editWindow":5,"./mainGrid":7,"./monthlyGrid":8,"./priodlyGrid":10,"./sended_workouts":12}],10:[function(require,module,exports){
+},{"../common/common":1,"./common":3,"./data":4,"./editWindow":5,"./mainGrid":7,"./monthlyGrid":8,"./priodlyGrid":10,"./sended_workouts":13}],10:[function(require,module,exports){
 const data = require('./data');
 //___________________دوره جاری جدول پایین صفحه 
 
@@ -1383,6 +1115,7 @@ module.exports={
 },{"./data":4}],11:[function(require,module,exports){
 const common = require('../common/common');
 const common_register = require('./common');
+const data = require('./data');
 
 
 //_____________________پنجره ذخیره
@@ -1397,7 +1130,7 @@ function kwndSaveWHs_OnInit(SaveWHsIdx) {
     });
 
     var ktrlTimeSheets = $("#ktrlTimeSheets").data('kendoTreeList').dataItem($("#" + SaveWHsIdx).closest("tr"));
-    _SelDate = ktrlTimeSheets.values[parseInt($("#" + SaveWHsIdx).attr('dayindex')) - 3];
+    data.selDate_set(ktrlTimeSheets.values[parseInt($("#" + SaveWHsIdx).attr('dayindex')) - 3]);
     GetProjects();
 }
 
@@ -1511,7 +1244,7 @@ function btnSaveWorkHours_Onclick() {
 
     var workHourJson = {
         ID: null,
-        Date: _SelDate.Date,
+        Date: data.selDate_get().Date,
         EmployeeID: '',
         TaskID: $("#ddlTasks").data("kendoDropDownList").value(),
         Hours: $("#ktpWorkHour").data("kendoTimePicker")._oldText,
@@ -1582,7 +1315,292 @@ function ResetSaveWindow() {
 module.exports={
     'kwndSaveWHs_OnInit':kwndSaveWHs_OnInit
 }
-},{"../common/common":1,"./common":3}],12:[function(require,module,exports){
+},{"../common/common":1,"./common":3,"./data":4}],12:[function(require,module,exports){
+const common_register = require('./common');
+const data = require('./data');
+
+// ________________ارسال تایم شیت
+
+function wndSendWorkHour_OnClose() {
+    $("#wndSendWorkHour").data("kendoWindow").close()
+}
+
+function GRDSendWorkHours_onInit(sendItem) {
+
+    var ktrlTimeSheetsSend = $("#ktrlTimeSheets").data('kendoTreeList').dataItem($("#" + sendItem).closest("tr"));
+    data.selDate_set(ktrlTimeSheetsSend.values[parseInt($("#" + sendItem).attr('dayindex')) - 3]);
+
+    $("#SenddateTitle").text(data.selDate_get().PersianDate);
+
+    var workHourJson = {
+        ID: null,
+        Date: data.selDate_get().Date,
+    };
+    var prmData = JSON.stringify(workHourJson);
+    $.ajax({
+        type: "Post",
+        url: "/api/TimeSheetsAPI/GetUnConfirmedWorkHours",
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        data: prmData,
+        success: function (response) {
+            _AllReadyForSent = 0
+            for (var i = 0; i < response.length; i++) {
+                _AllReadyForSent = _AllReadyForSent + response[i].Hours
+            }
+            $("#SumReadyForSentWorkHours").text(_AllReadyForSent);
+
+            $.ajax({
+                type: "Post",
+                url: "/api/TimeSheetsAPI/GetPresenceHourByDate",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: prmData,
+                success: function (response) {
+                    _presenceHour = response.Hours
+
+                    $("#presenceHour").text(_presenceHour);
+
+                },
+                error: function (e) {
+
+                }
+            });
+            $.ajax({
+                type: "Post",
+                url: "/api/TimeSheetsAPI/GetConfirmedWorkHours",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: prmData,
+                success: function (response) {
+                    _AllSentCount = 0
+                    for (var i = 0; i < response.length; i++) {
+                        _AllSentCount = _AllSentCount + response[i].Hours
+                    }
+                    $("#SumSentWorkHours").text(_AllSentCount);
+                    $("#GRDSendWorkHours").data("kendoGrid").dataSource.read();
+                },
+                error: function (e) {
+
+                }
+            });
+            _SendWorkHourGrid = response;
+
+            $("#GRDSendWorkHours").kendoGrid({
+                dataSource: {
+                    transport: {
+                        read: function (e) {
+                            e.success(_SendWorkHourGrid)
+                        }
+                    },
+                    pageSize: 20
+                },
+                height: 400,
+                pageable: true,
+                columns: [{
+                    field: "PersianDate",
+                    title: "تاریخ"
+                },
+                {
+                    field: "ProjectTitle",
+                    title: "پروژه"
+                }, {
+                    field: "TaskTitle",
+                    title: "وظیفه"
+                }, {
+                    field: "Hours",
+                    title: "ساعت کار ثبت شده    "
+                },
+
+
+                {
+                    title: "ارسال ",
+                    template: "<button   onclick='SendWorkHour_OnClick(this)' type='button' class='btn btn-success btn-sm' name='info' title='ارسال' > ارسال</button>",
+                    headerTemplate: "<label class='text-center'> ارسال </label>",
+                    filterable: false,
+                    sortable: false,
+                    width: 100
+                },
+                {
+                    title: "حذف ",
+                    template: "<button  onclick='DeleteWorkHourSendGrid(this)' type='button' class='btn btn-danger btn-sm' name='info' title='حذف' > حذف</button>",
+                    headerTemplate: "<label class='text-center'> حذف </label>",
+                    filterable: false,
+                    sortable: false,
+                    width: 100
+                },
+                ]
+
+            });
+        },
+        error: function (e) {
+
+        }
+    });
+}
+
+function wndSendWorkHour_OnInit(SendWHsIdx) {
+
+    data.sendItem_set(SendWHsIdx);
+    var wndSendWorkHour = $("#wndSendWorkHour");
+    wndSendWorkHour.kendoWindow({
+        width: "750px",
+        height: "670",
+
+        scrollable: false,
+        visible: false,
+        modal: true,
+        actions: [
+            "Pin",
+            "Minimize",
+            "Maximize",
+            "Close"
+        ],
+        open: common_register.adjustSize,
+    }).data("kendoWindow").center().open();
+
+    GRDSendWorkHours_onInit(data.sendItem_get());
+}
+
+function SendAllWorkHours_OnClick() {
+    var ktrlTimeSheetsSend = $("#ktrlTimeSheets").data('kendoTreeList').dataItem($("#" + data.sendItem_get().id).closest("tr"));
+    data.selDate_set(ktrlTimeSheetsSend.values[parseInt($("#" + data.sendItem_get().id).attr('dayindex')) - 3]);
+
+    var workHourJson = {
+        ID: null,
+        Date: data.selDate_get().Date,
+    };
+    var prmData = JSON.stringify(workHourJson);
+    $.ajax({
+        type: "Post",
+        url: "/api/TimeSheetsAPI/SendWorkHours",
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        data: prmData,
+        success: function (response) {
+            _AllSentCount = 0
+
+            for (var i = 0; i < response.length; i++) {
+                _AllSentCount = _AllSentCount + response[i].Hours
+            }
+            $("#SumSentWorkHours").text(_AllSentCount);
+            for (var i = 0; i < response.length; i++) {
+                if (response[0] == "عملیات ارسال کارکرد ها با موفقیت انجام گردید") {
+                    common.Notify(response[i], "success");
+                } else {
+                    common.Notify(response[i], "danger");
+                }
+            }
+
+            wndSendWorkHour_OnClose();
+
+        },
+        error: function (e) {
+
+        }
+    });
+}
+
+function SendWorkHour_OnClick(e) {
+
+    var grid = $("#GRDSendWorkHours").data("kendoGrid");
+    var dataItem = grid.dataItem($(e).closest("tr"));
+
+
+    var workHourJson = {
+        ID: dataItem.ID,
+        Date: data.selDate_get().Date,
+    };
+
+    var prmData = JSON.stringify(workHourJson);
+    $.ajax({
+        type: "Post",
+        url: "/api/TimeSheetsAPI/SendWorkHour",
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        data: prmData,
+        success: function () {
+            //wndSendWorkHour_OnClose();
+            Refresh_GRDSendWorkHour();
+            common.Notify("انجام عملیات  ارسال با موفقیت به انجام رسید.", "success");
+        },
+        error: function (e) {
+
+        }
+    });
+
+}
+
+function Refresh_GRDSendWorkHour() {
+    var workHourJson = {
+        ID: null,
+        Date: data.selDate_get().Date,
+    };
+
+    var prmData = JSON.stringify(workHourJson);
+
+    $.ajax({
+        type: "Post",
+        url: "/api/TimeSheetsAPI/GetUnConfirmedWorkHours",
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        data: prmData,
+        success: function (response) {
+            _AllReadyForSent = 0
+
+            for (var i = 0; i < response.length; i++) {
+                _AllReadyForSent = _AllReadyForSent + response[i].Hours
+            }
+            $("#SumReadyForSentWorkHours").text(_AllReadyForSent);
+            $.ajax({
+                type: "Post",
+                url: "/api/TimeSheetsAPI/GetPresenceHourByDate",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: prmData,
+                success: function (response) {
+                    _presenceHour = response.Hour
+
+                    $("#presenceHour").text(_presenceHour);
+
+                },
+                error: function (e) {
+
+                }
+            });
+            $.ajax({
+                type: "Post",
+                url: "/api/TimeSheetsAPI/GetConfirmedWorkHours",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: prmData,
+                success: function (response) {
+                    _AllSentCount = 0
+                    for (var i = 0; i < response.length; i++) {
+                        _AllSentCount = _AllSentCount + response[i].Hours
+                    }
+                    $("#SumSentWorkHours").text(_AllSentCount);
+                    $("#GRDSendWorkHours").data("kendoGrid").dataSource.read();
+                },
+                error: function (e) {
+
+                }
+            });
+            _SendWorkHourGrid = response;
+            $("#GRDSendWorkHours").data("kendoGrid").dataSource.read();
+        },
+        error: function (e) {
+
+        }
+    });
+}
+
+module.exports={
+    'wndSendWorkHour_OnInit':wndSendWorkHour_OnInit
+};
+
+},{"./common":3,"./data":4}],13:[function(require,module,exports){
+const common = require('../common/common');
 const data = require('./data');
 const history=require('./history');
 const common_register = require('./common');
@@ -1718,12 +1736,12 @@ function ShowCurrentDaySendWorkHours(SaveWHsIdx) {
 	common.LoaderShow();
 	history.Create_GrdHistory();
 
-	var ktrlTimeSheets = $("#ktrlTimeSheets").data('kendoTreeList').dataItem($("#" + SaveWHsIdx.id).closest("tr"));
-	_SelDate = ktrlTimeSheets.values[parseInt($("#" + SaveWHsIdx.id).attr('dayindex')) - 3];
+	var ktrlTimeSheets = $("#ktrlTimeSheets").data('kendoTreeList').dataItem($("#" + SaveWHsIdx).closest("tr"));
+	data.selDate_set(ktrlTimeSheets.values[parseInt($("#" + SaveWHsIdx).attr('dayindex')) - 3]);
 
 	var workHourJson = {
 		ID: null,
-		Date: _SelDate.Date
+		Date: data.selDate_get().Date
 	}
 
 	var prmData = JSON.stringify(workHourJson);
@@ -1754,7 +1772,8 @@ function ShowCurrentDaySendWorkHours(SaveWHsIdx) {
 module.exports = {
 	'Refresh_GrdMonitorSentWorkHour': Refresh_GrdMonitorSentWorkHour,
 	'Init_GrdMonitorSentWorkHour': Init_GrdMonitorSentWorkHour,
-	'init':init
+	'init':init,
+	'ShowCurrentDaySendWorkHours': ShowCurrentDaySendWorkHours
 }
 
-},{"./common":3,"./data":4,"./history":6}]},{},[2]);
+},{"../common/common":1,"./common":3,"./data":4,"./history":6}]},{},[2]);

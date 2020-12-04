@@ -1,5 +1,6 @@
 const common = require('../common/common');
 const common_register = require('./common');
+const data = require('./data');
 
 
 //_____________________پنجره ذخیره
@@ -14,7 +15,7 @@ function kwndSaveWHs_OnInit(SaveWHsIdx) {
     });
 
     var ktrlTimeSheets = $("#ktrlTimeSheets").data('kendoTreeList').dataItem($("#" + SaveWHsIdx).closest("tr"));
-    _SelDate = ktrlTimeSheets.values[parseInt($("#" + SaveWHsIdx).attr('dayindex')) - 3];
+    data.selDate_set(ktrlTimeSheets.values[parseInt($("#" + SaveWHsIdx).attr('dayindex')) - 3]);
     GetProjects();
 }
 
@@ -128,7 +129,7 @@ function btnSaveWorkHours_Onclick() {
 
     var workHourJson = {
         ID: null,
-        Date: _SelDate.Date,
+        Date: data.selDate_get().Date,
         EmployeeID: '',
         TaskID: $("#ddlTasks").data("kendoDropDownList").value(),
         Hours: $("#ktpWorkHour").data("kendoTimePicker")._oldText,

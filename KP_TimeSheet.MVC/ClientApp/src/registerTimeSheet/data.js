@@ -33,4 +33,7 @@ module.exports={
 
     'workHours_get':function(){ return this._WorkHours;},
     'workHours_set':function(data){this._WorkHours = data;},
+
+    'sendItem_get':function(){ return this._SendItem;},
+    'sendItem_set':function(data){this._SendItem = data;},
 }

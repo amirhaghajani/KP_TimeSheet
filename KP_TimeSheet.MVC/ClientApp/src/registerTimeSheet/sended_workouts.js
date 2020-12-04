@@ -1,3 +1,4 @@
+const common = require('../common/common');
 const data = require('./data');
 const history=require('./history');
 const common_register = require('./common');
@@ -133,12 +134,12 @@ function ShowCurrentDaySendWorkHours(SaveWHsIdx) {
 	common.LoaderShow();
 	history.Create_GrdHistory();
 
-	var ktrlTimeSheets = $("#ktrlTimeSheets").data('kendoTreeList').dataItem($("#" + SaveWHsIdx.id).closest("tr"));
-	_SelDate = ktrlTimeSheets.values[parseInt($("#" + SaveWHsIdx.id).attr('dayindex')) - 3];
+	var ktrlTimeSheets = $("#ktrlTimeSheets").data('kendoTreeList').dataItem($("#" + SaveWHsIdx).closest("tr"));
+	data.selDate_set(ktrlTimeSheets.values[parseInt($("#" + SaveWHsIdx).attr('dayindex')) - 3]);
 
 	var workHourJson = {
 		ID: null,
-		Date: _SelDate.Date
+		Date: data.selDate_get().Date
 	}
 
 	var prmData = JSON.stringify(workHourJson);
@@ -169,5 +170,6 @@ function ShowCurrentDaySendWorkHours(SaveWHsIdx) {
 module.exports = {
 	'Refresh_GrdMonitorSentWorkHour': Refresh_GrdMonitorSentWorkHour,
 	'Init_GrdMonitorSentWorkHour': Init_GrdMonitorSentWorkHour,
-	'init':init
+	'init':init,
+	'ShowCurrentDaySendWorkHours': ShowCurrentDaySendWorkHours
 }

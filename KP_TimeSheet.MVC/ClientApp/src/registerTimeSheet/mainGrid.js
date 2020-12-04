@@ -1,5 +1,7 @@
 const data=require('./data');
 const saveWindow=require('./saveWindow');
+const sended_workouts = require('./sended_workouts');
+const sendWorkHour=require('./sendWorkHour');
 
 function KTRColumn() {
   this.field = "";
@@ -137,41 +139,29 @@ function ktrlTimeSheets_DataBound(e) {
         var semlId = 'SendWorkHours' + childIdx;
         var sendId = 'ShowSent' + childIdx;
 
-        if (childElm.innerText == "True True") {
-
-          childElm.innerHTML = "<button title='ثبت ساعت کارکرد' id='" + emlId +
-            "' class='btn btn-success btn-xs' style='width:10px;height:15px'" +
-            " onclick='kwndSaveWHs_OnInit(\"" + emlId + "\")' dayIndex='" + childIdx + "' >+</button>";
-
-
-          childElm.innerHTML = childElm.innerHTML + "<button title='ارسال ساعت کارکرد' id='" +
-            semlId + "'  class='btn btn-warning btn-xs' style='width:10px;height:15px;margin-right:10px;'" +
-            " onclick='wndSendWorkHour_OnInit(" + semlId + ")' dayIndex='" + childIdx + "' ><b>↑</b></button>";
-
-          childElm.innerHTML = childElm.innerHTML + "<button title='نمایش کارکردهای این روز' id='" +
-            sendId + "'  class='btn btn-info btn-xs' style='width:10px;height:15px;margin-right:10px;'" +
-            " onclick='ShowCurrentDaySendWorkHours(" + sendId + ")' dayIndex='" +
-            childIdx + "' ><i class='fa fa-tv'></i></button>";
-
-
-        }
-
-        if (childElm.innerText == "False False") {
+        var inner = childElm.innerText;
+        if (inner == "False False") {
           childElm.innerHTML = "<label title=' ' class='text-warning' ><i class='glyphicon glyphicon-ban-circle'></i> </label>"
         }
 
-        if (childElm.innerText == "True False") {
-          var emlId = 'SaveWorkHours' + childIdx;
+        if (inner == "True False" || inner == "True True") {
+
           childElm.innerHTML = `<button title='ثبت ساعت کارکرد' id='${emlId}' 
                         class='btn btn-success btn-xs forFound_kwndSaveWHs_OnInit' style='width:10px;height:15px'
                          dayIndex='${childIdx}' data-eml-id='${emlId}'>+</button>`;
 
-          childElm.innerHTML = childElm.innerHTML + `<button title='نمایش کارکردهای این روز' id='${sendId}'  
+          childElm.innerHTML += `<button title='نمایش کارکردهای این روز' id='${sendId}'  
             class='btn btn-info btn-xs forFound_ShowCurrentDaySendWorkHours' style='width:10px;height:15px;margin-right:10px;' 
-              data-send-id='"${sendId}"' dayIndex='${childIdx}' ><i class='fa fa-tv'></i></button>`;
+              data-send-id='${sendId}' dayIndex='${childIdx}' ><i class='fa fa-tv'></i></button>`;
         }
+        
+        if (inner == "True True") {
 
+          childElm.innerHTML += `<button title='ارسال ساعت کارکرد' id='${semlId}'
+            class='btn btn-warning btn-xs forFound_wndSendWorkHour_OnInit' style='width:10px;height:15px;margin-right:10px;'
+            data-seml-id='${semlId}' dayIndex='${childIdx}' ><b>↑</b></button>`;
 
+        }
       });
     }
   });
@@ -183,7 +173,12 @@ function ktrlTimeSheets_DataBound(e) {
 
   $('.forFound_ShowCurrentDaySendWorkHours').off().on('click',function(){
     var sendId = $(this).data("sendId");
-    howCurrentDaySendWorkHours(sendId);
+    sended_workouts.ShowCurrentDaySendWorkHours(sendId);
+  });
+
+  $('.forFound_wndSendWorkHour_OnInit').off().on('click',function(){
+    var semlId = $(this).data("semlId");
+    sendWorkHour.wndSendWorkHour_OnInit(semlId);
   });
 
 }
