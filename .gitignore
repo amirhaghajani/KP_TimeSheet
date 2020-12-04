@@ -95,3 +95,4 @@ KP.TimeSheets.Persistance/obj/Debug/net5.0/KP.TimeSheets.Persistance.assets.cach
 KP.TimeSheets.Persistance/obj/Debug/net5.0/KP.TimeSheets.Persistance.csprojAssemblyReference.cache
 KP_TimeSheet.MVC/obj/Debug/net5.0/Razor/Views/TimeSheets/Confirmation.cshtml.g.cs
 KP_TimeSheet.MVC/obj/Debug/net5.0/Razor/Views/TimeSheets/Register.cshtml.g.cs
+KP_TimeSheet.MVC/0MyQueries/q1.sql

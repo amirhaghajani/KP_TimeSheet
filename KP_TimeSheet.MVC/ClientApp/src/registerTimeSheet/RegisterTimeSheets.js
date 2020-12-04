@@ -1,34 +1,22 @@
 ﻿const common = require('../common/common');
+const mainGrid = require('./mainGrid');
+const priodlyGrid = require('./priodlyGrid');
+const monthlyGrid = require('./monthlyGrid');
+const data = require('./data');
+const common_register = require('./common');
 
 //_____ متغیر ها و Document Ready__________
-var _SelDate;
-var CurrentUser;
-var _TimeSheetData = [];
-var _WorkHourOnProjects = [];
-var _thisMonthdata = {};
-var _WorkHours = [];
-var _SendItem = {};
-var _SendWorkHourGrid = [];
-var _thisPerioddata = [];
-var _MonitorSentWorkHours = [];
-var _AllSentCount = 0;
-var _AllReadyForSent = 0;
-var _presenceHour = 0;
-var _TodayHistorys = [];
 
 
-function KTRColumn() {
-    this.field = "";
-    this.title = "";
-    this.template = "";
-    this.hidden = false;
-    this.width = 40;
-    this.headerTemplate = "";
-    this.filterable = false;
-}
+
+
 
 $(document).ready(function () {
-    GetTimeSheets();
+    mainGrid.GetTimeSheets(function(){
+        priodlyGrid.InitPeriodlyByProjectsGrid();
+        monthlyGrid.InitMonthlyByProjectsGrid();
+        common.LoaderHide();
+    });
 });
 
 $('input:radio[name="optperiod"]').change(function () {
@@ -64,7 +52,7 @@ function RefreshTimeSheet() {
 
 function ktrlTimeSheets_OnRefresh(response) {
 
-    _TimeSheetData = response;
+    data.timeSheetData_set(response);
     removeAndRecreateTreelisDiv();
     Init_TimeSheetTreeList();
     //$("#ktrlTimeSheets").data("kendoTreeList").dataSource.read();
@@ -77,178 +65,12 @@ function ktrlTimeSheets_OnRefresh(response) {
 
 
 //_______________ساختن TreeList اصلی
-function GetTimeSheets() {
-
-    $.ajax({
-        type: "Get",
-        url: "/api/TimeSheetsAPI/GetTimeSheets",
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        success: ktrlTimeSheets_OnInit,
-        error: function (e) {
-
-        }
-    });
-}
 
 
-function ktrlTimeSheets_OnInit(response) {
-    _TimeSheetData = response;
-    Init_TimeSheetTreeList();
-    InitPeriodlyByProjectsGrid();
-    InitMonthlyByProjectsGrid();
-    common.LoaderHide();
-}
-
-function Init_TimeSheetTreeList() {
-    var ktrlTSColumns = ktrlTimeSheets_OnInitColumns(_TimeSheetData);
-
-    $("#ktrlTimeSheets").kendoTreeList({
-        dataSource: {
-            transport: {
-                read: function (e) {
-                    e.success(_TimeSheetData);
-                },
-            }
-        },
-        schema: {
-            model: {
-                id: "id",
-                parentId: "parentId"
-            }
-        },
-        height: 400,
-        columns: ktrlTSColumns,
-        scrollable: true,
-        selectable: true,
-        dataBound: ktrlTimeSheets_DataBound
-    });
-
-    $("#ktrlTimeSheets").kendoTooltip({
-        filter: 'td',
-        content: function (e) {
-
-            var treelist = $("#ktrlTimeSheets").data("kendoTreeList");
-            var targetRow = $(e.target).closest('tr');
-            var dataItem = treelist.dataItem(targetRow);
-            return dataItem.title;
-        }
-    });
-    $("#ktrlTimeSheets tbody").on("dblclick", "td", function (e) {
-        var cell = $(e.currentTarget);
-        var cellIndex = cell[0].cellIndex;
-        var grid = $("#ktrlTimeSheets").data("kendoTreeList");
-        var column = grid.columns[cellIndex];
-        var dataItem = grid.dataItem(cell.closest("tr"));
-        alert("Satr: " + dataItem.title + " - Sotoon: " + dataItem.values[cellIndex-3].title);
-    });
 
 
-    
-}
-
-function ktrlTimeSheets_OnInitColumns(response) {
-    var x = JSON.stringify(response);
-    var columns = [];
-    var colId = new KTRColumn();
-    colId.field = "id";
-    colId.title = "شناسه";
-    colId.hidden = true;
-    colId.width = 10;
-    columns.push(colId);
-
-    var colParentId = new KTRColumn();
-    colParentId.field = "parentId";
-    colParentId.title = "شناسه پدر";
-    colParentId.hidden = true;
-    colParentId.width = 10;
-    columns.push(colParentId);
-
-    var colTitle = new KTRColumn();
-
-    colTitle.field = "title";
-    colTitle.title = "عنوان";
-    colTitle.hidden = false,
-
-        colTitle.width = 150;
-    columns.push(colTitle);
-
-    for (var i = 0; i < response[0].values.length; i++) {
-
-        var tsDate = response[0].values[i];
-        var colDate = new KTRColumn();
-        colDate.field = "values[" + i + "].value";
-        colDate.format = "";
-        colDate.title = tsDate.title;
-        colDate.headerTemplate = "<h6> <b>" + tsDate.persianDate + "</b></h6>  <h6>" + tsDate.persianDay + "</h6>";
-        colDate.hidden = false;
-        colDate.width = 50;
-        columns.push(colDate);
-    }
-    return columns;
-}
-
-function ktrlTimeSheets_DataBound(e) {
-
-    var grid = this;
-    var dataSource = grid.dataSource;
-    //Loop through each record in a Kendo Grid
-    $.each(grid.items(), function (index, item) {
-
-        var tsRow = $("#ktrlTimeSheets").data('kendoTreeList').dataItem($(item).closest("tr"));
-        if (tsRow.title === "عملیات") {
-
-            $.each(item.children, function (childIdx, childElm) {
-                var emlId = 'SaveWorkHours' + childIdx;
-                var semlId = 'SendWorkHours' + childIdx;
-                var sendId = 'ShowSent' + childIdx;
-
-                if (childElm.innerText == "True True") {
-
-                    childElm.innerHTML = "<button title='ثبت ساعت کارکرد' id='" + emlId + 
-                    "' class='btn btn-success btn-xs' style='width:10px;height:15px'" +
-                        " onclick='kwndSaveWHs_OnInit(\"" + emlId + "\")' dayIndex='" + childIdx + "' >+</button>";
 
 
-                    childElm.innerHTML = childElm.innerHTML + "<button title='ارسال ساعت کارکرد' id='" + 
-                    semlId + "'  class='btn btn-warning btn-xs' style='width:10px;height:15px;margin-right:10px;'" +
-                        " onclick='wndSendWorkHour_OnInit(" + semlId + ")' dayIndex='" + childIdx + "' ><b>↑</b></button>";
-
-                    childElm.innerHTML = childElm.innerHTML + "<button title='نمایش کارکردهای این روز' id='" + 
-                    sendId + "'  class='btn btn-info btn-xs' style='width:10px;height:15px;margin-right:10px;'" +
-                        " onclick='ShowCurrentDaySendWorkHours(" + sendId + ")' dayIndex='" + 
-                        childIdx + "' ><i class='fa fa-tv'></i></button>";
-
-
-                }
-
-                if (childElm.innerText == "False False") {
-                    childElm.innerHTML = "<label title=' ' class='text-warning' ><i class='glyphicon glyphicon-ban-circle'></i> </label>"
-                }
-
-                if (childElm.innerText == "True False") {
-                    var emlId = 'SaveWorkHours' + childIdx;
-                    childElm.innerHTML = `<button title='ثبت ساعت کارکرد' id='${emlId}' 
-                        class='btn btn-success btn-xs forFound_kwndSaveWHs_OnInit' style='width:10px;height:15px'
-                         dayIndex='${childIdx}' data-eml-id='${emlId}'>+</button>`;
-
-                    childElm.innerHTML = childElm.innerHTML + "<button title='نمایش کارکردهای این روز' id='" + 
-                    sendId + "'  class='btn btn-info btn-xs' style='width:10px;height:15px;margin-right:10px;'" +
-                        " onclick='ShowCurrentDaySendWorkHours(" + sendId + ")' dayIndex='" + childIdx + 
-                        "' ><i class='fa fa-tv'></i></button>";
-                }
-
-
-            });
-        }
-    });
-
-    $('.forFound_kwndSaveWHs_OnInit').off().on('click',function(){
-        var id = $(this).data("emlId");
-        kwndSaveWHs_OnInit(id);
-    });
-
-}
 //____________________________________
 
 
@@ -256,7 +78,7 @@ function ktrlTimeSheets_DataBound(e) {
 function GetNextPeriod() {
     common.LoaderShow();
 
-    var prmData = JSON.stringify(_TimeSheetData[0].values[_TimeSheetData[0].values.length - 1]);
+    var prmData = JSON.stringify(data.timeSheetData_get()[0].values[data.timeSheetData_get()[0].values.length - 1]);
 
     $.ajax({
         type: "Post",
@@ -265,13 +87,13 @@ function GetNextPeriod() {
         dataType: "json",
         data: prmData,
         success: function (response) {
-            _TimeSheetData = response;
+            data.timeSheetData_set(response);
             removeAndRecreateTreelisDiv();
             Init_TimeSheetTreeList();
             Refresh_GrdEditWorkHour();
             Refresh_GrdMonitorSentWorkHour();
-            InitPeriodlyByProjectsGrid();
-            InitMonthlyByProjectsGrid();
+            priodlyGrid.InitPeriodlyByProjectsGrid();
+            monthlyGrid.InitMonthlyByProjectsGrid();
             common.LoaderHide();
         },
         error: function (e) {
@@ -283,7 +105,7 @@ function GetNextPeriod() {
 function GetPreviousPeriod() {
     common.LoaderShow();
 
-    var prmData = JSON.stringify(_TimeSheetData[0].values[0]);
+    var prmData = JSON.stringify(data.timeSheetData_get()[0].values[0]);
 
     $.ajax({
         type: "Post",
@@ -293,13 +115,13 @@ function GetPreviousPeriod() {
         data: prmData,
         success: function (response) {
 
-            _TimeSheetData = response;
+            data.timeSheetData_set(response);
             removeAndRecreateTreelisDiv();
             Init_TimeSheetTreeList();
             Refresh_GrdEditWorkHour();
             Refresh_GrdMonitorSentWorkHour();
-            InitPeriodlyByProjectsGrid();
-            InitMonthlyByProjectsGrid();
+            priodlyGrid.InitPeriodlyByProjectsGrid();
+            monthlyGrid.InitMonthlyByProjectsGrid();
 
             common.LoaderHide();
 
@@ -316,7 +138,7 @@ function GetPreviousPeriod() {
 
 function GetCurrentPeriod() {
     common.LoaderShow();
-    var prmData = JSON.stringify(_TimeSheetData[0].values);
+    var prmData = JSON.stringify(data.timeSheetData_get()[0].values);
 
     $.ajax({
         type: "Post",
@@ -325,13 +147,13 @@ function GetCurrentPeriod() {
         dataType: "json",
         data: prmData,
         success: function (response) {
-            _TimeSheetData = response;
+            data.timeSheetData_set(response);
             removeAndRecreateTreelisDiv();
             Init_TimeSheetTreeList();
             Refresh_GrdEditWorkHour();
             Refresh_GrdMonitorSentWorkHour();
-            InitPeriodlyByProjectsGrid();
-            InitMonthlyByProjectsGrid();
+            priodlyGrid.InitPeriodlyByProjectsGrid();
+            monthlyGrid.InitMonthlyByProjectsGrid();
             common.LoaderHide();
         },
         error: function (e) {
@@ -340,17 +162,7 @@ function GetCurrentPeriod() {
     });
 }
 
-function adjustSize() {
-    // For small screens, maximize the window when it is shown.
-    // You can also make the check again in $(window).resize if you want to
-    // but you will have to change the way to reference the widget and then
-    // to use $("#theWindow").data("kendoWindow").
-    // Alternatively, you may want to .center() the window.
 
-    if ($(window).width() < 800 || $(window).height() < 600) {
-        this.maximize();
-    }
-}
 
 function kwndSelectPeriod_OnInit() {
 
@@ -367,7 +179,7 @@ function kwndSelectPeriod_OnInit() {
             "Maximize",
             "Close"
         ],
-        open: adjustSize,
+        open: common_register.adjustSize,
     }).data("kendoWindow").center().open();
 }
 
@@ -516,7 +328,7 @@ function wndSendWorkHour_OnInit(SendWHsIdx) {
             "Maximize",
             "Close"
         ],
-        open: adjustSize,
+        open: common_register.adjustSize,
     }).data("kendoWindow").center().open();
 
     GRDSendWorkHours_onInit(_SendItem);
@@ -695,7 +507,7 @@ function WndEditWorkHours_OnInit() {
             "Maximize",
             "Close"
         ],
-        open: adjustSize,
+        open: common_register.adjustSize,
     }).data("kendoWindow").center().open();
 }
 
@@ -705,7 +517,7 @@ function Close_WndEditWorkHours() {
 
 function GetWorkHours_GrdEditWorkHour() {
 
-    var prmData = JSON.stringify(_TimeSheetData[0].values);
+    var prmData = JSON.stringify(data.timeSheetData_get()[0].values);
 
     $.ajax({
         type: "Post",
@@ -784,7 +596,7 @@ function Open_WndMonitorSentWorkHours() {
 function GetWorkHours_MonitorSentWorkHour() {
   
    
-    var prmData = JSON.stringify(_TimeSheetData[0].values);
+    var prmData = JSON.stringify(data.timeSheetData_get()[0].values);
 
     $.ajax({
         type: "Post",
@@ -819,7 +631,7 @@ function Init_GrdMonitorSentWorkHour() {
             "Maximize",
             "Close"
         ],
-        open: adjustSize,
+        open: common_register.adjustSize,
     }).data("kendoWindow").center().open();
 
     $("#GrdMonitorSentWorkHour").kendoGrid({
@@ -870,7 +682,7 @@ function Init_GrdMonitorSentWorkHour() {
 }
 
 function Refresh_GrdMonitorSentWorkHour() {
-    var prmData = JSON.stringify(_TimeSheetData[0].values);
+    var prmData = JSON.stringify(data.timeSheetData_get()[0].values);
     $.ajax({
         type: "Post",
         url: "/api/TimeSheetsAPI/GetRegistereCurrentPerioddWorkHours",
@@ -1051,271 +863,14 @@ function HideHistory() {
 }
 
 
-//_____________________پنجره ذخیره
 
 
 
-function kwndSaveWHs_OnInit(SaveWHsIdx) {
 
-    var ktrlTimeSheets = $("#ktrlTimeSheets").data('kendoTreeList').dataItem($("#" + SaveWHsIdx).closest("tr"));
-    _SelDate = ktrlTimeSheets.values[parseInt($("#" + SaveWHsIdx).attr('dayindex')) - 3];
-    GetProjects();
-}
-
-function kwndSaveWHs_OnClose() {
-    var w= $("#kwndSaveWorkHours").data("kendoWindow");
-    if(w) w.close();
-}
-
-function GetProjects() {
-    $.ajax({
-        type: "Get",
-        url: "/api/ProjectsAPI/GetProjects",
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        success: ddlProjects_OnInit,
-        error: function (e) {
-
-        }
-    });
-}
-
-function ddlProjects_OnInit(response) {
-    if (response.length == 0 ) {
-        common.Notify("کاربر گرامی شما فاقد پروژه میباشید", "danger");
-        kwndSaveWHs_OnClose();
-        return
-    } else {
-
-        $("#ddlProjects").kendoDropDownList({
-            dataSource: {
-                data: response,
-                schema: {
-                    model: {
-                        id: "ID"
-                    }
-                }
-            },
-            dataTextField: "Title",
-            dataValueField: "ID",
-            filter: "contains",
-            optionLabel: "انتخاب پروژه...",
-            change: GetTasks
-        });
-        $("#ktpWorkHour").kendoTimePicker({
-            format: "HH:mm"
-        });
-        var kwndSaveWHs = $("#kwndSaveWorkHours");
-        kwndSaveWHs.kendoWindow({
-            width: "500px",
-            height: "640px",
-
-            scrollable: false,
-            visible: false,
-            modal: true,
-            actions: [
-                "Pin",
-                "Minimize",
-                "Maximize",
-                "Close"
-            ],
-            open: adjustSize,
-            close: ResetSaveWindow
-        }).data("kendoWindow").center().open();
-    }
-}
-
-function GetTasks() {
-
-    var projID = $("#ddlProjects").data("kendoDropDownList").value();
-    var prmData = JSON.stringify({ ID: projID });
-    $.ajax({
-        type: "Post",
-        url: "/api/ProjectsAPI/GetTasks",
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        data: prmData,
-        success: ddlTasks_OnInit,
-        error: function (e) {
-
-        }
-    });
-}
-
-function ddlTasks_OnInit(response) {
-
-    $("#ddlTasks").kendoDropDownList({
-        dataSource: {
-            data: response,
-            schema: {
-                model: {
-                    id: "ID"
-                }
-            }
-        },
-        dataTextField: "Title",
-        dataValueField: "ID",
-        filter: "contains",
-        optionLabel: "انتخاب فعالیت...",
-        change: GetTasks
-    });
-    $("#TaskPanel").show(100);
-    $("#TimeSpanPanel").show(100);
-
-}
-
-function btnSaveWorkHours_Onclick() {
-    
-    $("span[for='ktpWorkHour']").text("");
-    $("span[for='ddlTasks']").text("");
-
-    var workHourJson = {
-        ID: null,
-        Date: _SelDate.Date,
-        EmployeeID: '',
-        TaskID: $("#ddlTasks").data("kendoDropDownList").value(),
-        Hours: $("#ktpWorkHour").data("kendoTimePicker")._oldText,
-        ProjectID: $("#ddlProjects").data("kendoDropDownList").value(),
-        Description: $("#txtDescription").val()
-    };
-
-    if (!workHourJson.TaskID) {
-        $("span[for='ddlTasks']").text("وظیفه ضروری است");
-        return;
-    }
-
-    if (!workHourJson.Hours) {
-        $("#ktpWorkHour").val("");
-        $("span[for='ktpWorkHour']").text("ساعت ضروری است");
-        return;
-    }
-
-    common.LoaderShow();
-
-    kwndSaveWHs_OnClose();
-    var prmData = JSON.stringify(workHourJson);
-
-    $.ajax({
-        type: "Post",
-        url: "/api/TimeSheetsAPI/SaveWorkHours",
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        data: prmData,
-        success: SaveWorkHours_OnSuccess,
-        error: function (e) {
-
-        }
-    });
-}
-
-function SaveWorkHours_OnSuccess(response) {
-
-    GetCurrentPeriod();
-    kwndSaveWHs_OnClose();
-    if(response.lenth > 0){
-        for (var i = 0; i < response.length; i++) {
-            common.Notify(response[i], "danger");
-        } 
-    }
-    else {
-        common.Notify("ثبت کاکرد با موفقیت انجام شد", "success");
-    }
-}
-
-//___________جدول پایین صفحه ماهانه
-
-function InitMonthlyByProjectsGrid() {
-    var prmData = JSON.stringify(_TimeSheetData[0].values[0]);
-    $.ajax({
-        type: "Post",
-        url: "/api/TimeSheetsAPI/GetThisMonthData",
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        data: prmData,
-        success: function (response) {
-            _thisMonthdata = response;
-            $("#MonthlyPresence").text(response.Presence);
-            $("#MonthlyWorkHour").text(response.Work);
-            $("#MonthlyDefference").text(response.Defference);
-            $("#MonthlyPresencePercent").width(response.Presencepercent);
-            $("#MonthlyWorkHourPercent").width(response.Workpercent);
-            $("#MonthlyDefferencePercent").width(response.Defferencepercent);
-        },
-        error: function (e) {
-
-        }
-    });
-
-    $.ajax({
-        type: "Post",
-        url: "/api/TimeSheetsAPI/GetThisMonthProjects",
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        data: prmData,
-        success: KGRDMonthly_OnInit,
-        error: function (e) {
-
-        }
-    });
-}
-
-//___________________دوره جاری جدول پایین صفحه 
-
-function InitPeriodlyByProjectsGrid() {
-
-    var prmData = JSON.stringify(_TimeSheetData[0].values);
-    $.ajax({
-        type: "Post",
-        url: "/api/TimeSheetsAPI/GetThisPeriodData",
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        data:prmData,
-        success: function (response) {
-            _thisPerioddata = response;
-            $("#LblperHourCurrPeriod").text(response.Presence);
-            $("#LblworkHourCurrPeriod").text(response.Work);
-            $("#LblPeriodicallyDefference").text(response.Defference);
-            $("#PRBperHourCurrPeriod").width(response.Presencepercent);
-            $("#PRBworkHourCurrPeriod").width(response.Workpercent);
-            $("#PRGPeriodicallyDefferencePercent").width(response.Defferencepercent);
-        },
-        error: function (e) {
-
-        }
-    });
-
-    $.ajax({
-        type: "Post",
-        url: "/api/TimeSheetsAPI/GetThisPeriodProjects",
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        data: prmData,
-        success: KGRDPeriodically_OnInit,
-        error: function (e) {
-
-        }
-    });
-}
 
 //_____________________________________
 
-function Refresh_GrdEditWorkHour() {
-    var prmData = JSON.stringify(_TimeSheetData[0].values);
-    $.ajax({
-        type: "Post",
-        url: "/api/TimeSheetsAPI/GetRegistereCurrentPerioddWorkHours",
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        data: prmData,
-        success: function (response) {
-            _WorkHours = response;
-            var g = $("#GrdEditWorkHour").data("kendoGrid");
-            if(g) g.dataSource.read();
-        },
-        error: function (e) {
-        }
-    });
-}
+
 
 function DeleteWorkHourSendGrid(e) {
     var grid = $("#GRDSendWorkHours").data("kendoGrid");
@@ -1371,28 +926,7 @@ function DeleteWorkHourEditGrid(e) {
 
 }
 
-function KGRDMonthly_OnInit(response) {
 
-    $("#tblcurrmonth").kendoGrid({
-        dataSource: {
-            transport: {
-                read: function (e) {
-                    e.success(response)
-                }
-            },
-            pageSize: 20
-        },
-        height: 200,
-        columns: [{
-            field: "Title",
-            title: "عنوان پروژه"
-        }, {
-            field: "Hour",
-            title: "ساعت کار ثبت شده    "
-        }]
-    });
-
-}
 
 /////----------------- ارسال دوره و تایین آن 
 
@@ -1408,7 +942,7 @@ function btnSendPeriods_Onclick() {
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             success: function (response) {
-                _TimeSheetData = response;
+                data.timeSheetData_set(response);
                 removeAndRecreateTreelisDiv();
                 Init_TimeSheetTreeList();
                 Refresh_GrdEditWorkHour();
@@ -1437,7 +971,7 @@ function btnSendPeriods_Onclick() {
             dataType: "json",
             data: prmData,
             success: function (response) {
-                _TimeSheetData = response;
+                data.timeSheetData_set(response);
                 removeAndRecreateTreelisDiv();
                 Init_TimeSheetTreeList();
                 common.LoaderHide();
@@ -1456,30 +990,7 @@ function removeAndRecreateTreelisDiv() {
     $("#KTLContainer").append("<div id='ktrlTimeSheets'></div>");
 }
 
-function KGRDPeriodically_OnInit(response) {
 
-    $("#tblcurrperiod").kendoGrid({
-        dataSource: {
-            transport: {
-                read: function (e) {
-                    e.success(response)
-                }
-            },
-            pageSize: 20
-        },
-        height: 200,
-
-
-        columns: [{
-            field: "Title",
-            title: "عنوان پروژه"
-        }, {
-            field: "Hour",
-            title: "ساعت کار ثبت شده"
-        }]
-    })
-
-}
 
 function EnableAndDisableSendPeriodRadioButton() {
     if ($("#numberDays").is(':disabled')) {
@@ -1494,18 +1005,3 @@ function EnableAndDisableSendPeriodRadioButton() {
 
 }
 
-function ResetSaveWindow() {
-    var item = $("#ddlProjects").data("kendoDropDownList");
-    if (item && item.select) item.select(0);
-
-    item = $("#ddlTasks").data("kendoDropDownList");
-    if (item && item.select) item.select(0);
-
-    $("span[for='ktpWorkHour']").text("");
-    $("span[for='ddlTasks']").text("");
-
-    $("#ktpWorkHour").val("");
-
-    $("#txtDescription").val(""); 
-    $("#TaskPanel").hide();
-}

@@ -59,19 +59,17 @@ namespace KP.TimeSheets.MVC
 
         #region HttpPost Methods
 
-        [HttpPost("[action]")]
-        public IEnumerable<TaskJson> GetTasks(JObject jsonObject)
+        [HttpGet("[action]")]
+        public IEnumerable<TaskJson> GetTasks(Guid? id)
         {
-            IEnumerable<TaskJson> result = null;
+            IEnumerable<TaskJson> result=null;
             try
             {
-                dynamic projectJson = jsonObject;
-
                 ProjectManager projectManager = new ProjectManager(this._uow);
                 TaskManager taskManager = new TaskManager(this._uow);
                 User currUser = new UserHelper().GetCurrent(this._uow);
                 //SyncWithPWA(uow);
-                Project project = projectManager.GetByID(Guid.Parse(projectJson.ID.ToString()));
+                Project project = projectManager.GetByID(id.Value);
                 result = taskManager.GetByProject(project, currUser).ToJsons();
             }
             catch (Exception ex)

@@ -18,19 +18,11 @@ namespace KP_TimeSheet.MVC.Controllers
 
         public HomeController(ILogger<HomeController> logger, RASContext context)
         {
-            _db=context;
-            _db.Tasks.Add(new KP.TimeSheets.Domain.Task(){
-                ID=Guid.NewGuid(),
-                Title="Task1"
-            });
-
-            //_db.SaveChanges();
             _logger = logger;
         }
 
         public IActionResult Index()
         {
-            var t = _db.Tasks.FirstOrDefault(t=>t.Title=="Task1");
             return View();
         }
 
