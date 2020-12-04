@@ -190,6 +190,7 @@ function ktrlTimeSheets_DataBound(e) {
 
 module.exports = {
 
-  'GetTimeSheets': GetTimeSheets
+  'GetTimeSheets': GetTimeSheets,
+  'Init_TimeSheetTreeList': Init_TimeSheetTreeList
 
 };

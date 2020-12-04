@@ -10,6 +10,13 @@ function adjustSize() {
     }
 }
 
+function removeAndRecreateTreelisDiv() {
+    $("#ktrlTimeSheets").data("kendoTreeList").destroy();
+    $("#ktrlTimeSheets").remove();
+    $("#KTLContainer").append("<div id='ktrlTimeSheets'></div>");
+}
+
 module.exports={
-    adjustSize: adjustSize
+    'adjustSize': adjustSize,
+    'removeAndRecreateTreelisDiv':removeAndRecreateTreelisDiv
 }
