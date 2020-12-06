@@ -10,7 +10,7 @@ namespace KP.TimeSheets.MVC
         /// <summary>
         /// شناسه ساعت کارکرد
         /// </summary>
-        public Guid ID { get; set; }
+        public Guid? ID { get; set; }
 
 
         /// <summary>
@@ -26,7 +26,7 @@ namespace KP.TimeSheets.MVC
         /// <summary>
         /// شناسه کارمند مرتبط با ساعت کارکرد 
         /// </summary>
-        public Guid EmployeeID { get; set; }
+        public Guid? EmployeeID { get; set; }
 
         public string UserName { get; set; }
         /// <summary>

@@ -16,7 +16,7 @@ function GRDSendWorkHours_onInit(sendItem) {
 
     var workHourJson = {
         ID: null,
-        Date: data.selDate_get().Date,
+        Date: data.selDate_get().date,
     };
     var prmData = JSON.stringify(workHourJson);
     $.ajax({
@@ -150,7 +150,7 @@ function SendAllWorkHours_OnClick() {
 
     var workHourJson = {
         ID: null,
-        Date: data.selDate_get().Date,
+        Date: data.selDate_get().date,
     };
     var prmData = JSON.stringify(workHourJson);
     $.ajax({
@@ -191,7 +191,7 @@ function SendWorkHour_OnClick(e) {
 
     var workHourJson = {
         ID: dataItem.ID,
-        Date: data.selDate_get().Date,
+        Date: data.selDate_get().date,
     };
 
     var prmData = JSON.stringify(workHourJson);
@@ -216,7 +216,7 @@ function SendWorkHour_OnClick(e) {
 function Refresh_GRDSendWorkHour() {
     var workHourJson = {
         ID: null,
-        Date: data.selDate_get().Date,
+        Date: data.selDate_get().date,
     };
 
     var prmData = JSON.stringify(workHourJson);

@@ -129,7 +129,7 @@ function btnSaveWorkHours_Onclick() {
 
     var workHourJson = {
         ID: null,
-        Date: data.selDate_get().Date,
+        Date: data.selDate_get().date,
         EmployeeID: '',
         TaskID: $("#ddlTasks").data("kendoDropDownList").value(),
         Hours: $("#ktpWorkHour").data("kendoTimePicker")._oldText,
@@ -161,7 +161,8 @@ function btnSaveWorkHours_Onclick() {
         data: prmData,
         success: SaveWorkHours_OnSuccess,
         error: function (e) {
-
+            debugger;
+            var a =e;
         }
     });
 }

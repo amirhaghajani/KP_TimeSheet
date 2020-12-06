@@ -30,6 +30,34 @@ function init(){
         kwndSelectPeriod_OnClose();
     });
 
+
+    //دو تا کمبو تعداد روز هایی که در دوره نشان بده
+    $('input:radio[name="optperiod"]').change(function () {
+
+        EnableAndDisableSendPeriodRadioButton(this);
+    
+    });
+    
+    $("#numberDays").keyup(function () {
+    
+        if ($("#numberDays").val() > 25) {
+            $("#numberDays").val("25");
+        }
+    });
+
+}
+
+function EnableAndDisableSendPeriodRadioButton() {
+    if ($("#numberDays").is(':disabled')) {
+
+        $("#numberDays").prop("disabled", false);
+        $("#startDate").prop("disabled", false);
+
+    } else {
+        $("#numberDays").prop("disabled", true);
+        $("#startDate").prop("disabled", true);
+    }
+
 }
 
 function GetNextPeriod() {

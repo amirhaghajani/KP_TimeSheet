@@ -8,7 +8,7 @@ const period_next_pervious = require('./period_next_pervious');
 const sended_workouts =require('./sended_workouts');
 const editWindow=require('./editWindow');
 
-//_____ متغیر ها و Document Ready__________
+// Document Ready__________
 
 $(document).ready(function () {
     
@@ -31,18 +31,10 @@ $(document).ready(function () {
     });
 });
 
-$('input:radio[name="optperiod"]').change(function () {
 
-    EnableAndDisableSendPeriodRadioButton(this);
 
-});
 
-$("#numberDays").keyup(function () {
 
-    if ($("#numberDays").val() > 25) {
-        $("#numberDays").val("25");
-    }
-});
 
 //________________ جهت باز سازی TreeList اصلی
 
@@ -71,32 +63,8 @@ function ktrlTimeSheets_OnRefresh(response) {
     common.LoaderHide();
 }
 
+
 //________________
-
-
-
-
-//_______________ساختن TreeList اصلی
-
-
-
-
-
-
-//____________________________________
-
-
-
-//__________________________________________
-
-
-
-
-
-//_________________________
-
-
-
 
 
 
@@ -130,12 +98,6 @@ function exportTableToExcel(tableID, filename ){
         downloadLink.click();
     }
 }
-
-
-
-
-
-
 
 
 
@@ -198,16 +160,5 @@ function DeleteWorkHourEditGrid(e) {
 }
 
 
-function EnableAndDisableSendPeriodRadioButton() {
-    if ($("#numberDays").is(':disabled')) {
 
-        $("#numberDays").prop("disabled", false);
-        $("#startDate").prop("disabled", false);
-
-    } else {
-        $("#numberDays").prop("disabled", true);
-        $("#startDate").prop("disabled", true);
-    }
-
-}
 

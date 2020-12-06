@@ -139,9 +139,9 @@ function ShowCurrentDaySendWorkHours(SaveWHsIdx) {
 
 	var workHourJson = {
 		ID: null,
-		Date: data.selDate_get().Date
+		Date: data.selDate_get().date
 	}
-
+debugger;
 	var prmData = JSON.stringify(workHourJson);
 
 	$.ajax({
@@ -160,7 +160,7 @@ function ShowCurrentDaySendWorkHours(SaveWHsIdx) {
 			common.LoaderHide();
 		},
 		error: function (e) {
-
+			var a=e;
 		}
 	});
 

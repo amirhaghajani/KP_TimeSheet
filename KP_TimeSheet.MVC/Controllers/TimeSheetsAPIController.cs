@@ -24,7 +24,10 @@ namespace KP.TimeSheets.MVC
             UserManager userManager = new UserManager(this._uow);
             WorkHourHistoryManager historyManagerh = new WorkHourHistoryManager(this._uow);
             User currUser = new UserHelper().GetCurrent(this._uow);
-            result = new WorkHourHistoryAssembler().ToJsons(historyManagerh.GetByWorkHourID(WorkHourJson.ID)).ToList();
+
+            if(!WorkHourJson.ID.HasValue) WorkHourJson.ID=Guid.Empty;
+
+            result = new WorkHourHistoryAssembler().ToJsons(historyManagerh.GetByWorkHourID(WorkHourJson.ID.Value)).ToList();
             return result;
         }
 
@@ -341,7 +344,10 @@ namespace KP.TimeSheets.MVC
             TimeSheetManager WHM = new TimeSheetManager(this._uow);
             User currUser = new UserHelper().GetCurrent(this._uow);
             Validations validate = new Validations();
-            var WorkHour = WHM.GetByID(workHourJson.ID);
+
+            if(!workHourJson.ID.HasValue) workHourJson.ID=Guid.Empty;
+
+            var WorkHour = WHM.GetByID(workHourJson.ID.Value);
             List<string> result = new List<string>();
             result = validate.ValidateRegisterWorkHour(WorkHour);
 
@@ -413,7 +419,8 @@ namespace KP.TimeSheets.MVC
         public bool DeleteWorkHours(WorkHourJson workHourJson)//JObject jsonObject)
         {
             TimeSheetManager WHM = new TimeSheetManager(this._uow);
-            WHM.DeleteWorkHour(workHourJson.ID);
+            if(!workHourJson.ID.HasValue) workHourJson.ID=Guid.Empty;
+            WHM.DeleteWorkHour(workHourJson.ID.Value);
             return true;
         }
 

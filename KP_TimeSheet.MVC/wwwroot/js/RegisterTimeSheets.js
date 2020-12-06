@@ -76,7 +76,7 @@ const period_next_pervious = require('./period_next_pervious');
 const sended_workouts =require('./sended_workouts');
 const editWindow=require('./editWindow');
 
-//_____ متغیر ها و Document Ready__________
+// Document Ready__________
 
 $(document).ready(function () {
     
@@ -99,18 +99,10 @@ $(document).ready(function () {
     });
 });
 
-$('input:radio[name="optperiod"]').change(function () {
 
-    EnableAndDisableSendPeriodRadioButton(this);
 
-});
 
-$("#numberDays").keyup(function () {
 
-    if ($("#numberDays").val() > 25) {
-        $("#numberDays").val("25");
-    }
-});
 
 //________________ جهت باز سازی TreeList اصلی
 
@@ -139,32 +131,8 @@ function ktrlTimeSheets_OnRefresh(response) {
     common.LoaderHide();
 }
 
+
 //________________
-
-
-
-
-//_______________ساختن TreeList اصلی
-
-
-
-
-
-
-//____________________________________
-
-
-
-//__________________________________________
-
-
-
-
-
-//_________________________
-
-
-
 
 
 
@@ -198,12 +166,6 @@ function exportTableToExcel(tableID, filename ){
         downloadLink.click();
     }
 }
-
-
-
-
-
-
 
 
 
@@ -266,18 +228,7 @@ function DeleteWorkHourEditGrid(e) {
 }
 
 
-function EnableAndDisableSendPeriodRadioButton() {
-    if ($("#numberDays").is(':disabled')) {
 
-        $("#numberDays").prop("disabled", false);
-        $("#startDate").prop("disabled", false);
-
-    } else {
-        $("#numberDays").prop("disabled", true);
-        $("#startDate").prop("disabled", true);
-    }
-
-}
 
 
 },{"../common/common":1,"./common":3,"./data":4,"./editWindow":5,"./mainGrid":7,"./monthlyGrid":8,"./period_next_pervious":9,"./priodlyGrid":10,"./sended_workouts":13}],3:[function(require,module,exports){
@@ -868,6 +819,34 @@ function init(){
         kwndSelectPeriod_OnClose();
     });
 
+
+    //دو تا کمبو تعداد روز هایی که در دوره نشان بده
+    $('input:radio[name="optperiod"]').change(function () {
+
+        EnableAndDisableSendPeriodRadioButton(this);
+    
+    });
+    
+    $("#numberDays").keyup(function () {
+    
+        if ($("#numberDays").val() > 25) {
+            $("#numberDays").val("25");
+        }
+    });
+
+}
+
+function EnableAndDisableSendPeriodRadioButton() {
+    if ($("#numberDays").is(':disabled')) {
+
+        $("#numberDays").prop("disabled", false);
+        $("#startDate").prop("disabled", false);
+
+    } else {
+        $("#numberDays").prop("disabled", true);
+        $("#startDate").prop("disabled", true);
+    }
+
 }
 
 function GetNextPeriod() {
@@ -1244,8 +1223,8 @@ function btnSaveWorkHours_Onclick() {
 
     var workHourJson = {
         ID: null,
-        Date: data.selDate_get().Date,
-        EmployeeID: '',
+        Date: data.selDate_get().date,
+        EmployeeID: null,
         TaskID: $("#ddlTasks").data("kendoDropDownList").value(),
         Hours: $("#ktpWorkHour").data("kendoTimePicker")._oldText,
         ProjectID: $("#ddlProjects").data("kendoDropDownList").value(),
@@ -1276,7 +1255,8 @@ function btnSaveWorkHours_Onclick() {
         data: prmData,
         success: SaveWorkHours_OnSuccess,
         error: function (e) {
-
+            debugger;
+            var a =e;
         }
     });
 }
@@ -1334,7 +1314,7 @@ function GRDSendWorkHours_onInit(sendItem) {
 
     var workHourJson = {
         ID: null,
-        Date: data.selDate_get().Date,
+        Date: data.selDate_get().date,
     };
     var prmData = JSON.stringify(workHourJson);
     $.ajax({
@@ -1468,7 +1448,7 @@ function SendAllWorkHours_OnClick() {
 
     var workHourJson = {
         ID: null,
-        Date: data.selDate_get().Date,
+        Date: data.selDate_get().date,
     };
     var prmData = JSON.stringify(workHourJson);
     $.ajax({
@@ -1509,7 +1489,7 @@ function SendWorkHour_OnClick(e) {
 
     var workHourJson = {
         ID: dataItem.ID,
-        Date: data.selDate_get().Date,
+        Date: data.selDate_get().date,
     };
 
     var prmData = JSON.stringify(workHourJson);
@@ -1534,7 +1514,7 @@ function SendWorkHour_OnClick(e) {
 function Refresh_GRDSendWorkHour() {
     var workHourJson = {
         ID: null,
-        Date: data.selDate_get().Date,
+        Date: data.selDate_get().date,
     };
 
     var prmData = JSON.stringify(workHourJson);
@@ -1741,9 +1721,9 @@ function ShowCurrentDaySendWorkHours(SaveWHsIdx) {
 
 	var workHourJson = {
 		ID: null,
-		Date: data.selDate_get().Date
+		Date: data.selDate_get().date
 	}
-
+debugger;
 	var prmData = JSON.stringify(workHourJson);
 
 	$.ajax({
@@ -1762,7 +1742,7 @@ function ShowCurrentDaySendWorkHours(SaveWHsIdx) {
 			common.LoaderHide();
 		},
 		error: function (e) {
-
+			var a=e;
 		}
 	});
 

@@ -88,9 +88,11 @@ namespace KP.TimeSheets.MVC
         {
             WorkHour result = new WorkHour();
             
+            if(!jsonObject.EmployeeID.HasValue) jsonObject.EmployeeID=Guid.Empty;
+
                 result.ID =  Guid.NewGuid();
                 result.Date = jsonObject.Date;
-                result.EmployeeID = jsonObject.EmployeeID;
+                result.EmployeeID = jsonObject.EmployeeID.Value;
                 result.TaskID = jsonObject.TaskID;
                 result.ProjectId = jsonObject.ProjectID;
                 result.Hours = Math.Round(TimeSpan.Parse(jsonObject.Hours.ToString()).TotalHours, 2);
