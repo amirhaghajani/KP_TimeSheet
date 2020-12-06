@@ -1,12 +1,12 @@
 ﻿const common = require('../common/common');
 const mainGrid = require('./mainGrid');
-const priodlyGrid = require('./priodlyGrid');
-const monthlyGrid = require('./monthlyGrid');
+const priodlyGrid = require('./bottomPage_priodlyGrid');
+const monthlyGrid = require('./bottomPage_monthlyGrid');
 const data = require('./data');
 const common_register = require('./common');
 const period_next_pervious = require('./period_next_pervious');
-const sended_workouts =require('./sended_workouts');
-const editWindow=require('./editWindow');
+const sended_workouts =require('./history_sentWorkHour');
+const editWindow=require('./editWorkHour');
 
 // Document Ready__________
 
@@ -31,40 +31,6 @@ $(document).ready(function () {
     });
 });
 
-
-
-
-
-
-//________________ جهت باز سازی TreeList اصلی
-
-
-
-function RefreshTimeSheet() {
-    $.ajax({
-        type: "Get",
-        url: "/api/TimeSheetsAPI/GetTimeSheets",
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        success: ktrlTimeSheets_OnRefresh,
-        error: function (e) {
-
-        }
-    });
-}
-
-
-function ktrlTimeSheets_OnRefresh(response) {
-
-    data.timeSheetData_set(response);
-    common_register.removeAndRecreateTreelisDiv();
-    mainGrid.Init_TimeSheetTreeList();
-    //$("#ktrlTimeSheets").data("kendoTreeList").dataSource.read();
-    common.LoaderHide();
-}
-
-
-//________________
 
 
 
@@ -99,65 +65,6 @@ function exportTableToExcel(tableID, filename ){
     }
 }
 
-
-
-//_____________________________________
-
-
-
-function DeleteWorkHourSendGrid(e) {
-    var grid = $("#GRDSendWorkHours").data("kendoGrid");
-    var dataItem = grid.dataItem($(e).closest("tr"));
-    common.LoaderShow();
-    var prmData = JSON.stringify(dataItem);
-    $.ajax({
-        type: "Post",
-        url: "/api/TimeSheetsAPI/DeleteWorkHours",
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        data: prmData,
-        success: function (response) {
-            Refresh_GRDSendWorkHour();
-            RefreshTimeSheet();
-            common.LoaderHide();
-        },
-        error: function (e) {
-            alert(dataItem.ID);
-        }
-    });
-}
-
-function DeleteWorkHourEditGrid(e) {
-
-    var grid = $("#GrdEditWorkHour").data("kendoGrid");
-    var dataItem = grid.dataItem($(e).closest("tr"));
-
-
-    common.LoaderShow();
-
-
-    var prmData = JSON.stringify(dataItem);
-
-    $.ajax({
-        type: "Post",
-        url: "/api/TimeSheetsAPI/DeleteWorkHours",
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        data: prmData,
-        success: function (response) {
-            editWindow.Refresh_GrdEditWorkHour();
-
-            RefreshTimeSheet();
-            common.LoaderHide();
-        },
-        error: function (e) {
-            alert(dataItem.ID);
-        }
-    });
-
-
-
-}
 
 
 

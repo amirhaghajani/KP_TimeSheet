@@ -213,6 +213,28 @@ function SendWorkHour_OnClick(e) {
 
 }
 
+function DeleteWorkHourSendGrid(e) {
+    var grid = $("#GRDSendWorkHours").data("kendoGrid");
+    var dataItem = grid.dataItem($(e).closest("tr"));
+    common.LoaderShow();
+    var prmData = JSON.stringify(dataItem);
+    $.ajax({
+        type: "Post",
+        url: "/api/TimeSheetsAPI/DeleteWorkHours",
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        data: prmData,
+        success: function (response) {
+            Refresh_GRDSendWorkHour();
+            RefreshTimeSheet();
+            common.LoaderHide();
+        },
+        error: function (e) {
+            alert(dataItem.ID);
+        }
+    });
+}
+
 function Refresh_GRDSendWorkHour() {
     var workHourJson = {
         ID: null,

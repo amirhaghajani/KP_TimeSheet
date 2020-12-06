@@ -1,6 +1,6 @@
 const data=require('./data');
-const saveWindow=require('./saveWindow');
-const sended_workouts = require('./sended_workouts');
+const saveWindow=require('./newWorkHour');
+const sended_workouts = require('./history_sentWorkHour');
 const sendWorkHour=require('./sendWorkHour');
 
 function KTRColumn() {
@@ -182,6 +182,37 @@ function ktrlTimeSheets_DataBound(e) {
   });
 
 }
+
+
+//________________ جهت باز سازی TreeList اصلی
+
+
+
+function RefreshTimeSheet() {
+  $.ajax({
+      type: "Get",
+      url: "/api/TimeSheetsAPI/GetTimeSheets",
+      contentType: "application/json; charset=utf-8",
+      dataType: "json",
+      success: ktrlTimeSheets_OnRefresh,
+      error: function (e) {
+
+      }
+  });
+}
+
+
+function ktrlTimeSheets_OnRefresh(response) {
+
+  data.timeSheetData_set(response);
+  common_register.removeAndRecreateTreelisDiv();
+  mainGrid.Init_TimeSheetTreeList();
+  //$("#ktrlTimeSheets").data("kendoTreeList").dataSource.read();
+  common.LoaderHide();
+}
+
+
+//________________
 
 module.exports = {
 

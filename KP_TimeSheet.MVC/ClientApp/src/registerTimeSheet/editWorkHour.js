@@ -105,6 +105,38 @@ function Init_GrdEditWorkHour() {
     });
 }
 
+function DeleteWorkHourEditGrid(e) {
+
+    var grid = $("#GrdEditWorkHour").data("kendoGrid");
+    var dataItem = grid.dataItem($(e).closest("tr"));
+
+
+    common.LoaderShow();
+
+
+    var prmData = JSON.stringify(dataItem);
+
+    $.ajax({
+        type: "Post",
+        url: "/api/TimeSheetsAPI/DeleteWorkHours",
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        data: prmData,
+        success: function (response) {
+            editWindow.Refresh_GrdEditWorkHour();
+
+            RefreshTimeSheet();
+            common.LoaderHide();
+        },
+        error: function (e) {
+            alert(dataItem.ID);
+        }
+    });
+
+
+
+}
+
 function Refresh_GrdEditWorkHour() {
     var prmData = JSON.stringify(data.timeSheetData_get()[0].values);
     $.ajax({

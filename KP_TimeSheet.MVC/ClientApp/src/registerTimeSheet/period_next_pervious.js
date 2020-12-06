@@ -2,10 +2,10 @@ const common_register = require('./common');
 const common = require('../common/common');
 const data = require('./data');
 const mainGrid = require('./mainGrid');
-const monthlyGrid = require('./monthlyGrid');
-const sended_workouts =require('./sended_workouts');
-const priodlyGrid = require('./priodlyGrid');
-const editWindow = require('./editWindow');
+const monthlyGrid = require('./bottomPage_monthlyGrid');
+const sended_workouts =require('./history_sentWorkHour');
+const priodlyGrid = require('./bottomPage_priodlyGrid');
+const editWindow = require('./editWorkHour');
 
 //_________صفحه بعد و قبل 
 function init(){

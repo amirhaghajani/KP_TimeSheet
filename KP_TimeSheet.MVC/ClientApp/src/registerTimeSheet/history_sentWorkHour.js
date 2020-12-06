@@ -1,6 +1,6 @@
 const common = require('../common/common');
 const data = require('./data');
-const history=require('./history');
+const history=require('./hisotory_workHour');
 const common_register = require('./common');
 
 //______________________نمایش کارکرد های ارسال شده

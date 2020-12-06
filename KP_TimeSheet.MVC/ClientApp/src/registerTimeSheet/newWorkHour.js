@@ -101,7 +101,7 @@ function GetTasks() {
 }
 
 function ddlTasks_OnInit(response) {
-debugger;
+
     $("#ddlTasks").kendoDropDownList({
         dataSource: {
             data: response,
