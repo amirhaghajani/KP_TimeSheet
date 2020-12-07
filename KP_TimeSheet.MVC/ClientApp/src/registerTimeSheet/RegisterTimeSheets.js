@@ -41,9 +41,9 @@ $(document).ready(function () {
             monthlyGrid,history_sentWorkHour, priodlyGrid,editWindow, data);
             
         editWindow.init(common_register,data);
-        history_sentWorkHour.init(Comment,common_register,history_workHour,data);
+        history_sentWorkHour.init(common,common_register,history_workHour,data);
         createNewWorkHour.init(common,common_register,period_next_pervious,data);
-        history_workHour.init(data);
+        history_workHour.init(common, data);
         sendWorkHour.init(common_register,data);
     });
 });

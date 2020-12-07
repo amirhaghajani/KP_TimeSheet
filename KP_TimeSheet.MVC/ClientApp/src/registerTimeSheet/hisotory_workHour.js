@@ -5,15 +5,19 @@ const historyWorkHour = (function () {
 
 	const moduleData={};
 
-	function init(data) {
+	function init(common, data) {
+		
 		moduleData.data = data;
+		moduleData.common = common;
+
 		$('#btnWorkHoureHistory_hide').off().on('click', function () {
 			HideHistory();
 		});
 	}
 
 	function Init_GRDHistory(e) {
-		common.LoaderShow();
+
+		moduleData.common.LoaderShow();
 
 		var grid = $("#GrdMonitorSentWorkHour").data("kendoGrid");
 		var dataItem = grid.dataItem($(e).closest("tr"));
@@ -25,10 +29,10 @@ const historyWorkHour = (function () {
 			dataType: "json",
 			data: prmData,
 			success: function (response) {
-				data.todayHistory_set(response);
+				moduleData.data.todayHistory_set(response);
 				$("#WorkHourHistory").data("kendoGrid").dataSource.read();
 				ShowHistory();
-				common.LoaderHide();
+				moduleData.common.LoaderHide();
 			},
 			error: function (e) {
 
@@ -99,7 +103,8 @@ const historyWorkHour = (function () {
 	return {
 		Create_GrdHistory:Create_GrdHistory,
 		HideHistory:HideHistory,
-		init: init
+		init: init,
+		Init_GRDHistory: Init_GRDHistory
 	};
 })();
 
@@ -108,5 +113,6 @@ const historyWorkHour = (function () {
 module.exports = {
 	'Create_GrdHistory': historyWorkHour.Create_GrdHistory,
 	'HideHistory': historyWorkHour.HideHistory,
-	'init':historyWorkHour.init
+	'init':historyWorkHour.init,
+	'Init_GRDHistory': historyWorkHour.Init_GRDHistory
 }

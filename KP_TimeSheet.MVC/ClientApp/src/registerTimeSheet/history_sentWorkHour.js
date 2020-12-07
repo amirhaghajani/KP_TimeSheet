@@ -1,6 +1,6 @@
 // const common = require('../common/common');
 // const data = require('./data');
-// const history=require('./hisotory_workHour');
+// const hisotory_workHour=require('./hisotory_workHour');
 // const common_register = require('./common');
 
 //______________________نمایش کارکرد های ارسال شده
@@ -56,8 +56,8 @@ const hisotrSentWorkHour = (function () {
 
 	function Init_GrdMonitorSentWorkHour() {
 
-		history.Create_GrdHistory();
-		history.HideHistory();
+		moduleData.hisotory_workHour.Create_GrdHistory();
+		moduleData.hisotory_workHour.HideHistory();
 		$("#WndMonitorSentWorkHours").kendoWindow({
 			width: "1000px",
 			height: "600px",
@@ -70,14 +70,21 @@ const hisotrSentWorkHour = (function () {
 				"Maximize",
 				"Close"
 			],
-			open: common_register.adjustSize,
+			open: moduleData.common_register.adjustSize,
 		}).data("kendoWindow").center().open();
 
 		$("#GrdMonitorSentWorkHour").kendoGrid({
 			dataSource: {
 				transport: {
 					read: function (e) {
-						e.success(_MonitorSentWorkHours)
+						
+						debugger;
+
+						e.success(_MonitorSentWorkHours);
+
+						$('.forFound_Init_GRDHistory').off().on('click',function(){
+							moduleData.hisotory_workHour.Init_GRDHistory(this);
+						});
 					}
 				},
 				pageSize: 10
@@ -88,28 +95,28 @@ const hisotrSentWorkHour = (function () {
 			selectable: true,
 
 			columns: [{
-				field: "PersianDate",
+				field: "persianDate",
 				title: "تاریخ"
 			},
 			{
-				field: "ProjectTitle",
+				field: "projectTitle",
 				title: "پروژه"
 			}, {
-				field: "TaskTitle",
+				field: "taskTitle",
 				title: "وظیفه"
 			}, {
-				field: "Hours",
+				field: "hours",
 				title: "ساعت کار",
 				width: 80
 
 			}, {
-				field: "WorkFlowStageTitle",
+				field: "workFlowStageTitle",
 				title: "عنوان مرحله",
 				width: 200
 			}
 				, {
 				title: "نمایش تاریخچه   ",
-				template: "<button   onclick='Init_GRDHistory(this)' type='button' class='btn btn-primary btn-sm' name='info' title='نمایش تاریخچه' > نمایش تاریخچه</button>",
+				template: "<button type='button' class='btn btn-primary btn-sm forFound_Init_GRDHistory' name='info' title='نمایش تاریخچه' > نمایش تاریخچه</button>",
 				headerTemplate: "<label class='text-center'> نمایش تاریخچه </label>",
 				filterable: false,
 				sortable: false,
@@ -118,6 +125,8 @@ const hisotrSentWorkHour = (function () {
 			]
 
 		});
+
+		
 	}
 
 	function Refresh_GrdMonitorSentWorkHour() {
@@ -141,7 +150,7 @@ const hisotrSentWorkHour = (function () {
 
 	function ShowCurrentDaySendWorkHours(SaveWHsIdx) {
 		moduleData.common.LoaderShow();
-		history.Create_GrdHistory();
+		moduleData.hisotory_workHour.Create_GrdHistory();
 
 		var ktrlTimeSheets = $("#ktrlTimeSheets").data('kendoTreeList').dataItem($("#" + SaveWHsIdx).closest("tr"));
 		moduleData.data.selDate_set(ktrlTimeSheets.values[parseInt($("#" + SaveWHsIdx).attr('dayindex')) - 3]);
