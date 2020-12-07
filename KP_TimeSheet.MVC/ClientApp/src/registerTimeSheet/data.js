@@ -1,39 +1,50 @@
+const dataM = (function(){
 
-function init(){
-    this._SelDate={};
-    this.CurrentUser={};
-    this._TimeSheetData = [];
-    this._WorkHourOnProjects = [];
-    this._thisMonthdata = {};
-    this._WorkHours = [];
-    this._SendItem = {};
-    this._SendWorkHourGrid = [];
-    this._thisPerioddata = [];
-    this._MonitorSentWorkHours = [];
-    this._AllSentCount = 0;
-    this._AllReadyForSent = 0;
-    this._presenceHour = 0;
-    this._TodayHistorys = [];
-}
+    const moduleData={};
+
+    function init(){
+        moduleData._SelDate={};
+        moduleData.CurrentUser={};
+        moduleData._TimeSheetData = [];
+        moduleData._WorkHourOnProjects = [];
+        moduleData._thisMonthdata = {};
+        moduleData._WorkHours = [];
+        moduleData._SendItem = {};
+        moduleData._SendWorkHourGrid = [];
+        moduleData._thisPerioddata = [];
+        moduleData._MonitorSentWorkHours = [];
+        moduleData._AllSentCount = 0;
+        moduleData._AllReadyForSent = 0;
+        moduleData._presenceHour = 0;
+        moduleData._TodayHistorys = [];
+    };
+
+    return {
+        init: init,
+        moduleData: moduleData
+    }
+
+})();
+
 
 module.exports={
-    init:init,
+    init:dataM.init,
 
-    'selDate_get':function(){ return this._SelDate;},
-    'selDate_set':function(data){this._SelDate = data;},
+    'selDate_get':function(){ return dataM.moduleData._SelDate;},
+    'selDate_set':function(data){dataM.moduleData._SelDate = data;},
 
-    'timeSheetData_get':function(){ return this._TimeSheetData;},
-    'timeSheetData_set':function(data){this._TimeSheetData = data;},
+    'timeSheetData_get':function(){ return dataM.moduleData._TimeSheetData;},
+    'timeSheetData_set':function(data){dataM.moduleData._TimeSheetData = data;},
 
-    'todayHistory_get':function(){ return this._TodayHistorys;},
-    'todayHistory_set':function(data){this._TodayHistorys = data;},
+    'todayHistory_get':function(){ return dataM.moduleData._TodayHistorys;},
+    'todayHistory_set':function(data){dataM.moduleData._TodayHistorys = data;},
 
-    'thisMonthdata_get':function(){ return this._thisMonthdata;},
-    'thisMonthdata_set':function(data){this._thisMonthdata = data;},
+    'thisMonthdata_get':function(){ return dataM.moduleData._thisMonthdata;},
+    'thisMonthdata_set':function(data){dataM.moduleData._thisMonthdata = data;},
 
-    'workHours_get':function(){ return this._WorkHours;},
-    'workHours_set':function(data){this._WorkHours = data;},
+    'workHours_get':function(){ return dataM.moduleData._WorkHours;},
+    'workHours_set':function(data){dataM.moduleData._WorkHours = data;},
 
-    'sendItem_get':function(){ return this._SendItem;},
-    'sendItem_set':function(data){this._SendItem = data;},
+    'sendItem_get':function(){ return dataM.moduleData._SendItem;},
+    'sendItem_set':function(data){dataM.moduleData._SendItem = data;},
 }

@@ -1,98 +1,112 @@
-const data = require('./data');
+//const data = require('./data');
 
 //_________________________________________ناریخچه___________________________________
-function init() {
-    $('#btnWorkHoureHistory_hide').off().on('click', function () {
-        HideHistory();
-    });
-}
+const historyWorkHour = (function () {
 
-function Init_GRDHistory(e) {
-    common.LoaderShow();
+	const moduleData={};
 
-    var grid = $("#GrdMonitorSentWorkHour").data("kendoGrid");
-    var dataItem = grid.dataItem($(e).closest("tr"));
-    var prmData = JSON.stringify(dataItem);
-    $.ajax({
-        type: "Post",
-        url: "/api/TimeSheetsAPI/GetHistoryWorkHour",
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        data: prmData,
-        success: function (response) {
-            debugger;
-            data.todayHistory_set(response);
-            $("#WorkHourHistory").data("kendoGrid").dataSource.read();
-            ShowHistory();
-            common.LoaderHide();
-        },
-        error: function (e) {
+	function init(data) {
+		moduleData.data = data;
+		$('#btnWorkHoureHistory_hide').off().on('click', function () {
+			HideHistory();
+		});
+	}
 
-        }
-    });
-}
+	function Init_GRDHistory(e) {
+		common.LoaderShow();
 
-function Create_GrdHistory() {
+		var grid = $("#GrdMonitorSentWorkHour").data("kendoGrid");
+		var dataItem = grid.dataItem($(e).closest("tr"));
+		var prmData = JSON.stringify(dataItem);
+		$.ajax({
+			type: "Post",
+			url: "/api/TimeSheetsAPI/GetHistoryWorkHour",
+			contentType: "application/json; charset=utf-8",
+			dataType: "json",
+			data: prmData,
+			success: function (response) {
+				data.todayHistory_set(response);
+				$("#WorkHourHistory").data("kendoGrid").dataSource.read();
+				ShowHistory();
+				common.LoaderHide();
+			},
+			error: function (e) {
 
-    $("#WorkHourHistory").kendoGrid({
-        dataSource: {
-            transport: {
-                read: function (e) {
-                    e.success(data.todayHistory_get())
-                }
-            },
-            pageSize: 10
-        },
-        height: 450,
-        pageable: true,
-        filterable: true,
-        selectable: true,
+			}
+		});
+	}
 
-        columns: [{
-            field: "PersianDate",
-            title: "تاریخ",
-            width: 80
-        },
-        {
-            field: "Time",
-            title: "ساعت",
-            width: 80
-        },
-        {
-            field: "ManagerName",
-            title: "نام مدیر",
-            width: 200
-        }, {
-            field: "Action",
-            title: "عملیات",
-            width: 120
-        }, {
-            field: "StageTitle",
-            title: "مرحله",
-            width: 120
+	function Create_GrdHistory() {
 
-        }, {
-            field: "Description",
-            title: "توضیحات",
-            width: 400
+		$("#WorkHourHistory").kendoGrid({
+			dataSource: {
+				transport: {
+					read: function (e) {
+						e.success(moduleData.data.todayHistory_get())
+					}
+				},
+				pageSize: 10
+			},
+			height: 450,
+			pageable: true,
+			filterable: true,
+			selectable: true,
 
-        }
-        ]
+			columns: [{
+				field: "PersianDate",
+				title: "تاریخ",
+				width: 80
+			},
+			{
+				field: "Time",
+				title: "ساعت",
+				width: 80
+			},
+			{
+				field: "ManagerName",
+				title: "نام مدیر",
+				width: 200
+			}, {
+				field: "Action",
+				title: "عملیات",
+				width: 120
+			}, {
+				field: "StageTitle",
+				title: "مرحله",
+				width: 120
 
-    });
-}
+			}, {
+				field: "Description",
+				title: "توضیحات",
+				width: 400
 
-function ShowHistory() {
-    $("#PanelMonitorWorkHour").fadeOut(400);
-    $("#PanelHistory").fadeIn(400);
-}
+			}
+			]
 
-function HideHistory() {
-    $("#PanelMonitorWorkHour").fadeIn(400);
-    $("#PanelHistory").fadeOut(400);
-}
+		});
+	}
+
+	function ShowHistory() {
+		$("#PanelMonitorWorkHour").fadeOut(400);
+		$("#PanelHistory").fadeIn(400);
+	}
+
+	function HideHistory() {
+		$("#PanelMonitorWorkHour").fadeIn(400);
+		$("#PanelHistory").fadeOut(400);
+	}
+
+	return {
+		Create_GrdHistory:Create_GrdHistory,
+		HideHistory:HideHistory,
+		init: init
+	};
+})();
+
+
 
 module.exports = {
-    'Create_GrdHistory': Create_GrdHistory,
-    'HideHistory': HideHistory
+	'Create_GrdHistory': historyWorkHour.Create_GrdHistory,
+	'HideHistory': historyWorkHour.HideHistory,
+	'init':historyWorkHour.init
 }

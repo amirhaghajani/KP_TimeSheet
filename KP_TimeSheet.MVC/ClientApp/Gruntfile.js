@@ -8,16 +8,12 @@ module.exports = function (grunt) {
       'srcArray':[
         'src/layout/sideBar.js',
         'src/layout/site.js',
-        'src/registerTimeSheet/RegisterTimeSheets.js',
-        'src/index.js', 
-        'src/index2.js'
+        'src/registerTimeSheet/RegisterTimeSheets.js'
       ],
       'targetArray':[
         '../wwwroot/js/sideBar.js', 
         '../wwwroot/js/site.js', 
-        '../wwwroot/js/RegisterTimeSheets.js', 
-        '../wwwroot/js/app.js', 
-        '../wwwroot/js/app2.js'
+        '../wwwroot/js/RegisterTimeSheets.js',
       ],
       'srcCSS':[
         'node_modules/bootstrap/dist/css/bootstrap.min.css',
@@ -36,8 +32,6 @@ module.exports = function (grunt) {
       dist: {
         files: {
           '../wwwroot/js/sideBar.min.js': '../wwwroot/js/sideBar.js',
-          '../wwwroot/js/app.min.js': '../wwwroot/js/app.js',
-          '../wwwroot/js/app2.min.js': '../wwwroot/js/app2.js',
           '../wwwroot/js/vendor/jquery.min.js': '../wwwroot/js/vendor/jquery.js',
           '../wwwroot/js/vendor/bootstrap.min.js': '../wwwroot/js/vendor/bootstrap.js',
         }
