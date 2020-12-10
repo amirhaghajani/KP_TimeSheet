@@ -204,15 +204,16 @@ const myMainGrid = (function () {
   function ktrlTimeSheets_OnRefresh(response) {
 
     moduleData.data.timeSheetData_set(response);
-    common_register.removeAndRecreateTreelisDiv();
+    moduleData.common_register.removeAndRecreateTreelisDiv();
     Init_TimeSheetTreeList();
     //$("#ktrlTimeSheets").data("kendoTreeList").dataSource.read();
-    common.LoaderHide();
+    moduleData.common.LoaderHide();
   }
 
   return {
     GetTimeSheets: GetTimeSheets,
     Init_TimeSheetTreeList: Init_TimeSheetTreeList,
+    RefreshTimeSheet: RefreshTimeSheet,
     init: init
   };
 
@@ -227,6 +228,7 @@ module.exports = {
 
   'GetTimeSheets': myMainGrid.GetTimeSheets,
   'Init_TimeSheetTreeList': myMainGrid.Init_TimeSheetTreeList,
+  'RefreshTimeSheet':myMainGrid.RefreshTimeSheet,
   'init': myMainGrid.init
 
 };

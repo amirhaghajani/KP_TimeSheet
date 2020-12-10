@@ -400,11 +400,15 @@ namespace KP.TimeSheets.MVC
         }
 
         [HttpPost("[action]")]
-        public PresenceHour GetPresenceHourByDate(WorkHourJson workHourJson)//JObject jsonObject)
+        public object GetPresenceHourByDate(WorkHourJson workHourJson)//JObject jsonObject)
         {
             TimeSheetManager WHM = new TimeSheetManager(this._uow);
             User currUser = new UserHelper().GetCurrent(this._uow);
-            return WHM.GetPresenceHourByUserIdAndDate(currUser.ID, workHourJson.Date);
+            var answer = WHM.GetPresenceHourByUserIdAndDate(currUser.ID, workHourJson.Date);
+
+            var answer2 = new {date = answer.Date, hours=answer.Hours};
+
+            return answer2;
         }
 
         [HttpPost("[action]")]

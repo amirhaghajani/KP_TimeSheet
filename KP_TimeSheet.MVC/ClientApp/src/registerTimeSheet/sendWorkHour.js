@@ -6,9 +6,18 @@ const sendWorkHour = (function () {
 
 	const moduleData={};
 
-	function init(common_register, data) {
+	function init(mainGrid, common, common_register, data) {
+		moduleData.mainGrid = mainGrid;
+		moduleData.common = common;
 		moduleData.data = data;
 		moduleData.common_register = common_register;
+
+		$('#btn_sendAllWorkHoursClick').off().on('click',function(){
+			SendAllWorkHours_OnClick();
+		});
+		$('#btn_wndSendWorkHourClose').off().on('click',function(){
+			wndSendWorkHour_OnClose();
+		});
 	}
 
 	function wndSendWorkHour_OnClose() {
@@ -20,7 +29,7 @@ const sendWorkHour = (function () {
 		var timeSheetData = moduleData.data.timeSheetData_get();
         moduleData.data.selDate_set(timeSheetData[0].values[dayIndex]);
 
-		$("#SenddateTitle").text(moduleData.data.selDate_get().PersianDate);
+		$("#SenddateTitle").text(moduleData.data.selDate_get().persianDate);
 
 		var workHourJson = {
 			ID: null,
@@ -36,7 +45,7 @@ const sendWorkHour = (function () {
 			success: function (response) {
 				_AllReadyForSent = 0
 				for (var i = 0; i < response.length; i++) {
-					_AllReadyForSent = _AllReadyForSent + response[i].Hours
+					_AllReadyForSent = _AllReadyForSent + response[i].hours
 				}
 				$("#SumReadyForSentWorkHours").text(_AllReadyForSent);
 
@@ -47,13 +56,12 @@ const sendWorkHour = (function () {
 					dataType: "json",
 					data: prmData,
 					success: function (response) {
-						_presenceHour = response.Hours
+						_presenceHour = response.hours;
 
 						$("#presenceHour").text(_presenceHour);
 
 					},
 					error: function (e) {
-
 					}
 				});
 				$.ajax({
@@ -65,7 +73,7 @@ const sendWorkHour = (function () {
 					success: function (response) {
 						_AllSentCount = 0
 						for (var i = 0; i < response.length; i++) {
-							_AllSentCount = _AllSentCount + response[i].Hours
+							_AllSentCount = _AllSentCount + response[i].hours
 						}
 						$("#SumSentWorkHours").text(_AllSentCount);
 						$("#GRDSendWorkHours").data("kendoGrid").dataSource.read();
@@ -88,24 +96,24 @@ const sendWorkHour = (function () {
 					height: 400,
 					pageable: true,
 					columns: [{
-						field: "PersianDate",
+						field: "persianDate",
 						title: "تاریخ"
 					},
 					{
-						field: "ProjectTitle",
+						field: "projectTitle",
 						title: "پروژه"
 					}, {
-						field: "TaskTitle",
+						field: "taskTitle",
 						title: "وظیفه"
 					}, {
-						field: "Hours",
+						field: "hours",
 						title: "ساعت کار ثبت شده    "
 					},
 
 
 					{
 						title: "ارسال ",
-						template: "<button   onclick='SendWorkHour_OnClick(this)' type='button' class='btn btn-success btn-sm' name='info' title='ارسال' > ارسال</button>",
+						template: "<button  type='button' class='btn btn-success btn-sm forFound_SendWorkHour_OnClick' name='info' title='ارسال' > ارسال</button>",
 						headerTemplate: "<label class='text-center'> ارسال </label>",
 						filterable: false,
 						sortable: false,
@@ -113,19 +121,29 @@ const sendWorkHour = (function () {
 					},
 					{
 						title: "حذف ",
-						template: "<button  onclick='DeleteWorkHourSendGrid(this)' type='button' class='btn btn-danger btn-sm' name='info' title='حذف' > حذف</button>",
+						template: "<button type='button' class='btn btn-danger btn-sm forFound_DeleteWorkHourSendGrid' name='info' title='حذف' > حذف</button>",
 						headerTemplate: "<label class='text-center'> حذف </label>",
 						filterable: false,
 						sortable: false,
 						width: 100
 					},
-					]
-
+					],
+					dataBound: GRDSendWorkHours_DataBound
 				});
+
 			},
 			error: function (e) {
 
 			}
+		});
+	}
+
+	function GRDSendWorkHours_DataBound(e){
+		$('.forFound_DeleteWorkHourSendGrid').off().on('click',function(event){
+			DeleteWorkHourSendGrid(this);
+		});
+		$('.forFound_SendWorkHour_OnClick').off().on('click',function(event){
+			SendWorkHour_OnClick(this);
 		});
 	}
 
@@ -177,9 +195,9 @@ const sendWorkHour = (function () {
 				$("#SumSentWorkHours").text(_AllSentCount);
 				for (var i = 0; i < response.length; i++) {
 					if (response[0] == "عملیات ارسال کارکرد ها با موفقیت انجام گردید") {
-						common.Notify(response[i], "success");
+						moduleData.common.Notify(response[i], "success");
 					} else {
-						common.Notify(response[i], "danger");
+						moduleData.common.Notify(response[i], "danger");
 					}
 				}
 
@@ -193,13 +211,12 @@ const sendWorkHour = (function () {
 	}
 
 	function SendWorkHour_OnClick(e) {
-
 		var grid = $("#GRDSendWorkHours").data("kendoGrid");
 		var dataItem = grid.dataItem($(e).closest("tr"));
 
 
 		var workHourJson = {
-			ID: dataItem.ID,
+			ID: dataItem.id,
 			Date: moduleData.data.selDate_get().date,
 		};
 
@@ -213,7 +230,7 @@ const sendWorkHour = (function () {
 			success: function () {
 				//wndSendWorkHour_OnClose();
 				Refresh_GRDSendWorkHour();
-				common.Notify("انجام عملیات  ارسال با موفقیت به انجام رسید.", "success");
+				moduleData.common.Notify("انجام عملیات  ارسال با موفقیت به انجام رسید.", "success");
 			},
 			error: function (e) {
 
@@ -225,7 +242,7 @@ const sendWorkHour = (function () {
 	function DeleteWorkHourSendGrid(e) {
 		var grid = $("#GRDSendWorkHours").data("kendoGrid");
 		var dataItem = grid.dataItem($(e).closest("tr"));
-		common.LoaderShow();
+		moduleData.common.LoaderShow();
 		var prmData = JSON.stringify(dataItem);
 		$.ajax({
 			type: "Post",
@@ -235,8 +252,8 @@ const sendWorkHour = (function () {
 			data: prmData,
 			success: function (response) {
 				Refresh_GRDSendWorkHour();
-				RefreshTimeSheet();
-				common.LoaderHide();
+				moduleData.mainGrid.RefreshTimeSheet();
+				moduleData.common.LoaderHide();
 			},
 			error: function (e) {
 				alert(dataItem.ID);

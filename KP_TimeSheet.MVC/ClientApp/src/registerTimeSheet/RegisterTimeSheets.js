@@ -47,7 +47,7 @@ $(document).ready(function () {
         history_sentWorkHour.init(common,common_register,history_workHour,data);
         createNewWorkHour.init(common,common_register,period_next_pervious,data,service);
         history_workHour.init(common, data);
-        sendWorkHour.init(common_register,data);
+        sendWorkHour.init(mainGrid, common, common_register,data);
     });
 });
 
