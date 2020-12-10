@@ -10,11 +10,12 @@ const module_createNewRorkHour =(function(){
 
     const moduleData={};
 
-    function init(common,common_register,period_next_pervious,data){
+    function init(common,common_register,period_next_pervious,data, service){
         moduleData.common = common;
         moduleData.common_register = common_register;
         moduleData.period_next_pervious = period_next_pervious;
         moduleData.data = data;
+        moduleData.service = service;
 
         $('#btnCancel_kwndSaveWHs').off().on('click',function(){
             kwndSaveWHs_OnClose();
@@ -24,14 +25,10 @@ const module_createNewRorkHour =(function(){
         });
     }
     
-    function kwndSaveWHs_OnInit(SaveWHsIdx) {
+    function kwndSaveWHs_OnInit(dayIndex) {
     
-        debugger;
-
-        // var ktrlTimeSheets = $("#ktrlTimeSheets").data('kendoTreeList').dataItem($("#" + SaveWHsIdx).closest("tr"));
-        // moduleData.data.selDate_set(ktrlTimeSheets.values[parseInt($("#" + SaveWHsIdx).attr('dayindex')) - 3]);
-
-        moduleData.data.selDate_set(SaveWHsIdx);
+        var timeSheetData = moduleData.data.timeSheetData_get();
+        moduleData.data.selDate_set(timeSheetData[0].values[dayIndex]);
 
         GetProjects();
     }
@@ -141,7 +138,7 @@ const module_createNewRorkHour =(function(){
     
     function btnSaveWorkHours_Onclick() {
         
-        $("span[for='ktpWorkHour']").text("");
+        $("span[for='ktpWorkHour']").text(""); //جایی که خطاها را نشان می دهد را پاک میک می کند
         $("span[for='ddlTasks']").text("");
     
         var workHourJson = {
@@ -170,18 +167,8 @@ const module_createNewRorkHour =(function(){
     
         kwndSaveWHs_OnClose();
         var prmData = JSON.stringify(workHourJson);
-    
-        $.ajax({
-            type: "Post",
-            url: "/api/TimeSheetsAPI/SaveWorkHours",
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            data: prmData,
-            success: SaveWorkHours_OnSuccess,
-            error: function (e) {
-    
-            }
-        });
+
+        moduleData.service.saveWorkHours(prmData, SaveWorkHours_OnSuccess);
     }
     
     function SaveWorkHours_OnSuccess(response) {

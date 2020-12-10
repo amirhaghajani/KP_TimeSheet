@@ -7,11 +7,12 @@ const myMainGrid = (function () {
 
   const moduleData = {};
 
-  function init(createNewWorkHour, history_sentWorkHour, sendWorkHour, data) {
+  function init(createNewWorkHour, history_sentWorkHour, sendWorkHour, data, service) {
     moduleData.data = data;
     moduleData.history_sentWorkHour = history_sentWorkHour;
     moduleData.createNewWorkHour = createNewWorkHour;
     moduleData.sendWorkHour = sendWorkHour;
+    moduleData.service = service;
 
   };
 
@@ -27,34 +28,27 @@ const myMainGrid = (function () {
 
   function GetTimeSheets(callBackFn) {
 
-    $.ajax({
-      type: "Get",
-      url: "/api/TimeSheetsAPI/GetTimeSheets",
-      contentType: "application/json; charset=utf-8",
-      dataType: "json",
-      success: (response) => ktrlTimeSheets_OnInit(response, callBackFn),
-      error: function (e) {
-
-      }
+    moduleData.service.getTimeSheets((response) => {
+      if (callBackFn) callBackFn(response);
+      ktrlTimeSheets_OnInit();
     });
   }
 
-  function ktrlTimeSheets_OnInit(response, callBackFn) {
-    moduleData.data.timeSheetData_set(response);
+  function ktrlTimeSheets_OnInit() {
     Init_TimeSheetTreeList();
-
-    if (callBackFn) callBackFn();
-
   }
 
   function Init_TimeSheetTreeList() {
-    var ktrlTSColumns = ktrlTimeSheets_OnInitColumns(moduleData.data.timeSheetData_get());
+    const timeSheetData = moduleData.data.timeSheetData_get();
+    const timeSheetData2 = timeSheetData.slice(1);
+
+    var ktrlTSColumns = ktrlTimeSheets_OnInitColumns(timeSheetData);
 
     $("#ktrlTimeSheets").kendoTreeList({
       dataSource: {
         transport: {
           read: function (e) {
-            e.success(moduleData.data.timeSheetData_get());
+            e.success(timeSheetData2);
           },
         }
       },
@@ -71,16 +65,23 @@ const myMainGrid = (function () {
       dataBound: ktrlTimeSheets_DataBound
     });
 
-    $("#ktrlTimeSheets").kendoTooltip({
-      filter: 'td',
-      content: function (e) {
+    // var tooltip = $("#ktrlTimeSheets").kendoTooltip({
+    //   filter: 'td',
+    //   content: function (e) {
+    //     var treelist = $("#ktrlTimeSheets").data("kendoTreeList");
+    //     var targetRow = $(e.target).closest('tr');
+    //     var dataItem = treelist.dataItem(targetRow);
+    //     return dataItem.title;
+    //   },
+    //   position: "left",
+    //   animation: {
+    //     open: {
+    //       effects: "zoom",
+    //       duration: 150
+    //     }
+    //   }
+    // }).data("kendoTooltip");
 
-        var treelist = $("#ktrlTimeSheets").data("kendoTreeList");
-        var targetRow = $(e.target).closest('tr');
-        var dataItem = treelist.dataItem(targetRow);
-        return dataItem.title;
-      }
-    });
     $("#ktrlTimeSheets tbody").on("dblclick", "td", function (e) {
       var cell = $(e.currentTarget);
       var cellIndex = cell[0].cellIndex;
@@ -95,8 +96,6 @@ const myMainGrid = (function () {
   }
 
   function ktrlTimeSheets_OnInitColumns(response) {
-
-    debugger;
 
     var x = JSON.stringify(response);
     var columns = [];
@@ -130,11 +129,8 @@ const myMainGrid = (function () {
       colDate.field = "values[" + i + "].value";
       colDate.format = "";
       colDate.title = tsDate.title;
-      colDate.headerTemplate = "<h6> <b>" + tsDate.persianDate + "</b></h6>  <h6>" + tsDate.persianDay + "</h6>";
+      colDate.headerTemplate = "<h6><b>" + tsDate.persianDate + "</b></h6><h6>" + tsDate.persianDay + "</h6>";
 
-      var emlId = 'SaveWorkHours' + i;
-      var semlId = 'SendWorkHours' + i;
-      var sendId = 'ShowSent' + i;
 
       var inner = tsDate.value;
       if (inner == "False False") {
@@ -143,20 +139,20 @@ const myMainGrid = (function () {
 
       if (inner == "True False" || inner == "True True") {
 
-        colDate.headerTemplate += `<button title='ثبت ساعت کارکرد' id='${emlId}' 
+        colDate.headerTemplate += `<button title='ثبت ساعت کارکرد' 
                           class='btn btn-success btn-xs forFound_kwndSaveWHs_OnInit' style='width:10px;height:15px'
-                           dayIndex='${i}' data-day-index='${i}'>+</button>`;
+                          data-day-index='${i}'>+</button>`;
 
-        colDate.headerTemplate += `<button title='نمایش کارکردهای این روز' id='${sendId}'  
+        colDate.headerTemplate += `<button title='نمایش کارکردهای این روز'   
               class='btn btn-info btn-xs forFound_ShowCurrentDaySendWorkHours' style='width:10px;height:15px;margin-right:10px;' 
-              data-day-index='${i}' dayIndex='${i}' ><i class='fa fa-tv'></i></button>`;
+              data-day-index='${i}'><i class='fa fa-tv'></i></button>`;
       }
 
       if (inner == "True True") {
 
-        colDate.headerTemplate += `<button title='ارسال ساعت کارکرد' id='${semlId}'
+        colDate.headerTemplate += `<button title='ارسال ساعت کارکرد'
               class='btn btn-warning btn-xs forFound_wndSendWorkHour_OnInit' style='width:10px;height:15px;margin-right:10px;'
-              data-day-index='${i}' dayIndex='${i}' ><b>↑</b></button>`;
+              data-day-index='${i}'><b>↑</b></button>`;
 
       }
 
@@ -165,68 +161,10 @@ const myMainGrid = (function () {
       columns.push(colDate);
     }
 
-    
-
     return columns;
   }
 
   function ktrlTimeSheets_DataBound(e) {
-
-    var grid = this;
-    var dataSource = grid.dataSource;
-    //Loop through each record in a Kendo Grid
-    $.each(grid.items(), function (index, item) {
-
-      var tsRow = $("#ktrlTimeSheets").data('kendoTreeList').dataItem($(item).closest("tr"));
-      if (tsRow.title === "عملیات") {
-
-        $.each(item.children, function (childIdx, childElm) {
-          var emlId = 'SaveWorkHours' + childIdx;
-          var semlId = 'SendWorkHours' + childIdx;
-          var sendId = 'ShowSent' + childIdx;
-
-          // var inner = childElm.innerText;
-          // if (inner == "False False") {
-          //   childElm.innerHTML = "<label title=' ' class='text-warning' ><i class='glyphicon glyphicon-ban-circle'></i> </label>"
-          // }
-
-          // if (inner == "True False" || inner == "True True") {
-
-          //   childElm.innerHTML = `<button title='ثبت ساعت کارکرد' id='${emlId}' 
-          //                 class='btn btn-success btn-xs forFound_kwndSaveWHs_OnInit' style='width:10px;height:15px'
-          //                  dayIndex='${childIdx}' data-eml-id='${emlId}'>+</button>`;
-
-          //   childElm.innerHTML += `<button title='نمایش کارکردهای این روز' id='${sendId}'  
-          //     class='btn btn-info btn-xs forFound_ShowCurrentDaySendWorkHours' style='width:10px;height:15px;margin-right:10px;' 
-          //       data-send-id='${sendId}' dayIndex='${childIdx}' ><i class='fa fa-tv'></i></button>`;
-          // }
-
-          // if (inner == "True True") {
-
-          //   childElm.innerHTML += `<button title='ارسال ساعت کارکرد' id='${semlId}'
-          //     class='btn btn-warning btn-xs forFound_wndSendWorkHour_OnInit' style='width:10px;height:15px;margin-right:10px;'
-          //     data-seml-id='${semlId}' dayIndex='${childIdx}' ><b>↑</b></button>`;
-
-          // }
-        });
-      }
-    });
-
-    // $('.forFound_kwndSaveWHs_OnInit').off().on('click', function () {
-    //   var id = $(this).data("emlId");
-    //   moduleData.createNewWorkHour.kwndSaveWHs_OnInit(id);
-    // });
-
-    // $('.forFound_ShowCurrentDaySendWorkHours').off().on('click', function () {
-    //   var sendId = $(this).data("sendId");
-    //   moduleData.history_sentWorkHour.ShowCurrentDaySendWorkHours(sendId);
-    // });
-
-    // $('.forFound_wndSendWorkHour_OnInit').off().on('click', function () {
-    //   var semlId = $(this).data("semlId");
-    //   moduleData.sendWorkHour.wndSendWorkHour_OnInit(semlId);
-    // });
-
 
     $('.forFound_kwndSaveWHs_OnInit').off().on('click', function () {
       var id = $(this).data("dayIndex");
@@ -242,7 +180,6 @@ const myMainGrid = (function () {
       var semlId = $(this).data("dayIndex");
       moduleData.sendWorkHour.wndSendWorkHour_OnInit(semlId);
     });
-
   }
 
 

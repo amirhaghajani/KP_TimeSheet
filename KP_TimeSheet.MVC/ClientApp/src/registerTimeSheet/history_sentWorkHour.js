@@ -145,12 +145,12 @@ const hisotrSentWorkHour = (function () {
 		});
 	}
 
-	function ShowCurrentDaySendWorkHours(SaveWHsIdx) {
+	function ShowCurrentDaySendWorkHours(dayIndex) {
 		moduleData.common.LoaderShow();
 		moduleData.hisotory_workHour.Create_GrdHistory();
 
-		var ktrlTimeSheets = $("#ktrlTimeSheets").data('kendoTreeList').dataItem($("#" + SaveWHsIdx).closest("tr"));
-		moduleData.data.selDate_set(ktrlTimeSheets.values[parseInt($("#" + SaveWHsIdx).attr('dayindex')) - 3]);
+		var timeSheetData = moduleData.data.timeSheetData_get();
+        moduleData.data.selDate_set(timeSheetData[0].values[dayIndex]);
 
 		var workHourJson = {
 			ID: null,

@@ -81,6 +81,8 @@ const editWindow=require('./editWorkHour');
 const history_workHour = require('./hisotory_workHour');
 const sendWorkHour = require('./sendWorkHour');
 
+const service = require('./service');
+
 
 
 
@@ -91,6 +93,7 @@ $(document).ready(function () {
     data.init();
     monthlyGrid.init(data);
     priodlyGrid.init(data);
+    service.init(data);
 
     $('#registerTiemSheet_exportToExcel').off().on('click',function(){
         common.doExport('#ktrlTimeSheets', {type: 'excel'});
@@ -99,7 +102,7 @@ $(document).ready(function () {
         common.doExport('#ktrlTimeSheets', { type: 'doc' });
     });
     
-    mainGrid.init(createNewWorkHour,history_sentWorkHour,sendWorkHour,data);
+    mainGrid.init(createNewWorkHour,history_sentWorkHour,sendWorkHour,data, service);
 
     mainGrid.GetTimeSheets(function(){
         priodlyGrid.InitPeriodlyByProjectsGrid();
@@ -110,7 +113,7 @@ $(document).ready(function () {
             
         editWindow.init(common_register,data);
         history_sentWorkHour.init(common,common_register,history_workHour,data);
-        createNewWorkHour.init(common,common_register,period_next_pervious,data);
+        createNewWorkHour.init(common,common_register,period_next_pervious,data,service);
         history_workHour.init(common, data);
         sendWorkHour.init(common_register,data);
     });
@@ -155,7 +158,7 @@ function exportTableToExcel(tableID, filename ){
 
 
 
-},{"../common/common":1,"./bottomPage_monthlyGrid":3,"./bottomPage_priodlyGrid":4,"./common":5,"./createNewWorkHour":6,"./data":7,"./editWorkHour":8,"./hisotory_workHour":9,"./history_sentWorkHour":10,"./mainGrid":11,"./period_next_pervious":12,"./sendWorkHour":13}],3:[function(require,module,exports){
+},{"../common/common":1,"./bottomPage_monthlyGrid":3,"./bottomPage_priodlyGrid":4,"./common":5,"./createNewWorkHour":6,"./data":7,"./editWorkHour":8,"./hisotory_workHour":9,"./history_sentWorkHour":10,"./mainGrid":11,"./period_next_pervious":12,"./sendWorkHour":13,"./service":14}],3:[function(require,module,exports){
 //const data = require('./data');
 
 //___________جدول پایین صفحه ماهانه
@@ -367,11 +370,12 @@ const module_createNewRorkHour =(function(){
 
     const moduleData={};
 
-    function init(common,common_register,period_next_pervious,data){
+    function init(common,common_register,period_next_pervious,data, service){
         moduleData.common = common;
         moduleData.common_register = common_register;
         moduleData.period_next_pervious = period_next_pervious;
         moduleData.data = data;
+        moduleData.service = service;
 
         $('#btnCancel_kwndSaveWHs').off().on('click',function(){
             kwndSaveWHs_OnClose();
@@ -381,14 +385,10 @@ const module_createNewRorkHour =(function(){
         });
     }
     
-    function kwndSaveWHs_OnInit(SaveWHsIdx) {
+    function kwndSaveWHs_OnInit(dayIndex) {
     
-        debugger;
-
-        // var ktrlTimeSheets = $("#ktrlTimeSheets").data('kendoTreeList').dataItem($("#" + SaveWHsIdx).closest("tr"));
-        // moduleData.data.selDate_set(ktrlTimeSheets.values[parseInt($("#" + SaveWHsIdx).attr('dayindex')) - 3]);
-
-        moduleData.data.selDate_set(SaveWHsIdx);
+        var timeSheetData = moduleData.data.timeSheetData_get();
+        moduleData.data.selDate_set(timeSheetData[0].values[dayIndex]);
 
         GetProjects();
     }
@@ -498,7 +498,7 @@ const module_createNewRorkHour =(function(){
     
     function btnSaveWorkHours_Onclick() {
         
-        $("span[for='ktpWorkHour']").text("");
+        $("span[for='ktpWorkHour']").text(""); //جایی که خطاها را نشان می دهد را پاک میک می کند
         $("span[for='ddlTasks']").text("");
     
         var workHourJson = {
@@ -527,18 +527,8 @@ const module_createNewRorkHour =(function(){
     
         kwndSaveWHs_OnClose();
         var prmData = JSON.stringify(workHourJson);
-    
-        $.ajax({
-            type: "Post",
-            url: "/api/TimeSheetsAPI/SaveWorkHours",
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            data: prmData,
-            success: SaveWorkHours_OnSuccess,
-            error: function (e) {
-    
-            }
-        });
+
+        moduleData.service.saveWorkHours(prmData, SaveWorkHours_OnSuccess);
     }
     
     function SaveWorkHours_OnSuccess(response) {
@@ -587,18 +577,18 @@ module.exports={
     'init':module_createNewRorkHour.init
 }
 },{}],7:[function(require,module,exports){
-const dataM = (function(){
+const dataM = (function () {
 
-    const moduleData={};
+    const moduleData = {};
 
-    function init(){
-        moduleData._SelDate={};
-        moduleData.CurrentUser={};
+    function init() {
+        moduleData._SelDate = {};
+        moduleData.CurrentUser = {};
         moduleData._TimeSheetData = [];
         moduleData._WorkHourOnProjects = [];
         moduleData._thisMonthdata = {};
         moduleData._WorkHours = [];
-        moduleData._SendItem = {};
+        moduleData._DayIndex = {};
         moduleData._SendWorkHourGrid = [];
         moduleData._thisPerioddata = [];
         moduleData._MonitorSentWorkHours = [];
@@ -616,26 +606,26 @@ const dataM = (function(){
 })();
 
 
-module.exports={
-    init:dataM.init,
+module.exports = {
+    init: dataM.init,
 
-    'selDate_get':function(){ return dataM.moduleData._SelDate;},
-    'selDate_set':function(data){dataM.moduleData._SelDate = data;},
+    'selDate_get': function () { return dataM.moduleData._SelDate; },
+    'selDate_set': function (data) { dataM.moduleData._SelDate = data; },
 
-    'timeSheetData_get':function(){ return dataM.moduleData._TimeSheetData;},
-    'timeSheetData_set':function(data){dataM.moduleData._TimeSheetData = data;},
+    'timeSheetData_get': function () { return dataM.moduleData._TimeSheetData; },
+    'timeSheetData_set': function (data) { dataM.moduleData._TimeSheetData = data; },
 
-    'todayHistory_get':function(){ return dataM.moduleData._TodayHistorys;},
-    'todayHistory_set':function(data){dataM.moduleData._TodayHistorys = data;},
+    'todayHistory_get': function () { return dataM.moduleData._TodayHistorys; },
+    'todayHistory_set': function (data) { dataM.moduleData._TodayHistorys = data; },
 
-    'thisMonthdata_get':function(){ return dataM.moduleData._thisMonthdata;},
-    'thisMonthdata_set':function(data){dataM.moduleData._thisMonthdata = data;},
+    'thisMonthdata_get': function () { return dataM.moduleData._thisMonthdata; },
+    'thisMonthdata_set': function (data) { dataM.moduleData._thisMonthdata = data; },
 
-    'workHours_get':function(){ return dataM.moduleData._WorkHours;},
-    'workHours_set':function(data){dataM.moduleData._WorkHours = data;},
+    'workHours_get': function () { return dataM.moduleData._WorkHours; },
+    'workHours_set': function (data) { dataM.moduleData._WorkHours = data; },
 
-    'sendItem_get':function(){ return dataM.moduleData._SendItem;},
-    'sendItem_set':function(data){dataM.moduleData._SendItem = data;},
+    'dayIndex_get': function () { return dataM.moduleData._DayIndex; },
+    'dayIndex_set': function (data) { dataM.moduleData._DayIndex = data; },
 }
 },{}],8:[function(require,module,exports){
 // const data = require('./data');
@@ -1084,12 +1074,12 @@ const hisotrSentWorkHour = (function () {
 		});
 	}
 
-	function ShowCurrentDaySendWorkHours(SaveWHsIdx) {
+	function ShowCurrentDaySendWorkHours(dayIndex) {
 		moduleData.common.LoaderShow();
 		moduleData.hisotory_workHour.Create_GrdHistory();
 
-		var ktrlTimeSheets = $("#ktrlTimeSheets").data('kendoTreeList').dataItem($("#" + SaveWHsIdx).closest("tr"));
-		moduleData.data.selDate_set(ktrlTimeSheets.values[parseInt($("#" + SaveWHsIdx).attr('dayindex')) - 3]);
+		var timeSheetData = moduleData.data.timeSheetData_get();
+        moduleData.data.selDate_set(timeSheetData[0].values[dayIndex]);
 
 		var workHourJson = {
 			ID: null,
@@ -1149,11 +1139,12 @@ const myMainGrid = (function () {
 
   const moduleData = {};
 
-  function init(createNewWorkHour, history_sentWorkHour, sendWorkHour, data) {
+  function init(createNewWorkHour, history_sentWorkHour, sendWorkHour, data, service) {
     moduleData.data = data;
     moduleData.history_sentWorkHour = history_sentWorkHour;
     moduleData.createNewWorkHour = createNewWorkHour;
     moduleData.sendWorkHour = sendWorkHour;
+    moduleData.service = service;
 
   };
 
@@ -1169,34 +1160,30 @@ const myMainGrid = (function () {
 
   function GetTimeSheets(callBackFn) {
 
-    $.ajax({
-      type: "Get",
-      url: "/api/TimeSheetsAPI/GetTimeSheets",
-      contentType: "application/json; charset=utf-8",
-      dataType: "json",
-      success: (response) => ktrlTimeSheets_OnInit(response, callBackFn),
-      error: function (e) {
-
-      }
+    moduleData.service.getTimeSheets((response) => {
+      if (callBackFn) callBackFn(response);
+      ktrlTimeSheets_OnInit();
     });
   }
 
-  function ktrlTimeSheets_OnInit(response, callBackFn) {
-    moduleData.data.timeSheetData_set(response);
+  function ktrlTimeSheets_OnInit() {
     Init_TimeSheetTreeList();
-
-    if (callBackFn) callBackFn();
-
   }
 
   function Init_TimeSheetTreeList() {
-    var ktrlTSColumns = ktrlTimeSheets_OnInitColumns(moduleData.data.timeSheetData_get());
+
+    debugger;
+    
+    const timeSheetData = moduleData.data.timeSheetData_get();
+    const timeSheetData2 = timeSheetData.slice(1);
+
+    var ktrlTSColumns = ktrlTimeSheets_OnInitColumns(timeSheetData);
 
     $("#ktrlTimeSheets").kendoTreeList({
       dataSource: {
         transport: {
           read: function (e) {
-            e.success(moduleData.data.timeSheetData_get());
+            e.success(timeSheetData2);
           },
         }
       },
@@ -1213,16 +1200,23 @@ const myMainGrid = (function () {
       dataBound: ktrlTimeSheets_DataBound
     });
 
-    $("#ktrlTimeSheets").kendoTooltip({
-      filter: 'td',
-      content: function (e) {
+    // var tooltip = $("#ktrlTimeSheets").kendoTooltip({
+    //   filter: 'td',
+    //   content: function (e) {
+    //     var treelist = $("#ktrlTimeSheets").data("kendoTreeList");
+    //     var targetRow = $(e.target).closest('tr');
+    //     var dataItem = treelist.dataItem(targetRow);
+    //     return dataItem.title;
+    //   },
+    //   position: "left",
+    //   animation: {
+    //     open: {
+    //       effects: "zoom",
+    //       duration: 150
+    //     }
+    //   }
+    // }).data("kendoTooltip");
 
-        var treelist = $("#ktrlTimeSheets").data("kendoTreeList");
-        var targetRow = $(e.target).closest('tr');
-        var dataItem = treelist.dataItem(targetRow);
-        return dataItem.title;
-      }
-    });
     $("#ktrlTimeSheets tbody").on("dblclick", "td", function (e) {
       var cell = $(e.currentTarget);
       var cellIndex = cell[0].cellIndex;
@@ -1237,8 +1231,6 @@ const myMainGrid = (function () {
   }
 
   function ktrlTimeSheets_OnInitColumns(response) {
-
-    debugger;
 
     var x = JSON.stringify(response);
     var columns = [];
@@ -1272,11 +1264,8 @@ const myMainGrid = (function () {
       colDate.field = "values[" + i + "].value";
       colDate.format = "";
       colDate.title = tsDate.title;
-      colDate.headerTemplate = "<h6> <b>" + tsDate.persianDate + "</b></h6>  <h6>" + tsDate.persianDay + "</h6>";
+      colDate.headerTemplate = "<h6><b>" + tsDate.persianDate + "</b></h6><h6>" + tsDate.persianDay + "</h6>";
 
-      var emlId = 'SaveWorkHours' + i;
-      var semlId = 'SendWorkHours' + i;
-      var sendId = 'ShowSent' + i;
 
       var inner = tsDate.value;
       if (inner == "False False") {
@@ -1285,20 +1274,20 @@ const myMainGrid = (function () {
 
       if (inner == "True False" || inner == "True True") {
 
-        colDate.headerTemplate += `<button title='ثبت ساعت کارکرد' id='${emlId}' 
+        colDate.headerTemplate += `<button title='ثبت ساعت کارکرد' 
                           class='btn btn-success btn-xs forFound_kwndSaveWHs_OnInit' style='width:10px;height:15px'
-                           dayIndex='${i}' data-day-index='${i}'>+</button>`;
+                          data-day-index='${i}'>+</button>`;
 
-        colDate.headerTemplate += `<button title='نمایش کارکردهای این روز' id='${sendId}'  
+        colDate.headerTemplate += `<button title='نمایش کارکردهای این روز'   
               class='btn btn-info btn-xs forFound_ShowCurrentDaySendWorkHours' style='width:10px;height:15px;margin-right:10px;' 
-              data-day-index='${i}' dayIndex='${i}' ><i class='fa fa-tv'></i></button>`;
+              data-day-index='${i}'><i class='fa fa-tv'></i></button>`;
       }
 
       if (inner == "True True") {
 
-        colDate.headerTemplate += `<button title='ارسال ساعت کارکرد' id='${semlId}'
+        colDate.headerTemplate += `<button title='ارسال ساعت کارکرد'
               class='btn btn-warning btn-xs forFound_wndSendWorkHour_OnInit' style='width:10px;height:15px;margin-right:10px;'
-              data-day-index='${i}' dayIndex='${i}' ><b>↑</b></button>`;
+              data-day-index='${i}'><b>↑</b></button>`;
 
       }
 
@@ -1307,68 +1296,10 @@ const myMainGrid = (function () {
       columns.push(colDate);
     }
 
-    
-
     return columns;
   }
 
   function ktrlTimeSheets_DataBound(e) {
-
-    var grid = this;
-    var dataSource = grid.dataSource;
-    //Loop through each record in a Kendo Grid
-    $.each(grid.items(), function (index, item) {
-
-      var tsRow = $("#ktrlTimeSheets").data('kendoTreeList').dataItem($(item).closest("tr"));
-      if (tsRow.title === "عملیات") {
-
-        $.each(item.children, function (childIdx, childElm) {
-          var emlId = 'SaveWorkHours' + childIdx;
-          var semlId = 'SendWorkHours' + childIdx;
-          var sendId = 'ShowSent' + childIdx;
-
-          // var inner = childElm.innerText;
-          // if (inner == "False False") {
-          //   childElm.innerHTML = "<label title=' ' class='text-warning' ><i class='glyphicon glyphicon-ban-circle'></i> </label>"
-          // }
-
-          // if (inner == "True False" || inner == "True True") {
-
-          //   childElm.innerHTML = `<button title='ثبت ساعت کارکرد' id='${emlId}' 
-          //                 class='btn btn-success btn-xs forFound_kwndSaveWHs_OnInit' style='width:10px;height:15px'
-          //                  dayIndex='${childIdx}' data-eml-id='${emlId}'>+</button>`;
-
-          //   childElm.innerHTML += `<button title='نمایش کارکردهای این روز' id='${sendId}'  
-          //     class='btn btn-info btn-xs forFound_ShowCurrentDaySendWorkHours' style='width:10px;height:15px;margin-right:10px;' 
-          //       data-send-id='${sendId}' dayIndex='${childIdx}' ><i class='fa fa-tv'></i></button>`;
-          // }
-
-          // if (inner == "True True") {
-
-          //   childElm.innerHTML += `<button title='ارسال ساعت کارکرد' id='${semlId}'
-          //     class='btn btn-warning btn-xs forFound_wndSendWorkHour_OnInit' style='width:10px;height:15px;margin-right:10px;'
-          //     data-seml-id='${semlId}' dayIndex='${childIdx}' ><b>↑</b></button>`;
-
-          // }
-        });
-      }
-    });
-
-    // $('.forFound_kwndSaveWHs_OnInit').off().on('click', function () {
-    //   var id = $(this).data("emlId");
-    //   moduleData.createNewWorkHour.kwndSaveWHs_OnInit(id);
-    // });
-
-    // $('.forFound_ShowCurrentDaySendWorkHours').off().on('click', function () {
-    //   var sendId = $(this).data("sendId");
-    //   moduleData.history_sentWorkHour.ShowCurrentDaySendWorkHours(sendId);
-    // });
-
-    // $('.forFound_wndSendWorkHour_OnInit').off().on('click', function () {
-    //   var semlId = $(this).data("semlId");
-    //   moduleData.sendWorkHour.wndSendWorkHour_OnInit(semlId);
-    // });
-
 
     $('.forFound_kwndSaveWHs_OnInit').off().on('click', function () {
       var id = $(this).data("dayIndex");
@@ -1384,7 +1315,6 @@ const myMainGrid = (function () {
       var semlId = $(this).data("dayIndex");
       moduleData.sendWorkHour.wndSendWorkHour_OnInit(semlId);
     });
-
   }
 
 
@@ -1714,10 +1644,10 @@ const sendWorkHour = (function () {
 		$("#wndSendWorkHour").data("kendoWindow").close()
 	}
 
-	function GRDSendWorkHours_onInit(sendItem) {
+	function GRDSendWorkHours_onInit(dayIndex) {
 
-		var ktrlTimeSheetsSend = $("#ktrlTimeSheets").data('kendoTreeList').dataItem($("#" + sendItem).closest("tr"));
-		moduleData.data.selDate_set(ktrlTimeSheetsSend.values[parseInt($("#" + sendItem).attr('dayindex')) - 3]);
+		var timeSheetData = moduleData.data.timeSheetData_get();
+        moduleData.data.selDate_set(timeSheetData[0].values[dayIndex]);
 
 		$("#SenddateTitle").text(moduleData.data.selDate_get().PersianDate);
 
@@ -1828,9 +1758,10 @@ const sendWorkHour = (function () {
 		});
 	}
 
-	function wndSendWorkHour_OnInit(SendWHsIdx) {
+	function wndSendWorkHour_OnInit(dayIndex) {
 
-		moduleData.data.sendItem_set(SendWHsIdx);
+		moduleData.data.dayIndex_set(dayIndex);
+
 		var wndSendWorkHour = $("#wndSendWorkHour");
 		wndSendWorkHour.kendoWindow({
 			width: "750px",
@@ -1848,12 +1779,12 @@ const sendWorkHour = (function () {
 			open: moduleData.common_register.adjustSize,
 		}).data("kendoWindow").center().open();
 
-		GRDSendWorkHours_onInit(moduleData.data.sendItem_get());
+		GRDSendWorkHours_onInit(moduleData.data.dayIndex_get());
 	}
 
 	function SendAllWorkHours_OnClick() {
-		var ktrlTimeSheetsSend = $("#ktrlTimeSheets").data('kendoTreeList').dataItem($("#" + moduleData.data.sendItem_get().id).closest("tr"));
-		moduleData.data.selDate_set(ktrlTimeSheetsSend.values[parseInt($("#" + moduleData.data.sendItem_get().id).attr('dayindex')) - 3]);
+		var ktrlTimeSheetsSend = $("#ktrlTimeSheets").data('kendoTreeList').dataItem($("#" + moduleData.data.dayIndex_get().id).closest("tr"));
+		moduleData.data.selDate_set(ktrlTimeSheetsSend.values[parseInt($("#" + moduleData.data.dayIndex_get().id).attr('dayindex')) - 3]);
 
 		var workHourJson = {
 			ID: null,
@@ -2022,4 +1953,60 @@ module.exports = {
 	init: sendWorkHour.init
 };
 
+},{}],14:[function(require,module,exports){
+
+var service = (function () {
+
+    const moduleData = {};
+
+    function init(data) {
+        moduleData.data = data;
+    }
+
+
+    //اون اول اطلاعات کل تایم شیت ها را می دهد
+    function getTimeSheets(success_callBack, error_callBack) {
+        $.ajax({
+            type: "Get",
+            url: "/api/TimeSheetsAPI/GetTimeSheets",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: (response) => {
+                moduleData.data.timeSheetData_set(response);
+                if (success_callBack) success_callBack(response);
+            },
+            error: error_callBack ? () => error_callBack() : () => { }
+        });
+    }
+
+
+    function saveWorkHours(prmData, success_callBack, error_callBack){
+        $.ajax({
+            type: "Post",
+            url: "/api/TimeSheetsAPI/SaveWorkHours",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: prmData,
+            success: success_callBack ? (response) => success_callBack(response) : ()=>{},
+            error: error_callBack ? () => error_callBack() : () => { }
+        });
+    }
+
+    return {
+        init: init,
+
+        getTimeSheets: getTimeSheets,
+        saveWorkHours: saveWorkHours
+    };
+
+})();
+
+
+
+module.exports = {
+    init: service.init,
+
+    getTimeSheets: service.getTimeSheets,
+    saveWorkHours: service.saveWorkHours
+}
 },{}]},{},[2]);

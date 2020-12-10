@@ -13,6 +13,8 @@ const editWindow=require('./editWorkHour');
 const history_workHour = require('./hisotory_workHour');
 const sendWorkHour = require('./sendWorkHour');
 
+const service = require('./service');
+
 
 
 
@@ -23,6 +25,7 @@ $(document).ready(function () {
     data.init();
     monthlyGrid.init(data);
     priodlyGrid.init(data);
+    service.init(data);
 
     $('#registerTiemSheet_exportToExcel').off().on('click',function(){
         common.doExport('#ktrlTimeSheets', {type: 'excel'});
@@ -31,7 +34,7 @@ $(document).ready(function () {
         common.doExport('#ktrlTimeSheets', { type: 'doc' });
     });
     
-    mainGrid.init(createNewWorkHour,history_sentWorkHour,sendWorkHour,data);
+    mainGrid.init(createNewWorkHour,history_sentWorkHour,sendWorkHour,data, service);
 
     mainGrid.GetTimeSheets(function(){
         priodlyGrid.InitPeriodlyByProjectsGrid();
@@ -42,7 +45,7 @@ $(document).ready(function () {
             
         editWindow.init(common_register,data);
         history_sentWorkHour.init(common,common_register,history_workHour,data);
-        createNewWorkHour.init(common,common_register,period_next_pervious,data);
+        createNewWorkHour.init(common,common_register,period_next_pervious,data,service);
         history_workHour.init(common, data);
         sendWorkHour.init(common_register,data);
     });

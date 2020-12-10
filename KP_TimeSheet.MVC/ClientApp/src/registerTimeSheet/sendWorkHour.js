@@ -15,10 +15,10 @@ const sendWorkHour = (function () {
 		$("#wndSendWorkHour").data("kendoWindow").close()
 	}
 
-	function GRDSendWorkHours_onInit(sendItem) {
+	function GRDSendWorkHours_onInit(dayIndex) {
 
-		var ktrlTimeSheetsSend = $("#ktrlTimeSheets").data('kendoTreeList').dataItem($("#" + sendItem).closest("tr"));
-		moduleData.data.selDate_set(ktrlTimeSheetsSend.values[parseInt($("#" + sendItem).attr('dayindex')) - 3]);
+		var timeSheetData = moduleData.data.timeSheetData_get();
+        moduleData.data.selDate_set(timeSheetData[0].values[dayIndex]);
 
 		$("#SenddateTitle").text(moduleData.data.selDate_get().PersianDate);
 
@@ -129,9 +129,10 @@ const sendWorkHour = (function () {
 		});
 	}
 
-	function wndSendWorkHour_OnInit(SendWHsIdx) {
+	function wndSendWorkHour_OnInit(dayIndex) {
 
-		moduleData.data.sendItem_set(SendWHsIdx);
+		moduleData.data.dayIndex_set(dayIndex);
+
 		var wndSendWorkHour = $("#wndSendWorkHour");
 		wndSendWorkHour.kendoWindow({
 			width: "750px",
@@ -149,12 +150,12 @@ const sendWorkHour = (function () {
 			open: moduleData.common_register.adjustSize,
 		}).data("kendoWindow").center().open();
 
-		GRDSendWorkHours_onInit(moduleData.data.sendItem_get());
+		GRDSendWorkHours_onInit(moduleData.data.dayIndex_get());
 	}
 
 	function SendAllWorkHours_OnClick() {
-		var ktrlTimeSheetsSend = $("#ktrlTimeSheets").data('kendoTreeList').dataItem($("#" + moduleData.data.sendItem_get().id).closest("tr"));
-		moduleData.data.selDate_set(ktrlTimeSheetsSend.values[parseInt($("#" + moduleData.data.sendItem_get().id).attr('dayindex')) - 3]);
+		var ktrlTimeSheetsSend = $("#ktrlTimeSheets").data('kendoTreeList').dataItem($("#" + moduleData.data.dayIndex_get().id).closest("tr"));
+		moduleData.data.selDate_set(ktrlTimeSheetsSend.values[parseInt($("#" + moduleData.data.dayIndex_get().id).attr('dayindex')) - 3]);
 
 		var workHourJson = {
 			ID: null,
