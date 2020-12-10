@@ -77,9 +77,6 @@ const hisotrSentWorkHour = (function () {
 			dataSource: {
 				transport: {
 					read: function (e) {
-						
-						debugger;
-
 						e.success(_MonitorSentWorkHours);
 
 						$('.forFound_Init_GRDHistory').off().on('click',function(){

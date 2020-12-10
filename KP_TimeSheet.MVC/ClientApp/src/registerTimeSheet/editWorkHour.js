@@ -6,10 +6,11 @@ const editWorkHour = (function () {
 
 	const moduleData={};
 
-	function init(common_register, data) {
+	function init(common_register, data, mainGrid) {
 		
 		moduleData.common_register = common_register;
 		moduleData.data = data;
+		moduleData.mainGrid = mainGrid;
 
 		$('#btnEditWorkHour').off().on('click', function () {
 			WndEditWorkHours_OnInit();
@@ -38,7 +39,7 @@ const editWorkHour = (function () {
 				"Maximize",
 				"Close"
 			],
-			open: common_register.adjustSize,
+			open: moduleData.common_register.adjustSize,
 		}).data("kendoWindow").center().open();
 	}
 
@@ -48,7 +49,7 @@ const editWorkHour = (function () {
 
 	function GetWorkHours_GrdEditWorkHour() {
 
-		var prmData = JSON.stringify(data.timeSheetData_get()[0].values);
+		var prmData = JSON.stringify(moduleData.data.timeSheetData_get()[0].values);
 
 		$.ajax({
 			type: "Post",
@@ -57,7 +58,7 @@ const editWorkHour = (function () {
 			dataType: "json",
 			data: prmData,
 			success: function (response) {
-				data.workHours_set(response);
+				moduleData.data.workHours_set(response);
 				Init_GrdEditWorkHour();
 			},
 			error: function (e) {
@@ -72,7 +73,7 @@ const editWorkHour = (function () {
 			dataSource: {
 				transport: {
 					read: function (e) {
-						e.success(data.workHours_get())
+						e.success(moduleData.data.workHours_get())
 					}
 				},
 				pageSize: 10
@@ -84,17 +85,17 @@ const editWorkHour = (function () {
 			selectable: true,
 
 			columns: [{
-				field: "PersianDate",
+				field: "persianDate",
 				title: "تاریخ"
 			},
 			{
-				field: "ProjectTitle",
+				field: "projectTitle",
 				title: "پروژه"
 			}, {
-				field: "TaskTitle",
+				field: "taskTitle",
 				title: "وظیفه"
 			}, {
-				field: "Hours",
+				field: "hours",
 				title: "ساعت کار ثبت شده    "
 			},
 
@@ -130,10 +131,10 @@ const editWorkHour = (function () {
 			dataType: "json",
 			data: prmData,
 			success: function (response) {
-				editWindow.Refresh_GrdEditWorkHour();
+				Refresh_GrdEditWorkHour();
 
-				RefreshTimeSheet();
-				common.LoaderHide();
+				moduleData.mainGrid.RefreshTimeSheet();
+				moduleData.common.LoaderHide();
 			},
 			error: function (e) {
 				alert(dataItem.ID);

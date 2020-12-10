@@ -15,19 +15,24 @@ const module_createNewRorkHour =(function(){
         moduleData.common_register = common_register;
         moduleData.period_next_pervious = period_next_pervious;
         moduleData.data = data;
-    }
-    
-    function kwndSaveWHs_OnInit(SaveWHsIdx) {
-    
+
         $('#btnCancel_kwndSaveWHs').off().on('click',function(){
             kwndSaveWHs_OnClose();
         });
         $('#btnSaveWorkHours_kwndSaveWHs').off().on('click',function(){
             btnSaveWorkHours_Onclick();
         });
+    }
     
-        var ktrlTimeSheets = $("#ktrlTimeSheets").data('kendoTreeList').dataItem($("#" + SaveWHsIdx).closest("tr"));
-        moduleData.data.selDate_set(ktrlTimeSheets.values[parseInt($("#" + SaveWHsIdx).attr('dayindex')) - 3]);
+    function kwndSaveWHs_OnInit(SaveWHsIdx) {
+    
+        debugger;
+
+        // var ktrlTimeSheets = $("#ktrlTimeSheets").data('kendoTreeList').dataItem($("#" + SaveWHsIdx).closest("tr"));
+        // moduleData.data.selDate_set(ktrlTimeSheets.values[parseInt($("#" + SaveWHsIdx).attr('dayindex')) - 3]);
+
+        moduleData.data.selDate_set(SaveWHsIdx);
+
         GetProjects();
     }
     

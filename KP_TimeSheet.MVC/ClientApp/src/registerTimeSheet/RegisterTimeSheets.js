@@ -2,7 +2,7 @@
 const common_register = require('./common');
 const data = require('./data');
 const createNewWorkHour = require('./createNewWorkHour');
-const my_mainGrid = require('./my_mainGrid');
+const mainGrid = require('./mainGrid');
 const priodlyGrid = require('./bottomPage_priodlyGrid');
 const monthlyGrid = require('./bottomPage_monthlyGrid');
 
@@ -31,13 +31,13 @@ $(document).ready(function () {
         common.doExport('#ktrlTimeSheets', { type: 'doc' });
     });
     
-    my_mainGrid.init(createNewWorkHour,history_sentWorkHour,sendWorkHour,data);
+    mainGrid.init(createNewWorkHour,history_sentWorkHour,sendWorkHour,data);
 
-    my_mainGrid.GetTimeSheets(function(){
+    mainGrid.GetTimeSheets(function(){
         priodlyGrid.InitPeriodlyByProjectsGrid();
         monthlyGrid.InitMonthlyByProjectsGrid();
         common.LoaderHide();
-        period_next_pervious.init(common, common_register,my_mainGrid,
+        period_next_pervious.init(common, common_register,mainGrid,
             monthlyGrid,history_sentWorkHour, priodlyGrid,editWindow, data);
             
         editWindow.init(common_register,data);

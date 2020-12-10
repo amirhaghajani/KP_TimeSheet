@@ -1,7 +1,7 @@
 // const common_register = require('./common');
 // const common = require('../common/common');
 // const data = require('./data');
-// const my_mainGrid = require('./my_mainGrid');
+// const mainGrid = require('./mainGrid');
 // const monthlyGrid = require('./bottomPage_monthlyGrid');
 // const sended_workouts = require('./history_sentWorkHour');
 // const priodlyGrid = require('./bottomPage_priodlyGrid');
@@ -12,12 +12,12 @@ const period_next_pervious = (function(){
 
     const moduleData={};
 
-    function init(common, common_register,  my_mainGrid,monthlyGrid, 
+    function init(common, common_register,  mainGrid,monthlyGrid, 
         history_sentWorkHour, priodlyGrid, editWindow, data) {
 
         moduleData.common_register = common_register;
         moduleData.common = common;
-        moduleData.my_mainGrid = my_mainGrid;
+        moduleData.mainGrid = mainGrid;
         moduleData.monthlyGrid = monthlyGrid;
         moduleData.history_sentWorkHour = history_sentWorkHour;
         moduleData.priodlyGrid = priodlyGrid;
@@ -89,7 +89,7 @@ const period_next_pervious = (function(){
             success: function (response) {
                 moduleData.data.timeSheetData_set(response);
                 moduleData.common_register.removeAndRecreateTreelisDiv();
-                moduleData.my_mainGrid.Init_TimeSheetTreeList();
+                moduleData.mainGrid.Init_TimeSheetTreeList();
                 moduleData.editWindow.Refresh_GrdEditWorkHour();
                 moduleData.history_sentWorkHour.Refresh_GrdMonitorSentWorkHour();
                 moduleData.priodlyGrid.InitPeriodlyByProjectsGrid();
@@ -117,7 +117,7 @@ const period_next_pervious = (function(){
     
                 moduleData.data.timeSheetData_set(response);
                 moduleData.common_register.removeAndRecreateTreelisDiv();
-                moduleData.my_mainGrid.Init_TimeSheetTreeList();
+                moduleData.mainGrid.Init_TimeSheetTreeList();
                 moduleData.editWindow.Refresh_GrdEditWorkHour();
                 moduleData.history_sentWorkHour.Refresh_GrdMonitorSentWorkHour();
                 moduleData.priodlyGrid.InitPeriodlyByProjectsGrid();
@@ -151,7 +151,7 @@ const period_next_pervious = (function(){
 
                 moduleData.data.timeSheetData_set(response);
                 moduleData.common_register.removeAndRecreateTreelisDiv();
-                moduleData.my_mainGrid.Init_TimeSheetTreeList();
+                moduleData.mainGrid.Init_TimeSheetTreeList();
                 moduleData.editWindow.Refresh_GrdEditWorkHour();
                 moduleData.history_sentWorkHour.Refresh_GrdMonitorSentWorkHour();
                 moduleData.priodlyGrid.InitPeriodlyByProjectsGrid();
@@ -205,7 +205,7 @@ const period_next_pervious = (function(){
                 success: function (response) {
                     moduleData.data.timeSheetData_set(response);
                     moduleData.common_register.removeAndRecreateTreelisDiv();
-                    moduleData.my_mainGrid.Init_TimeSheetTreeList();
+                    moduleData.mainGrid.Init_TimeSheetTreeList();
                     moduleData.editWindow.Refresh_GrdEditWorkHour();
                     moduleData.history_sentWorkHour.Refresh_GrdMonitorSentWorkHour();
                     moduleData.common.LoaderHide();
@@ -234,7 +234,7 @@ const period_next_pervious = (function(){
                 success: function (response) {
                     moduleData.data.timeSheetData_set(response);
                     moduleData.common_register.removeAndRecreateTreelisDiv();
-                    moduleData.my_mainGrid.Init_TimeSheetTreeList();
+                    moduleData.mainGrid.Init_TimeSheetTreeList();
                     moduleData.common.LoaderHide();
                 },
                 error: function (e) {
