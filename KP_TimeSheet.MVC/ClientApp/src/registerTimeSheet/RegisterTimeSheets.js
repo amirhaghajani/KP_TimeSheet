@@ -4,7 +4,7 @@ const data = require('./data');
 const createNewWorkHour = require('./createNewWorkHour');
 const mainGrid = require('./mainGrid');
 const priodlyGrid = require('./bottomPage_priodlyGrid');
-const monthlyGrid = require('./bottomPage_monthlyGrid');
+const bottomPage_monthlyGrid = require('./bottomPage_monthlyGrid');
 
 
 const period_next_pervious = require('./period_next_pervious');
@@ -23,7 +23,7 @@ const service = require('./service');
 $(document).ready(function () {
 
     data.init();
-    monthlyGrid.init(data);
+    bottomPage_monthlyGrid.init(data);
     priodlyGrid.init(data);
     service.init(data);
 
@@ -34,20 +34,22 @@ $(document).ready(function () {
         common.doExport('#ktrlTimeSheets', { type: 'doc' });
     });
     
-    mainGrid.init(createNewWorkHour,history_sentWorkHour,sendWorkHour,data, service);
+    mainGrid.init(common, common_register, createNewWorkHour,history_sentWorkHour,sendWorkHour,data, service);
 
     mainGrid.GetTimeSheets(function(){
         priodlyGrid.InitPeriodlyByProjectsGrid();
-        monthlyGrid.InitMonthlyByProjectsGrid();
+        bottomPage_monthlyGrid.InitMonthlyByProjectsGrid();
         common.LoaderHide();
         period_next_pervious.init(common, common_register,mainGrid,
-            monthlyGrid,history_sentWorkHour, priodlyGrid,editWindow, data);
+            bottomPage_monthlyGrid,history_sentWorkHour, priodlyGrid,editWindow, data);
             
-        editWindow.init(common_register,data);
-        history_sentWorkHour.init(common,common_register,history_workHour,data);
+        editWindow.init(mainGrid, common, common_register,data);
+        
         createNewWorkHour.init(common,common_register,period_next_pervious,data,service);
-        history_workHour.init(common, data);
         sendWorkHour.init(mainGrid, common, common_register,data);
+        
+        history_workHour.init(common, data);
+        history_sentWorkHour.init(common,common_register,history_workHour,data);
     });
 });
 

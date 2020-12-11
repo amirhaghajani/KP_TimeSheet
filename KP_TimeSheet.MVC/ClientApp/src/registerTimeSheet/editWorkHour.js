@@ -6,11 +6,11 @@ const editWorkHour = (function () {
 
 	const moduleData={};
 
-	function init(common_register, data, mainGrid) {
-		
+	function init(mainGrid, common,common_register, data) {
+		moduleData.mainGrid = mainGrid;
+		moduleData.common = common;
 		moduleData.common_register = common_register;
 		moduleData.data = data;
-		moduleData.mainGrid = mainGrid;
 
 		$('#btnEditWorkHour').off().on('click', function () {
 			WndEditWorkHours_OnInit();
@@ -102,14 +102,21 @@ const editWorkHour = (function () {
 
 			{
 				title: "حذف ",
-				template: "<button  onclick='DeleteWorkHourEditGrid(this)' type='button' class='btn btn-danger btn-sm' name='info' title='حذف' > حذف</button>",
+				template: "<button  type='button' class='btn btn-danger btn-sm forFound_DeleteWorkHourEditGrid' name='info' title='حذف' > حذف</button>",
 				headerTemplate: "<label class='text-center'> حذف </label>",
 				filterable: false,
 				sortable: false,
 				width: 100
 			},
-			]
+			],
+			dataBound: GrdEditWorkHour_DataBound
 
+		});
+	}
+
+	function GrdEditWorkHour_DataBound(e){
+		$('.forFound_DeleteWorkHourEditGrid').off().on('click',function(){
+			DeleteWorkHourEditGrid(this);
 		});
 	}
 
@@ -119,7 +126,7 @@ const editWorkHour = (function () {
 		var dataItem = grid.dataItem($(e).closest("tr"));
 
 
-		common.LoaderShow();
+		moduleData.common.LoaderShow();
 
 
 		var prmData = JSON.stringify(dataItem);

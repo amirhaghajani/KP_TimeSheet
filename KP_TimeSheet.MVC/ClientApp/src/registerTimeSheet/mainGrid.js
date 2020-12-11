@@ -7,7 +7,9 @@ const myMainGrid = (function () {
 
   const moduleData = {};
 
-  function init(createNewWorkHour, history_sentWorkHour, sendWorkHour, data, service) {
+  function init(common, common_register, createNewWorkHour, history_sentWorkHour, sendWorkHour, data, service) {
+    moduleData.common = common;
+    moduleData.common_register= common_register;
     moduleData.data = data;
     moduleData.history_sentWorkHour = history_sentWorkHour;
     moduleData.createNewWorkHour = createNewWorkHour;

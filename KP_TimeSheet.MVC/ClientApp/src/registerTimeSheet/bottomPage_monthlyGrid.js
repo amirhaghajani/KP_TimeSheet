@@ -20,12 +20,12 @@ const monthlyGrid =(function(){
             data: prmData,
             success: function (response) {
                 moduleData.data.thisMonthdata_set(response);
-                $("#MonthlyPresence").text(response.Presence);
-                $("#MonthlyWorkHour").text(response.Work);
-                $("#MonthlyDefference").text(response.Defference);
-                $("#MonthlyPresencePercent").width(response.Presencepercent);
-                $("#MonthlyWorkHourPercent").width(response.Workpercent);
-                $("#MonthlyDefferencePercent").width(response.Defferencepercent);
+                $("#MonthlyPresence").text(response.presence);
+                $("#MonthlyWorkHour").text(response.work);
+                $("#MonthlyDefference").text(response.defference);
+                $("#MonthlyPresencePercent").width(response.presencepercent);
+                $("#MonthlyWorkHourPercent").width(response.workpercent);
+                $("#MonthlyDefferencePercent").width(response.defferencepercent);
             },
             error: function (e) {
     
@@ -58,10 +58,10 @@ const monthlyGrid =(function(){
             },
             height: 200,
             columns: [{
-                field: "Title",
+                field: "title",
                 title: "عنوان پروژه"
             }, {
-                field: "Hour",
+                field: "hour",
                 title: "ساعت کار ثبت شده    "
             }]
         });

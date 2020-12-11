@@ -20,12 +20,12 @@ const priodGrid = (function () {
             data: prmData,
             success: function (response) {
                 _thisPerioddata = response;
-                $("#LblperHourCurrPeriod").text(response.Presence);
-                $("#LblworkHourCurrPeriod").text(response.Work);
-                $("#LblPeriodicallyDefference").text(response.Defference);
-                $("#PRBperHourCurrPeriod").width(response.Presencepercent);
-                $("#PRBworkHourCurrPeriod").width(response.Workpercent);
-                $("#PRGPeriodicallyDefferencePercent").width(response.Defferencepercent);
+                $("#LblperHourCurrPeriod").text(response.presence);
+                $("#LblworkHourCurrPeriod").text(response.work);
+                $("#LblPeriodicallyDefference").text(response.defference);
+                $("#PRBperHourCurrPeriod").width(response.presencepercent);
+                $("#PRBworkHourCurrPeriod").width(response.workpercent);
+                $("#PRGPeriodicallyDefferencePercent").width(response.defferencepercent);
             },
             error: function (e) {
 
@@ -62,10 +62,10 @@ const priodGrid = (function () {
 
 
             columns: [{
-                field: "Title",
+                field: "title",
                 title: "عنوان پروژه"
             }, {
-                field: "Hour",
+                field: "hour",
                 title: "ساعت کار ثبت شده"
             }]
         })

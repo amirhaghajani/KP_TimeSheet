@@ -72,7 +72,7 @@ const data = require('./data');
 const createNewWorkHour = require('./createNewWorkHour');
 const mainGrid = require('./mainGrid');
 const priodlyGrid = require('./bottomPage_priodlyGrid');
-const monthlyGrid = require('./bottomPage_monthlyGrid');
+const bottomPage_monthlyGrid = require('./bottomPage_monthlyGrid');
 
 
 const period_next_pervious = require('./period_next_pervious');
@@ -91,7 +91,7 @@ const service = require('./service');
 $(document).ready(function () {
 
     data.init();
-    monthlyGrid.init(data);
+    bottomPage_monthlyGrid.init(data);
     priodlyGrid.init(data);
     service.init(data);
 
@@ -102,20 +102,22 @@ $(document).ready(function () {
         common.doExport('#ktrlTimeSheets', { type: 'doc' });
     });
     
-    mainGrid.init(createNewWorkHour,history_sentWorkHour,sendWorkHour,data, service);
+    mainGrid.init(common, common_register, createNewWorkHour,history_sentWorkHour,sendWorkHour,data, service);
 
     mainGrid.GetTimeSheets(function(){
         priodlyGrid.InitPeriodlyByProjectsGrid();
-        monthlyGrid.InitMonthlyByProjectsGrid();
+        bottomPage_monthlyGrid.InitMonthlyByProjectsGrid();
         common.LoaderHide();
         period_next_pervious.init(common, common_register,mainGrid,
-            monthlyGrid,history_sentWorkHour, priodlyGrid,editWindow, data);
+            bottomPage_monthlyGrid,history_sentWorkHour, priodlyGrid,editWindow, data);
             
-        editWindow.init(common_register,data);
-        history_sentWorkHour.init(common,common_register,history_workHour,data);
+        editWindow.init(mainGrid, common, common_register,data);
+        
         createNewWorkHour.init(common,common_register,period_next_pervious,data,service);
-        history_workHour.init(common, data);
         sendWorkHour.init(mainGrid, common, common_register,data);
+        
+        history_workHour.init(common, data);
+        history_sentWorkHour.init(common,common_register,history_workHour,data);
     });
 });
 
@@ -181,12 +183,12 @@ const monthlyGrid =(function(){
             data: prmData,
             success: function (response) {
                 moduleData.data.thisMonthdata_set(response);
-                $("#MonthlyPresence").text(response.Presence);
-                $("#MonthlyWorkHour").text(response.Work);
-                $("#MonthlyDefference").text(response.Defference);
-                $("#MonthlyPresencePercent").width(response.Presencepercent);
-                $("#MonthlyWorkHourPercent").width(response.Workpercent);
-                $("#MonthlyDefferencePercent").width(response.Defferencepercent);
+                $("#MonthlyPresence").text(response.presence);
+                $("#MonthlyWorkHour").text(response.work);
+                $("#MonthlyDefference").text(response.defference);
+                $("#MonthlyPresencePercent").width(response.presencepercent);
+                $("#MonthlyWorkHourPercent").width(response.workpercent);
+                $("#MonthlyDefferencePercent").width(response.defferencepercent);
             },
             error: function (e) {
     
@@ -219,10 +221,10 @@ const monthlyGrid =(function(){
             },
             height: 200,
             columns: [{
-                field: "Title",
+                field: "title",
                 title: "عنوان پروژه"
             }, {
-                field: "Hour",
+                field: "hour",
                 title: "ساعت کار ثبت شده    "
             }]
         });
@@ -269,12 +271,12 @@ const priodGrid = (function () {
             data: prmData,
             success: function (response) {
                 _thisPerioddata = response;
-                $("#LblperHourCurrPeriod").text(response.Presence);
-                $("#LblworkHourCurrPeriod").text(response.Work);
-                $("#LblPeriodicallyDefference").text(response.Defference);
-                $("#PRBperHourCurrPeriod").width(response.Presencepercent);
-                $("#PRBworkHourCurrPeriod").width(response.Workpercent);
-                $("#PRGPeriodicallyDefferencePercent").width(response.Defferencepercent);
+                $("#LblperHourCurrPeriod").text(response.presence);
+                $("#LblworkHourCurrPeriod").text(response.work);
+                $("#LblPeriodicallyDefference").text(response.defference);
+                $("#PRBperHourCurrPeriod").width(response.presencepercent);
+                $("#PRBworkHourCurrPeriod").width(response.workpercent);
+                $("#PRGPeriodicallyDefferencePercent").width(response.defferencepercent);
             },
             error: function (e) {
 
@@ -311,10 +313,10 @@ const priodGrid = (function () {
 
 
             columns: [{
-                field: "Title",
+                field: "title",
                 title: "عنوان پروژه"
             }, {
-                field: "Hour",
+                field: "hour",
                 title: "ساعت کار ثبت شده"
             }]
         })
@@ -636,11 +638,11 @@ const editWorkHour = (function () {
 
 	const moduleData={};
 
-	function init(common_register, data, mainGrid) {
-		
+	function init(mainGrid, common,common_register, data) {
+		moduleData.mainGrid = mainGrid;
+		moduleData.common = common;
 		moduleData.common_register = common_register;
 		moduleData.data = data;
-		moduleData.mainGrid = mainGrid;
 
 		$('#btnEditWorkHour').off().on('click', function () {
 			WndEditWorkHours_OnInit();
@@ -732,14 +734,21 @@ const editWorkHour = (function () {
 
 			{
 				title: "حذف ",
-				template: "<button  onclick='DeleteWorkHourEditGrid(this)' type='button' class='btn btn-danger btn-sm' name='info' title='حذف' > حذف</button>",
+				template: "<button  type='button' class='btn btn-danger btn-sm forFound_DeleteWorkHourEditGrid' name='info' title='حذف' > حذف</button>",
 				headerTemplate: "<label class='text-center'> حذف </label>",
 				filterable: false,
 				sortable: false,
 				width: 100
 			},
-			]
+			],
+			dataBound: GrdEditWorkHour_DataBound
 
+		});
+	}
+
+	function GrdEditWorkHour_DataBound(e){
+		$('.forFound_DeleteWorkHourEditGrid').off().on('click',function(){
+			DeleteWorkHourEditGrid(this);
 		});
 	}
 
@@ -749,7 +758,7 @@ const editWorkHour = (function () {
 		var dataItem = grid.dataItem($(e).closest("tr"));
 
 
-		common.LoaderShow();
+		moduleData.common.LoaderShow();
 
 
 		var prmData = JSON.stringify(dataItem);
@@ -1139,7 +1148,9 @@ const myMainGrid = (function () {
 
   const moduleData = {};
 
-  function init(createNewWorkHour, history_sentWorkHour, sendWorkHour, data, service) {
+  function init(common, common_register, createNewWorkHour, history_sentWorkHour, sendWorkHour, data, service) {
+    moduleData.common = common;
+    moduleData.common_register= common_register;
     moduleData.data = data;
     moduleData.history_sentWorkHour = history_sentWorkHour;
     moduleData.createNewWorkHour = createNewWorkHour;
@@ -1839,9 +1850,6 @@ const sendWorkHour = (function () {
 	}
 
 	function SendWorkHour_OnClick(e) {
-
-		debugger;
-
 		var grid = $("#GRDSendWorkHours").data("kendoGrid");
 		var dataItem = grid.dataItem($(e).closest("tr"));
 
