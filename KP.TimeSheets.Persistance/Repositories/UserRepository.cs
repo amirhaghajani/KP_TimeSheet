@@ -51,7 +51,7 @@ namespace KP.TimeSheets.Persistance
         public User GetByUserName(string userName)
         {
             User result = null;
-                result = _RASContext.Users.FirstOrDefault(item => item.UserName.Trim().Contains(userName));
+                result = _RASContext.Users.FirstOrDefault(item => item.UserName.Trim()==userName);
                        return result;
         }
 

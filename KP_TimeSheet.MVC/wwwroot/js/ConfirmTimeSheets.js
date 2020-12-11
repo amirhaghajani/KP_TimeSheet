@@ -233,12 +233,12 @@ function GetUsers() {
 		success: function (response) {
 			_Users = response;
 			$("#kddlUsers").kendoDropDownList({
-				dataTextField: "FullName",
-				dataValueField: "ID",
+				dataTextField: "fullName",
+				dataValueField: "id",
 				filter: "contains",
 				optionLabel: {
-					FullName: "انتخاب کاربر . . . ",
-					ID: ""
+					fullName: "انتخاب کاربر . . . ",
+					id: ""
 				},
 				dataSource: {
 					transport: {
@@ -261,7 +261,7 @@ function GetUsers() {
 function kddlUsers_OnChange(e) {
 
 	common.loaderShow();
-	_UserId = $("#kddlUsers").data("kendoDropDownList").dataItem($("#kddlUsers").data("kendoDropDownList").select()).ID;
+	_UserId = $("#kddlUsers").data("kendoDropDownList").dataItem($("#kddlUsers").data("kendoDropDownList").select()).id;
 
 	if (_UserId != "") {
 		$.ajax({
@@ -297,7 +297,7 @@ function Init_TimeSheetTreeListConfirm(data) {
 
 	var ktrlTSColumnsConfirm = ktrlTimeSheetsConfirm_OnInitColumns(data);
 	var counter = 0;
-	var lenth = data[0].Values.length;
+	var lenth = data[0].values.length;
 
 	$("#ktrlTimeSheetsConfirm").kendoTreeList({
 		dataSource: {
@@ -346,7 +346,7 @@ function ktrlTimeSheetsConfirm_OnInitColumns(response) {
 
 	var colTitle = new KTRColumnConfirm();
 
-	colTitle.field = "Title";
+	colTitle.field = "title";
 	colTitle.title = "عنوان";
 	colTitle.hidden = false;
 	colTitle.width = 150;
@@ -357,13 +357,13 @@ function ktrlTimeSheetsConfirm_OnInitColumns(response) {
 	var templateFunctions = CreateTemplateColumnsFunction();
 	///-----------------------------------------------------------------
 
-	for (var i = 0; i < response[0].Values.length; i++) {
+	for (var i = 0; i < response[0].values.length; i++) {
 
-		var tsDate = response[0].Values[i];
+		var tsDate = response[0].values[i];
 		var colDate = new KTRColumnConfirm();
-		colDate.field = "Values[" + i + "].Value";
+		colDate.field = "values[" + i + "].Value";
 		colDate.title = tsDate.Title;
-		colDate.headerTemplate = "<h6><b>" + tsDate.PersianDate + "</b></h6><h6>" + tsDate.PersianDay + "</h6>";
+		colDate.headerTemplate = "<h6><b>" + tsDate.persianDate + "</b></h6><h6>" + tsDate.persianDay + "</h6>";
 		colDate.hidden = false;
 		//تخصیص متد به تپلیت فقط باید ایندکس ها تنظیم گرددند
 		colDate.template = templateFunctions[i];
@@ -386,23 +386,23 @@ function KTRColumn() {
 
 function TreeListTemplateColumn(dataItem, index) {
 
-	if (index < dataItem.Values.length) {
-		if (dataItem.Values[index].Value != "0:00" && dataItem.Type == "TaskNotApprove" && dataItem.Values[index].Value != "") {
-			return dataItem.Values[index].Value +
+	if (index < dataItem.values.length) {
+		if (dataItem.values[index].value != "0:00" && dataItem.Type == "TaskNotApprove" && dataItem.values[index].value != "") {
+			return dataItem.values[index].value +
 				"<button title='تایید کارکرد' onClick='ApproveTask(\"" +
 				dataItem.UID + "\"," + index + ")' class='pull-left btn btn-success btn-xs' style='margin-right:5px'><i class='fa fa-check-square'></i></button>" +
 				"<button title='رد کارکرد' onClick='DenyTask(\"" +
 				dataItem.UID + "\"," + index + ")' class='pull-left btn btn-warning btn-xs' style='margin-left:5px'><i class='fa fa-times'></i></button>";
 		}
 		else {
-			if (dataItem.Values[index].Value == "0:00") {
-				return "<b class='text-warning'>" + dataItem.Values[index].Value + " </b>"
+			if (dataItem.values[index].value == "0:00") {
+				return "<b class='text-warning'>" + dataItem.values[index].value + " </b>"
 			}
-			else if (dataItem.Values[index].Value == "") {
+			else if (dataItem.values[index].value == "") {
 				return "<b class='text-warning'> </b>"
 			}
 			else {
-				return "<b>" + dataItem.Values[index].Value + " </b>"
+				return "<b>" + dataItem.values[index].value + " </b>"
 			}
 		}
 	} else {
@@ -656,10 +656,10 @@ function DenyTask(id, index) {
 
 function InitMonthlyByProjectsGridConfirm() {
 
-	_UserId = $("#kddlUsers").data("kendoDropDownList").dataItem($("#kddlUsers").data("kendoDropDownList").select()).ID;
+	_UserId = $("#kddlUsers").data("kendoDropDownList").dataItem($("#kddlUsers").data("kendoDropDownList").select()).id;
 
 	var json = {
-		value: _TimeSheetDataConfirm[0].Values[0],
+		value: _TimeSheetDataConfirm[0].values[0],
 		userid: _UserId
 	}
 
@@ -674,10 +674,10 @@ function InitMonthlyByProjectsGridConfirm() {
 		success: function (response) {
 
 			_thisMonthdataConfirm = response;
-			$("#MonthlyPresenceconfirmProgress").text(response.Presence);
-			$("#MonthlyWorkHourconfirmProgress").text(response.Work);
-			$("#MonthlyPresenceconfirm").width(response.Presencepercent);
-			$("#MonthlyWorkHourconfirm").width(response.Workpercent);
+			$("#MonthlyPresenceconfirmProgress").text(response.presence);
+			$("#MonthlyWorkHourconfirmProgress").text(response.work);
+			$("#MonthlyPresenceconfirm").width(response.presencepercent);
+			$("#MonthlyWorkHourconfirm").width(response.workpercent);
 
 			common.loaderHide();
 		},
@@ -704,10 +704,10 @@ function InitMonthlyByProjectsGridConfirm() {
 				},
 				height: 200,
 				columns: [{
-					field: "Title",
+					field: "title",
 					title: "عنوان پروژه"
 				}, {
-					field: "Hour",
+					field: "hour",
 					title: "ساعت کار ثبت شده    "
 				}]
 			});
@@ -722,9 +722,9 @@ function InitMonthlyByProjectsGridConfirm() {
 }
 
 function InitPeriodlyByProjectsGridConfirm() {
-	_UserId = $("#kddlUsers").data("kendoDropDownList").dataItem($("#kddlUsers").data("kendoDropDownList").select()).ID;
+	_UserId = $("#kddlUsers").data("kendoDropDownList").dataItem($("#kddlUsers").data("kendoDropDownList").select()).id;
 	var json = {
-		values: _TimeSheetDataConfirm[0].Values,
+		values: _TimeSheetDataConfirm[0].values,
 		userid: _UserId
 	}
 
@@ -739,10 +739,10 @@ function InitPeriodlyByProjectsGridConfirm() {
 
 		success: function (response) {
 
-			$("#PeriodicallyPresenceconfirmProgress").text(response.Presence);
-			$("#PeriodicallyWorkHourconfirmProgress").text(response.Work);
-			$("#PeriodicallyPresenceconfirm").width(response.Presencepercent);
-			$("#PeriodicallyWorkHourconfirm").width(response.Workpercent);
+			$("#PeriodicallyPresenceconfirmProgress").text(response.presence);
+			$("#PeriodicallyWorkHourconfirmProgress").text(response.work);
+			$("#PeriodicallyPresenceconfirm").width(response.presencepercent);
+			$("#PeriodicallyWorkHourconfirm").width(response.workpercent);
 		},
 		error: function (e) {
 
@@ -769,10 +769,10 @@ function InitPeriodlyByProjectsGridConfirm() {
 
 
 				columns: [{
-					field: "Title",
+					field: "title",
 					title: "عنوان پروژه"
 				}, {
-					field: "Hour",
+					field: "hour",
 					title: "ساعت کار ثبت شده"
 				}]
 			})
@@ -785,7 +785,7 @@ function InitPeriodlyByProjectsGridConfirm() {
 
 function btnSendPeriodsconfirm_Onclick() {
 	common.loaderShow();
-	_UserId = $("#kddlUsers").data("kendoDropDownList").dataItem($("#kddlUsers").data("kendoDropDownList").select()).ID;
+	_UserId = $("#kddlUsers").data("kendoDropDownList").dataItem($("#kddlUsers").data("kendoDropDownList").select()).id;
 	WNDSelectPeriod_OnClose()
 	if ($('#chkweeklyconfirm').is(':checked')) {
 		$.ajax({
@@ -843,9 +843,9 @@ function btnSendPeriodsconfirm_Onclick() {
 function GetPreviousPeriodconfirm() {
 	common.loaderShow();
 
-	_UserId = $("#kddlUsers").data("kendoDropDownList").dataItem($("#kddlUsers").data("kendoDropDownList").select()).ID;
+	_UserId = $("#kddlUsers").data("kendoDropDownList").dataItem($("#kddlUsers").data("kendoDropDownList").select()).id;
 	_TimeSheetDataConfirm[0].Values[0].UserId = _UserId;
-	var prmData = JSON.stringify(_TimeSheetDataConfirm[0].Values[0]);
+	var prmData = JSON.stringify(_TimeSheetDataConfirm[0].values[0]);
 
 	$.ajax({
 		type: "Post",
@@ -873,9 +873,9 @@ function GetPreviousPeriodconfirm() {
 function GetCurrentPeriodconfirm() {
 	common.loaderShow();
 
-	_UserId = $("#kddlUsers").data("kendoDropDownList").dataItem($("#kddlUsers").data("kendoDropDownList").select()).ID;
+	_UserId = $("#kddlUsers").data("kendoDropDownList").dataItem($("#kddlUsers").data("kendoDropDownList").select()).id;
 	_TimeSheetDataConfirm[0].Values[0].UserId = _UserId;
-	var prmData = JSON.stringify(_TimeSheetDataConfirm[0].Values);
+	var prmData = JSON.stringify(_TimeSheetDataConfirm[0].values);
 
 	$.ajax({
 		type: "Post",
@@ -903,9 +903,9 @@ function GetCurrentPeriodconfirm() {
 function GetNextPeriodconfirm() {
 	common.loaderShow();
 
-	_UserId = $("#kddlUsers").data("kendoDropDownList").dataItem($("#kddlUsers").data("kendoDropDownList").select()).ID;
-	_TimeSheetDataConfirm[0].Values[_TimeSheetDataConfirm[0].Values.length - 1].UserId = _UserId;
-	var prmData = JSON.stringify(_TimeSheetDataConfirm[0].Values[_TimeSheetDataConfirm[0].Values.length - 1]);
+	_UserId = $("#kddlUsers").data("kendoDropDownList").dataItem($("#kddlUsers").data("kendoDropDownList").select()).id;
+	_TimeSheetDataConfirm[0].values[_TimeSheetDataConfirm[0].values.length - 1].UserId = _UserId;
+	var prmData = JSON.stringify(_TimeSheetDataConfirm[0].values[_TimeSheetDataConfirm[0].values.length - 1]);
 
 	$.ajax({
 		type: "Post",
