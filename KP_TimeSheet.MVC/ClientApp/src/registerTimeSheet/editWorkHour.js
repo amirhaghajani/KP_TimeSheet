@@ -39,7 +39,7 @@ const editWorkHour = (function () {
 				"Maximize",
 				"Close"
 			],
-			open: moduleData.common_register.adjustSize,
+			open: moduleData.common.adjustSize,
 		}).data("kendoWindow").center().open();
 	}
 
@@ -126,7 +126,7 @@ const editWorkHour = (function () {
 		var dataItem = grid.dataItem($(e).closest("tr"));
 
 
-		moduleData.common.LoaderShow();
+		moduleData.common.loaderShow();
 
 
 		var prmData = JSON.stringify(dataItem);
@@ -141,7 +141,7 @@ const editWorkHour = (function () {
 				Refresh_GrdEditWorkHour();
 
 				moduleData.mainGrid.RefreshTimeSheet();
-				moduleData.common.LoaderHide();
+				moduleData.common.loaderHide();
 			},
 			error: function (e) {
 				alert(dataItem.ID);

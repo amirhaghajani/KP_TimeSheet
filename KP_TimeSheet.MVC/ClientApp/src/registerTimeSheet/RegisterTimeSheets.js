@@ -39,7 +39,7 @@ $(document).ready(function () {
     mainGrid.GetTimeSheets(function(){
         priodlyGrid.InitPeriodlyByProjectsGrid();
         bottomPage_monthlyGrid.InitMonthlyByProjectsGrid();
-        common.LoaderHide();
+        common.loaderHide();
         period_next_pervious.init(common, common_register,mainGrid,
             bottomPage_monthlyGrid,history_sentWorkHour, priodlyGrid,editWindow, data);
             

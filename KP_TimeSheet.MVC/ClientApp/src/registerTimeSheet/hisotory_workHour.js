@@ -17,7 +17,7 @@ const historyWorkHour = (function () {
 
 	function Init_GRDHistory(e) {
 
-		moduleData.common.LoaderShow();
+		moduleData.common.loaderShow();
 
 		var grid = $("#GrdMonitorSentWorkHour").data("kendoGrid");
 		var dataItem = grid.dataItem($(e).closest("tr"));
@@ -32,7 +32,7 @@ const historyWorkHour = (function () {
 				moduleData.data.todayHistory_set(response);
 				$("#WorkHourHistory").data("kendoGrid").dataSource.read();
 				ShowHistory();
-				moduleData.common.LoaderHide();
+				moduleData.common.loaderHide();
 			},
 			error: function (e) {
 

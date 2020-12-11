@@ -165,7 +165,7 @@ const sendWorkHour = (function () {
 				"Maximize",
 				"Close"
 			],
-			open: moduleData.common_register.adjustSize,
+			open: moduleData.common.adjustSize,
 		}).data("kendoWindow").center().open();
 
 		GRDSendWorkHours_onInit(moduleData.data.dayIndex_get());
@@ -195,9 +195,9 @@ const sendWorkHour = (function () {
 				$("#SumSentWorkHours").text(_AllSentCount);
 				for (var i = 0; i < response.length; i++) {
 					if (response[0] == "عملیات ارسال کارکرد ها با موفقیت انجام گردید") {
-						moduleData.common.Notify(response[i], "success");
+						moduleData.common.notify(response[i], "success");
 					} else {
-						moduleData.common.Notify(response[i], "danger");
+						moduleData.common.notify(response[i], "danger");
 					}
 				}
 
@@ -230,7 +230,7 @@ const sendWorkHour = (function () {
 			success: function () {
 				//wndSendWorkHour_OnClose();
 				Refresh_GRDSendWorkHour();
-				moduleData.common.Notify("انجام عملیات  ارسال با موفقیت به انجام رسید.", "success");
+				moduleData.common.notify("انجام عملیات  ارسال با موفقیت به انجام رسید.", "success");
 			},
 			error: function (e) {
 
@@ -242,7 +242,7 @@ const sendWorkHour = (function () {
 	function DeleteWorkHourSendGrid(e) {
 		var grid = $("#GRDSendWorkHours").data("kendoGrid");
 		var dataItem = grid.dataItem($(e).closest("tr"));
-		moduleData.common.LoaderShow();
+		moduleData.common.loaderShow();
 		var prmData = JSON.stringify(dataItem);
 		$.ajax({
 			type: "Post",
@@ -253,7 +253,7 @@ const sendWorkHour = (function () {
 			success: function (response) {
 				Refresh_GRDSendWorkHour();
 				moduleData.mainGrid.RefreshTimeSheet();
-				moduleData.common.LoaderHide();
+				moduleData.common.loaderHide();
 			},
 			error: function (e) {
 				alert(dataItem.ID);

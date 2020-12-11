@@ -54,7 +54,7 @@ const module_createNewRorkHour =(function(){
     function ddlProjects_OnInit(response) {
     
         if (response.length == 0 ) {
-            moduleData.common.Notify("کاربر گرامی شما فاقد پروژه میباشید", "danger");
+            moduleData.common.notify("کاربر گرامی شما فاقد پروژه میباشید", "danger");
             kwndSaveWHs_OnClose();
             return
         } else {
@@ -91,7 +91,7 @@ const module_createNewRorkHour =(function(){
                     "Maximize",
                     "Close"
                 ],
-                open: moduleData.common_register.adjustSize,
+                open: moduleData.common.adjustSize,
                 close: ResetSaveWindow
             }).data("kendoWindow").center().open();
         }
@@ -163,7 +163,7 @@ const module_createNewRorkHour =(function(){
         }
     
     
-        moduleData.common.LoaderShow();
+        moduleData.common.loaderShow();
     
         kwndSaveWHs_OnClose();
         var prmData = JSON.stringify(workHourJson);
@@ -177,11 +177,11 @@ const module_createNewRorkHour =(function(){
         kwndSaveWHs_OnClose();
         if(response.lenth > 0){
             for (var i = 0; i < response.length; i++) {
-                moduleData.common.Notify(response[i], "danger");
+                moduleData.common.notify(response[i], "danger");
             } 
         }
         else {
-            moduleData.common.Notify("ثبت کاکرد با موفقیت انجام شد", "success");
+            moduleData.common.notify("ثبت کاکرد با موفقیت انجام شد", "success");
         }
     }
     

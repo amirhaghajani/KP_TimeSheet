@@ -8,12 +8,14 @@ module.exports = function (grunt) {
       'srcArray':[
         'src/layout/sideBar.js',
         'src/layout/site.js',
-        'src/registerTimeSheet/RegisterTimeSheets.js'
+        'src/registerTimeSheet/RegisterTimeSheets.js',
+        'src/confirmTimeSheet/ConfirmTimeSheets.js'
       ],
       'targetArray':[
         '../wwwroot/js/sideBar.js', 
         '../wwwroot/js/site.js', 
         '../wwwroot/js/RegisterTimeSheets.js',
+        '../wwwroot/js/ConfirmTimeSheets.js'
       ],
       'srcCSS':[
         'node_modules/bootstrap/dist/css/bootstrap.min.css',

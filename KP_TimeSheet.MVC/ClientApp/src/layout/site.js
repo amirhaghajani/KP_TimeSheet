@@ -2,10 +2,10 @@ const common = require('../common/common');
 
 var _YesterdayData = [];
 var _ThisMonthData = [];
-common.LoaderShow();
+common.loaderShow();
 
 $(document).ready(function () {
-    common.LoaderShow();
+    common.loaderShow();
     GetHomeData();
 });
 function adjustSize() {
@@ -103,7 +103,7 @@ function Page_OnInitThisMonth(response) {
     $("#PresenceThisMonthpercent").width(response.Presencepercent );
     $("#workThisMonthpercent").width(response.Workpercent );
     $("#differentThisMonthpercent").width(response.Defferencepercent );
-    common.LoaderHide()
+    common.loaderHide()
 
 }
 

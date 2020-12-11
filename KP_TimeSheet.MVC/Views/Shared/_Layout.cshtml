@@ -9,7 +9,8 @@
 <body dir="rtl">
     
     <div id="Loader" class="glass" style="display:none;">
-        <div style="position:absolute; right:45%; top:40% "><img style="width:200px; z-index:11000" class="img-responsive" src="~/Images/Cube.gif" /></div>
+        <div style="position:absolute; right:45%; top:40% ">
+            <img style="width:200px; z-index:11000" class="img-responsive" src="~/Images/Cube.gif" /></div>
     </div>
 
     <div class="main-wrapper">
@@ -30,10 +31,11 @@
                 </div>
                 <div class="col-xs-4"></div>
                 <div class="col-xs-2" style="text-align:left;">
-                    <div onclick="ShowAndHideUserMenu()" style="top:20px;" class="ras-dropdown ras-border-menu ras-pointer ">
+                    <div id="div_ShowAndHideUserMenu11111" style="top:20px;" class="ras-dropdown ras-border-menu">
                         <div style="color:white;" class="form-inline">
-                            <img class="image img-circle img-responsive " style="max-height:30px;left:-50px ;position:absolute" src="~/Images/User.png" />
-                            <div style="margin-top:6px"><b style="font-size:15px">@User.Identity.Name  کاربر</b></div>
+                            <img class="image img-circle img-responsive " style="max-height:30px;left:-50px ;position:absolute" 
+                                    src="~/Images/User.png" />
+                            <div style="margin-top:6px"><b style="font-size:15px">@ViewBag.CurrentUserTitle  کاربر</b></div>
                         </div>
 
                         <div class="ras-dropdown-content" style="margin-left:5px;">

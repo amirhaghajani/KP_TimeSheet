@@ -1,68 +1,96 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+const common = (function () {
+	function doExport(selector, params) {
+		var options = {
+			//ignoreRow: [1,11,12,-2],
+			//ignoreColumn: [0,-1],
+			tableName: 'Countries',
+			worksheetName: 'Countries by population'
+		};
 
-function doExport(selector, params) {
-    var options = {
-        //ignoreRow: [1,11,12,-2],
-        //ignoreColumn: [0,-1],
-        tableName: 'Countries',
-        worksheetName: 'Countries by population'
-    };
+		$.extend(true, options, params);
 
-    $.extend(true, options, params);
+		$(selector).tableExport(options);
+	}
 
-    $(selector).tableExport(options);
-}
+	function notify(messege, type) {
+		$.notify({
+			//icon: 'glyphicon glyphicon-warning-sign',
+			//title: 'Bootstrap notify',
+			message: "<strong >" + messege + "</strong>",
+			//url: 'https://github.com/mouse0270/bootstrap-notify',
+			//target: '_blank'
+		}, {
+			// settings
+			//element: 'body',
+			//position: null,
+			type: type,
+			allow_dismiss: false,
+			//newest_on_top: false,
+			//showProgressbar: true,
+			placement: {
+				from: "top",
+				align: "left"
+			},
+			offset: 20,
+			spacing: 10,
+			z_index: 10100,
+			delay: 1000,
+			timer: 1000,
+			//url_target: '_blank',
+			//mouse_over: null,
+			animate: {
+				enter: 'animated fadeInDown',
+				exit: 'animated fadeOutUp'
+			},
+			//onShow: null,
+			//onShown: null,
+			//onClose: null,
+			//onClosed: null,
+			//icon_type: 'class',
+			// template: "<div style='height:15px;width:20%' class='shadow' >" + messege + "</div>"
+		});
+	}
 
-function notify(messege, type) {
-   
-    
-    $.notify({
-        //icon: 'glyphicon glyphicon-warning-sign',
-        //title: 'Bootstrap notify',
-        message:"<strong >"+ messege +"</strong>",
-        //url: 'https://github.com/mouse0270/bootstrap-notify',
-        //target: '_blank'
-    }, {
-            // settings
-            //element: 'body',
-            //position: null,
-            type: type,
-            allow_dismiss: false,
-            //newest_on_top: false,
-            //showProgressbar: true,
-            placement: {
-                from: "top",
-                align: "left"
-            },
-            offset: 20,
-            spacing: 10,
-            z_index: 10100,
-            delay: 1000,
-            timer: 1000,
-            //url_target: '_blank',
-            //mouse_over: null,
-            animate: {
-                enter: 'animated fadeInDown',
-               exit: 'animated fadeOutUp'
-           },
-            //onShow: null,
-            //onShown: null,
-            //onClose: null,
-            //onClosed: null,
-            //icon_type: 'class',
-           // template: "<div style='height:15px;width:20%' class='shadow' >" + messege + "</div>"
-        });
-    }
+	function loaderShow() {
+		$("#Loader").fadeIn(500);
+	}
+
+	function loaderHide() {
+		$("#Loader").fadeOut(500);
+	}
+
+
+	function adjustSize() {
+		// For small screens, maximize the window when it is shown.
+		// You can also make the check again in $(window).resize if you want to
+		// but you will have to change the way to reference the widget and then
+		// to use $("#theWindow").data("kendoWindow").
+		// Alternatively, you may want to .center() the window.
+
+		if ($(window).width() < 800 || $(window).height() < 600) {
+			this.maximize();
+		}
+	}
+
+	return {
+		loaderShow: loaderShow,
+		loaderHide: loaderHide,
+		Notify: notify,
+		DoExport: doExport,
+		adjustSize: adjustSize
+
+	};
+
+})();
+
 
 module.exports = {
-    'LoaderShow': function () {
-        $("#Loader").fadeIn(500);
-    },
-    'LoaderHide':function(){
-        $("#Loader").fadeOut(500);
-    },
-    'Notify':notify,
-    'doExport':doExport
+	'loaderShow': common.loaderShow,
+	'loaderHide': common.loaderHide,
+	'notify': common.Notify,
+	'doExport': common.DoExport,
+	'adjustSize': common.adjustSize
 };
 
 },{}],2:[function(require,module,exports){
@@ -107,7 +135,7 @@ $(document).ready(function () {
     mainGrid.GetTimeSheets(function(){
         priodlyGrid.InitPeriodlyByProjectsGrid();
         bottomPage_monthlyGrid.InitMonthlyByProjectsGrid();
-        common.LoaderHide();
+        common.loaderHide();
         period_next_pervious.init(common, common_register,mainGrid,
             bottomPage_monthlyGrid,history_sentWorkHour, priodlyGrid,editWindow, data);
             
@@ -337,17 +365,7 @@ module.exports = {
     init:priodGrid.init
 };
 },{}],5:[function(require,module,exports){
-function adjustSize() {
-    // For small screens, maximize the window when it is shown.
-    // You can also make the check again in $(window).resize if you want to
-    // but you will have to change the way to reference the widget and then
-    // to use $("#theWindow").data("kendoWindow").
-    // Alternatively, you may want to .center() the window.
 
-    if ($(window).width() < 800 || $(window).height() < 600) {
-        this.maximize();
-    }
-}
 
 function removeAndRecreateTreelisDiv() {
     $("#ktrlTimeSheets").data("kendoTreeList").destroy();
@@ -356,7 +374,6 @@ function removeAndRecreateTreelisDiv() {
 }
 
 module.exports={
-    'adjustSize': adjustSize,
     'removeAndRecreateTreelisDiv':removeAndRecreateTreelisDiv
 }
 },{}],6:[function(require,module,exports){
@@ -416,7 +433,7 @@ const module_createNewRorkHour =(function(){
     function ddlProjects_OnInit(response) {
     
         if (response.length == 0 ) {
-            moduleData.common.Notify("کاربر گرامی شما فاقد پروژه میباشید", "danger");
+            moduleData.common.notify("کاربر گرامی شما فاقد پروژه میباشید", "danger");
             kwndSaveWHs_OnClose();
             return
         } else {
@@ -453,7 +470,7 @@ const module_createNewRorkHour =(function(){
                     "Maximize",
                     "Close"
                 ],
-                open: moduleData.common_register.adjustSize,
+                open: moduleData.common.adjustSize,
                 close: ResetSaveWindow
             }).data("kendoWindow").center().open();
         }
@@ -525,7 +542,7 @@ const module_createNewRorkHour =(function(){
         }
     
     
-        moduleData.common.LoaderShow();
+        moduleData.common.loaderShow();
     
         kwndSaveWHs_OnClose();
         var prmData = JSON.stringify(workHourJson);
@@ -539,11 +556,11 @@ const module_createNewRorkHour =(function(){
         kwndSaveWHs_OnClose();
         if(response.lenth > 0){
             for (var i = 0; i < response.length; i++) {
-                moduleData.common.Notify(response[i], "danger");
+                moduleData.common.notify(response[i], "danger");
             } 
         }
         else {
-            moduleData.common.Notify("ثبت کاکرد با موفقیت انجام شد", "success");
+            moduleData.common.notify("ثبت کاکرد با موفقیت انجام شد", "success");
         }
     }
     
@@ -671,7 +688,7 @@ const editWorkHour = (function () {
 				"Maximize",
 				"Close"
 			],
-			open: moduleData.common_register.adjustSize,
+			open: moduleData.common.adjustSize,
 		}).data("kendoWindow").center().open();
 	}
 
@@ -758,7 +775,7 @@ const editWorkHour = (function () {
 		var dataItem = grid.dataItem($(e).closest("tr"));
 
 
-		moduleData.common.LoaderShow();
+		moduleData.common.loaderShow();
 
 
 		var prmData = JSON.stringify(dataItem);
@@ -773,7 +790,7 @@ const editWorkHour = (function () {
 				Refresh_GrdEditWorkHour();
 
 				moduleData.mainGrid.RefreshTimeSheet();
-				moduleData.common.LoaderHide();
+				moduleData.common.loaderHide();
 			},
 			error: function (e) {
 				alert(dataItem.ID);
@@ -836,7 +853,7 @@ const historyWorkHour = (function () {
 
 	function Init_GRDHistory(e) {
 
-		moduleData.common.LoaderShow();
+		moduleData.common.loaderShow();
 
 		var grid = $("#GrdMonitorSentWorkHour").data("kendoGrid");
 		var dataItem = grid.dataItem($(e).closest("tr"));
@@ -851,7 +868,7 @@ const historyWorkHour = (function () {
 				moduleData.data.todayHistory_set(response);
 				$("#WorkHourHistory").data("kendoGrid").dataSource.read();
 				ShowHistory();
-				moduleData.common.LoaderHide();
+				moduleData.common.loaderHide();
 			},
 			error: function (e) {
 
@@ -1008,7 +1025,7 @@ const hisotrSentWorkHour = (function () {
 				"Maximize",
 				"Close"
 			],
-			open: moduleData.common_register.adjustSize,
+			open: moduleData.common.adjustSize,
 		}).data("kendoWindow").center().open();
 
 		$("#GrdMonitorSentWorkHour").kendoGrid({
@@ -1084,7 +1101,7 @@ const hisotrSentWorkHour = (function () {
 	}
 
 	function ShowCurrentDaySendWorkHours(dayIndex) {
-		moduleData.common.LoaderShow();
+		moduleData.common.loaderShow();
 		moduleData.hisotory_workHour.Create_GrdHistory();
 
 		var timeSheetData = moduleData.data.timeSheetData_get();
@@ -1110,7 +1127,7 @@ const hisotrSentWorkHour = (function () {
 				$("#GrdMonitorSentWorkHour").data("kendoGrid").dataSource.read();
 				Open_WndMonitorSentWorkHours();
 
-				moduleData.common.LoaderHide();
+				moduleData.common.loaderHide();
 			},
 			error: function (e) {
 				var a = e;
@@ -1350,7 +1367,7 @@ const myMainGrid = (function () {
     moduleData.common_register.removeAndRecreateTreelisDiv();
     Init_TimeSheetTreeList();
     //$("#ktrlTimeSheets").data("kendoTreeList").dataSource.read();
-    moduleData.common.LoaderHide();
+    moduleData.common.loaderHide();
   }
 
   return {
@@ -1454,7 +1471,7 @@ const period_next_pervious = (function(){
     }
     
     function GetNextPeriod() {
-        moduleData.common.LoaderShow();
+        moduleData.common.loaderShow();
     
         var prmData = JSON.stringify(moduleData.data.timeSheetData_get()[0].values[moduleData.data.timeSheetData_get()[0].values.length - 1]);
     
@@ -1472,7 +1489,7 @@ const period_next_pervious = (function(){
                 moduleData.history_sentWorkHour.Refresh_GrdMonitorSentWorkHour();
                 moduleData.priodlyGrid.InitPeriodlyByProjectsGrid();
                 moduleData.monthlyGrid.InitMonthlyByProjectsGrid();
-                moduleData.common.LoaderHide();
+                moduleData.common.loaderHide();
             },
             error: function (e) {
     
@@ -1481,7 +1498,7 @@ const period_next_pervious = (function(){
     }
     
     function GetPreviousPeriod() {
-        moduleData.common.LoaderShow();
+        moduleData.common.loaderShow();
     
         var prmData = JSON.stringify(moduleData.data.timeSheetData_get()[0].values[0]);
     
@@ -1501,7 +1518,7 @@ const period_next_pervious = (function(){
                 moduleData.priodlyGrid.InitPeriodlyByProjectsGrid();
                 moduleData.monthlyGrid.InitMonthlyByProjectsGrid();
     
-                moduleData.common.LoaderHide();
+                moduleData.common.loaderHide();
     
             },
             error: function (e) {
@@ -1515,7 +1532,7 @@ const period_next_pervious = (function(){
     }
     
     function GetCurrentPeriod() {
-        moduleData.common.LoaderShow();
+        moduleData.common.loaderShow();
 
         var prmData = JSON.stringify(moduleData.data.timeSheetData_get()[0].values);
     
@@ -1534,7 +1551,7 @@ const period_next_pervious = (function(){
                 moduleData.history_sentWorkHour.Refresh_GrdMonitorSentWorkHour();
                 moduleData.priodlyGrid.InitPeriodlyByProjectsGrid();
                 moduleData.monthlyGrid.InitMonthlyByProjectsGrid();
-                moduleData.common.LoaderHide();
+                moduleData.common.loaderHide();
             },
             error: function (e) {
     
@@ -1559,7 +1576,7 @@ const period_next_pervious = (function(){
                 "Maximize",
                 "Close"
             ],
-            open: moduleData.common_register.adjustSize,
+            open: moduleData.common.adjustSize,
         }).data("kendoWindow").center().open();
     }
     
@@ -1570,7 +1587,7 @@ const period_next_pervious = (function(){
     /////----------------- دکمه تایید تعداد روزهای دوره که باید نشان بده 
     
     function btnSendPeriods_Onclick() {
-        moduleData.common.LoaderShow();
+        moduleData.common.loaderShow();
         kwndSelectPeriod_OnClose();
     
     
@@ -1586,7 +1603,7 @@ const period_next_pervious = (function(){
                     moduleData.mainGrid.Init_TimeSheetTreeList();
                     moduleData.editWindow.Refresh_GrdEditWorkHour();
                     moduleData.history_sentWorkHour.Refresh_GrdMonitorSentWorkHour();
-                    moduleData.common.LoaderHide();
+                    moduleData.common.loaderHide();
                 },
                 error: function (e) {
     
@@ -1613,7 +1630,7 @@ const period_next_pervious = (function(){
                     moduleData.data.timeSheetData_set(response);
                     moduleData.common_register.removeAndRecreateTreelisDiv();
                     moduleData.mainGrid.Init_TimeSheetTreeList();
-                    moduleData.common.LoaderHide();
+                    moduleData.common.loaderHide();
                 },
                 error: function (e) {
     
@@ -1804,7 +1821,7 @@ const sendWorkHour = (function () {
 				"Maximize",
 				"Close"
 			],
-			open: moduleData.common_register.adjustSize,
+			open: moduleData.common.adjustSize,
 		}).data("kendoWindow").center().open();
 
 		GRDSendWorkHours_onInit(moduleData.data.dayIndex_get());
@@ -1834,9 +1851,9 @@ const sendWorkHour = (function () {
 				$("#SumSentWorkHours").text(_AllSentCount);
 				for (var i = 0; i < response.length; i++) {
 					if (response[0] == "عملیات ارسال کارکرد ها با موفقیت انجام گردید") {
-						moduleData.common.Notify(response[i], "success");
+						moduleData.common.notify(response[i], "success");
 					} else {
-						moduleData.common.Notify(response[i], "danger");
+						moduleData.common.notify(response[i], "danger");
 					}
 				}
 
@@ -1869,7 +1886,7 @@ const sendWorkHour = (function () {
 			success: function () {
 				//wndSendWorkHour_OnClose();
 				Refresh_GRDSendWorkHour();
-				moduleData.common.Notify("انجام عملیات  ارسال با موفقیت به انجام رسید.", "success");
+				moduleData.common.notify("انجام عملیات  ارسال با موفقیت به انجام رسید.", "success");
 			},
 			error: function (e) {
 
@@ -1881,7 +1898,7 @@ const sendWorkHour = (function () {
 	function DeleteWorkHourSendGrid(e) {
 		var grid = $("#GRDSendWorkHours").data("kendoGrid");
 		var dataItem = grid.dataItem($(e).closest("tr"));
-		moduleData.common.LoaderShow();
+		moduleData.common.loaderShow();
 		var prmData = JSON.stringify(dataItem);
 		$.ajax({
 			type: "Post",
@@ -1892,7 +1909,7 @@ const sendWorkHour = (function () {
 			success: function (response) {
 				Refresh_GRDSendWorkHour();
 				moduleData.mainGrid.RefreshTimeSheet();
-				moduleData.common.LoaderHide();
+				moduleData.common.loaderHide();
 			},
 			error: function (e) {
 				alert(dataItem.ID);

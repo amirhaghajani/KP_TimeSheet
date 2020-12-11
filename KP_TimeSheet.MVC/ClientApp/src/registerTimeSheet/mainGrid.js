@@ -209,7 +209,7 @@ const myMainGrid = (function () {
     moduleData.common_register.removeAndRecreateTreelisDiv();
     Init_TimeSheetTreeList();
     //$("#ktrlTimeSheets").data("kendoTreeList").dataSource.read();
-    moduleData.common.LoaderHide();
+    moduleData.common.loaderHide();
   }
 
   return {

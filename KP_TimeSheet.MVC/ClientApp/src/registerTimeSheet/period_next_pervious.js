@@ -76,7 +76,7 @@ const period_next_pervious = (function(){
     }
     
     function GetNextPeriod() {
-        moduleData.common.LoaderShow();
+        moduleData.common.loaderShow();
     
         var prmData = JSON.stringify(moduleData.data.timeSheetData_get()[0].values[moduleData.data.timeSheetData_get()[0].values.length - 1]);
     
@@ -94,7 +94,7 @@ const period_next_pervious = (function(){
                 moduleData.history_sentWorkHour.Refresh_GrdMonitorSentWorkHour();
                 moduleData.priodlyGrid.InitPeriodlyByProjectsGrid();
                 moduleData.monthlyGrid.InitMonthlyByProjectsGrid();
-                moduleData.common.LoaderHide();
+                moduleData.common.loaderHide();
             },
             error: function (e) {
     
@@ -103,7 +103,7 @@ const period_next_pervious = (function(){
     }
     
     function GetPreviousPeriod() {
-        moduleData.common.LoaderShow();
+        moduleData.common.loaderShow();
     
         var prmData = JSON.stringify(moduleData.data.timeSheetData_get()[0].values[0]);
     
@@ -123,7 +123,7 @@ const period_next_pervious = (function(){
                 moduleData.priodlyGrid.InitPeriodlyByProjectsGrid();
                 moduleData.monthlyGrid.InitMonthlyByProjectsGrid();
     
-                moduleData.common.LoaderHide();
+                moduleData.common.loaderHide();
     
             },
             error: function (e) {
@@ -137,7 +137,7 @@ const period_next_pervious = (function(){
     }
     
     function GetCurrentPeriod() {
-        moduleData.common.LoaderShow();
+        moduleData.common.loaderShow();
 
         var prmData = JSON.stringify(moduleData.data.timeSheetData_get()[0].values);
     
@@ -156,7 +156,7 @@ const period_next_pervious = (function(){
                 moduleData.history_sentWorkHour.Refresh_GrdMonitorSentWorkHour();
                 moduleData.priodlyGrid.InitPeriodlyByProjectsGrid();
                 moduleData.monthlyGrid.InitMonthlyByProjectsGrid();
-                moduleData.common.LoaderHide();
+                moduleData.common.loaderHide();
             },
             error: function (e) {
     
@@ -181,7 +181,7 @@ const period_next_pervious = (function(){
                 "Maximize",
                 "Close"
             ],
-            open: moduleData.common_register.adjustSize,
+            open: moduleData.common.adjustSize,
         }).data("kendoWindow").center().open();
     }
     
@@ -192,7 +192,7 @@ const period_next_pervious = (function(){
     /////----------------- دکمه تایید تعداد روزهای دوره که باید نشان بده 
     
     function btnSendPeriods_Onclick() {
-        moduleData.common.LoaderShow();
+        moduleData.common.loaderShow();
         kwndSelectPeriod_OnClose();
     
     
@@ -208,7 +208,7 @@ const period_next_pervious = (function(){
                     moduleData.mainGrid.Init_TimeSheetTreeList();
                     moduleData.editWindow.Refresh_GrdEditWorkHour();
                     moduleData.history_sentWorkHour.Refresh_GrdMonitorSentWorkHour();
-                    moduleData.common.LoaderHide();
+                    moduleData.common.loaderHide();
                 },
                 error: function (e) {
     
@@ -235,7 +235,7 @@ const period_next_pervious = (function(){
                     moduleData.data.timeSheetData_set(response);
                     moduleData.common_register.removeAndRecreateTreelisDiv();
                     moduleData.mainGrid.Init_TimeSheetTreeList();
-                    moduleData.common.LoaderHide();
+                    moduleData.common.loaderHide();
                 },
                 error: function (e) {
     

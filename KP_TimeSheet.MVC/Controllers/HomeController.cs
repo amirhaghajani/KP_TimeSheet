@@ -8,15 +8,19 @@ using Microsoft.Extensions.Logging;
 using KP_TimeSheet.MVC.Models;
 using KP.TimeSheets.Persistance;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+
+using KP.TimeSheets.Domain;
 
 namespace KP_TimeSheet.MVC.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
         private readonly ILogger<HomeController> _logger;
         private readonly RASContext _db;
 
-        public HomeController(ILogger<HomeController> logger, RASContext context)
+        public HomeController(ILogger<HomeController> logger, 
+        RASContext context, IUnitOfWork uow):base(uow)
         {
             _logger = logger;
         }
@@ -26,15 +30,38 @@ namespace KP_TimeSheet.MVC.Controllers
             return View();
         }
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+
+
+
+
+
+        //cookie ------------------------------------------
+        private string cookie_Get(string key)
+        {
+            return Request.Cookies[key];
+        }
+
+        private void cookie_Set(string key, string value, DateTime? expireTime)
+        {
+            var option = new Microsoft.AspNetCore.Http.CookieOptions();
+            if (expireTime.HasValue)
+                option.Expires = expireTime.Value;
+            else
+                option.Expires = DateTime.Now.AddMilliseconds(10);
+            Response.Cookies.Append(key, value, option);
+        }
+
+        private void cookie_Remove(string key)
+        {
+            Response.Cookies.Delete(key);
+        }
     }
 }
+
+

@@ -70,7 +70,7 @@ const hisotrSentWorkHour = (function () {
 				"Maximize",
 				"Close"
 			],
-			open: moduleData.common_register.adjustSize,
+			open: moduleData.common.adjustSize,
 		}).data("kendoWindow").center().open();
 
 		$("#GrdMonitorSentWorkHour").kendoGrid({
@@ -146,7 +146,7 @@ const hisotrSentWorkHour = (function () {
 	}
 
 	function ShowCurrentDaySendWorkHours(dayIndex) {
-		moduleData.common.LoaderShow();
+		moduleData.common.loaderShow();
 		moduleData.hisotory_workHour.Create_GrdHistory();
 
 		var timeSheetData = moduleData.data.timeSheetData_get();
@@ -172,7 +172,7 @@ const hisotrSentWorkHour = (function () {
 				$("#GrdMonitorSentWorkHour").data("kendoGrid").dataSource.read();
 				Open_WndMonitorSentWorkHours();
 
-				moduleData.common.LoaderHide();
+				moduleData.common.loaderHide();
 			},
 			error: function (e) {
 				var a = e;
