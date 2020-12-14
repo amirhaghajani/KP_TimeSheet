@@ -1828,9 +1828,11 @@ const sendWorkHour = (function () {
 	}
 
 	function SendAllWorkHours_OnClick() {
-		var ktrlTimeSheetsSend = $("#ktrlTimeSheets").data('kendoTreeList').dataItem($("#" + moduleData.data.dayIndex_get().id).closest("tr"));
-		moduleData.data.selDate_set(ktrlTimeSheetsSend.values[parseInt($("#" + moduleData.data.dayIndex_get().id).attr('dayindex')) - 3]);
 
+		var dayIndex = moduleData.data.dayIndex_get();
+		var timeSheetData = moduleData.data.timeSheetData_get();
+		moduleData.data.selDate_set(timeSheetData[0].values[dayIndex]);
+		
 		var workHourJson = {
 			ID: null,
 			Date: moduleData.data.selDate_get().date,

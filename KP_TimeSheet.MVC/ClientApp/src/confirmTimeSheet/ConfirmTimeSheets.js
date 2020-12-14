@@ -1,11 +1,11 @@
 ﻿const common = require('../common/common');
+const service = require('./service');
+const dataService = require('./data');
 
-var _Users = [];
-var _TimeSheetDataConfirm = [];
-var SelectedTaskIdForDeny = "";
-var SelectedIndexDorDeny = 0;
-var _thisMonthdataConfirm = [];
-var _UserId = "";
+
+
+
+
 function KTRColumnConfirm() {
 	this.field = "";
 	this.title = "";
@@ -17,9 +17,32 @@ function KTRColumnConfirm() {
 }
 
 $(document).ready(function () {
+
+	dataService.init();
+	service.init(dataService);
+
+
 	GetUsers();
 	WndDeny_OnInit();
-	WNDSelectPeriod_OnInit()
+	WNDSelectPeriod_OnInit();
+
+	$('#btnpreviousPeriodconfirm').off().on('click', function () {
+		GetPreviousPeriodconfirm();
+	});
+	$('#btnSelectPeriodconfirm').off().on('click', function () {
+		WNDSelectPeriod_OnOpen();
+	});
+	$('#btnNextPeriodconfirm').off().on('click', function () {
+		GetNextPeriodconfirm();
+	});
+
+
+	$('#btnSendPeriodconfirm').off().on('click', function () {
+		btnSendPeriodsconfirm_Onclick();
+	});
+	$('#btnCancelconfirm').off().on('click', function () {
+		WNDSelectPeriod_OnClose();
+	});
 
 
 });
@@ -95,31 +118,24 @@ function WndDeny_OnClose() {
 
 function RefreshTimeSheetConfirm() {
 	common.loaderShow();
-	_UserId = $("#kddlUsers").data("kendoDropDownList").dataItem($("#kddlUsers").data("kendoDropDownList").select()).ID;
+	dataService.userId_set($("#kddlUsers").data("kendoDropDownList").dataItem($("#kddlUsers").data("kendoDropDownList").select()).id);
 	var json = {
-		userid: _UserId,
-		values: _TimeSheetDataConfirm[0].Values
+		userid: dataService.userId_get(),
+		values: dataService.timeSheetDataConfirm_get()[0].values
+	};
 
-	}
 	var prmData = JSON.stringify(json);
-	$.ajax({
-		type: "Post",
-		url: "/api/TimeSheetsAPI/GetTimeSheetsByUserId",
-		contentType: "application/json; charset=utf-8",
-		dataType: "json",
-		data: prmData,
-		success: function (response) {
 
-			_TimeSheetDataConfirm = response;
-			removeAndRecreateTreelisConfirmDiv();
-			Init_TimeSheetTreeListConfirm(_TimeSheetDataConfirm);
+	service.getTimeSheetsByUserId(prmData, (response) => {
+		removeAndRecreateTreelisConfirmDiv();
+		Init_TimeSheetTreeListConfirm(response);
 
-			common.loaderHide();
-		},
-		error: function (e) {
-			alert("Error")
-		}
-	});
+		common.loaderHide();
+	}, () => {
+		alert("Error");
+		common.loaderHide();
+	})
+
 }
 
 function removeAndRecreateTreelisConfirmDiv() {
@@ -129,71 +145,51 @@ function removeAndRecreateTreelisConfirmDiv() {
 	$("#KTLContainerRegisterConfirm").append("<div id='ktrlTimeSheetsConfirm'></div>");
 }
 function GetUsers() {
-	$.ajax({
-		type: "Get",
-		url: "/api/TimeSheetsAPI/GetUsersInCurrentUserOrganisation",
-		contentType: "application/json; charset=utf-8",
-		dataType: "json",
-		success: function (response) {
-			_Users = response;
-			$("#kddlUsers").kendoDropDownList({
-				dataTextField: "fullName",
-				dataValueField: "id",
-				filter: "contains",
-				optionLabel: {
-					fullName: "انتخاب کاربر . . . ",
-					id: ""
-				},
-				dataSource: {
-					transport: {
-						read: function (e) {
-							e.success(_Users);
-						}
+
+	service.getUsersInCurrentUserOrganisation((response) => {
+		$("#kddlUsers").kendoDropDownList({
+			dataTextField: "fullName",
+			dataValueField: "id",
+			filter: "contains",
+			optionLabel: {
+				fullName: "انتخاب کاربر . . . ",
+				id: ""
+			},
+			dataSource: {
+				transport: {
+					read: function (e) {
+						e.success(dataService.users_get());
 					}
-				},
-				index: 0,
-				change: kddlUsers_OnChange
-			});
-		},
-		error: function (e) {
-
-
-		}
+				}
+			},
+			index: 0,
+			change: kddlUsers_OnChange
+		});
 	});
 }
 
 function kddlUsers_OnChange(e) {
 
 	common.loaderShow();
-	_UserId = $("#kddlUsers").data("kendoDropDownList").dataItem($("#kddlUsers").data("kendoDropDownList").select()).id;
+	dataService.userId_set($("#kddlUsers").data("kendoDropDownList").dataItem($("#kddlUsers").data("kendoDropDownList").select()).id);
 
-	if (_UserId != "") {
-		$.ajax({
-			type: "Get",
-			url: "/api/TimeSheetsAPI/GetTimeSheetsByUserIdForFirstTime?UserId=" + _UserId,
-			contentType: "application/json; charset=utf-8",
-			dataType: "json",
+	if (dataService.userId_get() != "") {
 
-			success: function (response) {
-				_TimeSheetDataConfirm = response;
-				Init_TimeSheetTreeListConfirm(_TimeSheetDataConfirm);
-				InitMonthlyByProjectsGridConfirm();
-				InitPeriodlyByProjectsGridConfirm();
-				$("#DownSideTabsConfirm").show();
-				$("#PeriodPanle").show();
-				$("#ExportNavConfirm").show();
-				common.loaderHide();
+		service.getTimeSheetsByUserIdForFirstTime((response) => {
+			
+			Init_TimeSheetTreeListConfirm(response);
+			InitMonthlyByProjectsGridConfirm();
+			InitPeriodlyByProjectsGridConfirm();
+			$("#DownSideTabsConfirm").show();
+			$("#PeriodPanle").show();
+			$("#ExportNavConfirm").show();
+			common.loaderHide();
+		})
 
-				common.loaderHide();
-			},
-			error: function (e) {
-
-			}
-		});
 	} else {
-		common.notify("کاربری انتخاب نشده ", "warning")
+		common.loaderHide();
+		common.notify("کاربری انتخاب نشده ", "warning");
 	}
-
 
 }
 
@@ -221,12 +217,8 @@ function Init_TimeSheetTreeListConfirm(data) {
 		selectable: true,
 		height: 400,
 		columns: ktrlTSColumnsConfirm,
+		dataBound: ktrlTimeSheetsConfirm_dataBound
 	});
-
-
-
-
-
 
 }
 
@@ -256,21 +248,20 @@ function ktrlTimeSheetsConfirm_OnInitColumns(response) {
 	colTitle.width = 150;
 	columns.push(colTitle);
 
-	// این تابع آرایه از متد های مربوطه ایجاد می کند
-	// فقط باید ایندکس ها توجه شود
-	var templateFunctions = CreateTemplateColumnsFunction();
 	///-----------------------------------------------------------------
 
 	for (var i = 0; i < response[0].values.length; i++) {
 
+		const index = i;
+
 		var tsDate = response[0].values[i];
 		var colDate = new KTRColumnConfirm();
-		colDate.field = "values[" + i + "].Value";
-		colDate.title = tsDate.Title;
+		colDate.field = "values[" + i + "].value";
+		colDate.title = tsDate.title;
 		colDate.headerTemplate = "<h6><b>" + tsDate.persianDate + "</b></h6><h6>" + tsDate.persianDay + "</h6>";
 		colDate.hidden = false;
 		//تخصیص متد به تپلیت فقط باید ایندکس ها تنظیم گرددند
-		colDate.template = templateFunctions[i];
+		colDate.template = (dataItem) => TreeListTemplateColumn(dataItem, index);
 		colDate.width = 50;
 		columns.push(colDate);
 
@@ -291,12 +282,12 @@ function KTRColumn() {
 function TreeListTemplateColumn(dataItem, index) {
 
 	if (index < dataItem.values.length) {
-		if (dataItem.values[index].value != "0:00" && dataItem.Type == "TaskNotApprove" && dataItem.values[index].value != "") {
+		if (dataItem.values[index].value != "0:00" && dataItem.type == "TaskNotApprove" && dataItem.values[index].value != "") {
 			return dataItem.values[index].value +
-				"<button title='تایید کارکرد' onClick='ApproveTask(\"" +
-				dataItem.UID + "\"," + index + ")' class='pull-left btn btn-success btn-xs' style='margin-right:5px'><i class='fa fa-check-square'></i></button>" +
-				"<button title='رد کارکرد' onClick='DenyTask(\"" +
-				dataItem.UID + "\"," + index + ")' class='pull-left btn btn-warning btn-xs' style='margin-left:5px'><i class='fa fa-times'></i></button>";
+				`<button title='تایید کارکرد' data-uid='${dataItem.uuiidd}' data-index='${index}' 
+				 class='pull-left btn btn-success btn-xs forFound_ApproveTask' style='margin-right:5px'><i class='fa fa-check-square'></i></button>` +
+				`<button title='رد کارکرد' data-uid='${dataItem.uuiidd}' data-index='${index}' 
+				 class='pull-left btn btn-warning btn-xs forFound_DenyTask' style='margin-left:5px'><i class='fa fa-times'></i></button>`;
 		}
 		else {
 			if (dataItem.values[index].value == "0:00") {
@@ -315,199 +306,39 @@ function TreeListTemplateColumn(dataItem, index) {
 
 }
 
-function TreeListTemplateColmn0(dataItem) {
-	return TreeListTemplateColumn(dataItem, 0);
-}
-
-function TreeListTemplateColmn1(dataItem) {
-	return TreeListTemplateColumn(dataItem, 1);
-}
-
-function TreeListTemplateColmn2(dataItem) {
-	return TreeListTemplateColumn(dataItem, 2);
-}
-
-function TreeListTemplateColumn3(dataItem) {
-	return TreeListTemplateColumn(dataItem, 3);
-}
-
-function TreeListTempalteColumn4(dataItem) {
-	return TreeListTemplateColumn(dataItem, 4);
-}
-
-function TreeListTemplateColumn5(dataItem) {
-	return TreeListTemplateColumn(dataItem, 5);
-}
-
-function TreeListTemplateColumn6(dataItem) {
-	return TreeListTemplateColumn(dataItem, 6);
-}
-
-function TreeListTemplateColumn7(dataItem) {
-	return TreeListTemplateColumn(dataItem, 7);
-}
-
-function TreeListTemplateColumn8(dataItem) {
-	return TreeListTemplateColumn(dataItem, 8);
-}
-
-function TreeListTemplateColumn9(dataItem) {
-	return TreeListTemplateColumn(dataItem, 9);
-}
-
-function TreeListTemplateColumn10(dataItem) {
-	return TreeListTemplateColumn(dataItem, 10);
-}
-
-function TreeListTemplateColumn11(dataItem) {
-	return TreeListTemplateColumn(dataItem, 11);
-}
-
-function TreeListTemplateColumn12(dataItem) {
-	return TreeListTemplateColumn(dataItem, 12);
-}
-
-function TreeListTemplateColumn13(dataItem) {
-	return TreeListTemplateColumn(dataItem, 13);
-}
-
-function TreeListTemplateColumn14(dataItem) {
-	return TreeListTemplateColumn(dataItem, 14);
-}
-
-function TreeListTemplteColumn15(dataItem) {
-	return TreeListTemplateColumn(dataItem, 15);
-}
-
-function TreeListTemplateColumn16(dataItem) {
-	return TreeListTemplateColumn(dataItem, 16);
-}
-
-function TreeListTemplateColumn17(dataItem) {
-	return TreeListTemplateColumn(dataItem, 17);
-}
-
-function TreeListTemplateColumn18(dataItem) {
-	return TreeListTemplateColumn(dataItem, 18);
-}
-
-function TreeListTemplatecolumn19(dataItem) {
-	return TreeListTemplateColumn(dataItem, 19);
-}
-
-function TreeListTemplateColumn20(dataItem) {
-	return TreeListTemplateColumn(dataItem, 20);
-}
-
-function TreeListTemplateColumn21(dataItem) {
-	return TreeListTemplateColumn(dataItem, 21);
-}
-
-function TreeListTemplateColumn22(dataItem) {
-	return TreeListTemplateColumn(dataItem, 22);
-}
-
-function TreeListTemplateColumn23(dataItem) {
-	return TreeListTemplateColumn(dataItem, 23);
-}
-
-function TreeListTemplateColumn24(dataItem) {
-	return TreeListTemplateColumn(dataItem, 24);
-}
-
-function TreeListTemplateColumn25(dataItem) {
-	return TreeListTemplateColumn(dataItem, 25);
-}
-
-function TreeListTemplateColumn26(dataItem) {
-	return TreeListTemplateColumn(dataItem, 26);
-}
-
-function TreeListTemplateColumn27(dataItem) {
-	return TreeListTemplateColumn(dataItem, 27);
-}
-
-function TreeListTemplateColumn28(dataItem) {
-	return TreeListTemplateColumn(dataItem, 28)
-}
-
-function TreeListTemplateColumn29(dataItem) {
-	return TreeListTemplateColumn(dataItem, 29);
-}
-
-function TreeListTemplateColumn30(dataItem) {
-	return TreeListTempalteColumn(dataItem, 30)
-}
-
-function CreateTemplateColumnsFunction() {
-
-	var columns = [];
-	columns.push(TreeListTemplateColmn0);
-	columns.push(TreeListTemplateColmn1);
-	columns.push(TreeListTemplateColmn2);
-	columns.push(TreeListTemplateColumn3);
-	columns.push(TreeListTempalteColumn4);
-	columns.push(TreeListTemplateColumn5);
-	columns.push(TreeListTemplateColumn6);
-	columns.push(TreeListTemplateColumn7);
-	columns.push(TreeListTemplateColumn9);
-	columns.push(TreeListTemplateColumn8);
-	columns.push(TreeListTemplateColumn10);
-	columns.push(TreeListTemplateColumn11);
-	columns.push(TreeListTemplateColumn12);
-	columns.push(TreeListTemplateColumn13);
-	columns.push(TreeListTemplateColumn14);
-	columns.push(TreeListTemplteColumn15);
-	columns.push(TreeListTemplateColumn16);
-	columns.push(TreeListTemplateColumn17);
-	columns.push(TreeListTemplateColumn18);
-	columns.push(TreeListTemplatecolumn19);
-	columns.push(TreeListTemplateColumn20);
-	columns.push(TreeListTemplateColumn21);
-	columns.push(TreeListTemplateColumn22);
-	columns.push(TreeListTemplateColumn23);
-	columns.push(TreeListTemplateColumn24);
-	columns.push(TreeListTemplateColumn25);
-	columns.push(TreeListTemplateColumn26);
-	columns.push(TreeListTemplateColumn27);
-	columns.push(TreeListTemplateColumn28);
-	columns.push(TreeListTemplateColumn29);
-	columns.push(TreeListTemplateColumn30);
-
-
-	return columns;
+function ktrlTimeSheetsConfirm_dataBound(e){
+	$('.forFound_ApproveTask').off().on('click', function () {
+		const uid = $(this).data("uid");
+		const index =$(this).data("index");
+		ApproveTask(uid,index);
+	});
+	$('.forFound_DenyTask').off().on('click', function () {
+		const uid = $(this).data("uid");
+		const index =$(this).data("index");
+		DenyTask(uid,index);
+	});
 }
 
 function ApproveTask(id, index) {
 	common.loaderShow();
 
-	for (var i = 0; i < _TimeSheetDataConfirm.length; i++) {
-		if (_TimeSheetDataConfirm[i].UID == id) {
-			var da = _TimeSheetDataConfirm[i].Values[index];
+	for (var i = 0; i < dataService.timeSheetDataConfirm_get().length; i++) {
+		if (dataService.timeSheetDataConfirm_get()[i].uid == id) {
+			var da = dataService.timeSheetDataConfirm_get()[i].values[index];
 		}
 	}
 
 	var data = {
-		date: da.Date,
+		date: da.date,
 		id: id,
 	};
 	var prmData = JSON.stringify(data);
-	$.ajax({
-		type: "Post",
-		url: "/api/TimeSheetsAPI/ApproveWorkHour",
-		contentType: "application/json; charset=utf-8",
-		dataType: "json",
-		data: prmData,
-		success: function (response) {
-			GetCurrentPeriodconfirm();
-			common.notify(response, "success");
 
-		},
-		error: function (e) {
-
-		}
+	service.approveWorkHour(prmData, (response) => {
+		debugger;
+		GetCurrentPeriodconfirm();
+		common.notify(response, "success");
 	});
-
 
 }
 
@@ -515,44 +346,32 @@ function FinalDeny() {
 
 	common.loaderShow();
 
-	for (var i = 0; i < _TimeSheetDataConfirm.length; i++) {
-		if (_TimeSheetDataConfirm[i].UID == SelectedTaskIdForDeny) {
-			var da = _TimeSheetDataConfirm[i].Values[SelectedIndexDorDeny];
+	for (var i = 0; i < dataService.timeSheetDataConfirm_get().length; i++) {
+		if (dataService.timeSheetDataConfirm_get()[i].uid == dataService.selectedTaskIdForDeny_get()) {
+			var da = dataService.timeSheetDataConfirm_get()[i].values[dataService.selectedIndexDorDeny_get()];
 		}
 	}
 
 	var data = {
 		date: da.Date,
-		id: SelectedTaskIdForDeny,
+		id: dataService.selectedTaskIdForDeny_get(),
 		description: $("#comment").val()
 	};
 
 	var prmData = JSON.stringify(data);
-	$.ajax({
-		type: "Post",
-		url: "/api/TimeSheetsAPI/DenyWorkHour",
-		contentType: "application/json; charset=utf-8",
-		dataType: "json",
-		data: prmData,
-		success: function (response) {
-			WndDeny_OnClose();
-			GetCurrentPeriodconfirm();
-			common.notify(response, "success");
 
-
-		},
-		error: function (e) {
-
-		}
+	service.denyWorkHour(prmData, (response) => {
+		WndDeny_OnClose();
+		GetCurrentPeriodconfirm();
+		common.notify(response, "success");
 	});
-
 
 }
 
 function DenyTask(id, index) {
 
-	SelectedTaskIdForDeny = id;
-	SelectedIndexDorDeny = index;
+	dataService.selectedTaskIdForDeny_set(id);
+	dataService.selectedIndexDorDeny_set(index);
 	WndDeny_OnOpen()
 
 
@@ -560,185 +379,123 @@ function DenyTask(id, index) {
 
 function InitMonthlyByProjectsGridConfirm() {
 
-	_UserId = $("#kddlUsers").data("kendoDropDownList").dataItem($("#kddlUsers").data("kendoDropDownList").select()).id;
+	dataService.userId_set($("#kddlUsers").data("kendoDropDownList").dataItem($("#kddlUsers").data("kendoDropDownList").select()).id);
 
 	var json = {
-		value: _TimeSheetDataConfirm[0].values[0],
-		userid: _UserId
+		value: dataService.timeSheetDataConfirm_get()[0].values[0],
+		userid: dataService.userId_get()
 	}
 
 
 	var prmData = JSON.stringify(json);
-	$.ajax({
-		type: "Post",
-		url: "/api/TimeSheetsAPI/GetThisMonthDataByUser",
-		contentType: "application/json; charset=utf-8",
-		dataType: "json",
-		data: prmData,
-		success: function (response) {
+	service.getThisMonthDataByUser(prmData, (response) => {
 
-			_thisMonthdataConfirm = response;
-			$("#MonthlyPresenceconfirmProgress").text(response.presence);
-			$("#MonthlyWorkHourconfirmProgress").text(response.work);
-			$("#MonthlyPresenceconfirm").width(response.presencepercent);
-			$("#MonthlyWorkHourconfirm").width(response.workpercent);
+		$("#MonthlyPresenceconfirmProgress").text(response.presence);
+		$("#MonthlyWorkHourconfirmProgress").text(response.work);
+		$("#MonthlyPresenceconfirm").width(response.presencepercent);
+		$("#MonthlyWorkHourconfirm").width(response.workpercent);
 
-			common.loaderHide();
-		},
-		error: function (e) {
-
-		}
+		common.loaderHide();
 	});
-	$.ajax({
-		type: "Post",
-		url: "/api/TimeSheetsAPI/GetThisMonthProjectsByUserID",
-		contentType: "application/json; charset=utf-8",
-		dataType: "json",
-		data: prmData,
-		success: function (response) {
 
-			$("#tblcurrmonthconfirm").kendoGrid({
-				dataSource: {
-					transport: {
-						read: function (e) {
-							e.success(response)
-						}
-					},
-					pageSize: 20
+	service.getThisMonthProjectsByUserID(prmData, (response) => {
+		$("#tblcurrmonthconfirm").kendoGrid({
+			dataSource: {
+				transport: {
+					read: function (e) {
+						e.success(response)
+					}
 				},
-				height: 200,
-				columns: [{
-					field: "title",
-					title: "عنوان پروژه"
-				}, {
-					field: "hour",
-					title: "ساعت کار ثبت شده    "
-				}]
-			});
+				pageSize: 20
+			},
+			height: 200,
+			columns: [{
+				field: "title",
+				title: "عنوان پروژه"
+			}, {
+				field: "hour",
+				title: "ساعت کار ثبت شده    "
+			}]
+		});
 
-			$("#DownSideTabsConfirm").show();
-		},
-		error: function (e) {
-
-		}
+		$("#DownSideTabsConfirm").show();
 	});
 
 }
 
 function InitPeriodlyByProjectsGridConfirm() {
-	_UserId = $("#kddlUsers").data("kendoDropDownList").dataItem($("#kddlUsers").data("kendoDropDownList").select()).id;
+	dataService.userId_set($("#kddlUsers").data("kendoDropDownList").dataItem($("#kddlUsers").data("kendoDropDownList").select()).id);
 	var json = {
-		values: _TimeSheetDataConfirm[0].values,
-		userid: _UserId
+		values: dataService.timeSheetDataConfirm_get()[0].values,
+		userid: dataService.userId_get()
 	}
 
 	var prmData = JSON.stringify(json);
 
-	$.ajax({
-		type: "Post",
-		url: "/api/TimeSheetsAPI/GetThisPeriodDataByUserId",
-		contentType: "application/json; charset=utf-8",
-		dataType: "json",
-		data: prmData,
-
-		success: function (response) {
-
-			$("#PeriodicallyPresenceconfirmProgress").text(response.presence);
-			$("#PeriodicallyWorkHourconfirmProgress").text(response.work);
-			$("#PeriodicallyPresenceconfirm").width(response.presencepercent);
-			$("#PeriodicallyWorkHourconfirm").width(response.workpercent);
-		},
-		error: function (e) {
-
-		}
+	service.getThisPeriodDataByUserId(prmData, (response) => {
+		$("#PeriodicallyPresenceconfirmProgress").text(response.presence);
+		$("#PeriodicallyWorkHourconfirmProgress").text(response.work);
+		$("#PeriodicallyPresenceconfirm").width(response.presencepercent);
+		$("#PeriodicallyWorkHourconfirm").width(response.workpercent);
 	});
 
-	$.ajax({
-		type: "Post",
-		url: "/api/TimeSheetsAPI/GetThisPeriodProjectsByUserId",
-		contentType: "application/json; charset=utf-8",
-		dataType: "json",
-		data: prmData,
-		success: function (response) {
-			$("#tblcurrperiodconfirm").kendoGrid({
-				dataSource: {
-					transport: {
-						read: function (e) {
-							e.success(response)
-						}
-					},
-					pageSize: 20
+	service.getThisPeriodProjectsByUserId(prmData, (response) => {
+		$("#tblcurrperiodconfirm").kendoGrid({
+			dataSource: {
+				transport: {
+					read: function (e) {
+						e.success(response)
+					}
 				},
-				height: 200,
+				pageSize: 20
+			},
+			height: 200,
 
 
-				columns: [{
-					field: "title",
-					title: "عنوان پروژه"
-				}, {
-					field: "hour",
-					title: "ساعت کار ثبت شده"
-				}]
-			})
-		},
-		error: function (e) {
-
-		}
+			columns: [{
+				field: "title",
+				title: "عنوان پروژه"
+			}, {
+				field: "hour",
+				title: "ساعت کار ثبت شده"
+			}]
+		});
 	});
+
 }
 
 function btnSendPeriodsconfirm_Onclick() {
 	common.loaderShow();
-	_UserId = $("#kddlUsers").data("kendoDropDownList").dataItem($("#kddlUsers").data("kendoDropDownList").select()).id;
+	dataService.userId_set($("#kddlUsers").data("kendoDropDownList").dataItem($("#kddlUsers").data("kendoDropDownList").select()).id);
 	WNDSelectPeriod_OnClose()
 	if ($('#chkweeklyconfirm').is(':checked')) {
-		$.ajax({
-			type: "Get",
-			url: "/api/TimeSheetsAPI/ChangeDisplayPeriodToWeeklyConfirm?UserId=" + _UserId,
-			contentType: "application/json; charset=utf-8",
-			dataType: "json",
-			success: function (response) {
-				_TimeSheetDataConfirm = response;
-				removeAndRecreateTreelisConfirmDiv();
-				Init_TimeSheetTreeListConfirm(_TimeSheetDataConfirm);
-				InitMonthlyByProjectsGridConfirm();
-				InitPeriodlyByProjectsGridConfirm();
 
+		service.changeDisplayPeriodToWeeklyConfirm((response) => {
 
-				common.loaderHide();
-			},
-			error: function (e) {
+			removeAndRecreateTreelisConfirmDiv();
+			Init_TimeSheetTreeListConfirm(response);
+			InitMonthlyByProjectsGridConfirm();
+			InitPeriodlyByProjectsGridConfirm();
 
-			}
+			common.loaderHide();
 		});
+
 	}
 	else {
 		var PeriodJson = {
 			Date: $("#startDateconfirm").val(),
 			Days: $("#numberDaysconfirm").val(),
 			IsWeekly: false,
-			UserId: _UserId
+			UserId: dataService.userId_get()
 		};
 
 		var prmData = JSON.stringify(PeriodJson);
-
-		$.ajax({
-			type: "Post",
-			url: "/api/TimeSheetsAPI/GetTimeSheetsByDateAndNumberOfDayConfirm",
-			contentType: "application/json; charset=utf-8",
-			dataType: "json",
-			data: prmData,
-			success: function (response) {
-				_TimeSheetDataConfirm = response;
-				removeAndRecreateTreelisConfirmDiv();
-				Init_TimeSheetTreeListConfirm(_TimeSheetDataConfirm);
-				InitMonthlyByProjectsGridConfirm();
-				InitPeriodlyByProjectsGridConfirm();
-				common.loaderHide();
-			},
-			error: function (e) {
-
-			}
+		service.getTimeSheetsByDateAndNumberOfDayConfirm(prmData, (response) => {
+			removeAndRecreateTreelisConfirmDiv();
+			Init_TimeSheetTreeListConfirm(response);
+			InitMonthlyByProjectsGridConfirm();
+			InitPeriodlyByProjectsGridConfirm();
+			common.loaderHide();
 		});
 	}
 
@@ -747,94 +504,54 @@ function btnSendPeriodsconfirm_Onclick() {
 function GetPreviousPeriodconfirm() {
 	common.loaderShow();
 
-	_UserId = $("#kddlUsers").data("kendoDropDownList").dataItem($("#kddlUsers").data("kendoDropDownList").select()).id;
-	_TimeSheetDataConfirm[0].Values[0].UserId = _UserId;
-	var prmData = JSON.stringify(_TimeSheetDataConfirm[0].values[0]);
+	dataService.userId_set($("#kddlUsers").data("kendoDropDownList").dataItem($("#kddlUsers").data("kendoDropDownList").select()).id);
+	dataService.timeSheetDataConfirm_get()[0].values[0].UserId = dataService.userId_get();
+	var prmData = JSON.stringify(dataService.timeSheetDataConfirm_get()[0].values[0]);
 
-	$.ajax({
-		type: "Post",
-		url: "/api/TimeSheetsAPI/GetPreviousPeriodConfirm",
-		contentType: "application/json; charset=utf-8",
-		dataType: "json",
-		data: prmData,
-		success: function (response) {
+	service.getPreviousPeriodConfirm(prmData, (response) => {
+		removeAndRecreateTreelisConfirmDiv();
+		Init_TimeSheetTreeListConfirm(response);
+		InitMonthlyByProjectsGridConfirm();
+		InitPeriodlyByProjectsGridConfirm();
 
-			_TimeSheetDataConfirm = response;
-			removeAndRecreateTreelisConfirmDiv();
-			Init_TimeSheetTreeListConfirm(_TimeSheetDataConfirm);
-			InitMonthlyByProjectsGridConfirm();
-			InitPeriodlyByProjectsGridConfirm();
-
-			common.loaderHide();
-
-		},
-		error: function (e) {
-
-		}
+		common.loaderHide();
 	});
+
 }
 
 function GetCurrentPeriodconfirm() {
 	common.loaderShow();
 
-	_UserId = $("#kddlUsers").data("kendoDropDownList").dataItem($("#kddlUsers").data("kendoDropDownList").select()).id;
-	_TimeSheetDataConfirm[0].Values[0].UserId = _UserId;
-	var prmData = JSON.stringify(_TimeSheetDataConfirm[0].values);
+	dataService.userId_set($("#kddlUsers").data("kendoDropDownList").dataItem($("#kddlUsers").data("kendoDropDownList").select()).id);
+	dataService.timeSheetDataConfirm_get()[0].values[0].UserId = dataService.userId_get();
+	var prmData = JSON.stringify(dataService.timeSheetDataConfirm_get()[0].values);
 
-	$.ajax({
-		type: "Post",
-		url: "/api/TimeSheetsAPI/GetCurrentPeriodConfirm",
-		contentType: "application/json; charset=utf-8",
-		dataType: "json",
-		data: prmData,
-		success: function (response) {
+	service.getCurrentPeriodConfirm(prmData, (response) => {
+		removeAndRecreateTreelisConfirmDiv();
+		Init_TimeSheetTreeListConfirm(response);
+		InitMonthlyByProjectsGridConfirm();
+		InitPeriodlyByProjectsGridConfirm();
 
-			_TimeSheetDataConfirm = response;
-			removeAndRecreateTreelisConfirmDiv();
-			Init_TimeSheetTreeListConfirm(_TimeSheetDataConfirm);
-			InitMonthlyByProjectsGridConfirm();
-			InitPeriodlyByProjectsGridConfirm();
-
-			common.loaderHide();
-
-		},
-		error: function (e) {
-
-		}
+		common.loaderHide();
 	});
+
 }
 
 function GetNextPeriodconfirm() {
 	common.loaderShow();
 
-	_UserId = $("#kddlUsers").data("kendoDropDownList").dataItem($("#kddlUsers").data("kendoDropDownList").select()).id;
-	_TimeSheetDataConfirm[0].values[_TimeSheetDataConfirm[0].values.length - 1].UserId = _UserId;
-	var prmData = JSON.stringify(_TimeSheetDataConfirm[0].values[_TimeSheetDataConfirm[0].values.length - 1]);
+	dataService.userId_set($("#kddlUsers").data("kendoDropDownList").dataItem($("#kddlUsers").data("kendoDropDownList").select()).id);
+	dataService.timeSheetDataConfirm_get()[0].values[dataService.timeSheetDataConfirm_get()[0].values.length - 1].UserId = dataService.userId_get();
+	var prmData = JSON.stringify(dataService.timeSheetDataConfirm_get()[0].values[dataService.timeSheetDataConfirm_get()[0].values.length - 1]);
 
-	$.ajax({
-		type: "Post",
-		url: "/api/TimeSheetsAPI/GetNextPeriodConfirm",
-		contentType: "application/json; charset=utf-8",
-		dataType: "json",
-		data: prmData,
-		success: function (response) {
+	service.getNextPeriodConfirm(prmData, (response) => {
+		removeAndRecreateTreelisConfirmDiv();
+		Init_TimeSheetTreeListConfirm(response);
+		InitMonthlyByProjectsGridConfirm();
+		InitPeriodlyByProjectsGridConfirm();
 
-			_TimeSheetDataConfirm = response;
-			removeAndRecreateTreelisConfirmDiv();
-			Init_TimeSheetTreeListConfirm(_TimeSheetDataConfirm);
-			InitMonthlyByProjectsGridConfirm();
-			InitPeriodlyByProjectsGridConfirm();
-
-			common.loaderHide();
-
-		},
-		error: function (e) {
-
-		}
+		common.loaderHide();
 	});
-
-
-
 
 }
 

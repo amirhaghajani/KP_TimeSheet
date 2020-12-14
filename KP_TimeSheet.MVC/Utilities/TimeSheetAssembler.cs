@@ -218,11 +218,12 @@ namespace KP.TimeSheets.MVC
 
             foreach (var item in workHours)
             {
-                if (timesheetMnager.ApprovementStatus(item,new UserHelper().GetCurrent(uow).UserName) == "Approve")
+                var approveStatus = timesheetMnager.ApprovementStatus(item,new UserHelper().GetCurrent(uow).UserName);
+                if ( approveStatus == "Approve")
                 {
                     approveItems.Add(item);
                 }
-                if (timesheetMnager.ApprovementStatus(item, new UserHelper().GetCurrent(uow).UserName) == "NotApprove")
+                if (approveStatus == "NotApprove")
                 {
                     notApproveItems.Add(item);
                 }

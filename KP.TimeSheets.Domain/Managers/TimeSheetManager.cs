@@ -22,7 +22,7 @@ namespace KP.TimeSheets.Domain
         {
             return _UOW.WorkHourRepository.GetByProjectID(projectId);
         }
-        public IEnumerable<WorkHour> GetByProjectID(Guid projectId,DateTime from,DateTime to)
+        public IEnumerable<WorkHour> GetByProjectID(Guid projectId, DateTime from, DateTime to)
         {
             return _UOW.WorkHourRepository.GetByProjectID(projectId);
         }
@@ -36,9 +36,9 @@ namespace KP.TimeSheets.Domain
         {
             return _UOW.WorkHourRepository.GetYesterdayByUserId(UserId);
         }
-        public IEnumerable<WorkHour> GetThisPeriodhworkHoursByUserId(Guid UserId,DateTime from,DateTime to)
+        public IEnumerable<WorkHour> GetThisPeriodhworkHoursByUserId(Guid UserId, DateTime from, DateTime to)
         {
-            return _UOW.WorkHourRepository.GetThisPeriodByUserId(UserId,from,to);
+            return _UOW.WorkHourRepository.GetThisPeriodByUserId(UserId, from, to);
         }
         public void DeleteWorkHour(Guid id)
         {
@@ -58,7 +58,7 @@ namespace KP.TimeSheets.Domain
         {
             return _UOW.WorkHourRepository.GetByEpmloyeeID(user.ID);
         }
-        public IEnumerable<WorkHour> GetWorkHoursByUser(Guid userId,DateTime date)
+        public IEnumerable<WorkHour> GetWorkHoursByUser(Guid userId, DateTime date)
         {
             var month = DateUtility.GetPersianManth(date);
             var year = DateUtility.GetPersianYear(date);
@@ -68,7 +68,7 @@ namespace KP.TimeSheets.Domain
                 to = DateUtility.GetMiladiDate(year.ToString() + "/" + month + "/" + "30");
             else
                 to = DateUtility.GetMiladiDate(year.ToString() + "/" + month + "/" + "31");
-            return _UOW.WorkHourRepository.GetByEpmloyeeID(userId ,from,to );
+            return _UOW.WorkHourRepository.GetByEpmloyeeID(userId, from, to);
         }
 
         public void SaveWorkHour(WorkHour workHour)
@@ -84,7 +84,7 @@ namespace KP.TimeSheets.Domain
                 AddWorkHour(workHour);
             _UOW.SaveChanges();
         }
-        public IEnumerable<WorkHour> GetUnConfirmedWorkHours(DateTime date , Guid userId)
+        public IEnumerable<WorkHour> GetUnConfirmedWorkHours(DateTime date, Guid userId)
         {
 
             return _UOW.WorkHourRepository.GetUnConfirmedWorkHours(date, userId);
@@ -98,7 +98,7 @@ namespace KP.TimeSheets.Domain
         {
             StageController stage = new StageController(_UOW);
             stage.SetNextStageID(workHour);
-            
+
             _UOW.WorkHourRepository.Edit(workHour);
             _UOW.SaveChanges();
 
@@ -122,16 +122,16 @@ namespace KP.TimeSheets.Domain
 
             return _UOW.WorkHourRepository.GetRegisteredWorkHours(UserId);
         }
-        public IEnumerable< WorkHour> GetByDateAndTaskId(DateTime date,Guid Taskid)
-       {
+        public IEnumerable<WorkHour> GetByDateAndTaskId(DateTime date, Guid Taskid)
+        {
             return _UOW.WorkHourRepository.GetByDateAndTaskId(date, Taskid);
-       }
+        }
         /// <summary>
         /// WorkHour متد مشخص کردن مدیر پروژه بودن کاربر جاری توسط آبجکت 
         /// </summary>
         /// <param name="workHour"></param>
         /// <returns></returns>
-        public bool IsUserProjectMnager(WorkHour workHour,string userName)
+        public bool IsUserProjectMnager(WorkHour workHour, string userName)
         {
             var userManager = new UserManager(_UOW);
             var projectManager = new ProjectManager(_UOW);
@@ -152,7 +152,7 @@ namespace KP.TimeSheets.Domain
         /// </summary>
         /// <param name="workHour"></param>
         /// <returns></returns>
-        public bool IsUserOrganisationMnager(WorkHour workHour,string userName)
+        public bool IsUserOrganisationMnager(WorkHour workHour, string userName)
         {
             var userManager = new UserManager(_UOW);
             var orgManager = new OrgUnitManager(_UOW);
@@ -179,27 +179,45 @@ namespace KP.TimeSheets.Domain
         /// <returns>"Approve "</returns>
         /// <returns>"NotApprove "</returns>
         /// <returns>"Nothing "</returns>
-        public string ApprovementStatus(WorkHour workHour , string userName)
+        public string ApprovementStatus(WorkHour workHour, string userName)
         {
             var result = string.Empty;
             var workflowManager = new WorkflowManager(_UOW);
             var stage = workflowManager.GetByID(workHour.WorkflowStageID);
+
             
 
-            if (IsUserProjectMnager(workHour, userName) && IsUserOrganisationMnager(workHour, userName) && stage.Order == 2)
-                 return "NotApprove";
+            var isProjectManager = IsUserProjectMnager(workHour, userName);
+            var isOrganizationManager = IsUserOrganisationMnager(workHour, userName);
+
+            if(!isProjectManager && !isOrganizationManager) return "Nothing";
+
+            if (stage.Order > 3) return "Approve";
+            if (stage.Order < 2) return "Nothing";
+
+
+            // الان یا 2 است یا 3
+            if (isProjectManager && isOrganizationManager) return "NotApprove";
+            if(isProjectManager && stage.Type=="ProjectManager") return "NotApprove";
+            if(isOrganizationManager && stage.Type=="Manager") return "NotApprove";
+
+            return "Approve";
+
+
+                if (IsUserProjectMnager(workHour, userName) && IsUserOrganisationMnager(workHour, userName) && stage.Order == 2)
+                    return "NotApprove";
             if (IsUserProjectMnager(workHour, userName) && IsUserOrganisationMnager(workHour, userName) && stage.Order == 3)
                 return "NotApprove";
             if (IsUserProjectMnager(workHour, userName) && IsUserOrganisationMnager(workHour, userName) && stage.Order > 3)
                 return "Approve";
 
             if (IsUserProjectMnager(workHour, userName) && stage.Order == 2)
-                return  "NotApprove";
+                return "NotApprove";
             if (IsUserProjectMnager(workHour, userName) && stage.Order >= 3)
-                return  "Approve";
-            if (IsUserOrganisationMnager(workHour, userName) && stage.Order <= 2 )
+                return "Approve";
+            if (IsUserOrganisationMnager(workHour, userName) && stage.Order <= 2)
                 return "Nothing";
-            if (IsUserOrganisationMnager(workHour, userName) && stage.Order == 3 )
+            if (IsUserOrganisationMnager(workHour, userName) && stage.Order == 3)
                 return "NotApprove";
             if (IsUserOrganisationMnager(workHour, userName) && stage.Order > 3)
                 return "Approve";
@@ -209,22 +227,22 @@ namespace KP.TimeSheets.Domain
         }
         public void ApproveWorkHour(WorkHour wh)
         {
-         var stagecontroller =     new StageController(_UOW);
+            var stagecontroller = new StageController(_UOW);
             stagecontroller.SetNextStageID(wh);
             _UOW.SaveChanges();
 
         }
         public void DenyWorkHour(WorkHour wh)
         {
-           
+
             var stagecontroller = new StageController(_UOW);
-           
+
 
             stagecontroller.SetPreviusStage(wh);
             _UOW.SaveChanges();
 
         }
-        public IEnumerable<WorkHour> GetApproveWorkHoursByUserId(User user,string curUserName)
+        public IEnumerable<WorkHour> GetApproveWorkHoursByUserId(User user, string curUserName)
         {
             var whs = GetWorkHoursByUser(user);
             List<WorkHour> result = new List<WorkHour>();
@@ -237,9 +255,9 @@ namespace KP.TimeSheets.Domain
             }
             return result;
 
-          
+
         }
-        public IEnumerable<WorkHour> GetNotApproveWorkHoursByUserId(User user,string curUserName)
+        public IEnumerable<WorkHour> GetNotApproveWorkHoursByUserId(User user, string curUserName)
         {
             var whs = GetWorkHoursByUser(user);
             List<WorkHour> result = new List<WorkHour>();
@@ -277,10 +295,10 @@ namespace KP.TimeSheets.Domain
             foreach (var mision in Missions)
             {
                 if (!result.Any(x => x.Date.Date == mision.Date.Date))
-                    result.Add(new PresenceHour() {ID = Guid.NewGuid(), Date = mision.Date, Hours = mision.Hours,EmployeeID=user.ID,Employee=user });
+                    result.Add(new PresenceHour() { ID = Guid.NewGuid(), Date = mision.Date, Hours = mision.Hours, EmployeeID = user.ID, Employee = user });
 
                 result.First(x => x.Date.Date == mision.Date.Date).Hours += mision.Hours;
-                    
+
             }
 
             return result;
@@ -289,7 +307,7 @@ namespace KP.TimeSheets.Domain
         {
             return _UOW.PresHourRepository.GetByUserIdAndDate(UserId, date);
         }
-        public IEnumerable<PresenceHour> GetThisMonthPresencHoursByUserId(Guid UserId,DateTime date)
+        public IEnumerable<PresenceHour> GetThisMonthPresencHoursByUserId(Guid UserId, DateTime date)
         {
             var month = DateUtility.GetPersianManth(date);
             var year = DateUtility.GetPersianYear(date);
@@ -299,7 +317,7 @@ namespace KP.TimeSheets.Domain
                 to = DateUtility.GetMiladiDate(year.ToString() + "/" + month + "/" + "30");
             else
                 to = DateUtility.GetMiladiDate(year.ToString() + "/" + month + "/" + "31");
-            return _UOW.PresHourRepository.GetByEpmloyeeID(UserId,from,to);
+            return _UOW.PresHourRepository.GetByEpmloyeeID(UserId, from, to);
         }
         public IEnumerable<PresenceHour> GetThisPeriodPresencHoursByUserId(Guid UserId, DateTime from, DateTime to)
         {
@@ -314,9 +332,9 @@ namespace KP.TimeSheets.Domain
             return _UOW.PresHourRepository.GetFirstDate();
         }
 
-        public List<WorkHour> GetByUserIdsAndProjectIds(List<Guid> userids, List<Guid> ProjectIds, DateTime from , DateTime to)
+        public List<WorkHour> GetByUserIdsAndProjectIds(List<Guid> userids, List<Guid> ProjectIds, DateTime from, DateTime to)
         {
-            var FilterusersworkHours =new List<WorkHour>();
+            var FilterusersworkHours = new List<WorkHour>();
             var FilterprojectsworkHours = new List<WorkHour>();
 
             foreach (var userid in userids)
@@ -324,7 +342,7 @@ namespace KP.TimeSheets.Domain
                 foreach (var FilterusersworkHour in _UOW.WorkHourRepository.GetByEpmloyeeID(userid, from, to))
                 {
                     FilterusersworkHours.Add(FilterusersworkHour);
-                } 
+                }
             }
 
             foreach (var projectid in ProjectIds)
@@ -335,7 +353,7 @@ namespace KP.TimeSheets.Domain
                     {
                         FilterusersworkHours.Add(FilterprojectsworkHour);
                     }
-                    
+
                 }
             }
             return FilterusersworkHours;
