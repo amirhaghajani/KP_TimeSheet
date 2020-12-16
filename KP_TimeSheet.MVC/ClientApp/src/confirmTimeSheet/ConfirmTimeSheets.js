@@ -44,6 +44,12 @@ $(document).ready(function () {
 		WNDSelectPeriod_OnClose();
 	});
 
+	$('#btnDeny').off().on('click', function () {
+		FinalDeny();
+	});
+	$('#btnDiscardDeny').off().on('click', function () {
+		WndDeny_OnClose();
+	});
 
 });
 
@@ -332,12 +338,14 @@ function ApproveTask(id, index) {
 		date: da.date,
 		id: id,
 	};
+
+	debugger;
 	var prmData = JSON.stringify(data);
 
 	service.approveWorkHour(prmData, (response) => {
 		debugger;
 		GetCurrentPeriodconfirm();
-		common.notify(response, "success");
+		if(response && response.message) common.notify(response.message, "success");
 	});
 
 }
@@ -353,7 +361,7 @@ function FinalDeny() {
 	}
 
 	var data = {
-		date: da.Date,
+		date: da.date,
 		id: dataService.selectedTaskIdForDeny_get(),
 		description: $("#comment").val()
 	};
@@ -363,7 +371,7 @@ function FinalDeny() {
 	service.denyWorkHour(prmData, (response) => {
 		WndDeny_OnClose();
 		GetCurrentPeriodconfirm();
-		common.notify(response, "success");
+		if(response && response.message) common.notify(response.message, "success");
 	});
 
 }

@@ -11,10 +11,11 @@ namespace KP.TimeSheets.MVC
     public class TimeSheetsAPIController : ControllerBase
     {
         IUnitOfWork _uow;
-        public TimeSheetsAPIController(IUnitOfWork uow){
+        public TimeSheetsAPIController(IUnitOfWork uow)
+        {
             this._uow = uow;
         }
-        
+
         #region Register Methods
 
         [HttpPost("[action]")]
@@ -25,7 +26,7 @@ namespace KP.TimeSheets.MVC
             WorkHourHistoryManager historyManagerh = new WorkHourHistoryManager(this._uow);
             User currUser = new UserHelper().GetCurrent(this._uow);
 
-            if(!WorkHourJson.ID.HasValue) WorkHourJson.ID=Guid.Empty;
+            if (!WorkHourJson.ID.HasValue) WorkHourJson.ID = Guid.Empty;
 
             result = new WorkHourHistoryAssembler().ToJsons(historyManagerh.GetByWorkHourID(WorkHourJson.ID.Value)).ToList();
             return result;
@@ -52,7 +53,7 @@ namespace KP.TimeSheets.MVC
             ProjectManager projectManager = new Domain.ProjectManager(this._uow);
             TimeSheetManager timeSheetManager = new TimeSheetManager(this._uow);
             DisplayPeriodManager displayPeriodMnager = new DisplayPeriodManager(this._uow);
-            var displayPeriod = DisplayPeriodUtilities.ConvertPeriodNumberDateJsonToDisplayPeriod(period,this._uow);
+            var displayPeriod = DisplayPeriodUtilities.ConvertPeriodNumberDateJsonToDisplayPeriod(period, this._uow);
             //SyncWithPWA(uow);
             User currUser = new UserHelper().GetCurrent(this._uow);
             displayPeriodMnager.Save(displayPeriod);
@@ -325,14 +326,14 @@ namespace KP.TimeSheets.MVC
                 workHour.WorkflowStage = new WorkflowManager(this._uow).FirstStage();
                 workHour.WorkflowStageID = workHour.WorkflowStage.ID;
                 workHour.Description = workHourJson.Description;
-                 tsManager.SaveWorkHour(workHour);
-                 HistoryUtilities.RegisterSaveHistory(workHour,this._uow);
+                tsManager.SaveWorkHour(workHour);
+                HistoryUtilities.RegisterSaveHistory(workHour, this._uow);
             }
 
             catch (ValidationException ex)
             {
 
-                result= ex.Errors;
+                result = ex.Errors;
             }
             return result;
         }
@@ -345,7 +346,7 @@ namespace KP.TimeSheets.MVC
             User currUser = new UserHelper().GetCurrent(this._uow);
             Validations validate = new Validations();
 
-            if(!workHourJson.ID.HasValue) workHourJson.ID=Guid.Empty;
+            if (!workHourJson.ID.HasValue) workHourJson.ID = Guid.Empty;
 
             var WorkHour = WHM.GetByID(workHourJson.ID.Value);
             List<string> result = new List<string>();
@@ -356,7 +357,7 @@ namespace KP.TimeSheets.MVC
                 if (WorkHour.WorkflowStage.IsFirst)
                 {
                     WHM.SendWorkHour(WorkHour);
-                    HistoryUtilities.RegisterSendHistory(WorkHour,this._uow);
+                    HistoryUtilities.RegisterSendHistory(WorkHour, this._uow);
                     result.Add("ارسال کارکرد با موفقیت انجام گردید");
                 }
             }
@@ -383,7 +384,7 @@ namespace KP.TimeSheets.MVC
                         return result;
 
                     WHM.SendWorkHour(wh);
-                    HistoryUtilities.RegisterSendHistory(wh,this._uow);
+                    HistoryUtilities.RegisterSendHistory(wh, this._uow);
                     result.Add("عملیات ارسال کارکرد ها با موفقیت انجام گردید");
                 }
             }
@@ -406,7 +407,7 @@ namespace KP.TimeSheets.MVC
             User currUser = new UserHelper().GetCurrent(this._uow);
             var answer = WHM.GetPresenceHourByUserIdAndDate(currUser.ID, workHourJson.Date);
 
-            var answer2 = new {date = answer.Date, hours=answer.Hours};
+            var answer2 = new { date = answer.Date, hours = answer.Hours };
 
             return answer2;
         }
@@ -423,7 +424,7 @@ namespace KP.TimeSheets.MVC
         public bool DeleteWorkHours(WorkHourJson workHourJson)//JObject jsonObject)
         {
             TimeSheetManager WHM = new TimeSheetManager(this._uow);
-            if(!workHourJson.ID.HasValue) workHourJson.ID=Guid.Empty;
+            if (!workHourJson.ID.HasValue) workHourJson.ID = Guid.Empty;
             WHM.DeleteWorkHour(workHourJson.ID.Value);
             return true;
         }
@@ -628,7 +629,7 @@ namespace KP.TimeSheets.MVC
             IEnumerable<WorkHour> workHours = timeSheetManager.GetWorkHoursByUser(user, fromDate, toDate);
             IEnumerable<PresenceHour> presHours = timeSheetManager.GetPresHoursByUser(user, fromDate, toDate);
 
-            result = TimeSheetAssembler.ToJsonsForConfirm(presHours, workHours, user,this._uow);
+            result = TimeSheetAssembler.ToJsonsForConfirm(presHours, workHours, user, this._uow);
             return result;
 
         }
@@ -670,13 +671,13 @@ namespace KP.TimeSheets.MVC
             IEnumerable<WorkHour> workHours = timeSheetManager.GetWorkHoursByUser(user, fromDate, toDate);
             IEnumerable<PresenceHour> presHours = timeSheetManager.GetPresHoursByUser(user, fromDate, toDate);
 
-            result = TimeSheetAssembler.ToJsonsForConfirm(presHours, workHours, user,this._uow);
+            result = TimeSheetAssembler.ToJsonsForConfirm(presHours, workHours, user, this._uow);
             return result;
 
         }
 
         [HttpPost("[action]")]
-        public string ApproveWorkHour(ApproveAndDenyJson data)
+        public ActionResult ApproveWorkHour(ApproveAndDenyJson data)
         {
             IEnumerable<WorkHour> result;
 
@@ -691,23 +692,23 @@ namespace KP.TimeSheets.MVC
                     for (int i = 0; i < 2; i++)
                     {
                         timeSheetManager.ApproveWorkHour(item);
-                        HistoryUtilities.RegisterApproveHistory(data, item,this._uow);
+                        HistoryUtilities.RegisterApproveHistory(data, item, this._uow);
                     }
                 }
                 else
                 {
                     timeSheetManager.ApproveWorkHour(item);
-                    HistoryUtilities.RegisterApproveHistory(data, item,this._uow);
+                    HistoryUtilities.RegisterApproveHistory(data, item, this._uow);
                 }
 
             }
 
 
-            return "عملیات تایید با موفقیت انجام گردید";
+            return Ok(new { message = "عملیات تایید با موفقیت انجام گردید" });
         }
 
         [HttpPost("[action]")]
-        public string DenyWorkHour(ApproveAndDenyJson data)
+        public ActionResult DenyWorkHour(ApproveAndDenyJson data)
         {
             IEnumerable<WorkHour> result;
             TimeSheetManager timeSheetManager = new TimeSheetManager(this._uow);
@@ -716,12 +717,11 @@ namespace KP.TimeSheets.MVC
             foreach (var item in result)
             {
                 timeSheetManager.DenyWorkHour(item);
-                HistoryUtilities.RegisterDenyHistory(data, item,this._uow);
+                HistoryUtilities.RegisterDenyHistory(data, item, this._uow);
 
             }
 
-
-            return "عملیات رد با موفقیت انجام گردید";
+            return Ok(new { message = "عملیات رد با موفقیت انجام گردید" });
         }
 
         [HttpPost("[action]")]
@@ -755,7 +755,7 @@ namespace KP.TimeSheets.MVC
             ProjectManager projectManager = new Domain.ProjectManager(this._uow);
             TimeSheetManager timeSheetManager = new TimeSheetManager(this._uow);
             DisplayPeriodManager displayPeriodMnager = new DisplayPeriodManager(this._uow);
-            var displayPeriod = DisplayPeriodUtilities.ConvertPeriodNumberDateJsonToDisplayPeriod(period,this._uow);
+            var displayPeriod = DisplayPeriodUtilities.ConvertPeriodNumberDateJsonToDisplayPeriod(period, this._uow);
             //SyncWithPWA(uow);
             User currUser = new UserHelper().GetCurrent(this._uow);
             User user = userManager.GetByID(Guid.Parse(period.UserId));
@@ -765,7 +765,7 @@ namespace KP.TimeSheets.MVC
             DateTime toDate = fromDate.AddDays(displayPeriod.NumOfDays);
             IEnumerable<PresenceHour> presHours = timeSheetManager.GetPresHoursByUser(user, fromDate, toDate);
             IEnumerable<WorkHour> workHours = timeSheetManager.GetWorkHoursByUser(user, fromDate, toDate);
-            result = TimeSheetAssembler.ToJsonsForConfirm(presHours, workHours, user,this._uow);
+            result = TimeSheetAssembler.ToJsonsForConfirm(presHours, workHours, user, this._uow);
 
             return result;
         }
@@ -808,7 +808,7 @@ namespace KP.TimeSheets.MVC
                         IEnumerable<PresenceHour> presHours = timeSheetManager.GetPresHoursByUser(currUser, fromDate, toDate);
                         IEnumerable<WorkHour> workHours = timeSheetManager.GetWorkHoursByUser(currUser, fromDate, toDate);
 
-                        result = TimeSheetAssembler.ToJsonsForConfirm(presHours, workHours, user,this._uow);
+                        result = TimeSheetAssembler.ToJsonsForConfirm(presHours, workHours, user, this._uow);
                     }
                     else
                     {
@@ -817,7 +817,7 @@ namespace KP.TimeSheets.MVC
                         toDate = DateTime.Now.EndOfWeek(DayOfWeek.Friday);
                         IEnumerable<PresenceHour> presHours = timeSheetManager.GetPresHoursByUser(currUser, fromDate, toDate);
                         IEnumerable<WorkHour> workHours = timeSheetManager.GetWorkHoursByUser(currUser, fromDate, toDate);
-                        result = TimeSheetAssembler.ToJsonsForConfirm(presHours, workHours, user,this._uow);
+                        result = TimeSheetAssembler.ToJsonsForConfirm(presHours, workHours, user, this._uow);
                     }
 
                 }
@@ -832,7 +832,7 @@ namespace KP.TimeSheets.MVC
                         presHours = timeSheetManager.GetPresHoursByUser(currUser, fromDate, toDate);
                     }
                     IEnumerable<WorkHour> workHours = timeSheetManager.GetWorkHoursByUser(currUser, fromDate, toDate);
-                    result = TimeSheetAssembler.ToJsonsForConfirm(presHours, workHours, user,this._uow);
+                    result = TimeSheetAssembler.ToJsonsForConfirm(presHours, workHours, user, this._uow);
                 }
             }
             else
@@ -841,7 +841,7 @@ namespace KP.TimeSheets.MVC
                 toDate = DateTime.Now.EndOfWeek(DayOfWeek.Friday);
                 IEnumerable<PresenceHour> presHours = timeSheetManager.GetPresHoursByUser(currUser, fromDate, toDate);
                 IEnumerable<WorkHour> workHours = timeSheetManager.GetWorkHoursByUser(currUser, fromDate, toDate);
-                result = TimeSheetAssembler.ToJsonsForConfirm(presHours, workHours, user,this._uow);
+                result = TimeSheetAssembler.ToJsonsForConfirm(presHours, workHours, user, this._uow);
 
 
 
@@ -880,9 +880,9 @@ namespace KP.TimeSheets.MVC
 
             DateTime toDate = workHourJsons[workHourJsons.Count() - 1].Date; ;
 
-            IEnumerable<PresenceHour> presHours = timeSheetManager.GetPresHoursByUser(currUser, fromDate, toDate);
-            IEnumerable<WorkHour> workHours = timeSheetManager.GetWorkHoursByUser(currUser, fromDate, toDate);
-            result = TimeSheetAssembler.ToJsonsForConfirm(presHours, workHours, user,this._uow);
+            IEnumerable<PresenceHour> presHours = timeSheetManager.GetPresHoursByUser(user, fromDate, toDate);
+            IEnumerable<WorkHour> workHours = timeSheetManager.GetWorkHoursByUser(user, fromDate, toDate);
+            result = TimeSheetAssembler.ToJsonsForConfirm(presHours, workHours, user, this._uow);
 
             return result;
 
@@ -923,7 +923,7 @@ namespace KP.TimeSheets.MVC
 
                 IEnumerable<PresenceHour> presHours = timeSheetManager.GetPresHoursByUser(currUser, fromDate, toDate);
                 IEnumerable<WorkHour> workHours = timeSheetManager.GetWorkHoursByUser(currUser, fromDate, toDate);
-                result = TimeSheetAssembler.ToJsonsForConfirm(presHours, workHours, user,this._uow);
+                result = TimeSheetAssembler.ToJsonsForConfirm(presHours, workHours, user, this._uow);
 
             }
             else
@@ -937,7 +937,7 @@ namespace KP.TimeSheets.MVC
                     toDate = fromDate.AddDays(displayPeriod.NumOfDays);
                     presHours = timeSheetManager.GetPresHoursByUser(currUser, fromDate, toDate);
                 }
-                result = TimeSheetAssembler.ToJsonsForConfirm(presHours, workHours, user,this._uow);
+                result = TimeSheetAssembler.ToJsonsForConfirm(presHours, workHours, user, this._uow);
             }
 
             return result;
