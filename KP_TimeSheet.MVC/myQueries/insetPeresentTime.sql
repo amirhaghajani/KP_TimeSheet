@@ -9,10 +9,10 @@ SELECT TOP (1000) [ID]
 
   insert into [ForTest].[tsm].[PresenceHours]
   (id,date,EmployeeID,[Hours])
-  VALUEs (NEWID(),'2020-12-9','e2f7c45f-5beb-e911-80c4-000c29db41e2', 11 )
-  ,(NEWID(),'2020-12-8','e2f7c45f-5beb-e911-80c4-000c29db41e2', 11 )
-  ,(NEWID(),'2020-12-13','e2f7c45f-5beb-e911-80c4-000c29db41e2', 11 )
-  ,(NEWID(),'2020-12-14','e2f7c45f-5beb-e911-80c4-000c29db41e2', 11 )
+  VALUEs (NEWID(),'2020-12-19','e2f7c45f-5beb-e911-80c4-000c29db41e2', 9 )
+  ,(NEWID(),'2020-12-20','e2f7c45f-5beb-e911-80c4-000c29db41e2', 10 )
+  ,(NEWID(),'2020-12-21','e2f7c45f-5beb-e911-80c4-000c29db41e2', 11 )
+  ,(NEWID(),'2020-12-22','e2f7c45f-5beb-e911-80c4-000c29db41e2', 12 )
 
 
 

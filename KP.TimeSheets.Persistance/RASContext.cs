@@ -1,5 +1,7 @@
 ﻿using KP.TimeSheets.Domain;
+using KP.TimeSheets.Persistance.QueryEntities;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace KP.TimeSheets.Persistance
 {
@@ -46,10 +48,18 @@ namespace KP.TimeSheets.Persistance
         public virtual DbSet<HourlyMission> HourlyMissions { get; set; }
 
 
+        public DbSet<FoundConfirmTimeSheet> spFoundConfirmTimeSheet { get; set; }
+        public System.FormattableString spFoundConfirmTimeSheet_str(Guid approver_userId,Guid userId, DateTime startDate,DateTime endDate)
+        {
+						return $"exec spFoundConfirmTimeSheet @approver_userId={approver_userId},@userId={userId},@startDate={startDate},@endDate={endDate}";
+        }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<FoundConfirmTimeSheet>().HasNoKey();
 
             #region Configuration of Users' Table
 
@@ -262,7 +272,7 @@ namespace KP.TimeSheets.Persistance
                 .HasForeignKey(em => em.EmployeeID);
 
 
-            
+
 
             //Users to WorkHours(one-many)
             //ارتباط یک به چند میان کاربر و ساعات کاری

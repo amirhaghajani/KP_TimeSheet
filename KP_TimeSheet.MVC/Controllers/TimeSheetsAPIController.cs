@@ -626,8 +626,8 @@ namespace KP.TimeSheets.MVC
                 toDate = fromDate.AddDays(displayPeriod.NumOfDays);
             }
 
-            IEnumerable<WorkHour> workHours = timeSheetManager.GetWorkHoursByUser(user, fromDate, toDate);
-            IEnumerable<PresenceHour> presHours = timeSheetManager.GetPresHoursByUser(user, fromDate, toDate);
+            IEnumerable<WorkHour> workHours = timeSheetManager.GetWorkHoursByUser(user, fromDate, toDate).ToList();
+            IEnumerable<PresenceHour> presHours = timeSheetManager.GetPresHoursByUser(user, fromDate, toDate).ToList();
 
             result = TimeSheetAssembler.ToJsonsForConfirm(presHours, workHours, user, this._uow);
             return result;
