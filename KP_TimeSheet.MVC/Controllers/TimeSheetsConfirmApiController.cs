@@ -54,12 +54,15 @@ namespace KP.TimeSheets.MVC
                 ));
                 var items = await query.ToListAsync();
 
+                var days=new string[]{"شنبه","یکشنبه","دوشنبه","سه شنبه","چارشنبه","پنج شنبه","جمعه"};
+
                 var answer = items.GroupBy(g => g.Date)
                 .Select(gg => new vmGetTimeSheetResualt
                 {
                     date = gg.Key,
                     date_persian = gg.First().PersianDate,
-                    hozoor = 10,
+                    day_persian = days[gg.First().DayOfWeek],
+                    hozoor = gg.First().Hozoor,
                     projects = gg.Where(p => p.ProjectId.HasValue).GroupBy(p => p.ProjectId).Select(pp => new vmGetTimeSheetResualt_Project
                     {
                         id = pp.Key,

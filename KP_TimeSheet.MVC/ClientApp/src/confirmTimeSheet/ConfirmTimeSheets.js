@@ -1,6 +1,7 @@
 ﻿const common = require('../common/common');
 const service = require('./service');
 const dataService = require('./data');
+const common_timeSheet = require('../common/timesheet');
 
 
 
@@ -19,7 +20,7 @@ function KTRColumnConfirm() {
 $(document).ready(function () {
 
 	dataService.init();
-	service.init(dataService);
+	service.init(dataService, common_timeSheet);
 
 
 	GetUsers();
