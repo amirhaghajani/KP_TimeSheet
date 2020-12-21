@@ -941,27 +941,24 @@ namespace KP.TimeSheets.MVC
             }
 
             return result;
-
-
-
         }
 
-        [HttpGet("[action]")]
-        public IEnumerable<TimeSheetJson> ChangeDisplayPeriodToWeeklyConfirm(Guid UserId)
-        {
-            UserManager um = new UserManager(this._uow);
-            var user = um.GetByID(UserId);
+        // [HttpGet("[action]")]
+        // public IEnumerable<TimeSheetJson> ChangeDisplayPeriodToWeeklyConfirm(Guid UserId)
+        // {
+        //     UserManager um = new UserManager(this._uow);
+        //     var user = um.GetByID(UserId);
 
-            var currentUser = new UserHelper().GetCurrent(this._uow);
-            DisplayPeriodManager dpm = new DisplayPeriodManager(this._uow);
-            DisplayPeriod dp = new DisplayPeriod();
-            dp = dpm.GetDisplayPeriod(currentUser);
-            dp.IsWeekly = true;
-            dpm.Edit(dp);
-            var inputArg = new GetThisMonthDataByUserJson();
-            inputArg.userid = user.ID.ToString();
-            return GetTimeSheetsByUserId(inputArg);
-        }
+        //     var currentUser = new UserHelper().GetCurrent(this._uow);
+        //     DisplayPeriodManager dpm = new DisplayPeriodManager(this._uow);
+        //     DisplayPeriod dp = new DisplayPeriod();
+        //     dp = dpm.GetDisplayPeriod(currentUser);
+        //     dp.IsWeekly = true;
+        //     dpm.Edit(dp);
+        //     var inputArg = new GetThisMonthDataByUserJson();
+        //     inputArg.userid = user.ID.ToString();
+        //     return GetTimeSheetsByUserId(inputArg);
+        // }
 
         #endregion
 

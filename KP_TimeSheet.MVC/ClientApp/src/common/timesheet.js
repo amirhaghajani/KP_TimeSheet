@@ -71,8 +71,6 @@ const timeSheet = (function () {
 
         if (!createItemForWantApprove) return data;
 
-        debugger;
-
         const taeedNashodeId = data.length + 1
         const karkard_notApprove = new timeSheet_Row(taeedNashodeId, null, "تایید نشده", "-", "eb96abcb-d37d-1001-0000-e1f4a753bee5", []);
         data.push(karkard_notApprove);
@@ -86,6 +84,8 @@ const timeSheet = (function () {
     }
 
     function private_addDailyTimes(data, times, projects, parentId, isApprove) {
+
+        if(projects.length==0) return;
 
         const rowProjects = [];
         for (var i = 0; i < projects.length; i++) {
@@ -156,9 +156,10 @@ const timeSheet = (function () {
 
                 let pIndex = projects.findIndex(p => p.id == cProject.id);
                 let savedProject;
+                let isNewSavedProject = false;
                 if (pIndex == -1) {
                     savedProject = { id: cProject.id, title: cProject.title, workouts: [] };
-                    projects.push(savedProject);
+                    isNewSavedProject = true;
                 } else {
                     savedProject = projects[pIndex];
                 }
@@ -169,11 +170,16 @@ const timeSheet = (function () {
 
                     if (!wantedState || cWorkout.state == wantedState) {
                         cProject.workouts.push(cWorkout);
-                        if (savedProject.workouts.findIndex(p => p.id == cWorkout.id) == -1) savedProject.workouts.push({ id: cWorkout.id, title: cWorkout.title, state: cWorkout.state, hours: cWorkout.hours });
+                        if (savedProject.workouts.findIndex(p => p.id == cWorkout.id) == -1) savedProject.workouts.push({ 
+                            id: cWorkout.id, title: cWorkout.title, state: cWorkout.state, hours: cWorkout.hours 
+                        });
                     }
                 }
 
-                if (cProject.workouts.length > 0) cTime.projects.push(cProject);
+                if (cProject.workouts.length > 0) {
+                    cTime.projects.push(cProject);
+                    if(isNewSavedProject) projects.push(savedProject);
+                }
 
             }
 

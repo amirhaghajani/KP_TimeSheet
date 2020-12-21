@@ -167,8 +167,6 @@ const timeSheet = (function () {
 
         if (!createItemForWantApprove) return data;
 
-        debugger;
-
         const taeedNashodeId = data.length + 1
         const karkard_notApprove = new timeSheet_Row(taeedNashodeId, null, "تایید نشده", "-", "eb96abcb-d37d-1001-0000-e1f4a753bee5", []);
         data.push(karkard_notApprove);
@@ -182,6 +180,8 @@ const timeSheet = (function () {
     }
 
     function private_addDailyTimes(data, times, projects, parentId, isApprove) {
+
+        if(projects.length==0) return;
 
         const rowProjects = [];
         for (var i = 0; i < projects.length; i++) {
@@ -252,9 +252,10 @@ const timeSheet = (function () {
 
                 let pIndex = projects.findIndex(p => p.id == cProject.id);
                 let savedProject;
+                let isNewSavedProject = false;
                 if (pIndex == -1) {
                     savedProject = { id: cProject.id, title: cProject.title, workouts: [] };
-                    projects.push(savedProject);
+                    isNewSavedProject = true;
                 } else {
                     savedProject = projects[pIndex];
                 }
@@ -265,11 +266,16 @@ const timeSheet = (function () {
 
                     if (!wantedState || cWorkout.state == wantedState) {
                         cProject.workouts.push(cWorkout);
-                        if (savedProject.workouts.findIndex(p => p.id == cWorkout.id) == -1) savedProject.workouts.push({ id: cWorkout.id, title: cWorkout.title, state: cWorkout.state, hours: cWorkout.hours });
+                        if (savedProject.workouts.findIndex(p => p.id == cWorkout.id) == -1) savedProject.workouts.push({ 
+                            id: cWorkout.id, title: cWorkout.title, state: cWorkout.state, hours: cWorkout.hours 
+                        });
                     }
                 }
 
-                if (cProject.workouts.length > 0) cTime.projects.push(cProject);
+                if (cProject.workouts.length > 0) {
+                    cTime.projects.push(cProject);
+                    if(isNewSavedProject) projects.push(savedProject);
+                }
 
             }
 
@@ -333,13 +339,13 @@ $(document).ready(function () {
 	WNDSelectPeriod_OnInit();
 
 	$('#btnpreviousPeriodconfirm').off().on('click', function () {
-		GetPreviousPeriodconfirm();
+		GetPreviousNextPeriodconfirm('previous');
 	});
 	$('#btnSelectPeriodconfirm').off().on('click', function () {
 		WNDSelectPeriod_OnOpen();
 	});
 	$('#btnNextPeriodconfirm').off().on('click', function () {
-		GetNextPeriodconfirm();
+		GetPreviousNextPeriodconfirm('next');
 	});
 
 
@@ -452,6 +458,7 @@ function RefreshTimeSheetConfirm() {
 
 function removeAndRecreateTreelisConfirmDiv() {
 
+	if(!$("#ktrlTimeSheetsConfirm").data("kendoTreeList")) return;
 	$("#ktrlTimeSheetsConfirm").data("kendoTreeList").destroy();
 	$("#ktrlTimeSheetsConfirm").remove();
 	$("#KTLContainerRegisterConfirm").append("<div id='ktrlTimeSheetsConfirm'></div>");
@@ -488,7 +495,9 @@ function kddlUsers_OnChange(e) {
 	if (dataService.userId_get() != "") {
 
 		service.getTimeSheetsByUserIdForFirstTime((response) => {
-			
+
+			removeAndRecreateTreelisConfirmDiv();
+
 			Init_TimeSheetTreeListConfirm(response);
 			InitMonthlyByProjectsGridConfirm();
 			InitPeriodlyByProjectsGridConfirm();
@@ -618,16 +627,16 @@ function TreeListTemplateColumn(dataItem, index) {
 
 }
 
-function ktrlTimeSheetsConfirm_dataBound(e){
+function ktrlTimeSheetsConfirm_dataBound(e) {
 	$('.forFound_ApproveTask').off().on('click', function () {
 		const uid = $(this).data("uid");
-		const index =$(this).data("index");
-		ApproveTask(uid,index);
+		const index = $(this).data("index");
+		ApproveTask(uid, index);
 	});
 	$('.forFound_DenyTask').off().on('click', function () {
 		const uid = $(this).data("uid");
-		const index =$(this).data("index");
-		DenyTask(uid,index);
+		const index = $(this).data("index");
+		DenyTask(uid, index);
 	});
 }
 
@@ -651,7 +660,7 @@ function ApproveTask(id, index) {
 	service.approveWorkHour(prmData, (response) => {
 		debugger;
 		GetCurrentPeriodconfirm();
-		if(response && response.message) common.notify(response.message, "success");
+		if (response && response.message) common.notify(response.message, "success");
 	});
 
 }
@@ -677,7 +686,7 @@ function FinalDeny() {
 	service.denyWorkHour(prmData, (response) => {
 		WndDeny_OnClose();
 		GetCurrentPeriodconfirm();
-		if(response && response.message) common.notify(response.message, "success");
+		if (response && response.message) common.notify(response.message, "success");
 	});
 
 }
@@ -815,14 +824,26 @@ function btnSendPeriodsconfirm_Onclick() {
 
 }
 
-function GetPreviousPeriodconfirm() {
+function GetPreviousNextPeriodconfirm(type) {
 	common.loaderShow();
 
-	dataService.userId_set($("#kddlUsers").data("kendoDropDownList").dataItem($("#kddlUsers").data("kendoDropDownList").select()).id);
-	dataService.timeSheetDataConfirm_get()[0].values[0].UserId = dataService.userId_get();
-	var prmData = JSON.stringify(dataService.timeSheetDataConfirm_get()[0].values[0]);
+	debugger;
 
-	service.getPreviousPeriodConfirm(prmData, (response) => {
+	dataService.userId_set($("#kddlUsers").data("kendoDropDownList").dataItem($("#kddlUsers").data("kendoDropDownList").select()).id);
+
+	let startDate = null;
+	let endDate = null;
+
+	if (type == 'previous') {
+		startDate = dataService.timeSheetDataConfirm_get()[0].values[0].date;
+	} else {
+		var firstData = dataService.timeSheetDataConfirm_get()[0];
+		endDate = firstData.values[firstData.values.length - 1].date;
+	}
+
+
+
+	service.getPreviousNextPeriodConfirm(dataService.userId_get(), startDate, endDate, (response) => {
 		removeAndRecreateTreelisConfirmDiv();
 		Init_TimeSheetTreeListConfirm(response);
 		InitMonthlyByProjectsGridConfirm();
@@ -834,6 +855,8 @@ function GetPreviousPeriodconfirm() {
 }
 
 function GetCurrentPeriodconfirm() {
+	debugger;
+
 	common.loaderShow();
 
 	dataService.userId_set($("#kddlUsers").data("kendoDropDownList").dataItem($("#kddlUsers").data("kendoDropDownList").select()).id);
@@ -851,23 +874,7 @@ function GetCurrentPeriodconfirm() {
 
 }
 
-function GetNextPeriodconfirm() {
-	common.loaderShow();
 
-	dataService.userId_set($("#kddlUsers").data("kendoDropDownList").dataItem($("#kddlUsers").data("kendoDropDownList").select()).id);
-	dataService.timeSheetDataConfirm_get()[0].values[dataService.timeSheetDataConfirm_get()[0].values.length - 1].UserId = dataService.userId_get();
-	var prmData = JSON.stringify(dataService.timeSheetDataConfirm_get()[0].values[dataService.timeSheetDataConfirm_get()[0].values.length - 1]);
-
-	service.getNextPeriodConfirm(prmData, (response) => {
-		removeAndRecreateTreelisConfirmDiv();
-		Init_TimeSheetTreeListConfirm(response);
-		InitMonthlyByProjectsGridConfirm();
-		InitPeriodlyByProjectsGridConfirm();
-
-		common.loaderHide();
-	});
-
-}
 
 
 function EnableAndDisableSendPeriodRadioButtonConfirm() {
@@ -935,7 +942,7 @@ const service = (function () {
 
 	const moduleData = {};
 
-	function init(data,common_timeSheet) {
+	function init(data, common_timeSheet) {
 		moduleData.data = data;
 		moduleData.common_timeSheet = common_timeSheet;
 	}
@@ -983,38 +990,36 @@ const service = (function () {
 
 			success: function (response) {
 
-				debugger;
-
-				var data = moduleData.common_timeSheet.convertServerDataToTimeSheet_baseInfo(response,true);
-
+				var data = moduleData.common_timeSheet.convertServerDataToTimeSheet_baseInfo(response, true);
 
 				moduleData.data.timeSheetDataConfirm_set(data);
+
 				if (success_callBack) success_callBack(data);
 			},
 			error: error_callBack ? () => error_callBack() : () => { }
 		});
 
 
-		$.ajax({
-			type: "Get",
-			url: "/api/TimeSheetsAPI/GetTimeSheetsByUserIdForFirstTime?UserId=" + moduleData.data.userId_get(),
-			contentType: "application/json; charset=utf-8",
-			dataType: "json",
+		// $.ajax({
+		// 	type: "Get",
+		// 	url: "/api/TimeSheetsAPI/GetTimeSheetsByUserIdForFirstTime?UserId=" + moduleData.data.userId_get(),
+		// 	contentType: "application/json; charset=utf-8",
+		// 	dataType: "json",
 
-			success: function (response) {
-				if (response) {
-					response.forEach(element => {
-						element.uuiidd = element.uid;
-					});
-				}
-				//moduleData.data.timeSheetDataConfirm_set(response);
-				//if (success_callBack) success_callBack(response);
-			},
-			error: error_callBack ? () => error_callBack() : () => { }
-		});
+		// 	success: function (response) {
+		// 		if (response) {
+		// 			response.forEach(element => {
+		// 				element.uuiidd = element.uid;
+		// 			});
+		// 		}
+		// 		//moduleData.data.timeSheetDataConfirm_set(response);
+		// 		//if (success_callBack) success_callBack(response);
+		// 	},
+		// 	error: error_callBack ? () => error_callBack() : () => { }
+		// });
 	}
 
-	
+
 
 
 
@@ -1097,12 +1102,15 @@ const service = (function () {
 	function changeDisplayPeriodToWeeklyConfirm(success_callBack, error_callBack) {
 		$.ajax({
 			type: "Get",
-			url: "/api/TimeSheetsAPI/ChangeDisplayPeriodToWeeklyConfirm?UserId=" + moduleData.data.userId_get(),
+			url: "/api/Confirm/ChangeDisplayPeriodToWeeklyConfirm?userId=" + moduleData.data.userId_get(),
 			contentType: "application/json; charset=utf-8",
 			dataType: "json",
 			success: (response) => {
-				moduleData.data.timeSheetDataConfirm_set(response);
-				if (success_callBack) success_callBack(response);
+
+				var data = moduleData.common_timeSheet.convertServerDataToTimeSheet_baseInfo(response, true);
+
+				moduleData.data.timeSheetDataConfirm_set(data);
+				if (success_callBack) success_callBack(data);
 			},
 			error: error_callBack ? () => error_callBack() : () => { }
 		});
@@ -1111,32 +1119,55 @@ const service = (function () {
 	function getTimeSheetsByDateAndNumberOfDayConfirm(prmData, success_callBack, error_callBack) {
 		$.ajax({
 			type: "Post",
-			url: "/api/TimeSheetsAPI/GetTimeSheetsByDateAndNumberOfDayConfirm",
+			url: "/api/confirm/GetTimeSheetsByDateAndNumberOfDayConfirm",
 			contentType: "application/json; charset=utf-8",
 			dataType: "json",
 			data: prmData,
 			success: (response) => {
-				moduleData.data.timeSheetDataConfirm_set(response);
-				if (success_callBack) success_callBack(response);
+				var data = moduleData.common_timeSheet.convertServerDataToTimeSheet_baseInfo(response, true);
+
+				moduleData.data.timeSheetDataConfirm_set(data);
+				if (success_callBack) success_callBack(data);
 			},
 			error: error_callBack ? () => error_callBack() : () => { }
 		});
 	}
 
 
-	function getPreviousPeriodConfirm(prmData, success_callBack, error_callBack) {
+	function getPreviousNextPeriodConfirm(userId, startDate = null, toDate = null, success_callBack, error_callBack) {
+		var type = "previous";
+		let date = startDate;
+		if (startDate == null) {
+			type = "next";
+			date = toDate;
+		}
 		$.ajax({
-			type: "Post",
-			url: "/api/TimeSheetsAPI/GetPreviousPeriodConfirm",
+			type: "Get",
+			url: `/api/Confirm/${type}/${userId}/${date}`,
 			contentType: "application/json; charset=utf-8",
 			dataType: "json",
-			data: prmData,
 			success: (response) => {
-				moduleData.data.timeSheetDataConfirm_set(response);
-				if (success_callBack) success_callBack(response);
+
+				var data = moduleData.common_timeSheet.convertServerDataToTimeSheet_baseInfo(response, true);
+
+				moduleData.data.timeSheetDataConfirm_set(data);
+				if (success_callBack) success_callBack(data);
 			},
 			error: error_callBack ? () => error_callBack() : () => { }
 		});
+
+		// $.ajax({
+		// 	type: "Post",
+		// 	url: "/api/TimeSheetsAPI/GetPreviousPeriodConfirm",
+		// 	contentType: "application/json; charset=utf-8",
+		// 	dataType: "json",
+		// 	data: prmData,
+		// 	success: (response) => {
+		// 		moduleData.data.timeSheetDataConfirm_set(response);
+		// 		if (success_callBack) success_callBack(response);
+		// 	},
+		// 	error: error_callBack ? () => error_callBack() : () => { }
+		// });
 	}
 
 	function getCurrentPeriodConfirm(prmData, success_callBack, error_callBack) {
@@ -1154,20 +1185,7 @@ const service = (function () {
 		});
 	}
 
-	function getNextPeriodConfirm(prmData, success_callBack, error_callBack) {
-		$.ajax({
-			type: "Post",
-			url: "/api/TimeSheetsAPI/GetNextPeriodConfirm",
-			contentType: "application/json; charset=utf-8",
-			dataType: "json",
-			data: prmData,
-			success: (response) => {
-				moduleData.data.timeSheetDataConfirm_set(response);
-				if (success_callBack) success_callBack(response);
-			},
-			error: error_callBack ? () => error_callBack() : () => { }
-		});
-	}
+
 
 
 	return {
@@ -1183,9 +1201,8 @@ const service = (function () {
 		getThisPeriodProjectsByUserId: getThisPeriodProjectsByUserId,
 		changeDisplayPeriodToWeeklyConfirm: changeDisplayPeriodToWeeklyConfirm,
 		getTimeSheetsByDateAndNumberOfDayConfirm: getTimeSheetsByDateAndNumberOfDayConfirm,
-		getPreviousPeriodConfirm: getPreviousPeriodConfirm,
+		getPreviousNextPeriodConfirm: getPreviousNextPeriodConfirm,
 		getCurrentPeriodConfirm: getCurrentPeriodConfirm,
-		getNextPeriodConfirm: getNextPeriodConfirm
 	}
 
 })();
@@ -1203,8 +1220,7 @@ module.exports = {
 	getThisPeriodProjectsByUserId: service.getThisPeriodProjectsByUserId,
 	changeDisplayPeriodToWeeklyConfirm: service.changeDisplayPeriodToWeeklyConfirm,
 	getTimeSheetsByDateAndNumberOfDayConfirm: service.getTimeSheetsByDateAndNumberOfDayConfirm,
-	getPreviousPeriodConfirm: service.getPreviousPeriodConfirm,
-	getCurrentPeriodConfirm: service.getCurrentPeriodConfirm,
-	getNextPeriodConfirm: service.getNextPeriodConfirm
+	getPreviousNextPeriodConfirm: service.getPreviousNextPeriodConfirm,
+	getCurrentPeriodConfirm: service.getCurrentPeriodConfirm
 }
 },{}]},{},[3]);
