@@ -17,7 +17,7 @@ public class BaseController : Controller
     public override void OnActionExecuting(ActionExecutingContext context)
     {
         base.OnActionExecuting(context);
-        ViewBag.CurrentUserTitle = CurrentUser.UserTitle;
+        ViewBag.CurrentUserTitle = CurrentUser==null ? "" : CurrentUser.UserTitle;
     }
 
 
