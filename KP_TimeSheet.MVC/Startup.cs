@@ -34,7 +34,7 @@ namespace KP_TimeSheet.MVC
             else
             {
                 services.AddDbContext<KP.TimeSheets.Persistance.RASContext>(
-                options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+                options => options.UseSqlServer(Configuration.GetConnectionString("DeploymentConnection")));
             }
             services.AddScoped<KP.TimeSheets.Domain.IUnitOfWork,KP.TimeSheets.Persistance.UnitOfWork>();
             services.AddControllersWithViews();
