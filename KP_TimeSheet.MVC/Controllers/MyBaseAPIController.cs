@@ -4,12 +4,32 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace KP.TimeSheets.MVC
 {
-	public class MyBaseController : ControllerBase
+	public class MyBaseAPIController : ControllerBase
 	{
 		public RASContext DBContext{get; private set;}
-		public MyBaseController(RASContext db){
+		public MyBaseAPIController(RASContext db){
 			this.DBContext = db;
 		}
+
+        string _userName;
+        public string UserName
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(_userName)) return _userName;
+
+                if (this.User != null && this.User.Identity != null)
+                {
+                    _userName = this.User.Identity.Name;
+                }
+                if (string.IsNullOrEmpty(_userName)) _userName = Environment.UserName;
+
+                var i = _userName.IndexOf("\\");
+                if (i == -1) _userName = "kpe0\\" + _userName;
+
+                return _userName;
+            }
+        }
 
 
 		public bool MainChecks(string ver, out string error)

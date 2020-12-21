@@ -15,7 +15,7 @@ namespace KP.TimeSheets.MVC
 {
     [Microsoft.AspNetCore.Mvc.Route("api/Confirm")]
     [ApiController]
-    public class TimeSheetsConfirmApiController : MyBaseController
+    public class TimeSheetsConfirmApiController : MyBaseAPIController
     {
         IUnitOfWork _uow;
         public TimeSheetsConfirmApiController(RASContext db, IUnitOfWork uow) : base(db) { this._uow = uow; }
@@ -28,7 +28,7 @@ namespace KP.TimeSheets.MVC
             try
             {
                 DisplayPeriodManager displayPeriodMnager = new DisplayPeriodManager(this._uow);
-                User currentUser = new UserHelper().GetCurrent(this._uow);
+                User currentUser = new UserHelper().GetCurrent(this._uow,this.UserName);
                 
                 if(!fromDate.HasValue){
                     
@@ -97,7 +97,7 @@ namespace KP.TimeSheets.MVC
             TimeSheetManager timeSheetManager = new TimeSheetManager(this._uow);
             DisplayPeriodManager displayPeriodMnager = new DisplayPeriodManager(this._uow);
             //SyncWithPWA(uow);
-            User currUser = new UserHelper().GetCurrent(this._uow);
+            User currUser = new UserHelper().GetCurrent(this._uow,this.UserName);
             DisplayPeriod displayPeriod = displayPeriodMnager.GetDisplayPeriod(currUser);
             
             DateTime fromDate;
@@ -141,7 +141,7 @@ namespace KP.TimeSheets.MVC
         [HttpGet("[action]")]
         public async Task<IActionResult> ChangeDisplayPeriodToWeeklyConfirm(Guid userId)
         {
-            var currentUser = new UserHelper().GetCurrent(this._uow);
+            var currentUser = new UserHelper().GetCurrent(this._uow,this.UserName);
             DisplayPeriodManager dpm = new DisplayPeriodManager(this._uow);
             DisplayPeriod dp = new DisplayPeriod();
             dp = dpm.GetDisplayPeriod(currentUser);
@@ -154,8 +154,9 @@ namespace KP.TimeSheets.MVC
         [HttpPost("[action]")]
         public async Task<IActionResult> GetTimeSheetsByDateAndNumberOfDayConfirm(PeriodNumberDateJson period)
         {
+            var currentUser = new UserHelper().GetCurrent(this._uow,this.UserName);
             DisplayPeriodManager displayPeriodMnager = new DisplayPeriodManager(this._uow);
-            var displayPeriod = DisplayPeriodUtilities.ConvertPeriodNumberDateJsonToDisplayPeriod(period, this._uow);
+            var displayPeriod = DisplayPeriodUtilities.ConvertPeriodNumberDateJsonToDisplayPeriod(period, this._uow, currentUser);
             //SyncWithPWA(uow);
 
             displayPeriodMnager.Save(displayPeriod);

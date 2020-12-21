@@ -4,16 +4,17 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
+using KP.TimeSheets.Persistance;
 
 namespace KP.TimeSheets.MVC
 {
 
     [Route("api/[controller]")]
     [ApiController]
-    public class ProjectsAPIController : ControllerBase
+    public class ProjectsAPIController : MyBaseAPIController
     {
         IUnitOfWork _uow;
-        public ProjectsAPIController(IUnitOfWork uow)
+        public ProjectsAPIController(IUnitOfWork uow, RASContext db):base(db)
         {
             this._uow = uow;
         }
@@ -26,7 +27,7 @@ namespace KP.TimeSheets.MVC
         {
             UserManager userManager = new UserManager(this._uow);
             ProjectManager projectManager = new ProjectManager(this._uow);
-            User currUser = new UserHelper().GetCurrent(this._uow);
+            User currUser = new UserHelper().GetCurrent(this._uow,this.UserName);
             var projectwithoutentities = projectManager.GetByUser(currUser).ToList();
             List<Project> completeprojects = new List<Project>();
 
@@ -67,7 +68,7 @@ namespace KP.TimeSheets.MVC
             {
                 ProjectManager projectManager = new ProjectManager(this._uow);
                 TaskManager taskManager = new TaskManager(this._uow);
-                User currUser = new UserHelper().GetCurrent(this._uow);
+                User currUser = new UserHelper().GetCurrent(this._uow,this.UserName);
                 //SyncWithPWA(uow);
                 Project project = projectManager.GetByID(id.Value);
                 result = taskManager.GetByProject(project, currUser).ToJsons();

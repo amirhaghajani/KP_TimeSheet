@@ -20,13 +20,33 @@ public class BaseController : Controller
         ViewBag.CurrentUserTitle = CurrentUser==null ? "" : CurrentUser.UserTitle;
     }
 
+    string _userName;
+        public string UserName
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(_userName)) return _userName;
+
+                if (this.User != null && this.User.Identity != null)
+                {
+                    _userName = this.User.Identity.Name;
+                }
+                if (string.IsNullOrEmpty(_userName)) _userName = Environment.UserName;
+
+                var i = _userName.IndexOf("\\");
+                if (i == -1) _userName = "kpe0\\" + _userName;
+
+                return _userName;
+            }
+        }
+
 
     private User _currUser;
     public User CurrentUser
     {
         get
         {
-            if(_currUser==null) _currUser = new UserHelper().GetCurrent(this._uow);
+            if(_currUser==null) _currUser = new UserHelper().GetCurrent(this._uow, UserName);
             return _currUser;
         }
     }

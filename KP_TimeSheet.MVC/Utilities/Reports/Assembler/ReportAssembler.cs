@@ -11,11 +11,10 @@ namespace KP.TimeSheets.MVC
     {
 
         //Assemble Bounch of projects
-        public FinalReport AssembleBreakingProjectsByMonth(ReportParametersFromToJson parametres,IUnitOfWork uow)
+        public FinalReport AssembleBreakingProjectsByMonth(ReportParametersFromToJson parametres,IUnitOfWork uow,User currentUser)
         {
             var result = new FinalReport();
 
-            var currentUser = new UserHelper().GetCurrent(uow);
             TimeSheetManager TimeSheetManager = new TimeSheetManager(uow);
             var workHours = TimeSheetManager.GetWorkHoursByUser
                 (currentUser, DateUtility.GetMiladiDate(parametres.FromDate), DateUtility.GetMiladiDate(parametres.ToDate)).ToList();
@@ -135,11 +134,10 @@ namespace KP.TimeSheets.MVC
         }
 
         //Assemble single project
-        public FinalReport AssembleBreakingProjectByMonth(ReportParametrsFromToProjectIdJson parametres,IUnitOfWork uow)
+        public FinalReport AssembleBreakingProjectByMonth(ReportParametrsFromToProjectIdJson parametres,IUnitOfWork uow,User currentUser)
         {
             var result = new FinalReport();
 
-            var currentUser = new UserHelper().GetCurrent(uow);
             TimeSheetManager TimeSheetManager = new TimeSheetManager(uow);
 
 
@@ -235,11 +233,10 @@ namespace KP.TimeSheets.MVC
             return result;
         }
 
-        public FinalReport AssemblePersonnelsAndProjects(ReportParametersJson parametres,IUnitOfWork uow)
+        public FinalReport AssemblePersonnelsAndProjects(ReportParametersJson parametres,IUnitOfWork uow, User currentUser)
         {
             var result = new FinalReport();
 
-            var currentUser = new UserHelper().GetCurrent(uow);
             TimeSheetManager TimeSheetManager = new TimeSheetManager(uow);
             UserManager userManager = new UserManager(uow);
             DateTime from = DateUtility.GetMiladiDate(parametres.FromDate);
@@ -377,12 +374,11 @@ namespace KP.TimeSheets.MVC
         }
 
 
-        public FinalReport AssembleTotalWorkHoursOnProjects(ReportParametersFromToJson parametres,IUnitOfWork uow)
+        public FinalReport AssembleTotalWorkHoursOnProjects(ReportParametersFromToJson parametres,IUnitOfWork uow, User currentUser)
         {
 
             var result = new FinalReport();
 
-            var currentUser = new UserHelper().GetCurrent(uow);
             TimeSheetManager TimeSheetManager = new TimeSheetManager(uow);
             var workHours = TimeSheetManager.GetWorkHoursByUser
                 (currentUser, DateUtility.GetMiladiDate(parametres.FromDate), DateUtility.GetMiladiDate(parametres.ToDate)).ToList();
@@ -454,11 +450,10 @@ namespace KP.TimeSheets.MVC
             return result;
         }
 
-        public FinalReport AssembleDailyOnProjects(ReportParametersFromToJson parametres,IUnitOfWork uow)
+        public FinalReport AssembleDailyOnProjects(ReportParametersFromToJson parametres,IUnitOfWork uow, User currentUser)
         {
             var result = new FinalReport();
-
-            var currentUser = new UserHelper().GetCurrent(uow);
+            
             TimeSheetManager TimeSheetManager = new TimeSheetManager(uow);
             var from = DateUtility.GetMiladiDate(parametres.FromDate);
             var to = DateUtility.GetMiladiDate(parametres.ToDate);

@@ -203,7 +203,7 @@ namespace KP.TimeSheets.MVC
 
 
         public static List<TimeSheetJson> ToJsonsForConfirm(IEnumerable<PresenceHour> presenceHours, IEnumerable<WorkHour> workHours
-            ,User user, IUnitOfWork uow  )
+            ,User user, IUnitOfWork uow , User currentUser )
         {
             TimeSheetManager timesheetMnager = new TimeSheetManager(uow);
             var result = new List<TimeSheetJson>();
@@ -218,7 +218,7 @@ namespace KP.TimeSheets.MVC
 
             foreach (var item in workHours)
             {
-                var approveStatus = timesheetMnager.ApprovementStatus(item,new UserHelper().GetCurrent(uow).UserName);
+                var approveStatus = timesheetMnager.ApprovementStatus(item,currentUser.UserName);
                 if ( approveStatus == "Approve")
                 {
                     approveItems.Add(item);
@@ -312,7 +312,7 @@ namespace KP.TimeSheets.MVC
                 var counter = 0;
                 foreach (var worktask in groupingTasksApprove)
                 {
-                    if (timesheetMnager.ApprovementStatus(worktask,new UserHelper().GetCurrent(uow).UserName) == "Approve" &&
+                    if (timesheetMnager.ApprovementStatus(worktask,currentUser.UserName) == "Approve" &&
                         projectApprove.ProjectId == worktask.ProjectId)
                     {
                         if (counter == 0)
@@ -360,7 +360,7 @@ namespace KP.TimeSheets.MVC
                 var timesheetIdapproveaskt = timeSheetID;
                 foreach (var w in groupingTasksNotApprove)
                 {
-                    if (timesheetMnager.ApprovementStatus(w, new UserHelper().GetCurrent(uow).UserName) == "NotApprove"
+                    if (timesheetMnager.ApprovementStatus(w, currentUser.UserName) == "NotApprove"
                    
                     && item.ProjectId == w.ProjectId)
                     {

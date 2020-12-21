@@ -9,7 +9,7 @@ namespace KP.TimeSheets.MVC
 {
     static class HistoryUtilities
     {
-        public static void RegisterApproveHistory(ApproveAndDenyJson approveAndDenyJson, WorkHour worhHour, IUnitOfWork uow)
+        public static void RegisterApproveHistory(ApproveAndDenyJson approveAndDenyJson, WorkHour worhHour, IUnitOfWork uow,User currentUser)
         {
             var history = new WorkHourHistory();
             var userManager = new UserManager(uow);
@@ -17,14 +17,14 @@ namespace KP.TimeSheets.MVC
             history.Action = "Approve";
             history.Date = DateTime.Now;
             history.Description = approveAndDenyJson.description;
-            history.ManagerID = new UserHelper().GetCurrent(uow).ID;
+            history.ManagerID = currentUser.ID;
             history.WorkHourID = worhHour.ID;
             history.StageID = worhHour.WorkflowStageID;
             historyManager.Add(history);
         }
 
 
-        public static void RegisterDenyHistory(ApproveAndDenyJson approveAndDenyJson, WorkHour worhHour, IUnitOfWork uow)
+        public static void RegisterDenyHistory(ApproveAndDenyJson approveAndDenyJson, WorkHour worhHour, IUnitOfWork uow,User currentUser)
         {
             var history = new WorkHourHistory();
           
@@ -32,14 +32,14 @@ namespace KP.TimeSheets.MVC
             history.Action = "Deny";
             history.Date = DateTime.Now;
             history.Description = approveAndDenyJson.description;
-            history.ManagerID = new UserHelper().GetCurrent(uow).ID;
+            history.ManagerID = currentUser.ID;
             history.WorkHourID = worhHour.ID;
             history.StageID = worhHour.WorkflowStageID;
             historyManager.Add(history);
         }
 
 
-        public static void RegisterSendHistory(WorkHour workHour, IUnitOfWork uow)
+        public static void RegisterSendHistory(WorkHour workHour, IUnitOfWork uow, User currentUser)
         {
             var history = new WorkHourHistory();
            
@@ -47,14 +47,14 @@ namespace KP.TimeSheets.MVC
             history.Action = "Send";
             history.Date = DateTime.Now;
             history.Description = "ارسال کارکرد به مدیر";
-            history.ManagerID = new UserHelper().GetCurrent(uow).ID;
+            history.ManagerID = currentUser.ID;
             history.WorkHourID = workHour.ID;
             history.StageID = workHour.WorkflowStageID;
             historyManager.Add(history);
         }
 
 
-        public static void RegisterSaveHistory(WorkHour workHour, IUnitOfWork uow )
+        public static void RegisterSaveHistory(WorkHour workHour, IUnitOfWork uow,User currentUser )
         {
             var history = new WorkHourHistory();
             var userManager = new UserManager(uow);
@@ -62,7 +62,7 @@ namespace KP.TimeSheets.MVC
             history.Action = "Register";
             history.Date = DateTime.Now;
             history.Description = "ثبت کارکرد جدید";
-            history.ManagerID = new UserHelper().GetCurrent(uow).ID;
+            history.ManagerID = currentUser.ID;
             history.WorkHourID = workHour.ID;
             history.StageID = workHour.WorkflowStageID;
             historyManager.Add(history);
