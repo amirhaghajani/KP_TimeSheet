@@ -449,6 +449,7 @@ namespace KP.TimeSheets.MVC
             {
                 TimeSheetManager timesheetManager = new Domain.TimeSheetManager(this._uow);
                 User currUser = new UserHelper().GetCurrent(this._uow, this.UserName);
+                if(currUser==null) throw new Exception($"کاربر یافت نشد {this.UserName}");
                 var presenceour = timesheetManager.GetyesterdayPresencHoursByUserId(currUser.ID);
                 var workours = timesheetManager.GetyesterdayworkHoursByUserId(currUser.ID);
                 return Ok( new HomeEntityAssembler().ToJson(presenceour, workours, User.Identity.Name));
