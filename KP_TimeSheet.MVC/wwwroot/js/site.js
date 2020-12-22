@@ -116,7 +116,7 @@ function adjustSize() {
     }
 }
 
- 
+
 
 $(".sidebar-dropdown > a").click(function () {
 
@@ -158,6 +158,11 @@ function GetHomeData() {
         success: Page_OnInitYesterday,
         error: function (e) {
 
+            if (e.responseText) {
+                common.notify(e.responseText, 'danger');
+                common.loaderHide();
+            }
+
         }
     });
 
@@ -178,16 +183,16 @@ function Page_OnInitYesterday(response) {
 
 
     _YesterdayData = response;
-    
-    $("#UsenNameSidebar").text(response.CurrentUser );
+
+    $("#UsenNameSidebar").text(response.CurrentUser);
     $("#currentUser").text(response.CurrentUser);
     $("#PresenceYesterday").text(response.Presence);
     $("#WorkYesterday").text(response.Work);
     $("#differenceYesterday").text(response.Defference);
-    $("#PresenceYesterdaypercent").width(response.Presencepercent*10);
-    $("#workYesterdaypercent").width(response.Workpercent*10);
-    $("#differentYesterdaypercent").width(response.Defferencepercent*10);
-    
+    $("#PresenceYesterdaypercent").width(response.Presencepercent * 10);
+    $("#workYesterdaypercent").width(response.Workpercent * 10);
+    $("#differentYesterdaypercent").width(response.Defferencepercent * 10);
+
 }
 
 function Page_OnInitThisMonth(response) {
@@ -196,9 +201,9 @@ function Page_OnInitThisMonth(response) {
     $("#PresenceThisMonth").text(response.Presence);
     $("#WorkThisMonth").text(response.Work);
     $("#differenceThisMonth").text(response.Defference);
-    $("#PresenceThisMonthpercent").width(response.Presencepercent );
-    $("#workThisMonthpercent").width(response.Workpercent );
-    $("#differentThisMonthpercent").width(response.Defferencepercent );
+    $("#PresenceThisMonthpercent").width(response.Presencepercent);
+    $("#workThisMonthpercent").width(response.Workpercent);
+    $("#differentThisMonthpercent").width(response.Defferencepercent);
     common.loaderHide()
 
 }
@@ -207,7 +212,7 @@ function Page_OnInitThisMonth(response) {
 
 //info error success
 function ShowNotification(id, message, color) {
-    
+
     //Initial kendoNotification
     $("#" + id).kendoNotification({
         position: {
@@ -277,6 +282,6 @@ function DoOnCellHtmlData(cell, row, col, data) {
 //  borderColor: "#1977CC",
 //  backgroundColor: "#FFF",
 //  textColor: '#555'
-  
+
 //});
 },{"../common/common":1}]},{},[2]);
