@@ -7,7 +7,7 @@ namespace KP.TimeSheets.MVC.ViewModels
     public class vmGetTimeSheetResualt
     {
 
-        public DateTime date{get;set;}
+        public DateTime? date{get;set;}
         public string date_persian{get;set;}
         public string day_persian{get;set;}
         public double? hozoor { get; set; }

@@ -204,11 +204,13 @@ const timeSheet = (function () {
 
 
     return {
-        convertServerDataToTimeSheet_baseInfo: convertServerDataToTimeSheet_baseInfo
+        convertServerDataToTimeSheet_baseInfo: convertServerDataToTimeSheet_baseInfo,
+        convertNumberToTime: convertNumberToTime
     }
 
 })();
 
 module.exports = {
-    convertServerDataToTimeSheet_baseInfo: timeSheet.convertServerDataToTimeSheet_baseInfo
+    convertServerDataToTimeSheet_baseInfo: timeSheet.convertServerDataToTimeSheet_baseInfo,
+    convertNumberToTime: timeSheet.convertNumberToTime
 };

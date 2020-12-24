@@ -7,7 +7,7 @@ module.exports = function (grunt) {
     'myConfig': {
       'srcArray':[
         'src/layout/sideBar.js',
-        'src/layout/site.js',
+        'src/home/site.js',
         'src/registerTimeSheet/RegisterTimeSheets.js',
         'src/confirmTimeSheet/ConfirmTimeSheets.js'
       ],

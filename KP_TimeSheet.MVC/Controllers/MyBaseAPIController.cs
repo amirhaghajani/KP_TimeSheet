@@ -36,11 +36,11 @@ namespace KP.TimeSheets.MVC
         {
             error = null;
 
-            // if (string.IsNullOrEmpty(ver) || (ver != "-1" && ver != Util.Version))
-            // {
-            //     error = "ورژن برنامه صحیح نیست. لطفا رفرش نمایید تا آخرین نسخه از سرور دریافت گردد";
-            //     return false;
-            // }
+            if (string.IsNullOrEmpty(ver) || (ver != "-1" && ver != Version.version))
+            {
+                error = "ورژن برنامه صحیح نیست. لطفا رفرش نمایید تا آخرین نسخه از سرور دریافت گردد";
+                return false;
+            }
 
             //if (this.UserRoles == null || this.UserRoles.Count == 0)
             //{

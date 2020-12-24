@@ -5,8 +5,8 @@ namespace KP.TimeSheets.Persistance.QueryEntities
     public class FoundConfirmTimeSheet
     {
         public Guid? TaskId { get; set; }
-        public DateTime Date { get; set; }
-        public System.Byte DayOfWeek{get;set;}
+        public DateTime? Date { get; set; }
+        public System.Byte? DayOfWeek{get;set;}
         public string PersianDate{get;set;}
         public Guid? ProjectId { get; set; }
         public string ProjectTitle { get; set; }

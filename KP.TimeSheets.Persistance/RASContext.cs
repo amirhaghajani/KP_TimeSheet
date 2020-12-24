@@ -49,9 +49,11 @@ namespace KP.TimeSheets.Persistance
 
 
         public DbSet<FoundConfirmTimeSheet> spFoundConfirmTimeSheet { get; set; }
-        public System.FormattableString spFoundConfirmTimeSheet_str(Guid approver_userId,Guid userId, DateTime startDate,DateTime endDate)
+        public System.FormattableString spFoundConfirmTimeSheet_str(Guid approver_userId,Guid? userId, DateTime? startDate,DateTime? endDate, int onlyWantSumOfAllWaitingForApproveTime=0)
         {
-						return $"exec spFoundConfirmTimeSheet @approver_userId={approver_userId},@userId={userId},@startDate={startDate},@endDate={endDate}";
+            return $@"exec spFoundConfirmTimeSheet @approver_userId={approver_userId}
+                        ,@userId={userId},@startDate={startDate},@endDate={endDate}
+                        ,@onlyWantSumOfAllWaitingForApproveTime={onlyWantSumOfAllWaitingForApproveTime}";
         }
 
 

@@ -5,6 +5,8 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using KP.TimeSheets.Persistance;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace KP.TimeSheets.MVC
 {
@@ -440,19 +442,50 @@ namespace KP.TimeSheets.MVC
             return UserName;
         }
 
-        [HttpGet("[action]")]
+        [HttpGet("[action]/{ver}")]
         [ProducesResponseType(typeof(AllEntityJson), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult GetYesterdayData()
+        public IActionResult GetYesterdayData(string ver)
         {
             try
             {
+                if(!this.MainChecks(ver,out string error)) throw new Exception(error);
                 TimeSheetManager timesheetManager = new Domain.TimeSheetManager(this._uow);
                 User currUser = new UserHelper().GetCurrent(this._uow, this.UserName);
                 if(currUser==null) throw new Exception($"کاربر یافت نشد {this.UserName}");
                 var presenceour = timesheetManager.GetyesterdayPresencHoursByUserId(currUser.ID);
                 var workours = timesheetManager.GetyesterdayworkHoursByUserId(currUser.ID);
                 return Ok( new HomeEntityAssembler().ToJson(presenceour, workours, User.Identity.Name));
+            }
+            catch (Exception ex)
+            {
+               return this.ReturnError(ex, "خطا در سرویس دریافت اطلاعات دیروز");
+            }
+        }
+
+        [HttpGet("[action]")]
+        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetWaitingForApproveSumTime()
+        {
+            try
+            {
+                TimeSheetManager timesheetManager = new Domain.TimeSheetManager(this._uow);
+                User currUser = new UserHelper().GetCurrent(this._uow, this.UserName);
+                if(currUser==null) throw new Exception($"کاربر یافت نشد {this.UserName}");
+
+            var query = this.DBContext.spFoundConfirmTimeSheet.FromSqlInterpolated(this.DBContext.spFoundConfirmTimeSheet_str(
+                    currUser.ID,
+                    null,
+                    null,
+                    null,
+                    1
+                ));
+                var item = await query.ToListAsync();
+
+                // var presenceour = timesheetManager.GetyesterdayPresencHoursByUserId(currUser.ID);
+                // var workours = timesheetManager.GetyesterdayworkHoursByUserId(currUser.ID);
+                return Ok(new {hours= item[0].Hours } );
             }
             catch (Exception ex)
             {

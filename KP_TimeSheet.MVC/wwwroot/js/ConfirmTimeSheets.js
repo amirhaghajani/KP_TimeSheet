@@ -1,5 +1,8 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 const common = (function () {
+
+	function version(){return "0.0.0.1";}
+
 	function doExport(selector, params) {
 		var options = {
 			//ignoreRow: [1,11,12,-2],
@@ -27,18 +30,18 @@ const common = (function () {
 			type: type,
 			allow_dismiss: false,
 			//newest_on_top: false,
-			//showProgressbar: true,
+			showProgressbar: true,
 			placement: {
-				from: "top",
-				align: "left"
+				from: "bottom",
+				align: "right"
 			},
 			offset: 20,
 			spacing: 10,
 			z_index: 10100,
-			delay: 1000,
-			timer: 1000,
+			delay: 2000,
+			timer: 500,
 			//url_target: '_blank',
-			//mouse_over: null,
+			mouse_over: 'pause',
 			animate: {
 				enter: 'animated fadeInDown',
 				exit: 'animated fadeOutUp'
@@ -50,6 +53,21 @@ const common = (function () {
 			//icon_type: 'class',
 			// template: "<div style='height:15px;width:20%' class='shadow' >" + messege + "</div>"
 		});
+	}
+
+	//info error success
+	function ShowNotification(id, message, color) {
+
+		//Initial kendoNotification
+		$("#" + id).kendoNotification({
+			position: {
+				top: 150,
+				left: 20
+			},
+			autoHideAfter: 10000,
+			stacking: "down"
+		});
+		$("#" + id).getKendoNotification().show(message, color);
 	}
 
 	function loaderShow() {
@@ -78,7 +96,8 @@ const common = (function () {
 		loaderHide: loaderHide,
 		Notify: notify,
 		DoExport: doExport,
-		adjustSize: adjustSize
+		adjustSize: adjustSize,
+		version: version
 
 	};
 
@@ -90,7 +109,8 @@ module.exports = {
 	'loaderHide': common.loaderHide,
 	'notify': common.Notify,
 	'doExport': common.DoExport,
-	'adjustSize': common.adjustSize
+	'adjustSize': common.adjustSize,
+	version:common.version
 };
 
 },{}],2:[function(require,module,exports){
@@ -300,13 +320,15 @@ const timeSheet = (function () {
 
 
     return {
-        convertServerDataToTimeSheet_baseInfo: convertServerDataToTimeSheet_baseInfo
+        convertServerDataToTimeSheet_baseInfo: convertServerDataToTimeSheet_baseInfo,
+        convertNumberToTime: convertNumberToTime
     }
 
 })();
 
 module.exports = {
-    convertServerDataToTimeSheet_baseInfo: timeSheet.convertServerDataToTimeSheet_baseInfo
+    convertServerDataToTimeSheet_baseInfo: timeSheet.convertServerDataToTimeSheet_baseInfo,
+    convertNumberToTime: timeSheet.convertNumberToTime
 };
 },{}],3:[function(require,module,exports){
 const common = require('../common/common');
@@ -871,6 +893,17 @@ function GetCurrentPeriodconfirm() {
 
 		common.loaderHide();
 	});
+
+	// service.getTimeSheetsByUserIdForFirstTime((response) => {
+	// 	removeAndRecreateTreelisConfirmDiv();
+	// 	Init_TimeSheetTreeListConfirm(response);
+	// 	InitMonthlyByProjectsGridConfirm();
+	// 	InitPeriodlyByProjectsGridConfirm();
+
+	// 	common.loaderHide();
+	// });
+
+	
 
 }
 
