@@ -5717,32 +5717,41 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Alireza\\.nuget\\packages\\": {}
+    "C:\\Users\\spfarm\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackagesFallback\\": {},
+    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\p_NaftKish\\KP_TimeSheet\\KP.TimeSheets.Persistance\\KP.TimeSheets.Persistance.csproj",
+      "projectUniqueName": "C:\\0Aghajani\\KP_TimeSheet\\KP.TimeSheets.Persistance\\KP.TimeSheets.Persistance.csproj",
       "projectName": "KP.TimeSheets.Persistance",
-      "projectPath": "D:\\p_NaftKish\\KP_TimeSheet\\KP.TimeSheets.Persistance\\KP.TimeSheets.Persistance.csproj",
-      "packagesPath": "C:\\Users\\Alireza\\.nuget\\packages\\",
-      "outputPath": "D:\\p_NaftKish\\KP_TimeSheet\\KP.TimeSheets.Persistance\\obj\\",
+      "projectPath": "C:\\0Aghajani\\KP_TimeSheet\\KP.TimeSheets.Persistance\\KP.TimeSheets.Persistance.csproj",
+      "packagesPath": "C:\\Users\\spfarm\\.nuget\\packages\\",
+      "outputPath": "C:\\0Aghajani\\KP_TimeSheet\\KP.TimeSheets.Persistance\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackagesFallback\\",
+        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+      ],
       "configFilePaths": [
-        "C:\\Users\\Alireza\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\spfarm\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.Fallback.config"
       ],
       "originalTargetFrameworks": [
         "net5.0"
       ],
       "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "net5.0": {
           "targetAlias": "net5.0",
           "projectReferences": {
-            "D:\\p_NaftKish\\KP_TimeSheet\\KP.TimeSheets.Domain\\KP.TimeSheets.Domain.csproj": {
-              "projectPath": "D:\\p_NaftKish\\KP_TimeSheet\\KP.TimeSheets.Domain\\KP.TimeSheets.Domain.csproj"
+            "C:\\0Aghajani\\KP_TimeSheet\\KP.TimeSheets.Domain\\KP.TimeSheets.Domain.csproj": {
+              "projectPath": "C:\\0Aghajani\\KP_TimeSheet\\KP.TimeSheets.Domain\\KP.TimeSheets.Domain.csproj"
             }
           }
         }
@@ -5777,7 +5786,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.100\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.101\\RuntimeIdentifierGraph.json"
       }
     }
   }

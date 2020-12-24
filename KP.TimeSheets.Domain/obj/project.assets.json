@@ -8,24 +8,33 @@
     "net5.0": []
   },
   "packageFolders": {
-    "C:\\Users\\Alireza\\.nuget\\packages\\": {}
+    "C:\\Users\\spfarm\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackagesFallback\\": {},
+    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\p_NaftKish\\KP_TimeSheet\\KP.TimeSheets.Domain\\KP.TimeSheets.Domain.csproj",
+      "projectUniqueName": "C:\\0Aghajani\\KP_TimeSheet\\KP.TimeSheets.Domain\\KP.TimeSheets.Domain.csproj",
       "projectName": "KP.TimeSheets.Domain",
-      "projectPath": "D:\\p_NaftKish\\KP_TimeSheet\\KP.TimeSheets.Domain\\KP.TimeSheets.Domain.csproj",
-      "packagesPath": "C:\\Users\\Alireza\\.nuget\\packages\\",
-      "outputPath": "D:\\p_NaftKish\\KP_TimeSheet\\KP.TimeSheets.Domain\\obj\\",
+      "projectPath": "C:\\0Aghajani\\KP_TimeSheet\\KP.TimeSheets.Domain\\KP.TimeSheets.Domain.csproj",
+      "packagesPath": "C:\\Users\\spfarm\\.nuget\\packages\\",
+      "outputPath": "C:\\0Aghajani\\KP_TimeSheet\\KP.TimeSheets.Domain\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackagesFallback\\",
+        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+      ],
       "configFilePaths": [
-        "C:\\Users\\Alireza\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\spfarm\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.Fallback.config"
       ],
       "originalTargetFrameworks": [
         "net5.0"
       ],
       "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -58,7 +67,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.100\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.101\\RuntimeIdentifierGraph.json"
       }
     }
   }
