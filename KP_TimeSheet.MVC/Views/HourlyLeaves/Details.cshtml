@@ -1,0 +1,73 @@
+﻿@model KP.TimeSheets.MVC.HourlyLeaveJson
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<div class="panel panel-info ras-center shadow" style="margin-top:10px;width:50%">
+    <div style="text-align:center" class="panel-heading">جزئیات مرخصی ساعتی</div>
+    <div class="panel-body">
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.UserTitle)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.UserTitle)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.PersonnelNumber)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.PersonnelNumber)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Organisation)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Organisation)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.ProjectTitle)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.ProjectTitle)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.LeaveDate)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.LeaveDate)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.From)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.From)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.TO)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.TO)
+            </dd>
+
+        </dl>
+    </div>
+    <p style="padding:5px">
+        @Html.ActionLink(" ", "Edit", new { id = Model.ID }, new { @class = "btn btn-warning zmdi zmdi-edit", @title = "ویرایش" })
+        @Html.ActionLink(" ", "Index", null, new { @class = "btn btn-info zmdi zmdi-arrow-left", @title = "بازگشت" })
+    </p>
+</div>

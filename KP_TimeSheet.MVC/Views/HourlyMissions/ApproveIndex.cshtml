@@ -1,0 +1,126 @@
+﻿@using Microsoft.Extensions.Primitives
+@model IEnumerable<KP.TimeSheets.MVC.HourlyMissionJson>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<p>
+    @Html.ActionLink(" تایید همه  ", "ApproveAll", null, new { @class = "btn btn-success zmdi zmdi-check-all" })
+    @Html.ActionLink(" رد همه  ", "DenyAll", null, new { @class = "btn btn-danger zmdi zmdi-check-all" })
+</p>
+
+
+@{
+    var approveparameter = "";
+
+    if (Context.Request.Query.TryGetValue("ac", out StringValues approveparameterValues))
+    {
+        approveparameter = approveparameterValues.FirstOrDefault();
+    }
+    //Check parameter here and display Message
+
+    switch (approveparameter)
+    {
+        case "Approve":
+
+            <div class="alert alert-success alert-dismissable">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                <strong><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> تایید ماموریت با موفقیت انجام شد</strong>
+            </div>
+
+            break;
+        case "Deny":
+
+            <div class="alert alert-danger alert-dismissable">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                <strong><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> رد ماموریت با موفقیت انجام شد</strong>
+            </div>
+
+            break;
+        case "DenyAll":
+            <div class="alert alert-danger alert-dismissable">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                <strong><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> رد ماموریت  ها با موفقیت انجام شد</strong>
+            </div>
+            break;
+        case "ApproveAll":
+            <div class="alert alert-success alert-dismissable">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                <strong><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> تایید ماموریت  ها با موفقیت انجام شد</strong>
+            </div>
+
+            break;
+
+    }
+
+}
+
+<div class="panel panel-info shadow" style="margin-top:10px;overflow:auto ">
+    <div style="text-align:center" class="panel-heading">تاییدات ماموریت ساعتی</div>
+
+    <table class="table table-bordered table-striped panel-body" style="overflow:auto">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.UserTitle)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PersonnelNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Organisation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProjectTitle)
+            </th>
+
+            <th>
+                @Html.DisplayNameFor(model => model.From)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TO)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MissionDate)
+            </th>
+
+
+            <th> عملیات</th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserTitle)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PersonnelNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Organisation)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProjectTitle)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.From)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TO)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MissionDate)
+                </td>
+
+                <td>
+                    @Html.ActionLink(" ", "Approve", new { id = item.ID }, new { @class = "btn btn-success zmdi zmdi-check btn-xs", @title = "تایید ماموریت ساعتی" })
+                    @Html.ActionLink(" ", "Deny", new { id = item.ID }, new { @class = "btn btn-danger zmdi zmdi-block-alt btn-xs", @title = "رد ماموریت ساعتی" })
+                </td>
+            </tr>
+        }
+
+    </table>
+</div>
+

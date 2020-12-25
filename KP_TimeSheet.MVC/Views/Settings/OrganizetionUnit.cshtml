@@ -1,0 +1,150 @@
+﻿
+@{
+    ViewBag.Title = "OrganizetionUnit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+<link href="~/Content/DatePicker/datepicker-theme.css" rel="stylesheet" />
+<link href="~/Content/DatePicker/daterangepicker.css" rel="stylesheet" />
+<link href="~/Content/Kendo2018.3.1/kendo.common.min.css" rel="stylesheet" />
+<link href="~/Content/Kendo2018.3.1/kendo.default.min.css" rel="stylesheet" />
+<link href="~/Content/Kendo2018.3.1/kendo.default.mobile.min.css" rel="stylesheet" />
+<link href="~/Content/Kendo2018.3.1/kendo.rtl.min.css" rel="stylesheet" />
+<script src="~/Scripts/Kendo2018.3.1/kendo.all.min.js"></script>
+<script src="~/Scripts/DatePicker/html5shiv.js"></script>
+<script src="~/Scripts/DatePicker/respond.min.js"></script>
+<script src="~/Scripts/DatePicker/moment.min.js"></script>
+<script src="~/Scripts/DatePicker/moment-jalaali.js"></script>
+<script src="~/Scripts/DatePicker/daterangepicker-fa-ex.js"></script>
+<script src="~/Scripts/DatePicker/daterangepicker.js"></script>
+<link href="~/Content/Calender.css" rel="stylesheet" />
+<script src="~/Scripts/OrganisationUnits/OrganisationUnits.js"></script>
+
+<div>
+    <div class="row">
+        <div class="col-md-12 register-right" style="min-height:650px">
+            <ul class="nav nav-tabs nav-justified" id="myTab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" onClick="btnAddClick()" aria-selected="true">افزودن واحد جدید</a>
+                </li>
+            </ul>
+            <div class="tab-content" id="myTabContent">
+                <div id="CalenderTable">
+                    <div class="tab-pane show  active" role="tabpanel" aria-labelledby="m-tab" style="width: 98%;">
+                        <div class="form-group" style="margin-top: 10%;">
+                            <table class="table table-hover" style="text-align: right;">
+                                <thead>
+                                    <tr>
+                                        <th colspan="4" style="font-weight:bold; text-align:center">واحد های موجود</th>
+                                    </tr>
+                                    <tr>
+                                        <th scope="col" style='width: 10%;'>#</th>
+                                        <th scope="col" style='width: 35%;'>نام واحد</th>
+                                        <th scope="col" style='width: 35%;'>مدیر ستادی</th>
+                                        <th scope="col"> ویرایش واحد</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ShowCalendarTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade show " id="home" role="tabpanel" aria-labelledby="home-tab">
+                    <h3 class="register-heading" id="subject">تنظیم واحد</h3>
+                    <div class="row register-form">
+                        <div class="col-md-12" style="float:right">
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="TITLE" placeholder="عنوان تقویم *" value="" />
+                            </div>
+                            <div class="form-group">
+                                <div class="maxl">
+                                    <label class="radio inline" id="sa-label">
+                                        <input type="checkbox" name="DayOfWeek" id="Sa">
+                                        <span> شنبه </span>
+                                    </label>
+                                    <label class="radio inline">
+                                        <input type="checkbox" name="DayOfWeek" id="Su">
+                                        <span>یک شنبه </span>
+                                    </label>
+                                    <label class="radio inline">
+                                        <input type="checkbox" name="DayOfWeek" id="Mo">
+                                        <span>دو شنبه </span>
+                                    </label>
+                                    <label class="radio inline">
+                                        <input type="checkbox" name="DayOfWeek" id="Tu">
+                                        <span>سه شنبه </span>
+                                    </label>
+                                    <label class="radio inline">
+                                        <input type="checkbox" name="DayOfWeek" id="We">
+                                        <span>چهار شنبه </span>
+                                    </label>
+                                    <label class="radio inline">
+                                        <input type="checkbox" name="DayOfWeek" id="Th">
+                                        <span>پنج شنبه </span>
+                                    </label>
+                                    <label class="radio inline">
+                                        <input type="checkbox" name="DayOfWeek" id="Fr">
+                                        <span>جمعه </span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="maxl">
+                                    <div class="col-md-4">
+                                        <input type="submit" class="btnRegister" style="width: 80%;" value="ثبت تاریخ" onclick="AddVacDate()" />
+                                    </div>
+                                    <div class="col-md-5">
+                                        <input id="VacDate" type="text" class="form-control  jalali-datepicker" placeholder="انتخاب تاریخ تعطیلی" value="" style="direction: rtl;" />
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="inline" style="margin-bottom:1%">
+                                            <span> انتخاب تاریخ تعطیلی: </span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group" style="margin-top: 10%;">
+                                <table class="table table-hover" style="text-align: right;">
+                                    <thead>
+                                        <tr>
+                                            <th scope="colgroup" style="text-align:center"> جدول تاریخ تعطیلات</th>
+                                        </tr>
+                                        <tr>
+                                            <th scope="col">#</th>
+                                            <th scope="col">تاریخ تعطیل</th>
+                                            <th scope="col">حذف تاریخ</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="Dates"></tbody>
+                                </table>
+                            </div>
+                            <div style="">
+                                <input type="submit" class="btnRegister" onclick="Save()" value="ثبت" />
+                                <input style="background:#cc0000" type="submit" class="btnRegister" onclick="DiscardAllSetting()" value="بازگشت" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<div id="LoadModal"></div>
+
+
+<style>
+    .daterangepicker {
+        direction: rtl;
+    }
+
+    .tooltip {
+        z-index: 200;
+    }
+</style>
+
+
+
+<script src="~/Scripts/Settings/OrganizationUnit.js"></script>

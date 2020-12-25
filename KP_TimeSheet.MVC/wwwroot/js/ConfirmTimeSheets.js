@@ -885,16 +885,7 @@ function GetCurrentPeriodconfirm() {
 	dataService.timeSheetDataConfirm_get()[0].values[0].UserId = dataService.userId_get();
 	var prmData = JSON.stringify(dataService.timeSheetDataConfirm_get()[0].values);
 
-	service.getCurrentPeriodConfirm(prmData, (response) => {
-		removeAndRecreateTreelisConfirmDiv();
-		Init_TimeSheetTreeListConfirm(response);
-		InitMonthlyByProjectsGridConfirm();
-		InitPeriodlyByProjectsGridConfirm();
-
-		common.loaderHide();
-	});
-
-	// service.getTimeSheetsByUserIdForFirstTime((response) => {
+	// service.getCurrentPeriodConfirm(prmData, (response) => {
 	// 	removeAndRecreateTreelisConfirmDiv();
 	// 	Init_TimeSheetTreeListConfirm(response);
 	// 	InitMonthlyByProjectsGridConfirm();
@@ -902,6 +893,15 @@ function GetCurrentPeriodconfirm() {
 
 	// 	common.loaderHide();
 	// });
+
+	service.getTimeSheetsByUserIdForFirstTime((response) => {
+		removeAndRecreateTreelisConfirmDiv();
+		Init_TimeSheetTreeListConfirm(response);
+		InitMonthlyByProjectsGridConfirm();
+		InitPeriodlyByProjectsGridConfirm();
+
+		common.loaderHide();
+	});
 
 	
 

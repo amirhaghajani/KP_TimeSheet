@@ -31,7 +31,7 @@ namespace KP.TimeSheets.MVC
             result.Organisation = dailyLeave.OrganisationId != null? dailyLeave.Organisation.Title : "فاقد واحد سازمانی";
             result.PersonnelNumber = dailyLeave.User.Code != null ?  dailyLeave.User.Code : "فاقد کد پرسنلی";
             result.ProjectTitle = dailyLeave.Project!=null? dailyLeave.Project.Title:"فاقد پروژه";
-            result.Type =  dailyLeave.Type != null ? dailyLeave.Type.ToString() :"فاقد نوع";
+            result.Type = Enum.IsDefined(dailyLeave.Type) ? dailyLeave.Type.GetDisplayName() :"فاقد نوع";
             result.Successor = dailyLeave.Successor != null ? dailyLeave.Successor.UserTitle.ToString() : "فاقد جانشین";
             result.UserTitle = dailyLeave.User.UserTitle;
             return result;

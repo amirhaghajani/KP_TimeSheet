@@ -1,0 +1,249 @@
+﻿@{
+    ViewBag.Title = "Calendar";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<meta charset="UTF-8">
+
+<link href="~/lib/DatePicker/datepicker-theme.css" rel="stylesheet" />
+<link href="~/lib/DatePicker/daterangepicker.css" rel="stylesheet" />
+<link href="~/lib/Kendo2018.3.1_css/kendo.common.min.css" rel="stylesheet" />
+<link href="~/lib/Kendo2018.3.1_css/kendo.default.min.css" rel="stylesheet" />
+<link href="~/lib/Kendo2018.3.1_css/kendo.default.mobile.min.css" rel="stylesheet" />
+<link href="~/lib/Kendo2018.3.1_css/kendo.rtl.min.css" rel="stylesheet" />
+
+
+<div id="home" class="k-rtl" style="display:none">
+
+
+    <div class="ras-center raspanel shadow col-md-12" style="margin-left:10px; align-content:center; text-align:center;width:100%">
+
+        <!-- Indicators -->
+        <!-- Wrapper for slides -->
+
+        <div class="ras-center header" style="top:5px">
+            <h3 style="font-size:1vw;">افرودن و ویرایش تقویم </h3>
+        </div>
+
+
+
+
+        <div class="form-group" style="margin-top:15px">
+            <label for="TITLE" style="margin-top:5px" class="col-sm-1 col-form-label">عنوان :</label>
+            <div class="col-sm">
+                <input style="height:15px" type="text" class="form-control " id="TITLE" placeholder="عنوان تقویم *" value="" />
+            </div>
+        </div>
+
+
+
+        <div class="form-group " style="margin-top: 3%;padding-left:7%;text-align:center">
+            <div class="panel panel-info">
+                <div style="text-align:center" class="panel-heading">انتخاب روز هفته</div>
+                <table class="table" id="customers">
+                    <thead>
+                        <tr>
+                            <th style="text-align:center">شنبه</th>
+                            <th style="text-align:center">یکشنبه</th>
+                            <th style="text-align:center">دوشنبه</th>
+                            <th style="text-align:center">سه شنبه</th>
+                            <th style="text-align:center">چهار شنبه</th>
+                            <th style="text-align:center">پنج شنبه</th>
+                            <th style="text-align:center">جمعه</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="height:40px ;text-align:center">
+                            <td style="text-align:center">
+                                <label class="chk">
+                                    <input type="checkbox" checked="checked" name="DayOfWeek" id="Sa">
+                                    <span class="checkmark"></span>
+                                </label>
+
+                            </td>
+                            <td style="text-align:center">
+                                <label class="chk">
+                                    <input type="checkbox" checked="checked" name="DayOfWeek" id="Su">
+                                    <span class="checkmark"></span>
+                                </label>
+
+
+
+                            </td>
+                            <td style="text-align:center">
+                                <label class="chk">
+                                    <input type="checkbox" name="DayOfWeek" id="Mo">
+                                    <span class="checkmark"></span>
+                                </label>
+
+
+                            </td>
+                            <td style="text-align:center">
+                                <label class="chk">
+                                    <input type="checkbox" name="DayOfWeek" id="Tu">
+                                    <span class="checkmark"></span>
+                                </label>
+
+
+                            </td>
+                            <td style="text-align:center">
+                                <label class="chk">
+                                    <input type="checkbox" name="DayOfWeek" id="We">
+                                    <span class="checkmark"></span>
+                                </label>
+
+                            </td>
+                            <td style="text-align:center">
+                                <label class="chk">
+                                    <input type="checkbox" name="DayOfWeek" id="Th">
+                                    <span class="checkmark"></span>
+                                </label>
+
+                            </td>
+
+                            <td style="text-align:center">
+                                <label class="chk">
+                                    <input type="checkbox" name="DayOfWeek" id="Fr">
+                                    <span class="checkmark"></span>
+                                </label>
+
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+
+        <div class="form-group" style="margin-top: 10%;">
+            <div class="maxl">
+                <div class="form-inline">
+                    <label class="checkbox-inline">
+                        <b id="chkperiodly" type="radio" name="optperiod" value="periodically">  انتخاب تاریخ تعطیلی:</b>
+                        <input id="VacDate" type="text" class="form-control  jalali-datepicker" placeholder="انتخاب تاریخ تعطیلی" value="" style="direction: rtl;width:100px;height:20px; margin-right:5px" />
+                        <button type="submit" class="btn btn-primary  shadow" title="ثبت تاریخ جدید" style="height:10px;margin-right:5px" onclick="AddVacDate()"><b style="margin-top:-15px">  </b><i style="margin-bottom:10px" class="fa fa-calendar-check"></i></button>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group" style="padding-left:8%">
+            <div class="panel panel-info">
+                <div style="text-align:center" class="panel-heading">جدول تاریخ تعطیلات</div>
+
+                <table id="HolidayTable" class="table table-hover" style="text-align: right; text-align:center">
+                    <thead>
+                        <tr class="text-center">
+                            <th scope="col" style="text-align:center">ردیف</th>
+                            <th scope="col" style="text-align:center">تاریخ تعطیل</th>
+                            <th scope="col" style="text-align:center">حذف تاریخ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="Dates" style="text-align:center"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="pull-right">
+            <input type="submit" class="btn btn-success" onclick="Save()" value="ثبت" />
+            <input type="submit" class="btn btn-danger" onclick="Close_WndEditAndAdd()" value="انصراف" />
+        </div>
+    </div>
+
+</div>
+
+
+<div id="kgrdCalendars" class="k-rtl"></div>
+
+
+<div id="DeleteDialog">
+</div>
+
+<div id="Assign">
+    <div id="WNDAssignCalendar" class="k-rtl" style="display:none">
+        <div class="carousel slide" data-ride="carousel">
+            <!-- Indicators -->
+            <!-- Wrapper for slides -->
+            <div class="carousel-inner">
+                <div class="item active">
+                    <img src="~/Images/Headers/insert Time sheet.jpg" />
+                </div>
+            </div>
+            <div class="carousel-caption" style="top:-15px">
+                <h3 style="font-size:1vw;">تخصیص مدیر و تقویم به پروژه </h3>
+            </div>
+        </div>
+
+        <div class="jumbotron shadow" style="margin-right:10px; margin-top:10px;margin-left:10px">
+
+            <div id="PNLGRDProjectCalendar">
+                <div class="panel panel-info">
+                    <div style="text-align:center" class="panel-heading">جدول انتصاب مدیر و تقویم به پروژه</div>
+                    <div class="table table-hover" style="width:100%" id="GRDProjectCalendar">   </div>
+                </div>
+            </div>
+
+            <div class="panel panel-info" id="PNLAssign" style="width:40%; margin-right:30%;text-align:right !important;display:none">
+
+                <div style="text-align:center" class="panel-heading">
+                    جدول انتصاب مدیر و تقویم به پروژه
+                    <br />
+                    <p style="font-size:0.9vw;margin-top:5px;" id="PNLEditAssignHeader">پروژه :</p>
+                </div>
+
+
+                <div class="panel-body">
+
+                    <div class="col-md-8  pull-right" style="margin-top:5px;display:none">
+                        <label class="form-inline">
+                            <span title="انتخاب پروژه" id="DDLProjectsCalendar"> </span>
+                        </label>
+                    </div>
+
+                    <div id="PNLCalendar" class="col-md-8  pull-right" style="margin-top:5px;display:none">
+                        <label class="form-inline">
+                            <span title="انتخاب تقویم" id="DDLCalendar"> </span>
+                        </label>
+                    </div>
+
+                    <div id="PNLManager" class="col-md-8  pull-right" style="margin-top:5px;display:none">
+                        <label class="form-inline">
+                            <span title="انتخاب مدیر" id="DDLManager"> </span>
+                        </label>
+                    </div>
+
+
+                    <div id="AssignButtons" class="pull-right" style="display:none; float:right;margin:10px">
+                        <input type="submit" class="btn btn-success" onclick="Assign()" value="ثبت" />
+                        <input type="submit" class="btn btn-danger" onclick="ResetAssignForm()" value="انصراف" />
+
+                    </div>
+
+                </div>
+            </div>
+
+
+        </div>
+        <input type="submit" class="btn btn-primary pull-right" onclick="WNDAssignCalendar_OnClose()" value="بازگشت  " />
+    </div>
+
+</div>
+
+
+
+
+@section Scripts{
+
+<script src="~/lib/Kendo2018.3.1_js/kendo.all.min.js"></script>
+
+<script src="~/lib/DatePicker/html5shiv.js"></script>
+<script src="~/lib/DatePicker/respond.min.js"></script>
+<script src="~/lib/DatePicker/moment.min.js"></script>
+<script src="~/lib/DatePicker/moment-jalaali.js"></script>
+<script src="~/lib/DatePicker/daterangepicker-fa-ex.js"></script>
+<script src="~/lib/DatePicker/daterangepicker.js"></script>
+
+
+<script src="~/js/calendar.js"></script>
+
+}

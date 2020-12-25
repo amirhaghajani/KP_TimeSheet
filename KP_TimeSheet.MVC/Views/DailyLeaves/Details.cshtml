@@ -1,0 +1,92 @@
+﻿@model KP.TimeSheets.MVC.DailyLeaveJson
+
+@{
+    ViewBag.Title = "Details";
+}
+
+
+<div class="panel panel-info ras-center shadow" style="margin-top:10px;width:50%">
+    <div style="text-align:center" class="panel-heading">جزئیات مرخصی روزانه</div>
+    <div class="panel-body ">
+
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.UserTitle)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.UserTitle)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.PersonnelNumber)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.PersonnelNumber)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Organisation)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Organisation)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.ProjectTitle)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.ProjectTitle)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.RejisterDate)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.RejisterDate)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.From)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.From)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.TO)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.TO)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Type)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Type)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Successor)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Successor)
+            </dd>
+
+        </dl>
+        <p style="padding:5px">
+            @Html.ActionLink(" ", "Edit", new { id = Model.ID }, new { @class = "btn btn-warning zmdi zmdi-edit", @title = "ویرایش" })
+            @Html.ActionLink(" ", "Index", null, new { @class = "btn btn-info zmdi zmdi-arrow-left", @title = "بازگشت" })
+        </p>
+
+    </div>
+</div>

@@ -15,9 +15,13 @@ namespace KP.TimeSheets.Domain
         Deserved,
         [Display(Name = "استعلاجی")]
         Cure,
-        [Display(Name = "سایر موارد")]
-        WithOutSalary,
+        
+        
         [Display(Name = "بدون حقوق")]
+        WithOutSalary,
+        
+
+        [Display(Name = "سایر موارد")]
         OtherCases
     }
     public  class DailyLeave : IHaveStage

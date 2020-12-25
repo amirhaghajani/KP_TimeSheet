@@ -1,0 +1,86 @@
+﻿@model KP.TimeSheets.MVC.HourlyLeaveJson
+
+@{
+    ViewBag.Title = "Approve";
+}
+
+
+<div class="panel panel-danger ras-center" style="margin-top:10px;width:50%">
+
+
+    <div style="text-align:center" class="panel-heading">تایید مرخصی ساعتی</div>
+
+    <div class="panel-body">
+        <h4 class="border text-danger alert-danger" style="padding:3px">مدیر گرامی آیا از تایید این مرخصی اطمینان دارید؟</h4>
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.UserTitle)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.UserTitle)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.PersonnelNumber)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.PersonnelNumber)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Organisation)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Organisation)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.ProjectTitle)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.ProjectTitle)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.From)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.From)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.TO)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.TO)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.LeaveDate)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.LeaveDate)
+            </dd>
+
+        </dl>
+
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="form-actions no-color">
+                <button type="submit" title="تایید" value="تایید" class="btn btn-success "><i class="zmdi zmdi-check"></i></button>
+                @Html.ActionLink(" ", "Index", null, new { @class = "btn btn-info zmdi zmdi-arrow-left", @title = "بازگشت" })
+
+            </div>
+
+        }
+    </div>
+</div>

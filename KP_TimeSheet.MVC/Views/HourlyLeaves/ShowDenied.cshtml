@@ -1,0 +1,97 @@
+﻿@using Microsoft.Extensions.Primitives
+@model IEnumerable<KP.TimeSheets.MVC.HourlyLeaveJson>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+@{
+    var approveparameter = "";
+
+    if (Context.Request.Query.TryGetValue("ac", out StringValues approveparameterValues))
+    {
+        approveparameter = approveparameterValues.FirstOrDefault();
+    }
+    //Check parameter here and display Message
+
+    switch (approveparameter)
+    {
+        case "Resend":
+
+            <div class="alert alert-success alert-dismissable">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                <strong><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> ارسال مجدد مرخصی با موفقیت انجام شد</strong>
+            </div>
+            break;
+
+
+    }
+}
+
+<div class="panel panel-danger shadow" style="margin-top:10px;overflow:auto ">
+    <div style="text-align:center" class="panel-heading">مرخصی های روزانه رد شده</div>
+
+    <table class="table table-bordered table-striped panel-body" style="overflow:auto">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.UserTitle)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PersonnelNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Organisation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProjectTitle)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.From)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TO)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LeaveDate)
+            </th>
+
+
+            <th>عملیات</th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserTitle)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PersonnelNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Organisation)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProjectTitle)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.From)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TO)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LeaveDate)
+                </td>
+
+                <td>
+                    @Html.ActionLink(" ", "Resend", new { id = item.ID }, new { @class = "btn btn-success ti-share-alt btn-xs", @title = "ارسال مجدد مرخصی روزانه" })
+
+                </td>
+            </tr>
+        }
+
+    </table>
+
+</div>
+@Html.ActionLink(" ", "Index", null, new { @class = "btn btn-info zmdi zmdi-arrow-left", @title = "بازگشت" })

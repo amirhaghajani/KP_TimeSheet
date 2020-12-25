@@ -1,0 +1,70 @@
+﻿
+@{
+    ViewBag.Title = "ProjectsCalendars";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Scripts/Calendar/ProjectsCalendars.js"></script>
+<script src="js/jquery.min.js"></script>
+<script src="js/kendo.all.min.js"></script>
+
+<link href="~/Content/DatePicker/datepicker-theme.css" rel="stylesheet" />
+<link href="~/Content/DatePicker/daterangepicker.css" rel="stylesheet" />
+<link href="~/Content/Calender.css" rel="stylesheet" />
+<div class="register">
+    <div class="row">
+        <div class="col-md-3 register-left">
+            <img src="~/Images/calendrier.gif" alt="" />
+            <h4>انتخاب تقویم و مدیر پروژه</h4>
+            <p>شما می توانید تقویم کاری و مدیر پروژه را انتخاب کنید</p>
+        </div>
+        <div class="col-md-9 register-right" style="min-height: 500px;">
+            <ul class="nav nav-tabs nav-justified" id="myTab" role="tablist">
+                <li class="Pro-item">
+                    <a class="nav-link active" id="home-tab" data-toggle="tab" role="tab" onClick="btnAddProjectCalender(); return false;" aria-selected="true"> انتخاب جدید</a>
+                </li>
+            </ul>
+            <div class="tab-content" id="myTabContent">
+                <div id="dataTable">
+                    <div class="tab-pane show active" role="tabpanel" aria-labelledby="m-tab" style="width: 98%;">
+                        <div class="form-group" style="margin-top: 10%;">
+                            <table class="table table-hover" style="text-align: right;">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align:center" colspan="5">موارد موجود </th>
+                                    </tr>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">عنوان پروژه</th>
+                                        <th scope="col">عنوان تقویم</th>
+                                        <th scope="col"> مدیر پروژه</th>
+                                        <th scope="col"> حذف و ویرایش</th>
+                                    </tr>
+                                </thead>
+                                <tbody id=""></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane active" id="addNewPopUp" role="tabpanel" aria-labelledby="home-tab">
+                    <h3 class="register-heading"> انتخاب </h3>
+                    <div class="row register-form">
+                        <div class="col-md-12" style="float:right">
+                            <div class="form-group">
+                                <input style="margin-bottom:1%" type="text" class="form-control" id="title" placeholder="عنوان پروژه *" value="" />
+                                <input style="margin-bottom:1%" type="text" class="form-control" id="calendar" placeholder="انتخاب تقویم  " value="" />
+                                <input style="margin-bottom:1%" type="text" class="form-control" id="manager" placeholder="انتخاب مدیر پروژه " value="" />
+                            </div>
+                            <div style="">
+                                <input type="submit" class="btnRegister" onclick="" value="ذخیره" />
+                                <input style="background:#cc0000" type="submit" class="btnRegister" onclick="Discard()" value="انصراف" />
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>>
+

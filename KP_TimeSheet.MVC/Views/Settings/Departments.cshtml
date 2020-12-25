@@ -1,0 +1,87 @@
+﻿
+@{
+    ViewBag.Title = "Departments";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/Content/DatePicker/datepicker-theme.css" rel="stylesheet" />
+<link href="~/Content/DatePicker/daterangepicker.css" rel="stylesheet" />
+<link href="~/Content/Kendo2018.3.1/kendo.common.min.css" rel="stylesheet" />
+<link href="~/Content/Kendo2018.3.1/kendo.default.min.css" rel="stylesheet" />
+<link href="~/Content/Kendo2018.3.1/kendo.default.mobile.min.css" rel="stylesheet" />
+<link href="~/Content/Kendo2018.3.1/kendo.rtl.min.css" rel="stylesheet" />
+<script src="~/Scripts/Kendo2018.3.1/kendo.all.min.js"></script>
+<script src="~/Scripts/DatePicker/html5shiv.js"></script>
+<script src="~/Scripts/DatePicker/respond.min.js"></script>
+<script src="~/Scripts/DatePicker/moment.min.js"></script>
+<script src="~/Scripts/DatePicker/moment-jalaali.js"></script>
+<script src="~/Scripts/DatePicker/daterangepicker-fa-ex.js"></script>
+<script src="~/Scripts/DatePicker/daterangepicker.js"></script>
+
+
+   
+       
+            <div id="GRDOrganisationUnits" style="width:90%; " class="k-rtl"></div>
+            <div id="WNDEditAndAddOrgan" class="tab-pane k-rtl" style="display:none">
+                <div class="raspanel shadow">
+                    <div class="carousel slide" data-ride="carousel">
+                        <!-- Indicators -->
+                        <!-- Wrapper for slides -->
+                        <div class="carousel-inner">
+                            <div class="item active">
+                                <img src="~/Images/Headers/insert Time sheet.jpg" />
+                            </div>
+                        </div>
+                        <div class="carousel-caption" style="top:-15px">
+                            <h3 style="font-size:1vw;">مدیریت واحد های سازمانی </h3>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-top:30px">
+                        <div class="form-inline">
+                            <label class="checkbox-inline">
+                                <b id="chkperiodly" value="periodically">  عنوان واحد</b>
+                                <input id="UnitTitle" type="text" class="form-control" placeholder="عنوان واحد سازمانی..." value="" style="margin-right:5px;direction: rtl;width:300px;height:20px" />
+                                <b id="chkperiodly" style="margin-right:20px">  بخش</b>
+                                <input id="DDLtParentOrgan" type="text" class="form-control" placeholder="انتخاب بخش" value="" style="margin-right:5px;direction: rtl;width:200px;height:20px; margin-top:-15px" />
+                            </label>
+                        </div>
+                        <hr />
+                    </div>
+
+                    <div class="form-group" style="margin-top:-25px">
+                        <div class="panel panel-info">
+                            <div style="text-align:center" class="panel-heading">افراد داخل واحد</div>
+                            <div class="form-inline" style="margin-top:10px;">
+                                <label class="checkbox-inline">
+                                    <b id="chkperiodly" value="periodically">  انتخاب فرد جدید</b>
+                                    <input id="DDLAddUser" type="text" class="form-control" placeholder="انتخاب کاربر..." value="" style="margin-right:5px;direction: rtl;width:150px;height:20px;margin-top:-10px" />
+                                    <button type="submit" class="btn btn-primary  shadow" title="افزودن کاربر به واحد سازمانی" style="margin-right:10px;height:15px" onclick="AddNewUserToUnit()">
+                                        <i style="margin-bottom:10px; font-size:1vw; margin-top:-5px" class="fa fa-address-book"></i>
+                                    </button>
+                                    <b id="chkperiodly" style="margin-right:20px">  مدیر واحد</b>
+                                    <input id="DDLtUnitManager" type="text" class="form-control" placeholder="انتخاب مدیر  واحد" value="" style="margin-right:5px;direction: rtl;width:200px;height:20px; margin-top:-15px" />
+                                </label>
+                            </div>
+                            <div id="GRDOrganUsers" style="margin-top:5px" class="k-rtl"></div>
+
+                            @*<table class="table table-hover" style="text-align: right; text-align:center">
+                        <thead>
+                            <tr class="text-center ">
+                                <th scope="col">ردیف</th>
+                                <th scope="col">نام فرد</th>
+                            </tr>
+                        </thead>
+                        <tbody id="Dates"></tbody>
+                    </table>*@
+                        </div>
+                    </div>
+                    <input type="submit" class="btn btn-success " onclick="SendOrganUnit()" value="تایید" />
+                    <input type="submit" style="margin-right:5px" class="btn btn-danger " onclick="WNDEditAndAddOrgan_OnClose()" value="انصراف  " />
+
+                </div>
+            </div>
+
+    
+   
+
+<script src="~/Scripts/OrganisationUnits/OrganisationUnits.js"></script>

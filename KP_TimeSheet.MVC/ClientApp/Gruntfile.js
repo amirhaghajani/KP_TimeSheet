@@ -9,13 +9,17 @@ module.exports = function (grunt) {
         'src/layout/sideBar.js',
         'src/home/site.js',
         'src/registerTimeSheet/RegisterTimeSheets.js',
-        'src/confirmTimeSheet/ConfirmTimeSheets.js'
+        'src/confirmTimeSheet/ConfirmTimeSheets.js',
+        'src/leave/hourlyLeaves.js',
+        'src/calendar/calendar.js'
       ],
       'targetArray':[
         '../wwwroot/js/sideBar.js', 
         '../wwwroot/js/site.js', 
         '../wwwroot/js/RegisterTimeSheets.js',
-        '../wwwroot/js/ConfirmTimeSheets.js'
+        '../wwwroot/js/ConfirmTimeSheets.js',
+        '../wwwroot/js/hourlyLeaves.js',
+        '../wwwroot/js/calendar.js'
       ],
       'srcCSS':[
         'node_modules/bootstrap/dist/css/bootstrap.min.css',

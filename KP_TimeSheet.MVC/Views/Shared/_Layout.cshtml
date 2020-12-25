@@ -93,7 +93,7 @@
                                     <a style="color:white" class="ras-sidebar-li" href="@Url.Action("Register","TimeSheets")">
                                         <i title="ثبت برگه زمانی" class="ti-pencil pull-left ras-sidebar-left-logo" style="font-size:18px ; margin-left:-15px;color:#808080"></i>
                                         <i class="ti-pencil" style="font-size:16px;"></i>
-                                        <span>ثبت برگه زمانی</span>
+                                        <span style="display: none;">ثبت برگه زمانی</span>
                                     </a>
 
                                 </div>
@@ -109,7 +109,7 @@
                                     <a style="color:white" class="ras-sidebar-li" href="@Url.Action("Confirmation","TimeSheets")">
                                         <i title="تایید برگه زمانی" class="ti-check pull-left ras-sidebar-left-logo" style="font-size:18px ; margin-left:-15px;color:#808080"></i>
                                         <i class="ti-check" style="font-size:16px;"></i>
-                                        <span>تایید برگه زمانی</span>
+                                        <span style="display: none;">تایید برگه زمانی</span>
                                     </a>
 
                                 </div>
@@ -122,19 +122,19 @@
                                 </a>
                                 <div id="collapse3" class="panel-collapse collapse">
                                     <a style="color:white" class="ras-sidebar-li" href="@Url.Action("Index","DailyLeaves")">
-                                        <i title="تایید برگه زمانی" class="ti-marker-alt pull-left ras-sidebar-left-logo" style="font-size:18px ; margin-left:-15px;color:#808080"></i>
+                                        <i title="ثبت مرخصی روزانه" class="ti-marker-alt pull-left ras-sidebar-left-logo" style="font-size:18px ; margin-left:-15px;color:#808080"></i>
                                         <i class="ti-marker-alt" style="font-size:16px;"></i>
-                                        <span>ثبت مرخصی روزانه</span>
+                                        <span style="display: none;">ثبت مرخصی روزانه</span>
                                     </a>
                                     <a style="color:white" class="ras-sidebar-li" href="@Url.Action("Index","HourlyLeaves")">
-                                        <i title="تایید برگه زمانی" class="ti-pencil-alt pull-left ras-sidebar-left-logo" style="font-size:18px ; margin-left:-15px;color:#808080"></i>
+                                        <i title="ثبت مرخصی ساعتی" class="ti-pencil-alt pull-left ras-sidebar-left-logo" style="font-size:18px ; margin-left:-15px;color:#808080"></i>
                                         <i class="ti-pencil-alt" style="font-size:16px;"></i>
-                                        <span>ثبت مرخصی ساعتی</span>
+                                        <span style="display: none;">ثبت مرخصی ساعتی</span>
                                     </a>
                                     <a style="color:white" class="ras-sidebar-li" href="@Url.Action("Index","HourlyMissions")">
-                                        <i title="تایید برگه زمانی" class="ti-pencil pull-left ras-sidebar-left-logo" style="font-size:18px ; margin-left:-15px;color:#808080"></i>
+                                        <i title="ثبت ماموریت ساعتی" class="ti-pencil pull-left ras-sidebar-left-logo" style="font-size:18px ; margin-left:-15px;color:#808080"></i>
                                         <i class="ti-pencil" style="font-size:16px;"></i>
-                                        <span>ثبت ماموریت ساعتی</span>
+                                        <span style="display: none;">ثبت ماموریت ساعتی</span>
                                     </a>
                                 </div>
                             </div>
@@ -147,13 +147,19 @@
                                 </a>
                                 <div id="collapse4" class="panel-collapse collapse">
                                     <a style="color:white" class="ras-sidebar-li" href="@Url.Action("ApproveIndex","DailyLeaves")">
-                                        <span>تایید مرخصی روزانه</span>
+                                        <i title="تایید مرخصی روزانه" class="ti-hummer pull-left ras-sidebar-left-logo" style="font-size:18px ; margin-left:-15px;color:#808080"></i>
+                                        <i class="ti-hummer" style="font-size:16px;"></i>
+                                        <span style="display: none;">تایید مرخصی روزانه</span>
                                     </a>
                                     <a style="color:white" class="ras-sidebar-li" href="@Url.Action("ApproveIndex","HourlyLeaves")">
-                                        <span>تایید مرخصی ساعتی</span>
+                                        <i title="تایید مرخصی ساعتی" class="ti-info-alt pull-left ras-sidebar-left-logo" style="font-size:18px ; margin-left:-15px;color:#808080"></i>
+                                        <i class="ti-info-alt" style="font-size:16px;"></i>
+                                        <span style="display: none;">تایید مرخصی ساعتی</span>
                                     </a>
                                     <a style="color:white" class="ras-sidebar-li" href="@Url.Action("ApproveIndex","HourlyMissions")">
-                                        <span>تایید ماموریت ساعتی</span>
+                                        <i title="تایید ماموریت ساعتی" class="ti-key pull-left ras-sidebar-left-logo" style="font-size:18px ; margin-left:-15px;color:#808080"></i>
+                                        <i class="ti-key" style="font-size:16px;"></i>
+                                        <span style="display: none;">تایید ماموریت ساعتی</span>
                                     </a>
                                 </div>
                             </div>
@@ -166,13 +172,19 @@
                                 </a>
                                 <div id="collapse5" class="panel-collapse collapse">
                                     <a style="color:white" class="ras-sidebar-li" href="@Url.Action("Calendar", "Settings") ">
-                                        <span>تقویم سازمانی</span>
+                                        <i title="تقویم سازمانی" class="ti-view-grid pull-left ras-sidebar-left-logo" style="font-size:18px ; margin-left:-15px;color:#808080"></i>
+                                        <i class="ti-view-grid" style="font-size:16px;"></i>
+                                        <span style="display: none;">تقویم سازمانی</span>
                                     </a>
                                     <a style="color:white" class="ras-sidebar-li" href="@Url.Action("Departments","Settings")">
-                                        <span>واحد های سازمانی</span>
+                                        <i title="واحدهای سازمانی" class="ti-face-smile pull-left ras-sidebar-left-logo" style="font-size:18px ; margin-left:-15px;color:#808080"></i>
+                                        <i class="ti-face-smile" style="font-size:16px;"></i>
+                                        <span style="display: none;">واحد های سازمانی</span>
                                     </a>
                                     <a style="color:white" class="ras-sidebar-li" href="@Url.Action("Sync","Home")">
-                                        <span>همگام سازی PWA</span>
+                                        <i title="همگام سازی" class="ti-upload pull-left ras-sidebar-left-logo" style="font-size:18px ; margin-left:-15px;color:#808080"></i>
+                                        <i class="ti-upload" style="font-size:16px;"></i>
+                                        <span style="display: none;">همگام سازی PWA</span>
                                     </a>
                                 </div>
                             </div>
@@ -185,19 +197,29 @@
                                 </a>
                                 <div id="collapse6" class="panel-collapse collapse">
                                     <a style="color:white" class="ras-sidebar-li" href="@Url.Action("BreakingProjectsByMonth","Reports")">
-                                        <span>گزارش پروژه ها به تفکیک ماه</span>
+                                        <i title="گزارش پروژه ها به تفکیک ماه" class="ti-stats-down pull-left ras-sidebar-left-logo" style="font-size:18px ; margin-left:-15px;color:#808080"></i>
+                                        <i class="ti-stats-down" style="font-size:16px;"></i>
+                                        <span style="display: none;">گزارش پروژه ها به تفکیک ماه</span>
                                     </a>
                                     <a style="color:white" class="ras-sidebar-li" href="@Url.Action("BreakingProjectByMonth","Reports")">
-                                        <span>گزارش یک پروژه به تفکیک ماه</span>
+                                        <i title="گزارش یک پروژه به تفکیک ماه" class="ti-stats-up pull-left ras-sidebar-left-logo" style="font-size:18px ; margin-left:-15px;color:#808080"></i>
+                                        <i class="ti-stats-up" style="font-size:16px;"></i>
+                                        <span style="display: none;">گزارش یک پروژه به تفکیک ماه</span>
                                     </a>
                                     <a style="color:white" class="ras-sidebar-li" href="@Url.Action("PersonelsAndProjects", "Reports")">
-                                        <span>گزارش ماتریسی پرسنل و پروژه ها</span>
+                                        <i title="گزارش ماتریسی پرسنل و پروژه ها" class="ti-pulse pull-left ras-sidebar-left-logo" style="font-size:18px ; margin-left:-15px;color:#808080"></i>
+                                        <i class="ti-pulse" style="font-size:16px;"></i>
+                                        <span style="display: none;">گزارش ماتریسی پرسنل و پروژه ها</span>
                                     </a>
                                     <a style="color:white" class="ras-sidebar-li" href="@Url.Action("TotalWorkHoursOnProjects", "Reports")">
-                                        <span>گزارش کلی پروژه ها</span>
+                                        <i title="گزارش کلی پروژه ها" class="ti-stats-up pull-left ras-sidebar-left-logo" style="font-size:18px ; margin-left:-15px;color:#808080"></i>
+                                        <i class="ti-stats-up" style="font-size:16px;"></i>
+                                        <span style="display: none;">گزارش کلی پروژه ها</span>
                                     </a>
                                     <a style="color:white" class="ras-sidebar-li" href="@Url.Action("DailyOnProjects", "Reports")">
-                                        <span>گزارش روزانه پروژه ها</span>
+                                        <i title="گزارش روزانه پروژه ها" class="ti-stats-down pull-left ras-sidebar-left-logo" style="font-size:18px ; margin-left:-15px;color:#808080"></i>
+                                        <i class="ti-stats-down" style="font-size:16px;"></i>
+                                        <span style="display: none;">گزارش روزانه پروژه ها</span>
                                     </a>
                                 </div>
                             </div>

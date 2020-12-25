@@ -1,0 +1,70 @@
+﻿@model IEnumerable<KP.TimeSheets.MVC.HourlyLeaveJson>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+
+<div class="panel panel-success shadow" style="margin-top:10px;overflow:auto ">
+    <div style="text-align:center" class="panel-heading">مرخصی های ساعتی تایید شده</div>
+
+    <table class="table table-bordered table-striped panel-body" style="overflow:auto">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.UserTitle)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PersonnelNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Organisation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProjectTitle)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.From)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TO)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LeaveDate)
+            </th>
+
+
+          
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserTitle)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PersonnelNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Organisation)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProjectTitle)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.From)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TO)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LeaveDate)
+                </td>
+
+            </tr>
+        }
+
+    </table>
+
+</div>
+@Html.ActionLink(" ", "Index", null, new { @class = "btn btn-info zmdi zmdi-arrow-left pull-left", @title = "بازگشت" })

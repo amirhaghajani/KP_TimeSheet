@@ -1,0 +1,92 @@
+﻿@model KP.TimeSheets.Domain.HourlyMission
+
+<link href="~/lib/DatePicker/datepicker-theme.css" rel="stylesheet" />
+<link href="~/lib/DatePicker/daterangepicker.css" rel="stylesheet" />
+
+<link href="~/lib/FancyTimePicker/timedropper.css" rel="stylesheet" />
+<link href="~/lib/FancyTimePicker/timedropper.min.css" rel="stylesheet" />
+
+@{
+    ViewBag.Title = "Edit";
+}
+
+
+<div class="panel panel-info ras-center" style="margin-top:10px;width:50%">
+    <div style="text-align:center" class="panel-heading">ثبت ماموریت ساعتی</div>
+    <div class="panel-body">
+
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="form-horizontal">
+
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.PersianMissionDate, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-8">
+                        @Html.EditorFor(model => model.PersianMissionDate, new { htmlAttributes = new { @class = "form-control jalali-datepicker" } })
+                        @Html.ValidationMessageFor(model => model.PersianMissionDate, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ProjectID, null, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-8">
+                        @Html.DropDownListFor(model => model.ProjectID, (SelectList)ViewBag.ProjectID, "پروژه را انتخاب کنید", new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.ProjectID, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.PersianTimeFrom, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-8">
+                        @Html.EditorFor(model => model.PersianTimeFrom, new { htmlAttributes = new { @class = "form-control fancytime1" } })
+                        @Html.ValidationMessageFor(model => model.PersianTimeFrom, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.PersianTimeTo, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-8">
+                        @Html.EditorFor(model => model.PersianTimeTo, new { htmlAttributes = new { @class = "form-control fancytime2" } })
+                        @Html.ValidationMessageFor(model => model.PersianTimeTo, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+
+
+
+
+
+                <div class="form-group">
+                    <div class="col-md-offset-3 col-md-8">
+                        <input type="submit" value="ثبت" class="btn btn-success" />
+                        @Html.ActionLink(" ", "Index", null, new { @class = "btn btn-info zmdi zmdi-arrow-left", @title = "بازگشت" })
+                    </div>
+                </div>
+            </div>
+        }
+
+
+
+    </div>
+</div>
+
+@section Scripts{
+
+<script src="~/lib/DatePicker/html5shiv.js"></script>
+<script src="~/lib/DatePicker/respond.min.js"></script>
+<script src="~/lib/DatePicker/moment.min.js"></script>
+<script src="~/lib/DatePicker/moment-jalaali.js"></script>
+<script src="~/lib/DatePicker/daterangepicker-fa-ex.js"></script>
+<script src="~/lib/DatePicker/daterangepicker.js"></script>
+
+<script src="~/lib/FancyTimePicker/timedropper.js"></script>
+<script src="~/lib/FancyTimePicker/timedropper.min.js"></script>
+
+<script src="~/js/hourlyLeaves.js"></script>
+
+}

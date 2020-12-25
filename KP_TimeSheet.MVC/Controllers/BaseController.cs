@@ -8,10 +8,10 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 public class BaseController : Controller
 {
-    IUnitOfWork _uow;
+    public IUnitOfWork UOW{get;private set;}
     public BaseController(IUnitOfWork uow)
     {
-        this._uow = uow;
+        this.UOW = uow;
     }
 
     public override void OnActionExecuting(ActionExecutingContext context)
@@ -46,7 +46,7 @@ public class BaseController : Controller
     {
         get
         {
-            if(_currUser==null) _currUser = new UserHelper().GetCurrent(this._uow, UserName);
+            if(_currUser==null) _currUser = new UserHelper().GetCurrent(this.UOW, UserName);
             return _currUser;
         }
     }

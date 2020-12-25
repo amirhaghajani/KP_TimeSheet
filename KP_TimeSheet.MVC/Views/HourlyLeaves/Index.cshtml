@@ -1,0 +1,78 @@
+﻿@model IEnumerable<KP.TimeSheets.MVC.HourlyLeaveJson>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<p>
+    @Html.ActionLink("ثبت مرخصی جدید", "Create", null, new { @class = "btn btn-info" })
+    @Html.ActionLink("مرخصی های تایید شده", "ShowApproves", null, new { @class = "btn btn-success" })
+    @Html.ActionLink("مرخصی های رد شده", "ShowDenied", null, new { @class = "btn btn-danger" })
+</p>
+
+<div class="panel panel-info shadow" style="margin-top:10px;overflow:auto ">
+    <div style="text-align:center" class="panel-heading">مرخصی ساعتی</div>
+
+    <table class="table table-bordered table-striped panel-body" style="overflow:auto">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.UserTitle)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PersonnelNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Organisation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProjectTitle)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.From)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TO)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LeaveDate)
+            </th>
+
+
+            <th>عملیات</th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserTitle)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PersonnelNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Organisation)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProjectTitle)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.From)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TO)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LeaveDate)
+                </td>
+
+                <td>
+                    @Html.ActionLink(" ", "Edit", new { id = item.ID }, new { @class = "btn btn-success zmdi zmdi-edit btn-xs", @title = "ویرایش" })
+                    @Html.ActionLink(" ", "Details", new { id = item.ID }, new { @class = "btn btn-warning zmdi zmdi-comment-edit btn-xs", @title = "جزئیات" })
+                    @Html.ActionLink(" ", "Delete", new { id = item.ID }, new { @class = "btn btn-danger zmdi zmdi-delete btn-xs", @title = "حذف" })
+                </td>
+            </tr>
+        }
+
+    </table>
+</div>

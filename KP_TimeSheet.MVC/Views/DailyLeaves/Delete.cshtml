@@ -1,0 +1,102 @@
+﻿@model KP.TimeSheets.MVC.DailyLeaveJson
+
+@{
+    ViewBag.Title = "Delete";
+}
+
+
+<div class="panel panel-danger ras-center" style="margin-top:10px;width:50%">
+
+
+    <div style="text-align:center" class="panel-heading">حذف مرخصی روزانه</div>
+   
+    <div class="panel-body">
+        <h4 class="border text-danger alert-danger" style="padding:3px" >کاربر گرامی آیا از حذف این مرخصی اطمینان دارید؟</h4>
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.UserTitle)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.UserTitle)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.PersonnelNumber)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.PersonnelNumber)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Organisation)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Organisation)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.ProjectTitle)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.ProjectTitle)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.RejisterDate)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.RejisterDate)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.From)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.From)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.TO)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.TO)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Type)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Type)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Successor)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Successor)
+            </dd>
+
+        </dl>
+
+        @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <button type="submit" title="حذف" value="حذف" class="btn btn-danger "><i class="zmdi zmdi-delete"></i></button>
+            @Html.ActionLink(" ", "Index", null, new { @class = "btn btn-info zmdi zmdi-arrow-left", @title = "بازگشت" })
+
+        </div>
+
+}
+    </div>
+</div>

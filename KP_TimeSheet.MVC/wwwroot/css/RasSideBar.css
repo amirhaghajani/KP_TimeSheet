@@ -6,13 +6,15 @@
 .rasrasSidebar {
     
     width: 300px;
-    margin-right: -250px;
+    margin-right: -235px;
     position: fixed;
     z-index: 1;
     top: 100px;
+
     background-image: url('../Images/SideBar-Back.jpg');
     background-repeat: no-repeat;
     background-size: cover;
+    
     background-color: #111;
     overflow-x: auto;
     transition: 0.3s;
@@ -34,6 +36,12 @@
   transition: 0.3s;
    list-style:none;
    font-weight:bold
+}
+
+.side-header-inner{
+  background-image: url('../Images/SideBar-Back.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 li{

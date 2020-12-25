@@ -42,23 +42,27 @@ const sideBar = (function () {
 
 
   function openNav() {
+    const marginRight = "-235px";
 
-    if ($("#mySidebar").css('marginRight') == "-250px") {
+    if ($("#mySidebar").css('marginRight') == marginRight) {
       $(".panel-collapse").collapse("hide");
       $(".ras-sidebar-left-logo").fadeOut(100);
       $("#mySidebar").css({ "margin-right": "0px" });
       var width = $(window).width();
       $(".content-body").css({ "margin-right": "300px" });
       $('.content-body').css({ 'width': width - 300 + "px" });
+      
+      $(".menu-item span").show();
 
     } else {
       $(".ras-sidebar-left-logo").fadeIn(100);
       $('.panel-collapse').collapse('hide');
       var width = $(window).width();
-      $("#mySidebar").css({ "margin-right": "-250px" });
+      $("#mySidebar").css({ "margin-right": marginRight });
       $(".content-body").css({ "margin-right": "50px" });
       $('.content-body').css({ 'width': width - 50 + "px" });
 
+      $(".menu-item span").hide();
     }
   }
 
