@@ -1,8 +1,8 @@
 {
     "ConnectionStrings": {
-      "DevelopmentConnection": "Server=10.9.30.158;Database=RASTimeSheets;integrated security=True;MultipleActiveResultSets=true",
-      "DeploymentConnection": "Server=10.9.30.158;Database=RASTimeSheets;integrated security=True;MultipleActiveResultSets=true",
-      "DevelopmentConnection_": "Server=192.168.0.4;Database=ForTest;User Id=ForTest;Password=ForTest;MultipleActiveResultSets=true",
-      "DeploymentConnection_": "Server=192.168.0.4;Database=ForTest;Trusted_Connection=True;MultipleActiveResultSets=true"
+      "DevelopmentConnection_": "Server=10.9.30.158;Database=RASTimeSheets;integrated security=True;MultipleActiveResultSets=true",
+      "DeploymentConnection_": "Server=10.9.30.158;Database=RASTimeSheets;integrated security=True;MultipleActiveResultSets=true",
+      "DevelopmentConnection": "Server=192.168.0.4;Database=ForTest;User Id=ForTest;Password=ForTest;MultipleActiveResultSets=true",
+      "DeploymentConnection": "Server=192.168.0.4;Database=ForTest;Trusted_Connection=True;MultipleActiveResultSets=true"
     }
   }

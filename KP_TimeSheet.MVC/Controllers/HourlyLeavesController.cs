@@ -26,7 +26,7 @@ namespace KP_TimeSheet.MVC.Controllers
         // GET: HourlyLeaves/Details/5
         public ActionResult Details(Guid id)
         {
-            if (id == null)
+            if (id == Guid.Empty)
             {
                 return this.StatusCode(statusCode: (int)System.Net.HttpStatusCode.BadRequest,"آی دی مرخصی ارسال نشده است");
             }
@@ -81,7 +81,7 @@ namespace KP_TimeSheet.MVC.Controllers
             HourlyLeaveManager hm = new HourlyLeaveManager(UOW);
             ProjectManager pm = new ProjectManager(UOW);
             UserManager um = new UserManager(UOW);
-            if (id == null)
+            if (id == Guid.Empty)
             {
                 return this.StatusCode(statusCode: (int)System.Net.HttpStatusCode.BadRequest,"آی دی مرخصی ارسال نشده است");
             }
@@ -121,7 +121,7 @@ namespace KP_TimeSheet.MVC.Controllers
             HourlyLeaveManager hm = new HourlyLeaveManager(UOW);
             ProjectManager pm = new ProjectManager(UOW);
             UserManager um = new UserManager(UOW);
-            if (id == null)
+            if (id == Guid.Empty)
             {
                 return this.StatusCode(statusCode: (int)System.Net.HttpStatusCode.BadRequest,"آی دی مرخصی ارسال نشده است");
             }
@@ -159,7 +159,7 @@ namespace KP_TimeSheet.MVC.Controllers
             HourlyLeaveManager dlm = new HourlyLeaveManager(UOW);
             ProjectManager pm = new ProjectManager(UOW);
             UserManager um = new UserManager(UOW);
-            if (id == null)
+            if (id == Guid.Empty)
             {
                 return this.StatusCode(statusCode: (int)System.Net.HttpStatusCode.BadRequest,"آی دی مرخصی ارسال نشده است");
             }
@@ -191,7 +191,7 @@ namespace KP_TimeSheet.MVC.Controllers
             HourlyLeaveManager dlm = new HourlyLeaveManager(UOW);
             ProjectManager pm = new ProjectManager(UOW);
             UserManager um = new UserManager(UOW);
-            if (id == null)
+            if (id == Guid.Empty)
             {
                 return this.StatusCode(statusCode: (int)System.Net.HttpStatusCode.BadRequest,"آی دی مرخصی ارسال نشده است");
             }

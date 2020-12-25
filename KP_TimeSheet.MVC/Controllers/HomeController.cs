@@ -17,10 +17,9 @@ namespace KP_TimeSheet.MVC.Controllers
     public class HomeController : BaseController
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly RASContext _db;
 
-        public HomeController(ILogger<HomeController> logger, 
-        RASContext context, IUnitOfWork uow):base(uow)
+        public HomeController(ILogger<HomeController> logger,
+        RASContext context, IUnitOfWork uow) : base(uow)
         {
             _logger = logger;
         }
@@ -29,6 +28,22 @@ namespace KP_TimeSheet.MVC.Controllers
         {
             return View();
         }
+
+        public ActionResult Sync()
+        {
+            try
+            {
+                this.UOW.ProjectRepository.Sync();
+                this.UOW.SaveChanges();
+                ViewBag.Message = "همکام سازی با موفقیت انجام شد";
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message ="خطا در همگام سازی: " + ex.Message;
+            }
+            return View();
+        }
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

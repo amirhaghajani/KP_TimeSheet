@@ -27,7 +27,7 @@ namespace KP.TimeSheets.MVC.Controllers
         // GET: HourlyMissions/Details/5
         public ActionResult Details(Guid id)
         {
-            if (id == null)
+            if (id == Guid.Empty)
             {
                 return this.StatusCode(statusCode: (int)System.Net.HttpStatusCode.BadRequest,"آی دی ماموریت ارسال نشده است");
             }
@@ -81,7 +81,7 @@ namespace KP.TimeSheets.MVC.Controllers
             HourlyMissionManager hm = new HourlyMissionManager(UOW);
             ProjectManager pm = new ProjectManager(UOW);
             UserManager um = new UserManager(UOW);
-            if (id == null)
+            if (id == Guid.Empty)
             {
                 return this.StatusCode(statusCode: (int)System.Net.HttpStatusCode.BadRequest,"آی دی ماموریت ارسال نشده است");
             }
@@ -121,7 +121,7 @@ namespace KP.TimeSheets.MVC.Controllers
             HourlyMissionManager hm = new HourlyMissionManager(UOW);
             ProjectManager pm = new ProjectManager(UOW);
             UserManager um = new UserManager(UOW);
-            if (id == null)
+            if (id == Guid.Empty)
             {
                 return this.StatusCode(statusCode: (int)System.Net.HttpStatusCode.BadRequest,"آی دی ماموریت ارسال نشده است");
             }
@@ -160,7 +160,7 @@ namespace KP.TimeSheets.MVC.Controllers
             HourlyMissionManager dlm = new HourlyMissionManager(UOW);
             ProjectManager pm = new ProjectManager(UOW);
             UserManager um = new UserManager(UOW);
-            if (id == null)
+            if (id == Guid.Empty)
             {
                 return this.StatusCode(statusCode: (int)System.Net.HttpStatusCode.BadRequest,"آی دی ماموریت ارسال نشده است");
             }
@@ -192,7 +192,7 @@ namespace KP.TimeSheets.MVC.Controllers
             HourlyMissionManager dlm = new HourlyMissionManager(UOW);
             ProjectManager pm = new ProjectManager(UOW);
             UserManager um = new UserManager(UOW);
-            if (id == null)
+            if (id == Guid.Empty)
             {
                 return this.StatusCode(statusCode: (int)System.Net.HttpStatusCode.BadRequest,"آی دی ماموریت ارسال نشده است");
             }

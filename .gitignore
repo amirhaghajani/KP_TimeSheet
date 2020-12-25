@@ -3419,3 +3419,8 @@ KP.TimeSheets.Persistance/bin/Debug/net5.0/KP.TimeSheets.Persistance.pdb
 KP.TimeSheets.Persistance/obj/Debug/net5.0/KP.TimeSheets.Persistance.csprojAssemblyReference.cache
 KP.TimeSheets.Persistance/obj/Debug/net5.0/KP.TimeSheets.Persistance.dll
 KP.TimeSheets.Persistance/obj/Debug/net5.0/KP.TimeSheets.Persistance.pdb
+KP.TimeSheets.Domain/obj/KP.TimeSheets.Domain.csproj.nuget.dgspec.json
+KP.TimeSheets.Domain/obj/KP.TimeSheets.Domain.csproj.nuget.g.props
+KP.TimeSheets.Domain/obj/project.assets.json
+KP.TimeSheets.Domain/obj/project.nuget.cache
+KP.TimeSheets.Domain/obj/Debug/net5.0/KP.TimeSheets.Domain.csprojAssemblyReference.cache
