@@ -1,7 +1,7 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 const common = (function () {
 
-	function version(){return "0.0.0.1";}
+	function version(){return "0.0.0.2";}
 
 	function doExport(selector, params) {
 		var options = {
@@ -91,12 +91,28 @@ const common = (function () {
 		}
 	}
 
+	//----------------------------------------------------------
+	function window_height(){
+		return ($( window ).height() - 50) + "px";
+	}
+	function addNoScrollToBody(){
+		$("body").addClass("ob-no-scroll");
+	}
+	function removeNoScrollToBody(){
+		$("body").removeClass("ob-no-scroll");
+	}
+
 	return {
 		loaderShow: loaderShow,
 		loaderHide: loaderHide,
 		Notify: notify,
 		DoExport: doExport,
 		adjustSize: adjustSize,
+
+		window_height: window_height,
+		addNoScrollToBody: addNoScrollToBody,
+		removeNoScrollToBody: removeNoScrollToBody,
+
 		version: version
 
 	};
@@ -110,6 +126,11 @@ module.exports = {
 	'notify': common.Notify,
 	'doExport': common.DoExport,
 	'adjustSize': common.adjustSize,
+
+	window_height: common.window_height,
+	addNoScrollToBody: common.addNoScrollToBody,
+	removeNoScrollToBody: common.removeNoScrollToBody,
+
 	version:common.version
 };
 
@@ -477,9 +498,15 @@ const module_createNewRorkHour =(function(){
                 format: "HH:mm"
             });
             var kwndSaveWHs = $("#kwndSaveWorkHours");
+
+            
+
             kwndSaveWHs.kendoWindow({
                 width: "500px",
-                height: "640px",
+                height: moduleData.common.window_height(),
+
+                activate: moduleData.common.addNoScrollToBody,
+                deactivate: moduleData.common.removeNoScrollToBody ,
     
                 scrollable: false,
                 visible: false,

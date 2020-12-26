@@ -78,9 +78,15 @@ const module_createNewRorkHour =(function(){
                 format: "HH:mm"
             });
             var kwndSaveWHs = $("#kwndSaveWorkHours");
+
+            
+
             kwndSaveWHs.kendoWindow({
                 width: "500px",
-                height: "640px",
+                height: moduleData.common.window_height(),
+
+                activate: moduleData.common.addNoScrollToBody,
+                deactivate: moduleData.common.removeNoScrollToBody ,
     
                 scrollable: false,
                 visible: false,

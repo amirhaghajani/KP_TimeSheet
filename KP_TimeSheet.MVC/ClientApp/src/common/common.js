@@ -1,6 +1,6 @@
 const common = (function () {
 
-	function version(){return "0.0.0.1";}
+	function version(){return "0.0.0.2";}
 
 	function doExport(selector, params) {
 		var options = {
@@ -90,12 +90,28 @@ const common = (function () {
 		}
 	}
 
+	//----------------------------------------------------------
+	function window_height(){
+		return ($( window ).height() - 50) + "px";
+	}
+	function addNoScrollToBody(){
+		$("body").addClass("ob-no-scroll");
+	}
+	function removeNoScrollToBody(){
+		$("body").removeClass("ob-no-scroll");
+	}
+
 	return {
 		loaderShow: loaderShow,
 		loaderHide: loaderHide,
 		Notify: notify,
 		DoExport: doExport,
 		adjustSize: adjustSize,
+
+		window_height: window_height,
+		addNoScrollToBody: addNoScrollToBody,
+		removeNoScrollToBody: removeNoScrollToBody,
+
 		version: version
 
 	};
@@ -109,5 +125,10 @@ module.exports = {
 	'notify': common.Notify,
 	'doExport': common.DoExport,
 	'adjustSize': common.adjustSize,
+
+	window_height: common.window_height,
+	addNoScrollToBody: common.addNoScrollToBody,
+	removeNoScrollToBody: common.removeNoScrollToBody,
+
 	version:common.version
 };
