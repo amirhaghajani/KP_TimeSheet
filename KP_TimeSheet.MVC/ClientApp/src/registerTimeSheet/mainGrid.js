@@ -28,16 +28,23 @@ const myMainGrid = (function () {
     this.filterable = false;
   };
 
+
+  //________________ جهت باز سازی TreeList اصلی
+
+  function RefreshTimeSheet() {
+    GetTimeSheets(()=>{
+      moduleData.common_register.removeAndRecreateTreelisDiv();
+      moduleData.common.loaderHide();
+    });
+  }
+  //----------
+
   function GetTimeSheets(callBackFn) {
 
     moduleData.service.getTimeSheets((response) => {
       if (callBackFn) callBackFn(response);
-      ktrlTimeSheets_OnInit();
+      Init_TimeSheetTreeList();
     });
-  }
-
-  function ktrlTimeSheets_OnInit() {
-    Init_TimeSheetTreeList();
   }
 
   function Init_TimeSheetTreeList() {
@@ -61,11 +68,14 @@ const myMainGrid = (function () {
         }
       },
       height: 400,
+      width: 'auto',
       columns: ktrlTSColumns,
       scrollable: true,
       selectable: true,
       dataBound: ktrlTimeSheets_DataBound
     });
+
+    //تول تیپ درست کار نمی کرد برداشتم. جاش را اشتباه نشان می داد
 
     // var tooltip = $("#ktrlTimeSheets").kendoTooltip({
     //   filter: 'td',
@@ -121,45 +131,50 @@ const myMainGrid = (function () {
     colTitle.title = "عنوان";
     colTitle.hidden = false,
 
-      colTitle.width = 150;
+      colTitle.width = 240;
     columns.push(colTitle);
 
+    debugger;
     for (var i = 0; i < response[0].values.length; i++) {
 
       var tsDate = response[0].values[i];
       var colDate = new KTRColumn();
-      colDate.field = "values[" + i + "].value";
+      //colDate.field = "values[" + i + "].value";
+      colDate.template="#= type=='Defference' ? '<span title=\"تایید شده\">1:00</span> | <span title=\"برگشت شده\">2:00</span>' :  (values[ "+i+" ].value) #";
       colDate.format = "";
       colDate.title = tsDate.title;
-      colDate.headerTemplate = "<h6><b>" + tsDate.persianDate + "</b></h6><h6>" + tsDate.persianDay + "</h6>";
+      colDate.headerTemplate = "<h6 style='text-align:center'><b>" + tsDate.persianDate + "</b></h6><h6 style='text-align:center'>" + tsDate.persianDay + "</h6>";
 
 
       var inner = tsDate.value;
-      if (inner == "False False") {
-        colDate.headerTemplate += "<label title=' ' class='text-warning' ><i class='glyphicon glyphicon-ban-circle'></i> </label>"
+      if (!inner.isOpen && !inner.has_NotSendData && !inner.hasKarkard) {
+        colDate.headerTemplate += "<div style='text-align:center'><label title=' ' class='text-warning' ><i class='glyphicon glyphicon-ban-circle'></i> </label>"
       }
 
-      if (inner == "True False" || inner == "True True") {
+      if (inner.isOpen) {
 
-        colDate.headerTemplate += `<button title='ثبت ساعت کارکرد' 
+        colDate.headerTemplate += `<div style='text-align:center'><button title='ثبت ساعت کارکرد' 
                           class='btn btn-success btn-xs forFound_kwndSaveWHs_OnInit' style='width:10px;height:15px'
                           data-day-index='${i}'>+</button>`;
+      }
+      if (inner.hasKarkard) {
 
         colDate.headerTemplate += `<button title='نمایش کارکردهای این روز'   
-              class='btn btn-info btn-xs forFound_ShowCurrentDaySendWorkHours' style='width:10px;height:15px;margin-right:10px;' 
-              data-day-index='${i}'><i class='fa fa-tv'></i></button>`;
+              class='btn btn-info btn-xs forFound_ShowCurrentDaySendWorkHours' style='width:10px;height:15px;margin-right:5px;' 
+              data-day-index='${i}'><i class="glyphicon glyphicon-exclamation-sign"></i></button>`;
       }
 
-      if (inner == "True True") {
+      if (inner.has_NotSendData) {
 
         colDate.headerTemplate += `<button title='ارسال ساعت کارکرد'
-              class='btn btn-warning btn-xs forFound_wndSendWorkHour_OnInit' style='width:10px;height:15px;margin-right:10px;'
+              class='btn btn-warning btn-xs forFound_wndSendWorkHour_OnInit' style='width:10px;height:15px;margin-right:5px;'
               data-day-index='${i}'><b>↑</b></button>`;
 
       }
+      colDate.headerTemplate +="</div>";
 
       colDate.hidden = false;
-      colDate.width = 50;
+      colDate.width = 100;
       columns.push(colDate);
     }
 
@@ -185,32 +200,7 @@ const myMainGrid = (function () {
   }
 
 
-  //________________ جهت باز سازی TreeList اصلی
-
-
-
-  function RefreshTimeSheet() {
-    $.ajax({
-      type: "Get",
-      url: "/api/TimeSheetsAPI/GetTimeSheets",
-      contentType: "application/json; charset=utf-8",
-      dataType: "json",
-      success: ktrlTimeSheets_OnRefresh,
-      error: function (e) {
-
-      }
-    });
-  }
-
-
-  function ktrlTimeSheets_OnRefresh(response) {
-
-    moduleData.data.timeSheetData_set(response);
-    moduleData.common_register.removeAndRecreateTreelisDiv();
-    Init_TimeSheetTreeList();
-    //$("#ktrlTimeSheets").data("kendoTreeList").dataSource.read();
-    moduleData.common.loaderHide();
-  }
+  
 
   return {
     GetTimeSheets: GetTimeSheets,

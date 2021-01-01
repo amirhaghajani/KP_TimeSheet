@@ -48,12 +48,16 @@ namespace KP.TimeSheets.Persistance
         public virtual DbSet<HourlyMission> HourlyMissions { get; set; }
 
 
-        public DbSet<FoundConfirmTimeSheet> spFoundConfirmTimeSheet { get; set; }
+        public DbSet<EmployeeTimeSheetFromDB> spFoundConfirmTimeSheet { get; set; }
         public System.FormattableString spFoundConfirmTimeSheet_str(Guid approver_userId,Guid? userId, DateTime? startDate,DateTime? endDate, int onlyWantSumOfAllWaitingForApproveTime=0)
         {
             return $@"exec spFoundConfirmTimeSheet @approver_userId={approver_userId}
                         ,@userId={userId},@startDate={startDate},@endDate={endDate}
                         ,@onlyWantSumOfAllWaitingForApproveTime={onlyWantSumOfAllWaitingForApproveTime}";
+        }
+        public System.FormattableString spFoundEmployeeTimeSheet_str(Guid? userId, DateTime? startDate,DateTime? endDate)
+        {
+            return $@"exec spFoundEmployeeTimeSheet @userId={userId},@startDate={startDate},@endDate={endDate}";
         }
 
 
@@ -61,7 +65,7 @@ namespace KP.TimeSheets.Persistance
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<FoundConfirmTimeSheet>().HasNoKey();
+            modelBuilder.Entity<EmployeeTimeSheetFromDB>().HasNoKey();
 
             #region Configuration of Users' Table
 

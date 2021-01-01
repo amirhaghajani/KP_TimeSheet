@@ -3,21 +3,43 @@ var service = (function () {
 
     const moduleData = {};
 
-    function init(data) {
+    function init(data, common_timeSheet) {
         moduleData.data = data;
+        moduleData.common_timeSheet = common_timeSheet;
     }
 
 
     //اون اول اطلاعات کل تایم شیت ها را می دهد
     function getTimeSheets(success_callBack, error_callBack) {
+
+        $.ajax({
+			type: "Get",
+			url: "/api/Confirm/employee",
+			contentType: "application/json; charset=utf-8",
+			dataType: "json",
+
+			success: function (response) {
+                
+				var data = moduleData.common_timeSheet.convertServerDataToTimeSheet_ForEmployee(response);
+                debugger;
+
+                moduleData.data.timeSheetData_set(data);
+                if (success_callBack) success_callBack(data);
+			},
+			error: error_callBack ? () => error_callBack() : () => { }
+		});
+
+
+
         $.ajax({
             type: "Get",
             url: "/api/TimeSheetsAPI/GetTimeSheets",
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             success: (response) => {
-                moduleData.data.timeSheetData_set(response);
-                if (success_callBack) success_callBack(response);
+                debugger;
+                //moduleData.data.timeSheetData_set(response);
+                //if (success_callBack) success_callBack(response);
             },
             error: error_callBack ? () => error_callBack() : () => { }
         });

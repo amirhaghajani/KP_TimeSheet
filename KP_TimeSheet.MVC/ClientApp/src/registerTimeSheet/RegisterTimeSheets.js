@@ -13,6 +13,8 @@ const editWindow=require('./editWorkHour');
 const history_workHour = require('./hisotory_workHour');
 const sendWorkHour = require('./sendWorkHour');
 
+const common_timeSheet = require('../common/timesheet');
+
 const service = require('./service');
 
 
@@ -22,10 +24,12 @@ const service = require('./service');
 
 $(document).ready(function () {
 
+    common.loaderShow();
+
     data.init();
     bottomPage_monthlyGrid.init(data);
     priodlyGrid.init(data);
-    service.init(data);
+    service.init(data, common_timeSheet);
 
     $('#registerTiemSheet_exportToExcel').off().on('click',function(){
         common.doExport('#ktrlTimeSheets', {type: 'excel'});

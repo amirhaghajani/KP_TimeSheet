@@ -55,8 +55,13 @@ const timeSheet = (function () {
         return `${hour}:${minut > 9 ? minut : '0' + minut}`;
     }
 
-    function convertServerDataToTimeSheet_baseInfo(response, createItemForWantApprove) {
+
+
+    function convertServerDataToTimeSheet_ForEmployee(response) {
         const data = [];
+
+        const amaliat = new timeSheet_Row(0, null, "عملیات", "-", "eb96abcb-d37d-4aa1-1000-e1f4a753bee5", []);
+        data.push(amaliat);
 
         const hozoor = new timeSheet_Row(1, null, "حضور", "-", "eb96abcb-d37d-4aa1-1001-e1f4a753bee5", []);
         data.push(hozoor);
@@ -69,7 +74,62 @@ const timeSheet = (function () {
 
         private_addDailyTimes(data, times, projects, 2);
 
-        if (!createItemForWantApprove) return data;
+        const notSendId = data.length + 1
+        const karkard_notSend = new timeSheet_Row(notSendId, null, "ارسال نشده", "-", "eb96abcb-d37d-1001-0000-e1f4a753bee5", []);
+        data.push(karkard_notSend);
+
+
+
+        const projects_notSendByEmployee = [];
+        const times_notSend = private_findTimesAndProjects(response, null, karkard_notSend, projects_notSendByEmployee, "Resource");
+
+        private_addDailyTimes(data, times_notSend, projects_notSendByEmployee, notSendId, true);
+
+
+        const projects_approving = [];
+        const times_approve = private_findTimesAndProjects(response, null, null, projects_approving, "Approving");
+
+        const projects_final = [];
+        const times_final = private_findTimesAndProjects(response, null, null, projects_final, "Final");
+
+        private_addTimesForAmaliat(hozoor, karkard_notSend, karkard, amaliat);
+
+        return data;
+    }
+
+    function private_addTimesForAmaliat(hozoor, noSend, mainKarkard, amalit) {
+
+        const times = [];
+
+        for (let i = 0; i < hozoor.values.length; i++) {
+            const hozoorTodayTime = hozoor.values[i];
+            const nosendTodayTime = noSend.values[i];
+            const mainKarkardTodayTime = noSend.values[i];
+debugger;
+            amalit.values.push({
+                date: hozoorTodayTime.date,
+                persianDate: hozoorTodayTime.persianDate,
+                persianDay: hozoorTodayTime.persianDay,
+                title: hozoorTodayTime.persianDate,
+                value: {isOpen: hozoorTodayTime.isOpen, has_NotSendData: !!nosendTodayTime.minute, hasKarkard: !!mainKarkardTodayTime.minute} 
+            });
+
+        }
+    }
+
+    function convertServerDataToTimeSheet_ForApprove(response) {
+        const data = [];
+
+        const hozoor = new timeSheet_Row(1, null, "حضور", "-", "eb96abcb-d37d-4aa1-1001-e1f4a753bee5", []);
+        data.push(hozoor);
+
+        const karkard = new timeSheet_Row(2, null, "کارکرد", "-", "eb96abcb-d37d-4aa1-1002-e1f4a753bee5", []);
+        data.push(karkard);
+
+        const projects = [];
+        const times = private_findTimesAndProjects(response, hozoor, karkard, projects, null);
+
+        private_addDailyTimes(data, times, projects, 2);
 
         const taeedNashodeId = data.length + 1
         const karkard_notApprove = new timeSheet_Row(taeedNashodeId, null, "تایید نشده", "-", "eb96abcb-d37d-1001-0000-e1f4a753bee5", []);
@@ -85,7 +145,7 @@ const timeSheet = (function () {
 
     function private_addDailyTimes(data, times, projects, parentId, isApprove) {
 
-        if(projects.length==0) return;
+        if (projects.length == 0) return;
 
         const rowProjects = [];
         for (var i = 0; i < projects.length; i++) {
@@ -170,15 +230,15 @@ const timeSheet = (function () {
 
                     if (!wantedState || cWorkout.state == wantedState) {
                         cProject.workouts.push(cWorkout);
-                        if (savedProject.workouts.findIndex(p => p.id == cWorkout.id) == -1) savedProject.workouts.push({ 
-                            id: cWorkout.id, title: cWorkout.title, state: cWorkout.state, hours: cWorkout.hours 
+                        if (savedProject.workouts.findIndex(p => p.id == cWorkout.id) == -1) savedProject.workouts.push({
+                            id: cWorkout.id, title: cWorkout.title, state: cWorkout.state, hours: cWorkout.hours
                         });
                     }
                 }
 
                 if (cProject.workouts.length > 0) {
                     cTime.projects.push(cProject);
-                    if(isNewSavedProject) projects.push(savedProject);
+                    if (isNewSavedProject) projects.push(savedProject);
                 }
 
             }
@@ -188,14 +248,17 @@ const timeSheet = (function () {
                 persianDate: cTime.persianDate,
                 persianDay: cTime.persianDay,
                 title: cTime.persianDate,
-                value: convertNumberToTime(dbTime.hozoor)
+                value: convertNumberToTime(dbTime.hozoor),
+                minute: dbTime.hozoor,
+                isOpen: dbTime.isOpen
             });
-            karkard.values.push({
+            if (karkard) karkard.values.push({
                 date: cTime.date,
                 persianDate: cTime.persianDate,
                 persianDay: cTime.persianDay,
                 title: cTime.persianDate,
-                value: convertNumberToTime(cTime.calcTime())
+                value: convertNumberToTime(cTime.calcTime()),
+                minute: cTime.calcTime()
             });
         }
 
@@ -204,13 +267,15 @@ const timeSheet = (function () {
 
 
     return {
-        convertServerDataToTimeSheet_baseInfo: convertServerDataToTimeSheet_baseInfo,
+        convertServerDataToTimeSheet_ForEmployee: convertServerDataToTimeSheet_ForEmployee,
+        convertServerDataToTimeSheet_ForApprove: convertServerDataToTimeSheet_ForApprove,
         convertNumberToTime: convertNumberToTime
     }
 
 })();
 
 module.exports = {
-    convertServerDataToTimeSheet_baseInfo: timeSheet.convertServerDataToTimeSheet_baseInfo,
+    convertServerDataToTimeSheet_ForEmployee: timeSheet.convertServerDataToTimeSheet_ForEmployee,
+    convertServerDataToTimeSheet_ForApprove: timeSheet.convertServerDataToTimeSheet_ForApprove,
     convertNumberToTime: timeSheet.convertNumberToTime
 };

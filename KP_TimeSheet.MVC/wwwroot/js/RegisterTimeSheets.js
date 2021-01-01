@@ -135,6 +135,288 @@ module.exports = {
 };
 
 },{}],2:[function(require,module,exports){
+
+const timeSheet = (function () {
+
+    function timeSheet_Row(id, parentId, title, type, uid, values) {
+        this.id = id;
+        this.parentId = parentId;
+        this.title = title;
+        this.type = type;
+        this.uid = uid;
+        this.UID = uid;
+        this.uuiidd = uid;
+        this.values = values;
+    }
+
+    function timeSheet_Time(date, persianDate, persianDay, projects) {
+        this.date = date;
+        this.persianDate = persianDate;
+        this.persianDay = persianDay;
+        this.projects = projects;
+    }
+    timeSheet_Time.prototype.calcTime = function () {
+        var sum = 0;
+        for (var i = 0; i < this.projects.length; i++) {
+            sum += this.projects[i].calcTime();
+        }
+        return sum;
+    }
+
+
+    function timeSheet_Prject(id, title, workouts) {
+        this.id = id;
+        this.title = title;
+        this.workouts = workouts;
+    }
+    timeSheet_Prject.prototype.calcTime = function () {
+        var sum = 0;
+        for (var i = 0; i < this.workouts.length; i++) {
+            sum += this.workouts[i].hours;
+        }
+        return sum;
+    }
+
+
+    function timeSheet_Workout(id, title, hours, state) {
+        this.id = id;
+        this.title = title;
+        this.hours = hours;
+        this.state = state;
+    }
+
+    function convertNumberToTime(number) {
+        if (!number) return '0:00';
+        const hour = parseInt(number);
+        const minut = Math.round((number - hour) * 60);
+        return `${hour}:${minut > 9 ? minut : '0' + minut}`;
+    }
+
+
+
+    function convertServerDataToTimeSheet_ForEmployee(response) {
+        const data = [];
+
+        const amaliat = new timeSheet_Row(0, null, "عملیات", "-", "eb96abcb-d37d-4aa1-1000-e1f4a753bee5", []);
+        data.push(amaliat);
+
+        const hozoor = new timeSheet_Row(1, null, "حضور", "-", "eb96abcb-d37d-4aa1-1001-e1f4a753bee5", []);
+        data.push(hozoor);
+
+        const karkard = new timeSheet_Row(2, null, "کارکرد", "-", "eb96abcb-d37d-4aa1-1002-e1f4a753bee5", []);
+        data.push(karkard);
+
+        const projects = [];
+        const times = private_findTimesAndProjects(response, hozoor, karkard, projects, null);
+
+        private_addDailyTimes(data, times, projects, 2);
+
+        const notSendId = data.length + 1
+        const karkard_notSend = new timeSheet_Row(notSendId, null, "ارسال نشده", "-", "eb96abcb-d37d-1001-0000-e1f4a753bee5", []);
+        data.push(karkard_notSend);
+
+
+
+        const projects_notSendByEmployee = [];
+        const times_notSend = private_findTimesAndProjects(response, null, karkard_notSend, projects_notSendByEmployee, "Resource");
+
+        private_addDailyTimes(data, times_notSend, projects_notSendByEmployee, notSendId, true);
+
+
+        const projects_approving = [];
+        const times_approve = private_findTimesAndProjects(response, null, null, projects_approving, "Approving");
+
+        const projects_final = [];
+        const times_final = private_findTimesAndProjects(response, null, null, projects_final, "Final");
+
+        private_addTimesForAmaliat(hozoor, karkard_notSend, karkard, amaliat);
+
+        return data;
+    }
+
+    function private_addTimesForAmaliat(hozoor, noSend, mainKarkard, amalit) {
+
+        const times = [];
+
+        for (let i = 0; i < hozoor.values.length; i++) {
+            const hozoorTodayTime = hozoor.values[i];
+            const nosendTodayTime = noSend.values[i];
+            const mainKarkardTodayTime = noSend.values[i];
+debugger;
+            amalit.values.push({
+                date: hozoorTodayTime.date,
+                persianDate: hozoorTodayTime.persianDate,
+                persianDay: hozoorTodayTime.persianDay,
+                title: hozoorTodayTime.persianDate,
+                value: {isOpen: hozoorTodayTime.isOpen, has_NotSendData: !!nosendTodayTime.minute, hasKarkard: !!mainKarkardTodayTime.minute} 
+            });
+
+        }
+    }
+
+    function convertServerDataToTimeSheet_ForApprove(response) {
+        const data = [];
+
+        const hozoor = new timeSheet_Row(1, null, "حضور", "-", "eb96abcb-d37d-4aa1-1001-e1f4a753bee5", []);
+        data.push(hozoor);
+
+        const karkard = new timeSheet_Row(2, null, "کارکرد", "-", "eb96abcb-d37d-4aa1-1002-e1f4a753bee5", []);
+        data.push(karkard);
+
+        const projects = [];
+        const times = private_findTimesAndProjects(response, hozoor, karkard, projects, null);
+
+        private_addDailyTimes(data, times, projects, 2);
+
+        const taeedNashodeId = data.length + 1
+        const karkard_notApprove = new timeSheet_Row(taeedNashodeId, null, "تایید نشده", "-", "eb96abcb-d37d-1001-0000-e1f4a753bee5", []);
+        data.push(karkard_notApprove);
+
+        const projects_notApprove = [];
+        const times_notApprove = private_findTimesAndProjects(response, null, karkard_notApprove, projects_notApprove, "TaskNotApprove");
+
+        private_addDailyTimes(data, times_notApprove, projects_notApprove, taeedNashodeId, true);
+
+        return data;
+    }
+
+    function private_addDailyTimes(data, times, projects, parentId, isApprove) {
+
+        if (projects.length == 0) return;
+
+        const rowProjects = [];
+        for (var i = 0; i < projects.length; i++) {
+            const proj = projects[i];
+            const pId = data.length + 1;
+            var p = new timeSheet_Row(pId, parentId, proj.title, "Project", proj.id, []);
+            data.push(p);
+            rowProjects.push(p);
+
+            p.workouts = [];
+
+            for (var j = 0; j < proj.workouts.length; j++) {
+                const workout = proj.workouts[j];
+                var w = new timeSheet_Row(data.length + 1, pId, workout.title, isApprove ? workout.state : "Workout", workout.id, []);
+                data.push(w);
+                p.workouts.push(w)
+            }
+        }
+
+        times.forEach(t => {
+
+            rowProjects.forEach(r => {
+
+                var i = t.projects.findIndex(p => r.uid == p.id);
+
+                var newItem = {
+                    date: t.date,
+                    persianDate: t.persianDate,
+                    title: t.persianDate,
+                    value: convertNumberToTime(0)
+                };
+                r.workouts.forEach(w => {
+                    const newItemForW = { ...newItem };
+                    w.values.push(newItemForW);
+
+                    if (i > -1) {
+                        var wwIndex = t.projects[i].workouts.findIndex(ww => ww.id == w.uid);
+                        if (wwIndex > -1) newItemForW.value = convertNumberToTime(t.projects[i].workouts[wwIndex].hours);
+                    }
+
+                })
+
+                if (i > -1) {
+                    newItem.value = convertNumberToTime(t.projects[i].calcTime());
+                }
+
+                r.values.push(newItem);
+
+            });
+        });
+    }
+
+
+
+    function private_findTimesAndProjects(response, hozoor, karkard, projects, wantedState) {
+
+        const times = [];
+
+        for (let i = 0; i < response.length; i++) {
+            const dbTime = response[i];
+            const cTime = new timeSheet_Time(dbTime.date, dbTime.date_persian, dbTime.day_persian, []);
+            times.push(cTime);
+
+            for (let j = 0; j < dbTime.projects.length; j++) {
+                const dbProject = dbTime.projects[j];
+                const cProject = new timeSheet_Prject(dbProject.id, dbProject.title, []);
+
+
+                let pIndex = projects.findIndex(p => p.id == cProject.id);
+                let savedProject;
+                let isNewSavedProject = false;
+                if (pIndex == -1) {
+                    savedProject = { id: cProject.id, title: cProject.title, workouts: [] };
+                    isNewSavedProject = true;
+                } else {
+                    savedProject = projects[pIndex];
+                }
+
+                for (let k = 0; k < dbProject.workouts.length; k++) {
+                    const dbWorkout = dbProject.workouts[k];
+                    const cWorkout = new timeSheet_Workout(dbWorkout.id, dbWorkout.title, dbWorkout.hours, dbWorkout.state);
+
+                    if (!wantedState || cWorkout.state == wantedState) {
+                        cProject.workouts.push(cWorkout);
+                        if (savedProject.workouts.findIndex(p => p.id == cWorkout.id) == -1) savedProject.workouts.push({
+                            id: cWorkout.id, title: cWorkout.title, state: cWorkout.state, hours: cWorkout.hours
+                        });
+                    }
+                }
+
+                if (cProject.workouts.length > 0) {
+                    cTime.projects.push(cProject);
+                    if (isNewSavedProject) projects.push(savedProject);
+                }
+
+            }
+
+            if (hozoor) hozoor.values.push({
+                date: cTime.date,
+                persianDate: cTime.persianDate,
+                persianDay: cTime.persianDay,
+                title: cTime.persianDate,
+                value: convertNumberToTime(dbTime.hozoor),
+                minute: dbTime.hozoor,
+                isOpen: dbTime.isOpen
+            });
+            if (karkard) karkard.values.push({
+                date: cTime.date,
+                persianDate: cTime.persianDate,
+                persianDay: cTime.persianDay,
+                title: cTime.persianDate,
+                value: convertNumberToTime(cTime.calcTime()),
+                minute: cTime.calcTime()
+            });
+        }
+
+        return times;
+    }
+
+
+    return {
+        convertServerDataToTimeSheet_ForEmployee: convertServerDataToTimeSheet_ForEmployee,
+        convertServerDataToTimeSheet_ForApprove: convertServerDataToTimeSheet_ForApprove,
+        convertNumberToTime: convertNumberToTime
+    }
+
+})();
+
+module.exports = {
+    convertServerDataToTimeSheet_ForEmployee: timeSheet.convertServerDataToTimeSheet_ForEmployee,
+    convertServerDataToTimeSheet_ForApprove: timeSheet.convertServerDataToTimeSheet_ForApprove,
+    convertNumberToTime: timeSheet.convertNumberToTime
+};
+},{}],3:[function(require,module,exports){
 const common = require('../common/common');
 const common_register = require('./common');
 const data = require('./data');
@@ -150,6 +432,8 @@ const editWindow=require('./editWorkHour');
 const history_workHour = require('./hisotory_workHour');
 const sendWorkHour = require('./sendWorkHour');
 
+const common_timeSheet = require('../common/timesheet');
+
 const service = require('./service');
 
 
@@ -159,10 +443,12 @@ const service = require('./service');
 
 $(document).ready(function () {
 
+    common.loaderShow();
+
     data.init();
     bottomPage_monthlyGrid.init(data);
     priodlyGrid.init(data);
-    service.init(data);
+    service.init(data, common_timeSheet);
 
     $('#registerTiemSheet_exportToExcel').off().on('click',function(){
         common.doExport('#ktrlTimeSheets', {type: 'excel'});
@@ -229,7 +515,7 @@ function exportTableToExcel(tableID, filename ){
 
 
 
-},{"../common/common":1,"./bottomPage_monthlyGrid":3,"./bottomPage_priodlyGrid":4,"./common":5,"./createNewWorkHour":6,"./data":7,"./editWorkHour":8,"./hisotory_workHour":9,"./history_sentWorkHour":10,"./mainGrid":11,"./period_next_pervious":12,"./sendWorkHour":13,"./service":14}],3:[function(require,module,exports){
+},{"../common/common":1,"../common/timesheet":2,"./bottomPage_monthlyGrid":4,"./bottomPage_priodlyGrid":5,"./common":6,"./createNewWorkHour":7,"./data":8,"./editWorkHour":9,"./hisotory_workHour":10,"./history_sentWorkHour":11,"./mainGrid":12,"./period_next_pervious":13,"./sendWorkHour":14,"./service":15}],4:[function(require,module,exports){
 //const data = require('./data');
 
 //___________جدول پایین صفحه ماهانه
@@ -317,7 +603,7 @@ module.exports ={
     init: monthlyGrid.init
     
 }
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 //const data = require('./data');
 //___________________دوره جاری جدول پایین صفحه 
 
@@ -405,7 +691,7 @@ module.exports = {
     'InitPeriodlyByProjectsGrid': priodGrid.InitPeriodlyByProjectsGrid,
     init:priodGrid.init
 };
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 
 
 function removeAndRecreateTreelisDiv() {
@@ -417,7 +703,7 @@ function removeAndRecreateTreelisDiv() {
 module.exports={
     'removeAndRecreateTreelisDiv':removeAndRecreateTreelisDiv
 }
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 // const common = require('../common/common');
 // const common_register = require('./common');
 // const data = require('./data');
@@ -642,7 +928,7 @@ module.exports={
     'kwndSaveWHs_OnInit':module_createNewRorkHour.kwndSaveWHs_OnInit,
     'init':module_createNewRorkHour.init
 }
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 const dataM = (function () {
 
     const moduleData = {};
@@ -693,7 +979,7 @@ module.exports = {
     'dayIndex_get': function () { return dataM.moduleData._DayIndex; },
     'dayIndex_set': function (data) { dataM.moduleData._DayIndex = data; },
 }
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 // const data = require('./data');
 // const common_register = require('./common');
 
@@ -880,7 +1166,7 @@ module.exports = {
 	'init': editWorkHour.init,
 	'Refresh_GrdEditWorkHour': editWorkHour.Refresh_GrdEditWorkHour
 }
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 //const data = require('./data');
 
 //_________________________________________ناریخچه___________________________________
@@ -999,7 +1285,7 @@ module.exports = {
 	'init':historyWorkHour.init,
 	'Init_GRDHistory': historyWorkHour.Init_GRDHistory
 }
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 // const common = require('../common/common');
 // const data = require('./data');
 // const hisotory_workHour=require('./hisotory_workHour');
@@ -1202,7 +1488,7 @@ module.exports = {
 	'ShowCurrentDaySendWorkHours': hisotrSentWorkHour.ShowCurrentDaySendWorkHours
 }
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 // const data = require('./data');
 // const saveWindow = require('./createNewWorkHour');
 // const history_sentWorkHour = require('./history_sentWorkHour');
@@ -1233,16 +1519,23 @@ const myMainGrid = (function () {
     this.filterable = false;
   };
 
+
+  //________________ جهت باز سازی TreeList اصلی
+
+  function RefreshTimeSheet() {
+    GetTimeSheets(()=>{
+      moduleData.common_register.removeAndRecreateTreelisDiv();
+      moduleData.common.loaderHide();
+    });
+  }
+  //----------
+
   function GetTimeSheets(callBackFn) {
 
     moduleData.service.getTimeSheets((response) => {
       if (callBackFn) callBackFn(response);
-      ktrlTimeSheets_OnInit();
+      Init_TimeSheetTreeList();
     });
-  }
-
-  function ktrlTimeSheets_OnInit() {
-    Init_TimeSheetTreeList();
   }
 
   function Init_TimeSheetTreeList() {
@@ -1266,11 +1559,14 @@ const myMainGrid = (function () {
         }
       },
       height: 400,
+      width: 'auto',
       columns: ktrlTSColumns,
       scrollable: true,
       selectable: true,
       dataBound: ktrlTimeSheets_DataBound
     });
+
+    //تول تیپ درست کار نمی کرد برداشتم. جاش را اشتباه نشان می داد
 
     // var tooltip = $("#ktrlTimeSheets").kendoTooltip({
     //   filter: 'td',
@@ -1326,45 +1622,50 @@ const myMainGrid = (function () {
     colTitle.title = "عنوان";
     colTitle.hidden = false,
 
-      colTitle.width = 150;
+      colTitle.width = 240;
     columns.push(colTitle);
 
+    debugger;
     for (var i = 0; i < response[0].values.length; i++) {
 
       var tsDate = response[0].values[i];
       var colDate = new KTRColumn();
-      colDate.field = "values[" + i + "].value";
+      //colDate.field = "values[" + i + "].value";
+      colDate.template="#= type=='Defference' ? '<span title=\"تایید شده\">1:00</span> | <span title=\"برگشت شده\">2:00</span>' :  (values[ "+i+" ].value) #";
       colDate.format = "";
       colDate.title = tsDate.title;
-      colDate.headerTemplate = "<h6><b>" + tsDate.persianDate + "</b></h6><h6>" + tsDate.persianDay + "</h6>";
+      colDate.headerTemplate = "<h6 style='text-align:center'><b>" + tsDate.persianDate + "</b></h6><h6 style='text-align:center'>" + tsDate.persianDay + "</h6>";
 
 
       var inner = tsDate.value;
-      if (inner == "False False") {
-        colDate.headerTemplate += "<label title=' ' class='text-warning' ><i class='glyphicon glyphicon-ban-circle'></i> </label>"
+      if (!inner.isOpen && !inner.has_NotSendData && !inner.hasKarkard) {
+        colDate.headerTemplate += "<div style='text-align:center'><label title=' ' class='text-warning' ><i class='glyphicon glyphicon-ban-circle'></i> </label>"
       }
 
-      if (inner == "True False" || inner == "True True") {
+      if (inner.isOpen) {
 
-        colDate.headerTemplate += `<button title='ثبت ساعت کارکرد' 
+        colDate.headerTemplate += `<div style='text-align:center'><button title='ثبت ساعت کارکرد' 
                           class='btn btn-success btn-xs forFound_kwndSaveWHs_OnInit' style='width:10px;height:15px'
                           data-day-index='${i}'>+</button>`;
+      }
+      if (inner.hasKarkard) {
 
         colDate.headerTemplate += `<button title='نمایش کارکردهای این روز'   
-              class='btn btn-info btn-xs forFound_ShowCurrentDaySendWorkHours' style='width:10px;height:15px;margin-right:10px;' 
-              data-day-index='${i}'><i class='fa fa-tv'></i></button>`;
+              class='btn btn-info btn-xs forFound_ShowCurrentDaySendWorkHours' style='width:10px;height:15px;margin-right:5px;' 
+              data-day-index='${i}'><i class="glyphicon glyphicon-exclamation-sign"></i></button>`;
       }
 
-      if (inner == "True True") {
+      if (inner.has_NotSendData) {
 
         colDate.headerTemplate += `<button title='ارسال ساعت کارکرد'
-              class='btn btn-warning btn-xs forFound_wndSendWorkHour_OnInit' style='width:10px;height:15px;margin-right:10px;'
+              class='btn btn-warning btn-xs forFound_wndSendWorkHour_OnInit' style='width:10px;height:15px;margin-right:5px;'
               data-day-index='${i}'><b>↑</b></button>`;
 
       }
+      colDate.headerTemplate +="</div>";
 
       colDate.hidden = false;
-      colDate.width = 50;
+      colDate.width = 100;
       columns.push(colDate);
     }
 
@@ -1390,32 +1691,7 @@ const myMainGrid = (function () {
   }
 
 
-  //________________ جهت باز سازی TreeList اصلی
-
-
-
-  function RefreshTimeSheet() {
-    $.ajax({
-      type: "Get",
-      url: "/api/TimeSheetsAPI/GetTimeSheets",
-      contentType: "application/json; charset=utf-8",
-      dataType: "json",
-      success: ktrlTimeSheets_OnRefresh,
-      error: function (e) {
-
-      }
-    });
-  }
-
-
-  function ktrlTimeSheets_OnRefresh(response) {
-
-    moduleData.data.timeSheetData_set(response);
-    moduleData.common_register.removeAndRecreateTreelisDiv();
-    Init_TimeSheetTreeList();
-    //$("#ktrlTimeSheets").data("kendoTreeList").dataSource.read();
-    moduleData.common.loaderHide();
-  }
+  
 
   return {
     GetTimeSheets: GetTimeSheets,
@@ -1439,7 +1715,7 @@ module.exports = {
   'init': myMainGrid.init
 
 };
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 // const common_register = require('./common');
 // const common = require('../common/common');
 // const data = require('./data');
@@ -1700,7 +1976,7 @@ module.exports = {
     "init": period_next_pervious.init,
     "GetCurrentPeriod":  period_next_pervious.GetCurrentPeriod
 }
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 // const common_register = require('./common');
 // const data = require('./data');
 
@@ -2046,27 +2322,49 @@ module.exports = {
 	init: sendWorkHour.init
 };
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 
 var service = (function () {
 
     const moduleData = {};
 
-    function init(data) {
+    function init(data, common_timeSheet) {
         moduleData.data = data;
+        moduleData.common_timeSheet = common_timeSheet;
     }
 
 
     //اون اول اطلاعات کل تایم شیت ها را می دهد
     function getTimeSheets(success_callBack, error_callBack) {
+
+        $.ajax({
+			type: "Get",
+			url: "/api/Confirm/employee",
+			contentType: "application/json; charset=utf-8",
+			dataType: "json",
+
+			success: function (response) {
+                
+				var data = moduleData.common_timeSheet.convertServerDataToTimeSheet_ForEmployee(response);
+                debugger;
+
+                moduleData.data.timeSheetData_set(data);
+                if (success_callBack) success_callBack(data);
+			},
+			error: error_callBack ? () => error_callBack() : () => { }
+		});
+
+
+
         $.ajax({
             type: "Get",
             url: "/api/TimeSheetsAPI/GetTimeSheets",
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             success: (response) => {
-                moduleData.data.timeSheetData_set(response);
-                if (success_callBack) success_callBack(response);
+                debugger;
+                //moduleData.data.timeSheetData_set(response);
+                //if (success_callBack) success_callBack(response);
             },
             error: error_callBack ? () => error_callBack() : () => { }
         });
@@ -2102,4 +2400,4 @@ module.exports = {
     getTimeSheets: service.getTimeSheets,
     saveWorkHours: service.saveWorkHours
 }
-},{}]},{},[2]);
+},{}]},{},[3]);

@@ -2,7 +2,7 @@ using System;
 
 namespace KP.TimeSheets.Persistance.QueryEntities
 {
-    public class FoundConfirmTimeSheet
+    public class EmployeeTimeSheetFromDB
     {
         public Guid? TaskId { get; set; }
         public DateTime? Date { get; set; }
@@ -14,6 +14,7 @@ namespace KP.TimeSheets.Persistance.QueryEntities
         public double? Hozoor { get; set; }
         public string Title { get; set; }
         public string State { get; set; }
+        public bool? IsOpen{get;set;}
     }
 
 }

@@ -46,6 +46,12 @@ namespace KP.TimeSheets.Domain
         /// </summary>
         public string OutTime { get; set; }
 
+        public string DateName {get;set;}
+        public bool? IsFriday{get;set;}
+        public int? IsOffWork{get;set;}
+
+        public string DayTimeString{get;set;}
+
         #endregion
 
     }

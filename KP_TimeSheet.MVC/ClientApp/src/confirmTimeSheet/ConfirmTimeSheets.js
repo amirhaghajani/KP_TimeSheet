@@ -4,9 +4,6 @@ const dataService = require('./data');
 const common_timeSheet = require('../common/timesheet');
 
 
-
-
-
 function KTRColumnConfirm() {
 	this.field = "";
 	this.title = "";
@@ -343,11 +340,9 @@ function ApproveTask(id, index) {
 		id: id,
 	};
 
-	debugger;
 	var prmData = JSON.stringify(data);
 
 	service.approveWorkHour(prmData, (response) => {
-		debugger;
 		GetCurrentPeriodconfirm();
 		if (response && response.message) common.notify(response.message, "success");
 	});

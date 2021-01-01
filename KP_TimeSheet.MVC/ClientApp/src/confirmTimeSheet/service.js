@@ -50,7 +50,7 @@ const service = (function () {
 
 			success: function (response) {
 
-				var data = moduleData.common_timeSheet.convertServerDataToTimeSheet_baseInfo(response, true);
+				var data = moduleData.common_timeSheet.convertServerDataToTimeSheet_ForApprove(response);
 
 				moduleData.data.timeSheetDataConfirm_set(data);
 
@@ -167,7 +167,7 @@ const service = (function () {
 			dataType: "json",
 			success: (response) => {
 
-				var data = moduleData.common_timeSheet.convertServerDataToTimeSheet_baseInfo(response, true);
+				var data = moduleData.common_timeSheet.convertServerDataToTimeSheet_ForApprove(response);
 
 				moduleData.data.timeSheetDataConfirm_set(data);
 				if (success_callBack) success_callBack(data);
@@ -184,7 +184,7 @@ const service = (function () {
 			dataType: "json",
 			data: prmData,
 			success: (response) => {
-				var data = moduleData.common_timeSheet.convertServerDataToTimeSheet_baseInfo(response, true);
+				var data = moduleData.common_timeSheet.convertServerDataToTimeSheet_ForApprove(response);
 
 				moduleData.data.timeSheetDataConfirm_set(data);
 				if (success_callBack) success_callBack(data);
@@ -208,7 +208,7 @@ const service = (function () {
 			dataType: "json",
 			success: (response) => {
 
-				var data = moduleData.common_timeSheet.convertServerDataToTimeSheet_baseInfo(response, true);
+				var data = moduleData.common_timeSheet.convertServerDataToTimeSheet_ForApprove(response);
 
 				moduleData.data.timeSheetDataConfirm_set(data);
 				if (success_callBack) success_callBack(data);
