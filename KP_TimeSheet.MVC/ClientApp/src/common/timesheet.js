@@ -66,13 +66,19 @@ const timeSheet = (function () {
         const hozoor = new timeSheet_Row(1, null, "حضور", "-", "eb96abcb-d37d-4aa1-1001-e1f4a753bee5", []);
         data.push(hozoor);
 
-        const karkard = new timeSheet_Row(2, null, "کارکرد", "-", "eb96abcb-d37d-4aa1-1002-e1f4a753bee5", []);
+        const hozoorDetail = new timeSheet_Row(2, 1, "جزئیات", "-", "eb96abcb-d37d-4aa1-1002-e1f4a753bee5", []);
+        data.push(hozoorDetail);
+
+        const karkard = new timeSheet_Row(3, null, "کارکرد", "-", "eb96abcb-d37d-4aa1-1003-e1f4a753bee5", []);
         data.push(karkard);
 
-        const projects = [];
-        const times = private_findTimesAndProjects(response, hozoor, karkard, projects, null);
+        const diffHozoorKarkard = new timeSheet_Row(4, null, "اختلاف حضور و کارکرد", "-", "eb96abcb-d37d-4aa1-1004-e1f4a753bee5", []);
+        data.push(diffHozoorKarkard);
 
-        private_addDailyTimes(data, times, projects, 2);
+        const projects = [];
+        const times = private_findTimesAndProjects(response, hozoor, hozoorDetail, karkard, diffHozoorKarkard, projects, null);
+
+        private_addProjectsAndTasksTimes(data, times, projects, 3);
 
         const notSendId = data.length + 1
         const karkard_notSend = new timeSheet_Row(notSendId, null, "ارسال نشده", "-", "eb96abcb-d37d-1001-0000-e1f4a753bee5", []);
@@ -81,16 +87,16 @@ const timeSheet = (function () {
 
 
         const projects_notSendByEmployee = [];
-        const times_notSend = private_findTimesAndProjects(response, null, karkard_notSend, projects_notSendByEmployee, "Resource");
+        const times_notSend = private_findTimesAndProjects(response, null, null, karkard_notSend,null, projects_notSendByEmployee, "Resource");
 
-        private_addDailyTimes(data, times_notSend, projects_notSendByEmployee, notSendId, true);
+        private_addProjectsAndTasksTimes(data, times_notSend, projects_notSendByEmployee, notSendId, true);
 
 
         const projects_approving = [];
-        const times_approve = private_findTimesAndProjects(response, null, null, projects_approving, "Approving");
+        const times_approve = private_findTimesAndProjects(response, null, null, null, null, projects_approving, "Approving");
 
         const projects_final = [];
-        const times_final = private_findTimesAndProjects(response, null, null, projects_final, "Final");
+        const times_final = private_findTimesAndProjects(response, null, null, null, null, projects_final, "Final");
 
         private_addTimesForAmaliat(hozoor, karkard_notSend, karkard, amaliat);
 
@@ -104,8 +110,8 @@ const timeSheet = (function () {
         for (let i = 0; i < hozoor.values.length; i++) {
             const hozoorTodayTime = hozoor.values[i];
             const nosendTodayTime = noSend.values[i];
-            const mainKarkardTodayTime = noSend.values[i];
-debugger;
+            const mainKarkardTodayTime = mainKarkard.values[i];
+
             amalit.values.push({
                 date: hozoorTodayTime.date,
                 persianDate: hozoorTodayTime.persianDate,
@@ -115,35 +121,40 @@ debugger;
             });
 
         }
+
+        
     }
 
     function convertServerDataToTimeSheet_ForApprove(response) {
         const data = [];
 
-        const hozoor = new timeSheet_Row(1, null, "حضور", "-", "eb96abcb-d37d-4aa1-1001-e1f4a753bee5", []);
+        const hozoor = new timeSheet_Row(1, null, "حضور", "-", "eb96abcb-d37d-4aa1-1000-e1f4a753bee5", []);
         data.push(hozoor);
 
-        const karkard = new timeSheet_Row(2, null, "کارکرد", "-", "eb96abcb-d37d-4aa1-1002-e1f4a753bee5", []);
+        const hozoorDetail = new timeSheet_Row(2, 1, "جزئیات", "-", "eb96abcb-d37d-4aa1-1001-e1f4a753bee5", []);
+        data.push(hozoorDetail);
+
+        const karkard = new timeSheet_Row(3, null, "کارکرد", "-", "eb96abcb-d37d-4aa1-1002-e1f4a753bee5", []);
         data.push(karkard);
 
         const projects = [];
-        const times = private_findTimesAndProjects(response, hozoor, karkard, projects, null);
+        const times = private_findTimesAndProjects(response, hozoor, hozoorDetail, karkard,null, projects, null);
 
-        private_addDailyTimes(data, times, projects, 2);
+        private_addProjectsAndTasksTimes(data, times, projects, 3);
 
         const taeedNashodeId = data.length + 1
         const karkard_notApprove = new timeSheet_Row(taeedNashodeId, null, "تایید نشده", "-", "eb96abcb-d37d-1001-0000-e1f4a753bee5", []);
         data.push(karkard_notApprove);
 
         const projects_notApprove = [];
-        const times_notApprove = private_findTimesAndProjects(response, null, karkard_notApprove, projects_notApprove, "TaskNotApprove");
+        const times_notApprove = private_findTimesAndProjects(response, null, null, karkard_notApprove,null, projects_notApprove, "TaskNotApprove");
 
-        private_addDailyTimes(data, times_notApprove, projects_notApprove, taeedNashodeId, true);
+        private_addProjectsAndTasksTimes(data, times_notApprove, projects_notApprove, taeedNashodeId, true);
 
         return data;
     }
 
-    function private_addDailyTimes(data, times, projects, parentId, isApprove) {
+    function private_addProjectsAndTasksTimes(data, times, projects, parentId, isApprove) {
 
         if (projects.length == 0) return;
 
@@ -200,7 +211,7 @@ debugger;
 
 
 
-    function private_findTimesAndProjects(response, hozoor, karkard, projects, wantedState) {
+    function private_findTimesAndProjects(response, hozoor, hozoorDetail, karkard, diffHozoorKarkard, projects, wantedState) {
 
         const times = [];
 
@@ -252,6 +263,13 @@ debugger;
                 minute: dbTime.hozoor,
                 isOpen: dbTime.isOpen
             });
+            if (hozoorDetail) hozoorDetail.values.push({
+                date: cTime.date,
+                persianDate: cTime.persianDate,
+                persianDay: cTime.persianDay,
+                title: cTime.persianDate,
+                value: dbTime.dayTimeString ? dbTime.dayTimeString : '-',
+            });
             if (karkard) karkard.values.push({
                 date: cTime.date,
                 persianDate: cTime.persianDate,
@@ -259,6 +277,14 @@ debugger;
                 title: cTime.persianDate,
                 value: convertNumberToTime(cTime.calcTime()),
                 minute: cTime.calcTime()
+            });
+            if(diffHozoorKarkard) diffHozoorKarkard.values.push({
+                date: cTime.date,
+                persianDate: cTime.persianDate,
+                persianDay: cTime.persianDay,
+                title: cTime.persianDate,
+                value: convertNumberToTime(dbTime.hozoor - cTime.calcTime()),
+                minute: dbTime.hozoor - cTime.calcTime()
             });
         }
 

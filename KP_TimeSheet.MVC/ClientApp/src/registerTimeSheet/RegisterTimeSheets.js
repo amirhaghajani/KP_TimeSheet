@@ -44,8 +44,9 @@ $(document).ready(function () {
         priodlyGrid.InitPeriodlyByProjectsGrid();
         bottomPage_monthlyGrid.InitMonthlyByProjectsGrid();
         common.loaderHide();
+        
         period_next_pervious.init(common, common_register,mainGrid,
-            bottomPage_monthlyGrid,history_sentWorkHour, priodlyGrid,editWindow, data);
+            bottomPage_monthlyGrid,history_sentWorkHour, priodlyGrid,editWindow, data, service);
             
         editWindow.init(mainGrid, common, common_register,data);
         

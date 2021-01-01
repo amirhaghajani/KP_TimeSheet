@@ -215,19 +215,6 @@ const service = (function () {
 			},
 			error: error_callBack ? () => error_callBack() : () => { }
 		});
-
-		// $.ajax({
-		// 	type: "Post",
-		// 	url: "/api/TimeSheetsAPI/GetPreviousPeriodConfirm",
-		// 	contentType: "application/json; charset=utf-8",
-		// 	dataType: "json",
-		// 	data: prmData,
-		// 	success: (response) => {
-		// 		moduleData.data.timeSheetDataConfirm_set(response);
-		// 		if (success_callBack) success_callBack(response);
-		// 	},
-		// 	error: error_callBack ? () => error_callBack() : () => { }
-		// });
 	}
 
 	function getCurrentPeriodConfirm(prmData, success_callBack, error_callBack) {

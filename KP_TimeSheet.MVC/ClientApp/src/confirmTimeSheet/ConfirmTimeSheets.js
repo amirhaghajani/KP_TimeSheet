@@ -66,7 +66,6 @@ $("#numberDaysconfirm").keyup(function () {
 
 function WNDSelectPeriod_OnInit() {
 
-
 	var kwndSendWHs = $("#kwndSelectTimePeriodConfirm");
 	kwndSendWHs.kendoWindow({
 		width: "600px",
@@ -122,24 +121,25 @@ function WndDeny_OnClose() {
 
 function RefreshTimeSheetConfirm() {
 	common.loaderShow();
-	dataService.userId_set($("#kddlUsers").data("kendoDropDownList").dataItem($("#kddlUsers").data("kendoDropDownList").select()).id);
-	var json = {
-		userid: dataService.userId_get(),
-		values: dataService.timeSheetDataConfirm_get()[0].values
-	};
 
-	var prmData = JSON.stringify(json);
+	service.getTimeSheetsByUserIdForFirstTime((response) => {
 
-	service.getTimeSheetsByUserId(prmData, (response) => {
-		removeAndRecreateTreelisConfirmDiv();
-		Init_TimeSheetTreeListConfirm(response);
+		private_Refresh(response);
+		
+	});
 
-		common.loaderHide();
-	}, () => {
-		alert("Error");
-		common.loaderHide();
-	})
+}
 
+function private_Refresh(response){
+	removeAndRecreateTreelisConfirmDiv();
+
+	Init_TimeSheetTreeListConfirm(response);
+	InitMonthlyByProjectsGridConfirm();
+	InitPeriodlyByProjectsGridConfirm();
+	$("#DownSideTabsConfirm").show();
+	$("#PeriodPanle").show();
+	$("#ExportNavConfirm").show();
+	common.loaderHide();
 }
 
 function removeAndRecreateTreelisConfirmDiv() {
@@ -180,18 +180,7 @@ function kddlUsers_OnChange(e) {
 
 	if (dataService.userId_get() != "") {
 
-		service.getTimeSheetsByUserIdForFirstTime((response) => {
-
-			removeAndRecreateTreelisConfirmDiv();
-
-			Init_TimeSheetTreeListConfirm(response);
-			InitMonthlyByProjectsGridConfirm();
-			InitPeriodlyByProjectsGridConfirm();
-			$("#DownSideTabsConfirm").show();
-			$("#PeriodPanle").show();
-			$("#ExportNavConfirm").show();
-			common.loaderHide();
-		})
+		RefreshTimeSheetConfirm();
 
 	} else {
 		common.loaderHide();
@@ -292,9 +281,9 @@ function TreeListTemplateColumn(dataItem, index) {
 		if (dataItem.values[index].value != "0:00" && dataItem.type == "TaskNotApprove" && dataItem.values[index].value != "") {
 			return dataItem.values[index].value +
 				`<button title='تایید کارکرد' data-uid='${dataItem.uuiidd}' data-index='${index}' 
-				 class='pull-left btn btn-success btn-xs forFound_ApproveTask' style='margin-right:5px'><i class='fa fa-check-square'></i></button>` +
+				 class='pull-left btn btn-success btn-xs forFound_ApproveTask' style='margin-right:5px;padding: 4px 4px 0;'><i class='glyphicon glyphicon-ok'></i></button>` +
 				`<button title='رد کارکرد' data-uid='${dataItem.uuiidd}' data-index='${index}' 
-				 class='pull-left btn btn-warning btn-xs forFound_DenyTask' style='margin-left:5px'><i class='fa fa-times'></i></button>`;
+				 class='pull-left btn btn-warning btn-xs forFound_DenyTask' style='margin-left:5px;padding: 4px 4px 0;'><i class='glyphicon glyphicon-remove'></i></button>`;
 		}
 		else {
 			if (dataItem.values[index].value == "0:00") {
@@ -380,9 +369,18 @@ function DenyTask(id, index) {
 	dataService.selectedTaskIdForDeny_set(id);
 	dataService.selectedIndexDorDeny_set(index);
 	WndDeny_OnOpen()
-
-
 }
+
+
+function GetCurrentPeriodconfirm() {
+
+	common.loaderShow();
+
+	debugger;
+
+	RefreshTimeSheetConfirm();
+}
+
 
 function InitMonthlyByProjectsGridConfirm() {
 
@@ -479,12 +477,7 @@ function btnSendPeriodsconfirm_Onclick() {
 
 		service.changeDisplayPeriodToWeeklyConfirm((response) => {
 
-			removeAndRecreateTreelisConfirmDiv();
-			Init_TimeSheetTreeListConfirm(response);
-			InitMonthlyByProjectsGridConfirm();
-			InitPeriodlyByProjectsGridConfirm();
-
-			common.loaderHide();
+			private_Refresh(response);
 		});
 
 	}
@@ -498,11 +491,7 @@ function btnSendPeriodsconfirm_Onclick() {
 
 		var prmData = JSON.stringify(PeriodJson);
 		service.getTimeSheetsByDateAndNumberOfDayConfirm(prmData, (response) => {
-			removeAndRecreateTreelisConfirmDiv();
-			Init_TimeSheetTreeListConfirm(response);
-			InitMonthlyByProjectsGridConfirm();
-			InitPeriodlyByProjectsGridConfirm();
-			common.loaderHide();
+			private_Refresh(response);
 		});
 	}
 
@@ -510,8 +499,6 @@ function btnSendPeriodsconfirm_Onclick() {
 
 function GetPreviousNextPeriodconfirm(type) {
 	common.loaderShow();
-
-	debugger;
 
 	dataService.userId_set($("#kddlUsers").data("kendoDropDownList").dataItem($("#kddlUsers").data("kendoDropDownList").select()).id);
 
@@ -525,48 +512,9 @@ function GetPreviousNextPeriodconfirm(type) {
 		endDate = firstData.values[firstData.values.length - 1].date;
 	}
 
-
-
 	service.getPreviousNextPeriodConfirm(dataService.userId_get(), startDate, endDate, (response) => {
-		removeAndRecreateTreelisConfirmDiv();
-		Init_TimeSheetTreeListConfirm(response);
-		InitMonthlyByProjectsGridConfirm();
-		InitPeriodlyByProjectsGridConfirm();
-
-		common.loaderHide();
+		private_Refresh(response);
 	});
-
-}
-
-function GetCurrentPeriodconfirm() {
-	debugger;
-
-	common.loaderShow();
-
-	dataService.userId_set($("#kddlUsers").data("kendoDropDownList").dataItem($("#kddlUsers").data("kendoDropDownList").select()).id);
-	dataService.timeSheetDataConfirm_get()[0].values[0].UserId = dataService.userId_get();
-	var prmData = JSON.stringify(dataService.timeSheetDataConfirm_get()[0].values);
-
-	// service.getCurrentPeriodConfirm(prmData, (response) => {
-	// 	removeAndRecreateTreelisConfirmDiv();
-	// 	Init_TimeSheetTreeListConfirm(response);
-	// 	InitMonthlyByProjectsGridConfirm();
-	// 	InitPeriodlyByProjectsGridConfirm();
-
-	// 	common.loaderHide();
-	// });
-
-	service.getTimeSheetsByUserIdForFirstTime((response) => {
-		removeAndRecreateTreelisConfirmDiv();
-		Init_TimeSheetTreeListConfirm(response);
-		InitMonthlyByProjectsGridConfirm();
-		InitPeriodlyByProjectsGridConfirm();
-
-		common.loaderHide();
-	});
-
-	
-
 }
 
 

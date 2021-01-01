@@ -19,18 +19,9 @@ namespace KP.TimeSheets.MVC
     {
         IUnitOfWork _uow;
         public TimeSheetsConfirmApiController(RASContext db, IUnitOfWork uow) : base(db) { this._uow = uow; }
+        
 
-
-        [HttpGet("employee")]
-        [ProducesResponseType(typeof(List<vmGetTimeSheetResualt>), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> GetEmployeeTimeSheet()
-        {
-            return await GetTimeSheet(null, null, null);
-        }
-
-
-        [HttpGet("{userId}")]
+        [HttpGet("{userId}"),HttpGet("employee")]
         [ProducesResponseType(typeof(List<vmGetTimeSheetResualt>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetTimeSheet(Guid? userId, DateTime? fromDate, DateTime? toDate)
@@ -90,6 +81,7 @@ namespace KP.TimeSheets.MVC
                 {
                     date = gg.Key.Value,
                     isOpen = gg.FirstOrDefault().IsOpen ?? false,
+                    dayTimeString=gg.FirstOrDefault().DayTimeString,
                     date_persian = gg.First().PersianDate,
                     day_persian = days[gg.First().DayOfWeek.Value],
                     hozoor = gg.First().Hozoor,
@@ -115,8 +107,8 @@ namespace KP.TimeSheets.MVC
             }
         }
 
-        [HttpGet("{type}/{userId}/{date}")]
-        public async Task<IActionResult> GetPreviousPeriodConfirm(string type, Guid userId, DateTime date)
+        [HttpGet("{type}/{userId}/{date}"),HttpGet("employee/{type}/{date}")]
+        public async Task<IActionResult> GetPreviousPeriodConfirm(string type, Guid? userId, DateTime date)
         {
             UserManager userManager = new UserManager(this._uow);
             TimeSheetManager timeSheetManager = new TimeSheetManager(this._uow);

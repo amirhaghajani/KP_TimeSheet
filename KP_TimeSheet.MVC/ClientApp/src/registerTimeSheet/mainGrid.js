@@ -1,8 +1,3 @@
-// const data = require('./data');
-// const saveWindow = require('./createNewWorkHour');
-// const history_sentWorkHour = require('./history_sentWorkHour');
-// const sendWorkHour = require('./sendWorkHour');
-
 const myMainGrid = (function () {
 
   const moduleData = {};
@@ -134,7 +129,6 @@ const myMainGrid = (function () {
       colTitle.width = 240;
     columns.push(colTitle);
 
-    debugger;
     for (var i = 0; i < response[0].values.length; i++) {
 
       var tsDate = response[0].values[i];
@@ -147,13 +141,16 @@ const myMainGrid = (function () {
 
 
       var inner = tsDate.value;
+
+      colDate.headerTemplate +="<div style='text-align:center'>";
+
       if (!inner.isOpen && !inner.has_NotSendData && !inner.hasKarkard) {
-        colDate.headerTemplate += "<div style='text-align:center'><label title=' ' class='text-warning' ><i class='glyphicon glyphicon-ban-circle'></i> </label>"
+        colDate.headerTemplate += "<label title=' ' class='text-warning' ><i class='glyphicon glyphicon-ban-circle'></i> </label>"
       }
 
       if (inner.isOpen) {
 
-        colDate.headerTemplate += `<div style='text-align:center'><button title='ثبت ساعت کارکرد' 
+        colDate.headerTemplate += `<button title='ثبت ساعت کارکرد' 
                           class='btn btn-success btn-xs forFound_kwndSaveWHs_OnInit' style='width:10px;height:15px'
                           data-day-index='${i}'>+</button>`;
       }

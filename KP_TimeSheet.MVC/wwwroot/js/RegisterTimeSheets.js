@@ -203,13 +203,19 @@ const timeSheet = (function () {
         const hozoor = new timeSheet_Row(1, null, "حضور", "-", "eb96abcb-d37d-4aa1-1001-e1f4a753bee5", []);
         data.push(hozoor);
 
-        const karkard = new timeSheet_Row(2, null, "کارکرد", "-", "eb96abcb-d37d-4aa1-1002-e1f4a753bee5", []);
+        const hozoorDetail = new timeSheet_Row(2, 1, "جزئیات", "-", "eb96abcb-d37d-4aa1-1002-e1f4a753bee5", []);
+        data.push(hozoorDetail);
+
+        const karkard = new timeSheet_Row(3, null, "کارکرد", "-", "eb96abcb-d37d-4aa1-1003-e1f4a753bee5", []);
         data.push(karkard);
 
-        const projects = [];
-        const times = private_findTimesAndProjects(response, hozoor, karkard, projects, null);
+        const diffHozoorKarkard = new timeSheet_Row(4, null, "اختلاف حضور و کارکرد", "-", "eb96abcb-d37d-4aa1-1004-e1f4a753bee5", []);
+        data.push(diffHozoorKarkard);
 
-        private_addDailyTimes(data, times, projects, 2);
+        const projects = [];
+        const times = private_findTimesAndProjects(response, hozoor, hozoorDetail, karkard, diffHozoorKarkard, projects, null);
+
+        private_addProjectsAndTasksTimes(data, times, projects, 3);
 
         const notSendId = data.length + 1
         const karkard_notSend = new timeSheet_Row(notSendId, null, "ارسال نشده", "-", "eb96abcb-d37d-1001-0000-e1f4a753bee5", []);
@@ -218,16 +224,16 @@ const timeSheet = (function () {
 
 
         const projects_notSendByEmployee = [];
-        const times_notSend = private_findTimesAndProjects(response, null, karkard_notSend, projects_notSendByEmployee, "Resource");
+        const times_notSend = private_findTimesAndProjects(response, null, null, karkard_notSend,null, projects_notSendByEmployee, "Resource");
 
-        private_addDailyTimes(data, times_notSend, projects_notSendByEmployee, notSendId, true);
+        private_addProjectsAndTasksTimes(data, times_notSend, projects_notSendByEmployee, notSendId, true);
 
 
         const projects_approving = [];
-        const times_approve = private_findTimesAndProjects(response, null, null, projects_approving, "Approving");
+        const times_approve = private_findTimesAndProjects(response, null, null, null, null, projects_approving, "Approving");
 
         const projects_final = [];
-        const times_final = private_findTimesAndProjects(response, null, null, projects_final, "Final");
+        const times_final = private_findTimesAndProjects(response, null, null, null, null, projects_final, "Final");
 
         private_addTimesForAmaliat(hozoor, karkard_notSend, karkard, amaliat);
 
@@ -241,8 +247,8 @@ const timeSheet = (function () {
         for (let i = 0; i < hozoor.values.length; i++) {
             const hozoorTodayTime = hozoor.values[i];
             const nosendTodayTime = noSend.values[i];
-            const mainKarkardTodayTime = noSend.values[i];
-debugger;
+            const mainKarkardTodayTime = mainKarkard.values[i];
+
             amalit.values.push({
                 date: hozoorTodayTime.date,
                 persianDate: hozoorTodayTime.persianDate,
@@ -252,35 +258,40 @@ debugger;
             });
 
         }
+
+        
     }
 
     function convertServerDataToTimeSheet_ForApprove(response) {
         const data = [];
 
-        const hozoor = new timeSheet_Row(1, null, "حضور", "-", "eb96abcb-d37d-4aa1-1001-e1f4a753bee5", []);
+        const hozoor = new timeSheet_Row(1, null, "حضور", "-", "eb96abcb-d37d-4aa1-1000-e1f4a753bee5", []);
         data.push(hozoor);
 
-        const karkard = new timeSheet_Row(2, null, "کارکرد", "-", "eb96abcb-d37d-4aa1-1002-e1f4a753bee5", []);
+        const hozoorDetail = new timeSheet_Row(2, 1, "جزئیات", "-", "eb96abcb-d37d-4aa1-1001-e1f4a753bee5", []);
+        data.push(hozoorDetail);
+
+        const karkard = new timeSheet_Row(3, null, "کارکرد", "-", "eb96abcb-d37d-4aa1-1002-e1f4a753bee5", []);
         data.push(karkard);
 
         const projects = [];
-        const times = private_findTimesAndProjects(response, hozoor, karkard, projects, null);
+        const times = private_findTimesAndProjects(response, hozoor, hozoorDetail, karkard,null, projects, null);
 
-        private_addDailyTimes(data, times, projects, 2);
+        private_addProjectsAndTasksTimes(data, times, projects, 3);
 
         const taeedNashodeId = data.length + 1
         const karkard_notApprove = new timeSheet_Row(taeedNashodeId, null, "تایید نشده", "-", "eb96abcb-d37d-1001-0000-e1f4a753bee5", []);
         data.push(karkard_notApprove);
 
         const projects_notApprove = [];
-        const times_notApprove = private_findTimesAndProjects(response, null, karkard_notApprove, projects_notApprove, "TaskNotApprove");
+        const times_notApprove = private_findTimesAndProjects(response, null, null, karkard_notApprove,null, projects_notApprove, "TaskNotApprove");
 
-        private_addDailyTimes(data, times_notApprove, projects_notApprove, taeedNashodeId, true);
+        private_addProjectsAndTasksTimes(data, times_notApprove, projects_notApprove, taeedNashodeId, true);
 
         return data;
     }
 
-    function private_addDailyTimes(data, times, projects, parentId, isApprove) {
+    function private_addProjectsAndTasksTimes(data, times, projects, parentId, isApprove) {
 
         if (projects.length == 0) return;
 
@@ -337,7 +348,7 @@ debugger;
 
 
 
-    function private_findTimesAndProjects(response, hozoor, karkard, projects, wantedState) {
+    function private_findTimesAndProjects(response, hozoor, hozoorDetail, karkard, diffHozoorKarkard, projects, wantedState) {
 
         const times = [];
 
@@ -389,6 +400,13 @@ debugger;
                 minute: dbTime.hozoor,
                 isOpen: dbTime.isOpen
             });
+            if (hozoorDetail) hozoorDetail.values.push({
+                date: cTime.date,
+                persianDate: cTime.persianDate,
+                persianDay: cTime.persianDay,
+                title: cTime.persianDate,
+                value: dbTime.dayTimeString ? dbTime.dayTimeString : '-',
+            });
             if (karkard) karkard.values.push({
                 date: cTime.date,
                 persianDate: cTime.persianDate,
@@ -396,6 +414,14 @@ debugger;
                 title: cTime.persianDate,
                 value: convertNumberToTime(cTime.calcTime()),
                 minute: cTime.calcTime()
+            });
+            if(diffHozoorKarkard) diffHozoorKarkard.values.push({
+                date: cTime.date,
+                persianDate: cTime.persianDate,
+                persianDay: cTime.persianDay,
+                title: cTime.persianDate,
+                value: convertNumberToTime(dbTime.hozoor - cTime.calcTime()),
+                minute: dbTime.hozoor - cTime.calcTime()
             });
         }
 
@@ -463,8 +489,9 @@ $(document).ready(function () {
         priodlyGrid.InitPeriodlyByProjectsGrid();
         bottomPage_monthlyGrid.InitMonthlyByProjectsGrid();
         common.loaderHide();
+        
         period_next_pervious.init(common, common_register,mainGrid,
-            bottomPage_monthlyGrid,history_sentWorkHour, priodlyGrid,editWindow, data);
+            bottomPage_monthlyGrid,history_sentWorkHour, priodlyGrid,editWindow, data, service);
             
         editWindow.init(mainGrid, common, common_register,data);
         
@@ -1489,11 +1516,6 @@ module.exports = {
 }
 
 },{}],12:[function(require,module,exports){
-// const data = require('./data');
-// const saveWindow = require('./createNewWorkHour');
-// const history_sentWorkHour = require('./history_sentWorkHour');
-// const sendWorkHour = require('./sendWorkHour');
-
 const myMainGrid = (function () {
 
   const moduleData = {};
@@ -1625,7 +1647,6 @@ const myMainGrid = (function () {
       colTitle.width = 240;
     columns.push(colTitle);
 
-    debugger;
     for (var i = 0; i < response[0].values.length; i++) {
 
       var tsDate = response[0].values[i];
@@ -1638,13 +1659,16 @@ const myMainGrid = (function () {
 
 
       var inner = tsDate.value;
+
+      colDate.headerTemplate +="<div style='text-align:center'>";
+
       if (!inner.isOpen && !inner.has_NotSendData && !inner.hasKarkard) {
-        colDate.headerTemplate += "<div style='text-align:center'><label title=' ' class='text-warning' ><i class='glyphicon glyphicon-ban-circle'></i> </label>"
+        colDate.headerTemplate += "<label title=' ' class='text-warning' ><i class='glyphicon glyphicon-ban-circle'></i> </label>"
       }
 
       if (inner.isOpen) {
 
-        colDate.headerTemplate += `<div style='text-align:center'><button title='ثبت ساعت کارکرد' 
+        colDate.headerTemplate += `<button title='ثبت ساعت کارکرد' 
                           class='btn btn-success btn-xs forFound_kwndSaveWHs_OnInit' style='width:10px;height:15px'
                           data-day-index='${i}'>+</button>`;
       }
@@ -1716,22 +1740,13 @@ module.exports = {
 
 };
 },{}],13:[function(require,module,exports){
-// const common_register = require('./common');
-// const common = require('../common/common');
-// const data = require('./data');
-// const mainGrid = require('./mainGrid');
-// const monthlyGrid = require('./bottomPage_monthlyGrid');
-// const sended_workouts = require('./history_sentWorkHour');
-// const priodlyGrid = require('./bottomPage_priodlyGrid');
-// const editWindow = require('./editWorkHour');
-
 //_________صفحه بعد و قبل 
-const period_next_pervious = (function(){
+const period_next_pervious = (function () {
 
-    const moduleData={};
+    const moduleData = {};
 
-    function init(common, common_register,  mainGrid,monthlyGrid, 
-        history_sentWorkHour, priodlyGrid, editWindow, data) {
+    function init(common, common_register, mainGrid, monthlyGrid,
+        history_sentWorkHour, priodlyGrid, editWindow, data, service) {
 
         moduleData.common_register = common_register;
         moduleData.common = common;
@@ -1741,124 +1756,88 @@ const period_next_pervious = (function(){
         moduleData.priodlyGrid = priodlyGrid;
         moduleData.editWindow = editWindow;
         moduleData.data = data;
+        moduleData.service = service;
 
         $('#btnpreviousPeriod').off().on('click', function () {
-            GetPreviousPeriod();
+            GetNextPeriod('previous');
         });
-    
+
         $('#btnSelectPeriod').off().on('click', function () {
             kwndSelectPeriod_OnInit();
         });
-    
+
         $('#btnNextPeriod').off().on('click', function () {
-            GetNextPeriod();
+            GetNextPeriod('next');
         });
-    
+
         //دو تا دکمه تایید و کنسل در فرمی که تعداد روزهای صفحه را مشخص می کنه
         $('#btnSendPeriod_determinPeriod').off().on('click', function () {
             btnSendPeriods_Onclick();
         });
-    
+
         $('#btnCancel_determinPeriod').off().on('click', function () {
             kwndSelectPeriod_OnClose();
         });
-    
-    
+
+
         //دو تا کمبو تعداد روز هایی که در دوره نشان بده
         $('input:radio[name="optperiod"]').change(function () {
-    
+
             EnableAndDisableSendPeriodRadioButton(this);
-    
+
         });
-    
+
         $("#numberDays").keyup(function () {
-    
+
             if ($("#numberDays").val() > 25) {
                 $("#numberDays").val("25");
             }
         });
-    
+
     }
-    
+
     function EnableAndDisableSendPeriodRadioButton() {
         if ($("#numberDays").is(':disabled')) {
-    
+
             $("#numberDays").prop("disabled", false);
             $("#startDate").prop("disabled", false);
-    
+
         } else {
             $("#numberDays").prop("disabled", true);
             $("#startDate").prop("disabled", true);
         }
-    
+
     }
-    
-    function GetNextPeriod() {
+
+    function GetNextPeriod(type) {
         moduleData.common.loaderShow();
-    
-        var prmData = JSON.stringify(moduleData.data.timeSheetData_get()[0].values[moduleData.data.timeSheetData_get()[0].values.length - 1]);
-    
-        $.ajax({
-            type: "Post",
-            url: "/api/TimeSheetsAPI/GetNextPeriod",
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            data: prmData,
-            success: function (response) {
-                moduleData.data.timeSheetData_set(response);
-                moduleData.common_register.removeAndRecreateTreelisDiv();
-                moduleData.mainGrid.Init_TimeSheetTreeList();
-                moduleData.editWindow.Refresh_GrdEditWorkHour();
-                moduleData.history_sentWorkHour.Refresh_GrdMonitorSentWorkHour();
-                moduleData.priodlyGrid.InitPeriodlyByProjectsGrid();
-                moduleData.monthlyGrid.InitMonthlyByProjectsGrid();
-                moduleData.common.loaderHide();
-            },
-            error: function (e) {
-    
-            }
+
+        let prmData = moduleData.data.timeSheetData_get()[0].values[moduleData.data.timeSheetData_get()[0].values.length - 1];
+
+        if (type == 'previous') {
+            prmData = moduleData.data.timeSheetData_get()[0].values[0];
+        }
+
+        moduleData.service.getNextTimeSheets(type, prmData.date, (response) => {
+
+            moduleData.common_register.removeAndRecreateTreelisDiv();
+            moduleData.mainGrid.Init_TimeSheetTreeList();
+            moduleData.editWindow.Refresh_GrdEditWorkHour();
+            moduleData.history_sentWorkHour.Refresh_GrdMonitorSentWorkHour();
+            moduleData.priodlyGrid.InitPeriodlyByProjectsGrid();
+            moduleData.monthlyGrid.InitMonthlyByProjectsGrid();
+            moduleData.common.loaderHide();
+
         });
     }
-    
-    function GetPreviousPeriod() {
-        moduleData.common.loaderShow();
-    
-        var prmData = JSON.stringify(moduleData.data.timeSheetData_get()[0].values[0]);
-    
-        $.ajax({
-            type: "Post",
-            url: "/api/TimeSheetsAPI/GetPreviousPeriod",
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            data: prmData,
-            success: function (response) {
-    
-                moduleData.data.timeSheetData_set(response);
-                moduleData.common_register.removeAndRecreateTreelisDiv();
-                moduleData.mainGrid.Init_TimeSheetTreeList();
-                moduleData.editWindow.Refresh_GrdEditWorkHour();
-                moduleData.history_sentWorkHour.Refresh_GrdMonitorSentWorkHour();
-                moduleData.priodlyGrid.InitPeriodlyByProjectsGrid();
-                moduleData.monthlyGrid.InitMonthlyByProjectsGrid();
-    
-                moduleData.common.loaderHide();
-    
-            },
-            error: function (e) {
-    
-            }
-        });
-    
-    
-    
-    
-    }
-    
+
+
+
     function GetCurrentPeriod() {
         moduleData.common.loaderShow();
 
         var prmData = JSON.stringify(moduleData.data.timeSheetData_get()[0].values);
-    
+
         $.ajax({
             type: "Post",
             url: "/api/TimeSheetsAPI/GetCurrentPeriod",
@@ -1877,15 +1856,15 @@ const period_next_pervious = (function(){
                 moduleData.common.loaderHide();
             },
             error: function (e) {
-    
+
             }
         });
     }
-    
-    
-    
+
+
+
     function kwndSelectPeriod_OnInit() {
-    
+
         var kwndSendWHs = $("#kwndSelectTimePeriod");
         kwndSendWHs.kendoWindow({
             width: "600px",
@@ -1902,18 +1881,18 @@ const period_next_pervious = (function(){
             open: moduleData.common.adjustSize,
         }).data("kendoWindow").center().open();
     }
-    
+
     function kwndSelectPeriod_OnClose() {
         $("#kwndSelectTimePeriod").data("kendoWindow").close()
     }
-    
+
     /////----------------- دکمه تایید تعداد روزهای دوره که باید نشان بده 
-    
+
     function btnSendPeriods_Onclick() {
         moduleData.common.loaderShow();
         kwndSelectPeriod_OnClose();
-    
-    
+
+
         if ($('#chkweekly').is(':checked')) {
             $.ajax({
                 type: "Get",
@@ -1929,10 +1908,10 @@ const period_next_pervious = (function(){
                     moduleData.common.loaderHide();
                 },
                 error: function (e) {
-    
+
                 }
             });
-    
+
         }
         else {
             var PeriodJson = {
@@ -1940,9 +1919,9 @@ const period_next_pervious = (function(){
                 Days: $("#numberDays").val(),
                 IsWeekly: false
             };
-    
+
             var prmData = JSON.stringify(PeriodJson);
-    
+
             $.ajax({
                 type: "Post",
                 url: "/api/TimeSheetsAPI/GetTimeSheetsByDateAndNumberOfDay",
@@ -1956,15 +1935,15 @@ const period_next_pervious = (function(){
                     moduleData.common.loaderHide();
                 },
                 error: function (e) {
-    
+
                 }
             });
         }
-    
+
     }
 
     return {
-        init:init,
+        init: init,
         GetCurrentPeriod: GetCurrentPeriod
     };
 })();
@@ -1974,7 +1953,7 @@ const period_next_pervious = (function(){
 
 module.exports = {
     "init": period_next_pervious.init,
-    "GetCurrentPeriod":  period_next_pervious.GetCurrentPeriod
+    "GetCurrentPeriod": period_next_pervious.GetCurrentPeriod
 }
 },{}],14:[function(require,module,exports){
 // const common_register = require('./common');
@@ -2346,28 +2325,31 @@ var service = (function () {
 			success: function (response) {
                 
 				var data = moduleData.common_timeSheet.convertServerDataToTimeSheet_ForEmployee(response);
-                debugger;
 
                 moduleData.data.timeSheetData_set(data);
                 if (success_callBack) success_callBack(data);
 			},
 			error: error_callBack ? () => error_callBack() : () => { }
 		});
+    }
 
-
+    function getNextTimeSheets(type,date, success_callBack, error_callBack) {
 
         $.ajax({
-            type: "Get",
-            url: "/api/TimeSheetsAPI/GetTimeSheets",
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            success: (response) => {
-                debugger;
-                //moduleData.data.timeSheetData_set(response);
-                //if (success_callBack) success_callBack(response);
-            },
-            error: error_callBack ? () => error_callBack() : () => { }
-        });
+			type: "Get",
+			url: `/api/Confirm/employee/${type}/${date}`,
+			contentType: "application/json; charset=utf-8",
+			dataType: "json",
+
+			success: function (response) {
+                
+				var data = moduleData.common_timeSheet.convertServerDataToTimeSheet_ForEmployee(response);
+
+                moduleData.data.timeSheetData_set(data);
+                if (success_callBack) success_callBack(data);
+			},
+			error: error_callBack ? () => error_callBack() : () => { }
+		});
     }
 
 
@@ -2387,7 +2369,9 @@ var service = (function () {
         init: init,
 
         getTimeSheets: getTimeSheets,
-        saveWorkHours: saveWorkHours
+        saveWorkHours: saveWorkHours,
+
+        getNextTimeSheets: getNextTimeSheets
     };
 
 })();
@@ -2398,6 +2382,8 @@ module.exports = {
     init: service.init,
 
     getTimeSheets: service.getTimeSheets,
-    saveWorkHours: service.saveWorkHours
+    saveWorkHours: service.saveWorkHours,
+
+    getNextTimeSheets: service.getNextTimeSheets
 }
 },{}]},{},[3]);
