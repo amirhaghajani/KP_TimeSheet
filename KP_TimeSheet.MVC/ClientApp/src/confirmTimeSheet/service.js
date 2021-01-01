@@ -162,32 +162,25 @@ const service = (function () {
 	function changeDisplayPeriodToWeeklyConfirm(success_callBack, error_callBack) {
 		$.ajax({
 			type: "Get",
-			url: "/api/Confirm/ChangeDisplayPeriodToWeeklyConfirm?userId=" + moduleData.data.userId_get(),
+			url: "/api/Confirm/ChangeDisplayPeriodToWeeklyConfirm",
 			contentType: "application/json; charset=utf-8",
 			dataType: "json",
-			success: (response) => {
-
-				var data = moduleData.common_timeSheet.convertServerDataToTimeSheet_ForApprove(response);
-
-				moduleData.data.timeSheetDataConfirm_set(data);
-				if (success_callBack) success_callBack(data);
+			success: () => {
+				if (success_callBack) success_callBack();
 			},
 			error: error_callBack ? () => error_callBack() : () => { }
 		});
 	}
 
-	function getTimeSheetsByDateAndNumberOfDayConfirm(prmData, success_callBack, error_callBack) {
+	function changeDisplayPeriodToDaily(prmData, success_callBack, error_callBack) {
 		$.ajax({
 			type: "Post",
-			url: "/api/confirm/GetTimeSheetsByDateAndNumberOfDayConfirm",
+			url: "/api/confirm/ChangeDisplayPeriodToDaily",
 			contentType: "application/json; charset=utf-8",
 			dataType: "json",
 			data: prmData,
-			success: (response) => {
-				var data = moduleData.common_timeSheet.convertServerDataToTimeSheet_ForApprove(response);
-
-				moduleData.data.timeSheetDataConfirm_set(data);
-				if (success_callBack) success_callBack(data);
+			success: () => {
+				if (success_callBack) success_callBack();
 			},
 			error: error_callBack ? () => error_callBack() : () => { }
 		});
@@ -247,7 +240,7 @@ const service = (function () {
 		getThisPeriodDataByUserId: getThisPeriodDataByUserId,
 		getThisPeriodProjectsByUserId: getThisPeriodProjectsByUserId,
 		changeDisplayPeriodToWeeklyConfirm: changeDisplayPeriodToWeeklyConfirm,
-		getTimeSheetsByDateAndNumberOfDayConfirm: getTimeSheetsByDateAndNumberOfDayConfirm,
+		changeDisplayPeriodToDaily: changeDisplayPeriodToDaily,
 		getPreviousNextPeriodConfirm: getPreviousNextPeriodConfirm,
 		getCurrentPeriodConfirm: getCurrentPeriodConfirm,
 	}
@@ -266,7 +259,7 @@ module.exports = {
 	getThisPeriodDataByUserId: service.getThisPeriodDataByUserId,
 	getThisPeriodProjectsByUserId: service.getThisPeriodProjectsByUserId,
 	changeDisplayPeriodToWeeklyConfirm: service.changeDisplayPeriodToWeeklyConfirm,
-	getTimeSheetsByDateAndNumberOfDayConfirm: service.getTimeSheetsByDateAndNumberOfDayConfirm,
+	changeDisplayPeriodToDaily: service.changeDisplayPeriodToDaily,
 	getPreviousNextPeriodConfirm: service.getPreviousNextPeriodConfirm,
 	getCurrentPeriodConfirm: service.getCurrentPeriodConfirm
 }

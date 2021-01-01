@@ -4,7 +4,7 @@ const period_next_pervious = (function () {
     const moduleData = {};
 
     function init(common, common_register, mainGrid, monthlyGrid,
-        history_sentWorkHour, priodlyGrid, editWindow, data, service) {
+        history_sentWorkHour, priodlyGrid, editWindow, data, service,serviceConfirm) {
 
         moduleData.common_register = common_register;
         moduleData.common = common;
@@ -15,6 +15,7 @@ const period_next_pervious = (function () {
         moduleData.editWindow = editWindow;
         moduleData.data = data;
         moduleData.service = service;
+        moduleData.serviceConfirm = serviceConfirm;
 
         $('#btnpreviousPeriod').off().on('click', function () {
             GetNextPeriod('previous');
@@ -92,31 +93,34 @@ const period_next_pervious = (function () {
 
 
     function GetCurrentPeriod() {
-        moduleData.common.loaderShow();
 
-        var prmData = JSON.stringify(moduleData.data.timeSheetData_get()[0].values);
+        moduleData.mainGrid.RefreshTimeSheet(false);
 
-        $.ajax({
-            type: "Post",
-            url: "/api/TimeSheetsAPI/GetCurrentPeriod",
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            data: prmData,
-            success: function (response) {
+        // moduleData.common.loaderShow();
 
-                moduleData.data.timeSheetData_set(response);
-                moduleData.common_register.removeAndRecreateTreelisDiv();
-                moduleData.mainGrid.Init_TimeSheetTreeList();
-                moduleData.editWindow.Refresh_GrdEditWorkHour();
-                moduleData.history_sentWorkHour.Refresh_GrdMonitorSentWorkHour();
-                moduleData.priodlyGrid.InitPeriodlyByProjectsGrid();
-                moduleData.monthlyGrid.InitMonthlyByProjectsGrid();
-                moduleData.common.loaderHide();
-            },
-            error: function (e) {
+        // var prmData = JSON.stringify(moduleData.data.timeSheetData_get()[0].values);
 
-            }
-        });
+        // $.ajax({
+        //     type: "Post",
+        //     url: "/api/TimeSheetsAPI/GetCurrentPeriod",
+        //     contentType: "application/json; charset=utf-8",
+        //     dataType: "json",
+        //     data: prmData,
+        //     success: function (response) {
+
+        //         moduleData.data.timeSheetData_set(response);
+        //         moduleData.common_register.removeAndRecreateTreelisDiv();
+        //         moduleData.mainGrid.Init_TimeSheetTreeList();
+        //         moduleData.editWindow.Refresh_GrdEditWorkHour();
+        //         moduleData.history_sentWorkHour.Refresh_GrdMonitorSentWorkHour();
+        //         moduleData.priodlyGrid.InitPeriodlyByProjectsGrid();
+        //         moduleData.monthlyGrid.InitMonthlyByProjectsGrid();
+        //         moduleData.common.loaderHide();
+        //     },
+        //     error: function (e) {
+
+        //     }
+        // });
     }
 
 
@@ -152,22 +156,9 @@ const period_next_pervious = (function () {
 
 
         if ($('#chkweekly').is(':checked')) {
-            $.ajax({
-                type: "Get",
-                url: "/api/TimeSheetsAPI/ChangeDisplayPeriodToWeekly",
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                success: function (response) {
-                    moduleData.data.timeSheetData_set(response);
-                    moduleData.common_register.removeAndRecreateTreelisDiv();
-                    moduleData.mainGrid.Init_TimeSheetTreeList();
-                    moduleData.editWindow.Refresh_GrdEditWorkHour();
-                    moduleData.history_sentWorkHour.Refresh_GrdMonitorSentWorkHour();
-                    moduleData.common.loaderHide();
-                },
-                error: function (e) {
 
-                }
+            moduleData.serviceConfirm.changeDisplayPeriodToWeeklyConfirm(() => {
+                moduleData.mainGrid.RefreshTimeSheet(true);
             });
 
         }
@@ -180,21 +171,8 @@ const period_next_pervious = (function () {
 
             var prmData = JSON.stringify(PeriodJson);
 
-            $.ajax({
-                type: "Post",
-                url: "/api/TimeSheetsAPI/GetTimeSheetsByDateAndNumberOfDay",
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                data: prmData,
-                success: function (response) {
-                    moduleData.data.timeSheetData_set(response);
-                    moduleData.common_register.removeAndRecreateTreelisDiv();
-                    moduleData.mainGrid.Init_TimeSheetTreeList();
-                    moduleData.common.loaderHide();
-                },
-                error: function (e) {
-
-                }
+            moduleData.serviceConfirm.changeDisplayPeriodToDaily(prmData, () => {
+                moduleData.mainGrid.RefreshTimeSheet(true);
             });
         }
 

@@ -2,14 +2,22 @@ const myMainGrid = (function () {
 
   const moduleData = {};
 
-  function init(common, common_register, createNewWorkHour, history_sentWorkHour, sendWorkHour, data, service) {
+  function init(common, common_register, createNewWorkHour, history_sentWorkHour, sendWorkHour,
+    data, service, editWindow, history_sentWorkHour, priodlyGrid, monthlyGrid) {
+
     moduleData.common = common;
-    moduleData.common_register= common_register;
+    moduleData.common_register = common_register;
     moduleData.data = data;
     moduleData.history_sentWorkHour = history_sentWorkHour;
     moduleData.createNewWorkHour = createNewWorkHour;
     moduleData.sendWorkHour = sendWorkHour;
     moduleData.service = service;
+
+    moduleData.editWindow = editWindow;
+    moduleData.history_sentWorkHour = history_sentWorkHour;
+
+    moduleData.priodlyGrid = priodlyGrid;
+    moduleData.monthlyGrid = monthlyGrid;
 
   };
 
@@ -26,17 +34,36 @@ const myMainGrid = (function () {
 
   //________________ جهت باز سازی TreeList اصلی
 
-  function RefreshTimeSheet() {
-    GetTimeSheets(()=>{
+  function RefreshTimeSheet(reset = false) {
+    moduleData.common.loaderShow();
+
+    let fromDate = null;
+    let toDate = null;
+    if (!reset) {
+      var prmData = moduleData.data.timeSheetData_get()[0].values;
+      fromDate = prmData[0].date;
+      toDate = prmData[prmData.length - 1].date;
+    }
+    GetTimeSheets(() => {
       moduleData.common_register.removeAndRecreateTreelisDiv();
+
+      moduleData.editWindow.Refresh_GrdEditWorkHour();
+      moduleData.history_sentWorkHour.Refresh_GrdMonitorSentWorkHour();
+
+
+      moduleData.priodlyGrid.InitPeriodlyByProjectsGrid();
+      moduleData.monthlyGrid.InitMonthlyByProjectsGrid();
+
+
+
       moduleData.common.loaderHide();
-    });
+    }, fromDate, toDate);
   }
   //----------
 
-  function GetTimeSheets(callBackFn) {
+  function GetTimeSheets(callBackFn,fromDate, toDate) {
 
-    moduleData.service.getTimeSheets((response) => {
+    moduleData.service.getTimeSheets(fromDate, toDate, (response) => {
       if (callBackFn) callBackFn(response);
       Init_TimeSheetTreeList();
     });
@@ -133,16 +160,15 @@ const myMainGrid = (function () {
 
       var tsDate = response[0].values[i];
       var colDate = new KTRColumn();
-      //colDate.field = "values[" + i + "].value";
-      colDate.template="#= type=='Defference' ? '<span title=\"تایید شده\">1:00</span> | <span title=\"برگشت شده\">2:00</span>' :  (values[ "+i+" ].value) #";
+      colDate.field = "values[" + i + "].value";
+      //colDate.template = "#= type=='Defference' ? '<span title=\"تایید شده\">1:00</span> | <span title=\"برگشت شده\">2:00</span>' :  (values[ " + i + " ].value) #";
       colDate.format = "";
       colDate.title = tsDate.title;
       colDate.headerTemplate = "<h6 style='text-align:center'><b>" + tsDate.persianDate + "</b></h6><h6 style='text-align:center'>" + tsDate.persianDay + "</h6>";
 
-
       var inner = tsDate.value;
 
-      colDate.headerTemplate +="<div style='text-align:center'>";
+      colDate.headerTemplate += "<div style='text-align:center'>";
 
       if (!inner.isOpen && !inner.has_NotSendData && !inner.hasKarkard) {
         colDate.headerTemplate += "<label title=' ' class='text-warning' ><i class='glyphicon glyphicon-ban-circle'></i> </label>"
@@ -168,7 +194,7 @@ const myMainGrid = (function () {
               data-day-index='${i}'><b>↑</b></button>`;
 
       }
-      colDate.headerTemplate +="</div>";
+      colDate.headerTemplate += "</div>";
 
       colDate.hidden = false;
       colDate.width = 100;
@@ -197,7 +223,7 @@ const myMainGrid = (function () {
   }
 
 
-  
+
 
   return {
     GetTimeSheets: GetTimeSheets,
@@ -217,7 +243,7 @@ module.exports = {
 
   'GetTimeSheets': myMainGrid.GetTimeSheets,
   'Init_TimeSheetTreeList': myMainGrid.Init_TimeSheetTreeList,
-  'RefreshTimeSheet':myMainGrid.RefreshTimeSheet,
+  'RefreshTimeSheet': myMainGrid.RefreshTimeSheet,
   'init': myMainGrid.init
 
 };

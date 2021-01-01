@@ -21,7 +21,7 @@ namespace KP.TimeSheets.MVC
         public TimeSheetsConfirmApiController(RASContext db, IUnitOfWork uow) : base(db) { this._uow = uow; }
         
 
-        [HttpGet("{userId}"),HttpGet("employee")]
+        [HttpGet("{userId}"),HttpGet("employee"),HttpGet("employeeTimeSheet/{fromDate}/{toDate}")]
         [ProducesResponseType(typeof(List<vmGetTimeSheetResualt>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetTimeSheet(Guid? userId, DateTime? fromDate, DateTime? toDate)
@@ -89,10 +89,10 @@ namespace KP.TimeSheets.MVC
                     {
                         id = pp.Key,
                         title = pp.First().ProjectTitle,
-                        workouts = pp.Where(w => w.TaskId.HasValue).GroupBy(w => w.TaskId).Select(ww => new vmGetTimeSheetResualt_Workout
+                        workouts = pp.Where(w => w.TaskId.HasValue).GroupBy(w => new {w.TaskId,w.State}).Select(ww => new vmGetTimeSheetResualt_Workout
                         {
-                            id = ww.Key,
-                            state = ww.First().State,
+                            id = ww.Key.TaskId,
+                            state = ww.Key.State,
                             title = ww.First().Title,
                             hours = ww.First().Hours
                         }).ToList()
@@ -159,7 +159,7 @@ namespace KP.TimeSheets.MVC
         }
 
         [HttpGet("[action]")]
-        public async Task<IActionResult> ChangeDisplayPeriodToWeeklyConfirm(Guid userId)
+        public IActionResult ChangeDisplayPeriodToWeeklyConfirm()
         {
             var currentUser = new UserHelper().GetCurrent(this._uow, this.UserName);
             DisplayPeriodManager dpm = new DisplayPeriodManager(this._uow);
@@ -168,11 +168,11 @@ namespace KP.TimeSheets.MVC
             dp.IsWeekly = true;
             dpm.Edit(dp);
 
-            return await GetTimeSheet(userId, null, null);
+            return Ok(true);
         }
 
         [HttpPost("[action]")]
-        public async Task<IActionResult> GetTimeSheetsByDateAndNumberOfDayConfirm(PeriodNumberDateJson period)
+        public IActionResult ChangeDisplayPeriodToDaily(PeriodNumberDateJson period)
         {
             var currentUser = new UserHelper().GetCurrent(this._uow, this.UserName);
             DisplayPeriodManager displayPeriodMnager = new DisplayPeriodManager(this._uow);
@@ -180,9 +180,7 @@ namespace KP.TimeSheets.MVC
             //SyncWithPWA(uow);
 
             displayPeriodMnager.Save(displayPeriod);
-
-
-            return await GetTimeSheet(new Guid(period.UserId), null, null);
+            return Ok(true);
         }
 
 

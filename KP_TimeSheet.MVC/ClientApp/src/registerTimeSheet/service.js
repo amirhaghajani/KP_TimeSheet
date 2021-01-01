@@ -10,11 +10,17 @@ var service = (function () {
 
 
     //اون اول اطلاعات کل تایم شیت ها را می دهد
-    function getTimeSheets(success_callBack, error_callBack) {
+    function getTimeSheets(fromDate,toDate, success_callBack, error_callBack) {
+
+        let url = "/api/Confirm/employee";
+
+        if(fromDate){
+            url = `/api/Confirm/employeeTimeSheet/${fromDate}/${toDate}`;
+        }
 
         $.ajax({
 			type: "Get",
-			url: "/api/Confirm/employee",
+			url: url,
 			contentType: "application/json; charset=utf-8",
 			dataType: "json",
 

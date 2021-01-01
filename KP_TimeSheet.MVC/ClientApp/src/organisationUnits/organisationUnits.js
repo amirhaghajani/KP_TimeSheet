@@ -309,7 +309,6 @@ function AddNewUserToUnit(e) {
 }
 
 function GRDOrganUsers_OnInit() {
-debugger;
     $("#GRDOrganUsers").kendoGrid({
         dataSource: {
             transport: {

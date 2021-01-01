@@ -375,9 +375,6 @@ function DenyTask(id, index) {
 function GetCurrentPeriodconfirm() {
 
 	common.loaderShow();
-
-	debugger;
-
 	RefreshTimeSheetConfirm();
 }
 
@@ -475,9 +472,8 @@ function btnSendPeriodsconfirm_Onclick() {
 	WNDSelectPeriod_OnClose()
 	if ($('#chkweeklyconfirm').is(':checked')) {
 
-		service.changeDisplayPeriodToWeeklyConfirm((response) => {
-
-			private_Refresh(response);
+		service.changeDisplayPeriodToWeeklyConfirm(() => {
+			RefreshTimeSheetConfirm();
 		});
 
 	}
@@ -490,8 +486,8 @@ function btnSendPeriodsconfirm_Onclick() {
 		};
 
 		var prmData = JSON.stringify(PeriodJson);
-		service.getTimeSheetsByDateAndNumberOfDayConfirm(prmData, (response) => {
-			private_Refresh(response);
+		service.changeDisplayPeriodToDaily(prmData, () => {
+			RefreshTimeSheetConfirm();
 		});
 	}
 

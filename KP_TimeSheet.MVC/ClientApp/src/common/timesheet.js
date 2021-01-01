@@ -48,11 +48,14 @@ const timeSheet = (function () {
         this.state = state;
     }
 
-    function convertNumberToTime(number) {
-        if (!number) return '0:00';
-        const hour = parseInt(number);
+    function convertNumberToTime(mainNumber) {
+        if (!mainNumber) return '0:00';
+
+        var number = Math.abs(mainNumber);
+
+        const hour =  parseInt(number);
         const minut = Math.round((number - hour) * 60);
-        return `${hour}:${minut > 9 ? minut : '0' + minut}`;
+        return `${hour}:${minut > 9 ? minut : '0' + minut} ${mainNumber<0 ? '-' : ''}`;
     }
 
 
@@ -75,6 +78,7 @@ const timeSheet = (function () {
         const diffHozoorKarkard = new timeSheet_Row(4, null, "اختلاف حضور و کارکرد", "-", "eb96abcb-d37d-4aa1-1004-e1f4a753bee5", []);
         data.push(diffHozoorKarkard);
 
+        debugger;
         const projects = [];
         const times = private_findTimesAndProjects(response, hozoor, hozoorDetail, karkard, diffHozoorKarkard, projects, null);
 
@@ -85,9 +89,8 @@ const timeSheet = (function () {
         data.push(karkard_notSend);
 
 
-
         const projects_notSendByEmployee = [];
-        const times_notSend = private_findTimesAndProjects(response, null, null, karkard_notSend,null, projects_notSendByEmployee, "Resource");
+        const times_notSend = private_findTimesAndProjects(response, null, null, karkard_notSend, null, projects_notSendByEmployee, "Resource");
 
         private_addProjectsAndTasksTimes(data, times_notSend, projects_notSendByEmployee, notSendId, true);
 
@@ -117,12 +120,12 @@ const timeSheet = (function () {
                 persianDate: hozoorTodayTime.persianDate,
                 persianDay: hozoorTodayTime.persianDay,
                 title: hozoorTodayTime.persianDate,
-                value: {isOpen: hozoorTodayTime.isOpen, has_NotSendData: !!nosendTodayTime.minute, hasKarkard: !!mainKarkardTodayTime.minute} 
+                value: { isOpen: hozoorTodayTime.isOpen, has_NotSendData: !!nosendTodayTime.minute, hasKarkard: !!mainKarkardTodayTime.minute }
             });
 
         }
 
-        
+
     }
 
     function convertServerDataToTimeSheet_ForApprove(response) {
@@ -138,7 +141,7 @@ const timeSheet = (function () {
         data.push(karkard);
 
         const projects = [];
-        const times = private_findTimesAndProjects(response, hozoor, hozoorDetail, karkard,null, projects, null);
+        const times = private_findTimesAndProjects(response, hozoor, hozoorDetail, karkard, null, projects, null);
 
         private_addProjectsAndTasksTimes(data, times, projects, 3);
 
@@ -147,7 +150,7 @@ const timeSheet = (function () {
         data.push(karkard_notApprove);
 
         const projects_notApprove = [];
-        const times_notApprove = private_findTimesAndProjects(response, null, null, karkard_notApprove,null, projects_notApprove, "TaskNotApprove");
+        const times_notApprove = private_findTimesAndProjects(response, null, null, karkard_notApprove, null, projects_notApprove, "TaskNotApprove");
 
         private_addProjectsAndTasksTimes(data, times_notApprove, projects_notApprove, taeedNashodeId, true);
 
@@ -237,13 +240,29 @@ const timeSheet = (function () {
 
                 for (let k = 0; k < dbProject.workouts.length; k++) {
                     const dbWorkout = dbProject.workouts[k];
-                    const cWorkout = new timeSheet_Workout(dbWorkout.id, dbWorkout.title, dbWorkout.hours, dbWorkout.state);
 
-                    if (!wantedState || cWorkout.state == wantedState) {
-                        cProject.workouts.push(cWorkout);
-                        if (savedProject.workouts.findIndex(p => p.id == cWorkout.id) == -1) savedProject.workouts.push({
-                            id: cWorkout.id, title: cWorkout.title, state: cWorkout.state, hours: cWorkout.hours
-                        });
+                    if (wantedState && dbWorkout.state != wantedState) continue;
+
+                    let sumHours = dbWorkout.hours;
+
+                    // for (let k2 = k + 1; k2 < dbProject.workouts.length; k2++) {
+                    //     const dbWorkout2 = dbProject.workouts[k2];
+                    //     if (dbWorkout2.id == dbWorkout.id && (!wantedState || cWorkout2.state == wantedState)) {
+                    //         sumHours += dbWorkout2.hours;
+                    //     }
+                    // }
+
+                    const cWorkout = new timeSheet_Workout(dbWorkout.id, dbWorkout.title, sumHours, dbWorkout.state);
+
+                    cProject.workouts.push(cWorkout);
+
+                    const index = savedProject.workouts.findIndex(p => p.id == cWorkout.id);
+                    if (index == -1) {
+                        savedProject.workouts.push({
+                            id: cWorkout.id, title: cWorkout.title, state: cWorkout.state, hours: sumHours
+                        })
+                    } else {
+                        savedProject.workouts[index].hours += sumHours;
                     }
                 }
 
@@ -278,7 +297,7 @@ const timeSheet = (function () {
                 value: convertNumberToTime(cTime.calcTime()),
                 minute: cTime.calcTime()
             });
-            if(diffHozoorKarkard) diffHozoorKarkard.values.push({
+            if (diffHozoorKarkard) diffHozoorKarkard.values.push({
                 date: cTime.date,
                 persianDate: cTime.persianDate,
                 persianDay: cTime.persianDay,
@@ -290,6 +309,7 @@ const timeSheet = (function () {
 
         return times;
     }
+
 
 
     return {

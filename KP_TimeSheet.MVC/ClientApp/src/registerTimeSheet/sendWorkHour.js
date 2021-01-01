@@ -202,7 +202,7 @@ const sendWorkHour = (function () {
 						moduleData.common.notify(response[i], "danger");
 					}
 				}
-
+				moduleData.mainGrid.RefreshTimeSheet();
 				wndSendWorkHour_OnClose();
 
 			},
@@ -232,6 +232,7 @@ const sendWorkHour = (function () {
 			success: function () {
 				//wndSendWorkHour_OnClose();
 				Refresh_GRDSendWorkHour();
+				moduleData.mainGrid.RefreshTimeSheet();
 				moduleData.common.notify("انجام عملیات  ارسال با موفقیت به انجام رسید.", "success");
 			},
 			error: function (e) {
