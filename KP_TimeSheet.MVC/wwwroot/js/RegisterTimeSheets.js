@@ -194,6 +194,15 @@ const timeSheet = (function () {
         const minut = Math.round((number - hour) * 60);
         return `${hour}:${minut > 9 ? minut : '0' + minut} ${mainNumber<0 ? '-' : ''}`;
     }
+    function convertMinutsToTime(mainNumber) {
+        if (!mainNumber) return '0:00';
+
+        var number = Math.abs(mainNumber);
+
+        const hour =  parseInt(number / 60);
+        const minut = number - (hour * 60);
+        return `${hour}:${minut > 9 ? minut : '0' + minut} ${mainNumber<0 ? '-' : ''}`;
+    }
 
 
 
@@ -415,7 +424,7 @@ const timeSheet = (function () {
                 persianDate: cTime.persianDate,
                 persianDay: cTime.persianDay,
                 title: cTime.persianDate,
-                value: convertNumberToTime(dbTime.hozoor),
+                value: convertMinutsToTime(dbTime.hozoor),
                 minute: dbTime.hozoor,
                 isOpen: dbTime.isOpen
             });
