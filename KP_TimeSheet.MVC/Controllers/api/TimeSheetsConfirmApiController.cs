@@ -182,10 +182,5 @@ namespace KP.TimeSheets.MVC
             displayPeriodMnager.Save(displayPeriod);
             return Ok(true);
         }
-
-
-
     }
-
-
 }
