@@ -448,8 +448,8 @@ const timeSheet = (function () {
                 persianDate: cTime.persianDate,
                 persianDay: cTime.persianDay,
                 title: cTime.persianDate,
-                value: convertNumberToTime(dbTime.hozoor - cTime.calcTime()),
-                minute: dbTime.hozoor - cTime.calcTime()
+                value: convertMinutsToTime(dbTime.hozoor - (cTime.calcTime() * 60)),
+                minute: dbTime.hozoor - (cTime.calcTime()*60)
             });
         }
 
