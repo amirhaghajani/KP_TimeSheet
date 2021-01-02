@@ -109,7 +109,7 @@ namespace KP.TimeSheets.Persistance
                     Select 
 	                    ResourceUID, ResourceName, ResourceNTAccount,EmployeeCode
                     From 
-	                    MSP_EpmResource_UserView");
+	                    ProjectWebApp..MSP_EpmResource_UserView");
                 SqlCommand sqlCommand = new SqlCommand(commandText, new SqlConnection(_PWAConnString));
                 var dataTable = SqlQueryExecute.GetDataTable(commandText, _PWAConnString);
                 List<User> users = PWATranslator.ToUsers(dataTable,_RASContext.Users.ToList());

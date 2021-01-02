@@ -12,18 +12,16 @@ namespace KP.TimeSheets.Persistance
         #region Attributes & Properties
 
       
-        string _PWAConnString;
+        //string _PWAConnString;
         RASContext _RASContext;
 
         #endregion
 
         #region Constructors
 
-        public HolidayRepository(string pwaConnString, RASContext rasContext)
+        public HolidayRepository(RASContext rasContext)
         {
-           
-           
-            _PWAConnString = pwaConnString;
+            //_PWAConnString = pwaConnString;
             _RASContext = rasContext;
         }
 

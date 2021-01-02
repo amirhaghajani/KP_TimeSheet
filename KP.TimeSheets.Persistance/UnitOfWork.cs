@@ -53,7 +53,7 @@ namespace KP.TimeSheets.Persistance
         {
             get
             {
-                if(_calendarRepository==null) _calendarRepository= new CalendarRepository(_PWAConnString, _Context);
+                if(_calendarRepository==null) _calendarRepository= new CalendarRepository(_Context);
                 return _calendarRepository;
             }
         }
@@ -62,7 +62,7 @@ namespace KP.TimeSheets.Persistance
         {
             get
             {
-                if(_holidayRepository==null) _holidayRepository= new HolidayRepository( _PWAConnString, _Context);
+                if(_holidayRepository==null) _holidayRepository= new HolidayRepository( _Context);
                 return _holidayRepository;
             }
         }
@@ -107,7 +107,7 @@ namespace KP.TimeSheets.Persistance
         {
             get
             {
-                if(_orgUnitRepository==null) _orgUnitRepository= new OrgUnitRepository(_PWAConnString, _Context);
+                if(_orgUnitRepository==null) _orgUnitRepository= new OrgUnitRepository( _Context);
                 return _orgUnitRepository;
             }
         }
@@ -116,7 +116,7 @@ namespace KP.TimeSheets.Persistance
         {
             get
             {
-                if(_presHourRepository==null) _presHourRepository= new PresHourRepository(_PWAConnString, _Context);
+                if(_presHourRepository==null) _presHourRepository= new PresHourRepository( _Context);
                 return _presHourRepository;
             }
         }
@@ -125,7 +125,7 @@ namespace KP.TimeSheets.Persistance
         {
             get
             {
-                if(_workHourRepository==null) _workHourRepository= new WorkHourRepository( _PWAConnString, _Context);
+                if(_workHourRepository==null) _workHourRepository= new WorkHourRepository( _Context);
                 return _workHourRepository;
             }
         }
@@ -134,7 +134,7 @@ namespace KP.TimeSheets.Persistance
         {
             get
             {
-                if(_displayPeriodRepository==null) _displayPeriodRepository= new DisplayPeriodRepository(_PWAConnString, _Context);
+                if(_displayPeriodRepository==null) _displayPeriodRepository= new DisplayPeriodRepository( _Context);
                 return _displayPeriodRepository;
             }
         }

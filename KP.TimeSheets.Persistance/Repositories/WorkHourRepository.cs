@@ -12,12 +12,12 @@ namespace KP.TimeSheets.Persistance
 
        
        
-        string _PWAConnString;
+        //string _PWAConnString;
         RASContext _RASContext;
 
-        public WorkHourRepository( string pwaConnString, RASContext rasContext)
+        public WorkHourRepository( RASContext rasContext)
         {
-            _PWAConnString = pwaConnString;
+            //_PWAConnString = pwaConnString;
             _RASContext = rasContext;
         }
 

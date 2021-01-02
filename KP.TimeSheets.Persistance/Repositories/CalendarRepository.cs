@@ -12,7 +12,7 @@ namespace KP.TimeSheets.Persistance
         #region Attributes & Properties
 
       
-        string _PWAConnString;
+        //string _PWAConnString;
         RASContext _RASContext;
        
         
@@ -22,11 +22,9 @@ namespace KP.TimeSheets.Persistance
 
         #region Constructors
 
-        public CalendarRepository( string pwaConnString, RASContext rasContext)
+        public CalendarRepository( RASContext rasContext)
         {
-           
-          
-            _PWAConnString = pwaConnString;
+            //_PWAConnString = pwaConnString;
             _RASContext = rasContext;
         }
 

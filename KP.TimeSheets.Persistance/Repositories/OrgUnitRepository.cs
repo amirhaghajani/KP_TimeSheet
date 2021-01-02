@@ -12,16 +12,14 @@ namespace KP.TimeSheets.Persistance
       
 
      
-        string _PWAConnString;
+        //string _PWAConnString;
         RASContext _RASContext;
 
        
 
-        public OrgUnitRepository(string pwaConnString, RASContext rasContext)
+        public OrgUnitRepository(RASContext rasContext)
         {
-          
-            
-            _PWAConnString = pwaConnString;
+            //_PWAConnString = pwaConnString;
             _RASContext = rasContext;
         }
 

@@ -128,7 +128,7 @@ namespace KP.TimeSheets.Persistance
                     Select 
 	                    ProjectUID, TaskUID, TaskName, TaskParentUID 
                     From
-	                    dbo.MSP_EpmTask_UserView";
+	                    ProjectWebApp.dbo.MSP_EpmTask_UserView";
                 SqlCommand sqlCommand = new SqlCommand(commandText, new SqlConnection(_PWAConnString));
                 var dataTable = SqlQueryExecute.GetDataTable(commandText, _PWAConnString);
                 List<Task> tasks = PWATranslator.ToTasks(dataTable);
@@ -154,7 +154,7 @@ namespace KP.TimeSheets.Persistance
                     Select 
 	                    ProjectUID, TaskUID, TaskName, TaskParentUID 
                     From
-	                    dbo.MSP_EpmTask_UserView
+	                    ProjectWebApp.dbo.MSP_EpmTask_UserView
                     Where 
                         ProjectUID = '{0}'", projectID);
                 SqlCommand sqlCommand = new SqlCommand(commandText, new SqlConnection(_PWAConnString));
