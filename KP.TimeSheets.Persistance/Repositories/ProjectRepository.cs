@@ -64,7 +64,7 @@ namespace KP.TimeSheets.Persistance
                     Select 
 	                    Distinct Projects.*
                     FROM 
-	                    [dbo].[Assignments] Assinments 
+	                    [Assignments] Assinments 
 	                    Inner Join dbo.Tasks Tasks On Assinments.TaskID = Tasks.ID
 	                    Inner Join dbo.Projects Projects On Tasks.ProjectID = Projects.ID
                     Where
@@ -149,8 +149,8 @@ namespace KP.TimeSheets.Persistance
 			                    null 
 	                    End as UserName
                     From 
-	                    MSP_EpmProject_UserView RTable 
-	                    Left Join MSP_EpmResource_UserView LTable
+	                    ProjectWebApp..MSP_EpmProject_UserView RTable 
+	                    Left Join ProjectWebApp..MSP_EpmResource_UserView LTable
 	                    On RTable.ProjectOwnerResourceUID = LTable.ResourceUID";
                 SqlCommand sqlCommand = new SqlCommand(commandText, new SqlConnection(_PWAConnString));
                 var dataTable = SqlQueryExecute.GetDataTable(commandText, _PWAConnString);
