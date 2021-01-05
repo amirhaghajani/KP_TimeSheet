@@ -453,6 +453,9 @@ function EditOrganUnit(e) {
 debugger;
     var grid = $("#GRDOrganisationUnits").data("kendoGrid");
     var dataItem = grid.dataItem($(e).closest("tr"));
+
+    debugger;
+    
     OrganUnit = dataItem;
     FillFormEditUnit();
     WNDEditAndAddOrgan_OnOpen();
@@ -491,7 +494,7 @@ function GRDOrganUsers_OnInit() {
         sortable: true,
         selectable: true,
         columns: [
-            { field: "FullName", title: "نام فرد", width: 50 },
+            { field: "fullName", title: "نام فرد", width: 50 },
             {
                 title: "حذف",
                 template: "<button onclick='DeleteFromUsers(this)' class='btn btn-warning btn-sm edit' name='info' title='حذف' > حذف</button>",

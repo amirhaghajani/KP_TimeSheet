@@ -305,6 +305,9 @@ function EditOrganUnit(e) {
 debugger;
     var grid = $("#GRDOrganisationUnits").data("kendoGrid");
     var dataItem = grid.dataItem($(e).closest("tr"));
+
+    debugger;
+    
     OrganUnit = dataItem;
     FillFormEditUnit();
     WNDEditAndAddOrgan_OnOpen();
