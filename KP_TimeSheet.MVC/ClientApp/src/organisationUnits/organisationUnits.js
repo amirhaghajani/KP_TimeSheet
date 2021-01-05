@@ -11,13 +11,22 @@ var SelectedManager = {};
 $("document").ready(function () {
     BuildNewOrganUnit();
 
-     
+     init();
      
 });
 
-$("#UnitTitle").keyup(function () {
-    OrganUnit.title = $("#UnitTitle").val();
-});
+
+
+function init(){
+    $("#UnitTitle").keyup(function () {
+        OrganUnit.title = $("#UnitTitle").val();
+    });
+
+    $("#btnAddNewUserToUnit").off().on('click',function(){ AddNewUserToUnit(); });
+    $("#btnApprove").off().on('click',function(){ SendOrganUnit(); });
+    $("#btnCancel").off().on('click',function(){ WNDEditAndAddOrgan_OnClose(); });
+
+}
 
 function BuildNewOrganUnit() {
 
@@ -140,7 +149,7 @@ function GRDOrganisationUnits_OnInit() {
             }
         },
         height: 600,
-        toolbar: "<a class='btn btn-info' id='home-tab'   onClick='AddNewUnit()' >افزودن واحد جدید</a> ",
+        toolbar: "<a class='btn btn-info' id='btnAddNewUnit' >افزودن واحد جدید</a> ",
         filterable: true,
         sortable: true,
         selectable: true,
@@ -150,7 +159,7 @@ function GRDOrganisationUnits_OnInit() {
 
             {
                 title: "ویرایش ",
-                template: "<button onclick='EditOrganUnit(this)' type='button' class='btn btn-warning btn-sm edit' name='info' title='ویرایش' > ویرایش</button>",
+                template: "<button type='button' class='btn btn-warning btn-sm edit forFoundBtnEdit' name='info' title='ویرایش' > ویرایش</button>",
                 headerTemplate: "<label class='text-center'> ویرایش </label>",
                 filterable: false,
                 sortable: false,
@@ -160,8 +169,14 @@ function GRDOrganisationUnits_OnInit() {
         pageable: {
             pageSize: 15,
             pageSizes: true
-        }
+        },
+        dataBound: dataBound
     });
+}
+
+function dataBound(){
+    $("#btnAddNewUnit").off().on('click',function(){ AddNewUnit(); });
+    $(".forFoundBtnEdit").off().on('click',function(){ EditOrganUnit(this); });
 }
 
 function AddNewUnit() {
@@ -287,7 +302,7 @@ function FindUserById(id) {
 }
 
 function EditOrganUnit(e) {
-
+debugger;
     var grid = $("#GRDOrganisationUnits").data("kendoGrid");
     var dataItem = grid.dataItem($(e).closest("tr"));
     OrganUnit = dataItem;

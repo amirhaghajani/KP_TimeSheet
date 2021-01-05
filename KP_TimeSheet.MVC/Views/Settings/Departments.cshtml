@@ -51,11 +51,11 @@
                                 <label class="checkbox-inline">
                                     <b id="chkperiodly" value="periodically">  انتخاب فرد جدید</b>
                                     <input id="DDLAddUser" type="text" class="form-control" placeholder="انتخاب کاربر..." value="" style="margin-right:5px;direction: rtl;width:150px;height:20px;margin-top:-10px" />
-                                    <button type="submit" class="btn btn-primary  shadow" title="افزودن کاربر به واحد سازمانی" style="margin-right:10px;height:15px" onclick="AddNewUserToUnit()">
-                                        <i style="margin-bottom:10px; font-size:1vw; margin-top:-5px" class="fa fa-address-book"></i>
+                                    <button type="submit" class="btn btn-primary  shadow" title="افزودن کاربر به واحد سازمانی" id="btnAddNewUserToUnit" style="margin-right:10px;height:15px">
+                                        <i style="margin-bottom:10px; font-size:1vw; margin-top:-5px" class="glyphicon glyphicon-book"></i>
                                     </button>
                                     <b id="chkperiodly" style="margin-right:20px">  مدیر واحد</b>
-                                    <input id="DDLtUnitManager" type="text" class="form-control" placeholder="انتخاب مدیر  واحد" value="" style="margin-right:5px;direction: rtl;width:200px;height:20px; margin-top:-15px" />
+                                    <input id="DDLtUnitManager" type="text" class="form-control" placeholder="انتخاب مدیر واحد" value="" style="margin-right:5px;direction: rtl;width:200px;height:20px; margin-top:-15px" />
                                 </label>
                             </div>
                             <div id="GRDOrganUsers" style="margin-top:5px" class="k-rtl"></div>
@@ -71,8 +71,8 @@
                     </table>*@
                         </div>
                     </div>
-                    <input type="submit" class="btn btn-success " onclick="SendOrganUnit()" value="تایید" />
-                    <input type="submit" style="margin-right:5px" class="btn btn-danger " onclick="WNDEditAndAddOrgan_OnClose()" value="انصراف  " />
+                    <input type="submit" class="btn btn-success " id="btnApprove" value="تایید" />
+                    <input type="submit" style="margin-right:5px" id="btnCancel" class="btn btn-danger " value="انصراف  " />
 
                 </div>
             </div>
