@@ -1,3 +1,4 @@
+const { RefreshTimeSheet } = require("../registerTimeSheet/mainGrid");
 
 const timeSheet = (function () {
 
@@ -35,16 +36,16 @@ const timeSheet = (function () {
     timeSheet_Prject.prototype.calcTime = function () {
         var sum = 0;
         for (var i = 0; i < this.workouts.length; i++) {
-            sum += this.workouts[i].hours;
+            sum += this.workouts[i].minutes;
         }
         return sum;
     }
 
 
-    function timeSheet_Workout(id, title, hours, state) {
+    function timeSheet_Workout(id, title, minutes, state) {
         this.id = id;
         this.title = title;
-        this.hours = hours;
+        this.minutes = minutes;
         this.state = state;
     }
 
@@ -67,6 +68,12 @@ const timeSheet = (function () {
         return `${hour}:${minut > 9 ? minut : '0' + minut} ${mainNumber<0 ? '-' : ''}`;
     }
 
+    function convertClockTextToMinute(clock){
+        if(!clock) return 0;
+        var array = clock.split(':');
+        return array[0]*60 + array[1]*1;
+    }
+
 
 
     function convertServerDataToTimeSheet_ForEmployee(response) {
@@ -87,7 +94,6 @@ const timeSheet = (function () {
         const diffHozoorKarkard = new timeSheet_Row(4, null, "اختلاف حضور و کارکرد", "-", "eb96abcb-d37d-4aa1-1004-e1f4a753bee5", []);
         data.push(diffHozoorKarkard);
 
-        debugger;
         const projects = [];
         const times = private_findTimesAndProjects(response, hozoor, hozoorDetail, karkard, diffHozoorKarkard, projects, null);
 
@@ -198,7 +204,7 @@ const timeSheet = (function () {
                     date: t.date,
                     persianDate: t.persianDate,
                     title: t.persianDate,
-                    value: convertNumberToTime(0)
+                    value: convertMinutsToTime(0)
                 };
                 r.workouts.forEach(w => {
                     const newItemForW = { ...newItem };
@@ -206,13 +212,13 @@ const timeSheet = (function () {
 
                     if (i > -1) {
                         var wwIndex = t.projects[i].workouts.findIndex(ww => ww.id == w.uid);
-                        if (wwIndex > -1) newItemForW.value = convertNumberToTime(t.projects[i].workouts[wwIndex].hours);
+                        if (wwIndex > -1) newItemForW.value = convertMinutsToTime(t.projects[i].workouts[wwIndex].minutes);
                     }
 
                 })
 
                 if (i > -1) {
-                    newItem.value = convertNumberToTime(t.projects[i].calcTime());
+                    newItem.value = convertMinutsToTime(t.projects[i].calcTime());
                 }
 
                 r.values.push(newItem);
@@ -252,26 +258,26 @@ const timeSheet = (function () {
 
                     if (wantedState && dbWorkout.state != wantedState) continue;
 
-                    let sumHours = dbWorkout.hours;
+                    let sumMinutes = dbWorkout.minutes;
 
                     // for (let k2 = k + 1; k2 < dbProject.workouts.length; k2++) {
                     //     const dbWorkout2 = dbProject.workouts[k2];
                     //     if (dbWorkout2.id == dbWorkout.id && (!wantedState || cWorkout2.state == wantedState)) {
-                    //         sumHours += dbWorkout2.hours;
+                    //         sumMinutes += dbWorkout2.minutes;
                     //     }
                     // }
 
-                    const cWorkout = new timeSheet_Workout(dbWorkout.id, dbWorkout.title, sumHours, dbWorkout.state);
+                    const cWorkout = new timeSheet_Workout(dbWorkout.id, dbWorkout.title, sumMinutes, dbWorkout.state);
 
                     cProject.workouts.push(cWorkout);
 
                     const index = savedProject.workouts.findIndex(p => p.id == cWorkout.id);
                     if (index == -1) {
                         savedProject.workouts.push({
-                            id: cWorkout.id, title: cWorkout.title, state: cWorkout.state, hours: sumHours
+                            id: cWorkout.id, title: cWorkout.title, state: cWorkout.state, minutes: sumMinutes
                         })
                     } else {
-                        savedProject.workouts[index].hours += sumHours;
+                        savedProject.workouts[index].minutes += sumMinutes;
                     }
                 }
 
@@ -303,7 +309,7 @@ const timeSheet = (function () {
                 persianDate: cTime.persianDate,
                 persianDay: cTime.persianDay,
                 title: cTime.persianDate,
-                value: convertNumberToTime(cTime.calcTime()),
+                value: convertMinutsToTime(cTime.calcTime()),
                 minute: cTime.calcTime()
             });
             if (diffHozoorKarkard) diffHozoorKarkard.values.push({
@@ -311,12 +317,27 @@ const timeSheet = (function () {
                 persianDate: cTime.persianDate,
                 persianDay: cTime.persianDay,
                 title: cTime.persianDate,
-                value: convertMinutsToTime(dbTime.hozoor - (cTime.calcTime() * 60)),
-                minute: dbTime.hozoor - (cTime.calcTime()*60)
+                value: convertMinutsToTime(dbTime.hozoor - cTime.calcTime() ),
+                minute: dbTime.hozoor - cTime.calcTime()
             });
         }
 
         return times;
+    }
+
+    function calcPercent(inputs, wanted){
+
+        if(wanted<0) return 0;
+
+        var max = 0;
+
+        for(var k in inputs){
+            if(inputs[k]> max) max = inputs[k];
+        }
+
+        if(max<6000) max=6000;
+
+        return 100 * wanted / max;
     }
 
 
@@ -324,7 +345,9 @@ const timeSheet = (function () {
     return {
         convertServerDataToTimeSheet_ForEmployee: convertServerDataToTimeSheet_ForEmployee,
         convertServerDataToTimeSheet_ForApprove: convertServerDataToTimeSheet_ForApprove,
-        convertNumberToTime: convertNumberToTime
+        convertMinutsToTime: convertMinutsToTime,
+        convertClockTextToMinute:convertClockTextToMinute,
+        calcPercent: calcPercent
     }
 
 })();
@@ -332,5 +355,7 @@ const timeSheet = (function () {
 module.exports = {
     convertServerDataToTimeSheet_ForEmployee: timeSheet.convertServerDataToTimeSheet_ForEmployee,
     convertServerDataToTimeSheet_ForApprove: timeSheet.convertServerDataToTimeSheet_ForApprove,
-    convertNumberToTime: timeSheet.convertNumberToTime
+    convertMinutsToTime: timeSheet.convertMinutsToTime,
+    convertClockTextToMinute: timeSheet.convertClockTextToMinute,
+    calcPercent: timeSheet.calcPercent
 };

@@ -29,7 +29,7 @@ namespace KP.TimeSheets.MVC
             result.PersianDate = DateUtility.GetPersianDate(entity.Date);
             result.Description = entity.Description;
             result.UserName = entity.Employee.UserName;
-            result.Hours = entity.Hours;
+            result.Minutes = entity.Minutes;
             result.ProjectTitle = entity.Project.Title;
             result.TaskTitle = entity.Task.Title;
             result.WorkFlowStageTitle = entity.WorkflowStage.Title;

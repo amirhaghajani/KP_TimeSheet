@@ -289,15 +289,15 @@ namespace KP.TimeSheets.Domain
                 persent.Date = currentDay;
                 persent.EmployeeID = user.ID;
                 persent.ID = Guid.NewGuid();
-                persent.Hours = 0;
+                persent.Minutes = 0;
                 result.Add(persent);
             }
             foreach (var mision in Missions)
             {
                 if (!result.Any(x => x.Date.Date == mision.Date.Date))
-                    result.Add(new PresenceHour() { ID = Guid.NewGuid(), Date = mision.Date, Hours = mision.Hours, EmployeeID = user.ID, Employee = user });
+                    result.Add(new PresenceHour() { ID = Guid.NewGuid(), Date = mision.Date, Minutes = mision.Minutes, EmployeeID = user.ID, Employee = user });
 
-                result.First(x => x.Date.Date == mision.Date.Date).Hours += mision.Hours;
+                result.First(x => x.Date.Date == mision.Date.Date).Minutes += mision.Minutes;
 
             }
 

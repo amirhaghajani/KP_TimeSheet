@@ -48,7 +48,7 @@ namespace KP.TimeSheets.MVC
         /// <summary>
         /// میزان ساعت کاری
         /// </summary>
-        public object Hours { get; set; }
+        public int Minutes { get; set; }
 
         /// <summary>
         /// شناسه مرتبط با مرحله جاری گردش کار ساعت کارکرد 

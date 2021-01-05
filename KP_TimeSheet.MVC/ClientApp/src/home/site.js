@@ -85,7 +85,7 @@ function Page_OnInitThisMonth(response) {
 
 function Page_OnInitWaitApprove(response) {
 
-    $("#hoursWaitingToApprove").text(commonTimesheet.convertNumberToTime(response.hours));
-    $("#hoursWaitingToApprovePercent").width(response.hours);
+    $("#hoursWaitingToApprove").text(commonTimesheet.convertMinutsToTime(response.minutes));
+    $("#hoursWaitingToApprovePercent").width(response.minutes);
 
 }

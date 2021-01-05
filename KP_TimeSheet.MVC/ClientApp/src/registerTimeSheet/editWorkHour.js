@@ -4,13 +4,14 @@
 //____________ویرایش
 const editWorkHour = (function () {
 
-	const moduleData={};
+	const moduleData = {};
 
-	function init(mainGrid, common,common_register, data) {
+	function init(mainGrid, common, common_register, data, common_timeSheet) {
 		moduleData.mainGrid = mainGrid;
 		moduleData.common = common;
 		moduleData.common_register = common_register;
 		moduleData.data = data;
+		moduleData.common_timeSheet = common_timeSheet;
 
 		$('#btnEditWorkHour').off().on('click', function () {
 			WndEditWorkHours_OnInit();
@@ -27,10 +28,13 @@ const editWorkHour = (function () {
 
 		var kwndSaveWHs = $("#WndEditWorkHours");
 		kwndSaveWHs.kendoWindow({
-			width: "900px",
-			height: "650",
+			width: moduleData.common.window_width(),
+			height: moduleData.common.window_height(),
 
-			scrollable: false,
+			activate: moduleData.common.addNoScrollToBody,
+			deactivate: moduleData.common.removeNoScrollToBody,
+
+			scrollable: true,
 			visible: false,
 			modal: true,
 			actions: [
@@ -58,6 +62,10 @@ const editWorkHour = (function () {
 			dataType: "json",
 			data: prmData,
 			success: function (response) {
+				for (var k in response) {
+					const item = response[k];
+					item.time = moduleData.common_timeSheet.convertMinutsToTime(item.minutes);
+				}
 				moduleData.data.workHours_set(response);
 				Init_GrdEditWorkHour();
 			},
@@ -95,7 +103,7 @@ const editWorkHour = (function () {
 				field: "taskTitle",
 				title: "وظیفه"
 			}, {
-				field: "hours",
+				field: "time",
 				title: "ساعت کار ثبت شده    "
 			},
 
@@ -114,8 +122,8 @@ const editWorkHour = (function () {
 		});
 	}
 
-	function GrdEditWorkHour_DataBound(e){
-		$('.forFound_DeleteWorkHourEditGrid').off().on('click',function(){
+	function GrdEditWorkHour_DataBound(e) {
+		$('.forFound_DeleteWorkHourEditGrid').off().on('click', function () {
 			DeleteWorkHourEditGrid(this);
 		});
 	}

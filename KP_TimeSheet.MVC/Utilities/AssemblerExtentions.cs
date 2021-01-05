@@ -69,7 +69,7 @@ namespace KP.TimeSheets.MVC
                 result.ID = entity.ID;
                 result.Date = entity.Date;
                 result.TaskID = entity.Task.ID;
-                result.Hours = entity.Hours;
+                result.Minutes = entity.Minutes;
           
             return result;
         }
@@ -95,7 +95,7 @@ namespace KP.TimeSheets.MVC
                 result.EmployeeID = jsonObject.EmployeeID.Value;
                 result.TaskID = jsonObject.TaskID;
                 result.ProjectId = jsonObject.ProjectID;
-                result.Hours = Math.Round(TimeSpan.Parse(jsonObject.Hours.ToString()).TotalHours, 2);
+                result.Minutes = jsonObject.Minutes;
                 result.WorkflowStageID = jsonObject.WorkflowStageID;
            
               

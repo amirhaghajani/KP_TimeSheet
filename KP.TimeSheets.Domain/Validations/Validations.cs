@@ -16,17 +16,17 @@ namespace KP.TimeSheets.Domain
             List<string> result = new List<string>();
             if (workHour == null)
                 result.Add("کارکرد خالی میباشد");
-            if (workHour.Hours <= 0)
+            if (workHour.Minutes <= 0)
                 result.Add("ساعت کارکرد خالی میباشد");
-            if (workHour.Date == null )
+            if (workHour.Date == DateTime.MinValue )
                 result.Add("تاریخ کارکرد خالی میباشد");
-            if (workHour.EmployeeID == null)
+            if (workHour.EmployeeID == Guid.Empty)
                 result.Add("کاربر خالی میباشد");
-            if (workHour.WorkflowStageID == null)
+            if (workHour.WorkflowStageID == Guid.Empty)
                 result.Add("مرحله کارکرد خالی میباشد");
-            if (workHour.TaskID == null)
+            if (workHour.TaskID == Guid.Empty)
                 result.Add("وظیفه کارکرد خالی میباشد");
-            if (workHour.ProjectId == null)
+            if (workHour.ProjectId == Guid.Empty)
                 result.Add("پروژه کارکرد خالی میباشد");
 
             return result;
@@ -57,17 +57,17 @@ namespace KP.TimeSheets.Domain
             List<string> result = new List<string>();
             if (workHour == null)
                 result.Add("کارکرد خالی میباشد");
-            if (workHour.Hours <= 0)
+            if (workHour.Minutes <= 0)
                 result.Add("ساعت کارکرد خالی میباشد");
-            if (workHour.Date == null)
+            if (workHour.Date == DateTime.MinValue)
                 result.Add("تاریخ کارکرد خالی میباشد");
-            if (workHour.EmployeeID == null)
+            if (workHour.EmployeeID == Guid.Empty)
                 result.Add("کاربر خالی میباشد");
-            if (workHour.WorkflowStageID == null)
+            if (workHour.WorkflowStageID == Guid.Empty)
                 result.Add("مرحله کارکرد خالی میباشد");
-            if (workHour.TaskID == null)
+            if (workHour.TaskID == Guid.Empty)
                 result.Add("وظیفه کارکرد خالی میباشد");
-            if (workHour.ProjectId == null)
+            if (workHour.ProjectId == Guid.Empty)
                 result.Add("پروژه کارکرد خالی میباشد");
            
 

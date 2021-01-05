@@ -21,9 +21,8 @@ namespace KP.TimeSheets.MVC
         }
 
         static DateTime _defDD = new DateTime().AddYears(2000);
-        public static string ConvertToTimeSpan(double time)
+        public static string ConvertToTimeSpan(int minutes)
         {
-            var minutes = time * 60;
             var hour =(int) minutes / 60;
             var minute = minutes % 60;
             return hour + ":" + minute.ToString("00");

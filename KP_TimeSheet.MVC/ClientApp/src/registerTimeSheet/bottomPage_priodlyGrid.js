@@ -5,8 +5,9 @@ const priodGrid = (function () {
 
     const moduleData={};
 
-    function init(data) {
+    function init(data,common_timeSheet) {
         moduleData.data = data;
+        moduleData.common_timeSheet = common_timeSheet;
     }
 
     function InitPeriodlyByProjectsGrid() {
@@ -20,12 +21,18 @@ const priodGrid = (function () {
             data: prmData,
             success: function (response) {
                 _thisPerioddata = response;
-                $("#LblperHourCurrPeriod").text(response.presence);
-                $("#LblworkHourCurrPeriod").text(response.work);
-                $("#LblPeriodicallyDefference").text(response.defference);
-                $("#PRBperHourCurrPeriod").width(response.presencepercent);
-                $("#PRBworkHourCurrPeriod").width(response.workpercent);
-                $("#PRGPeriodicallyDefferencePercent").width(response.defferencepercent);
+
+                const items = [response.presencepercent, response.workpercent, response.defferencepercent];
+                const v1= moduleData.common_timeSheet.calcPercent(items, response.presencepercent);
+                const v2 = moduleData.common_timeSheet.calcPercent(items, response.workpercent);
+                const v3 = moduleData.common_timeSheet.calcPercent(items, response.defferencepercent);
+
+                $("#LblperHourCurrPeriod").text(moduleData.common_timeSheet.convertMinutsToTime(response.presence));
+                $("#LblworkHourCurrPeriod").text(moduleData.common_timeSheet.convertMinutsToTime(response.work));
+                $("#LblPeriodicallyDefference").text(moduleData.common_timeSheet.convertMinutsToTime(response.defference));
+                $("#PRBperHourCurrPeriod").css('width', v1+'%').attr('aria-valuenow', v1);
+                $("#PRBworkHourCurrPeriod").css('width', v2+'%').attr('aria-valuenow', v2);
+                $("#PRGPeriodicallyDefferencePercent").css('width', v3+'%').attr('aria-valuenow', v3);
             },
             error: function (e) {
 

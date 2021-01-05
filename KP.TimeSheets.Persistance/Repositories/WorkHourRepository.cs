@@ -98,7 +98,7 @@ namespace KP.TimeSheets.Persistance
             entity.ProjectId = workHour.ProjectId;
             entity.EmployeeID = workHour.EmployeeID;
             entity.TaskID = workHour.TaskID;
-            entity.Hours = workHour.Hours;
+            entity.Minutes = workHour.Minutes;
             entity.PreviousStage = workHour.PreviousStage;
             entity.WorkflowStageID = workHour.WorkflowStageID;
             entity.ID = workHour.ID;

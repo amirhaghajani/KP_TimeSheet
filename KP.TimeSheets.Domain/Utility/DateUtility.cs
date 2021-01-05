@@ -9,12 +9,13 @@ namespace KP.TimeSheets.Domain
 
 
 
-        public static double SubtarctToANdFromDateTimeToDouble(DateTime From , DateTime To)
+        public static int SubtarctToANdFromDateTimeToInt(DateTime From , DateTime To)
         {
-            TimeSpan span = To.Subtract(From);
-            var datetime = new DateTime(span.Ticks).ToString("H:mm");
-            string datetimestring = datetime.ToString().Replace(":", ".");
-           return double.Parse(datetimestring, CultureInfo.InvariantCulture);
+        //     TimeSpan span = To.Subtract(From);
+        //     var datetime = new DateTime(span.Ticks).ToString("H:mm");
+        //     string datetimestring = datetime.ToString().Replace(":", ".");
+        //    return double.Parse(datetimestring, CultureInfo.InvariantCulture);
+            return (To-From).Minutes;
         }
 
 

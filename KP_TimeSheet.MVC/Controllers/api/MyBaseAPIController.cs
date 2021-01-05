@@ -1,6 +1,7 @@
 using System;
 using KP.TimeSheets.Persistance;
 using Microsoft.AspNetCore.Mvc;
+using KP.TimeSheets.Domain;
 
 namespace KP.TimeSheets.MVC
 {
@@ -53,6 +54,11 @@ namespace KP.TimeSheets.MVC
         public IActionResult ReturnError(Exception ex, string errorText)
         {
             var error = errorText + " - " + ex.Message + (ex.InnerException == null ? "" : " - " + ex.InnerException.Message);
+            return this.StatusCode(statusCode: (int)System.Net.HttpStatusCode.BadRequest, value: error);
+        }
+        public IActionResult ReturnError(ValidationException validationException, string errorText)
+        {
+            var error = errorText + " - " + string.Join(", ",validationException.Errors);
             return this.StatusCode(statusCode: (int)System.Net.HttpStatusCode.BadRequest, value: error);
         }
 

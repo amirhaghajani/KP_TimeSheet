@@ -154,7 +154,7 @@ namespace KP.TimeSheets.MVC
                 var addItem = new WorkHourOnProjecstJson();
                 addItem.ProjectId = item.ProjectId;
                 addItem.Title = item.Project.Title;
-                var hour = all.Where(a => a.ProjectId == item.ProjectId).Sum(d => d.Hours);
+                var hour = all.Where(a => a.ProjectId == item.ProjectId).Sum(d => d.Minutes);
                 addItem.Hour = DateUtility.ConvertToTimeSpan(hour);
                 result.Add(addItem);
             }
@@ -309,9 +309,10 @@ namespace KP.TimeSheets.MVC
         }
 
         [HttpPost("[action]")]
-        public List<string> SaveWorkHours(WorkHourJson workHourJson)
+        [ProducesResponseType(typeof(List<string>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult SaveWorkHours(WorkHourJson workHourJson)
         {
-
             List<string> result = new List<string>();
 
             try
@@ -334,14 +335,14 @@ namespace KP.TimeSheets.MVC
                 workHour.Description = workHourJson.Description;
                 tsManager.SaveWorkHour(workHour);
                 HistoryUtilities.RegisterSaveHistory(workHour, this._uow, currUser);
-            }
 
+                return Ok(result);
+            }
             catch (ValidationException ex)
             {
-
-                result = ex.Errors;
+                return this.ReturnError(ex, "خطا در ثبت ساعت کاری");
             }
-            return result;
+            
         }
 
         [HttpPost("[action]")]
@@ -413,7 +414,7 @@ namespace KP.TimeSheets.MVC
             User currUser = new UserHelper().GetCurrent(this._uow, this.UserName);
             var answer = WHM.GetPresenceHourByUserIdAndDate(currUser.ID, workHourJson.Date);
 
-            var answer2 = new { date = answer.Date, hours = answer.Hours };
+            var answer2 = new { date = workHourJson.Date, minutes = answer!=null ? answer.Minutes : 0 };
 
             return answer2;
         }
@@ -485,7 +486,7 @@ namespace KP.TimeSheets.MVC
 
                 // var presenceour = timesheetManager.GetyesterdayPresencHoursByUserId(currUser.ID);
                 // var workours = timesheetManager.GetyesterdayworkHoursByUserId(currUser.ID);
-                return Ok(new {hours= item[0].Hours } );
+                return Ok(new {minutes= item[0].Minutes } );
             }
             catch (Exception ex)
             {
@@ -530,7 +531,7 @@ namespace KP.TimeSheets.MVC
                 var addItem = new WorkHourOnProjecstJson();
                 addItem.ProjectId = item.ProjectId;
                 addItem.Title = item.Project.Title;
-                var hour = all.Where(a => a.ProjectId == item.ProjectId).Sum(d => d.Hours);
+                var hour = all.Where(a => a.ProjectId == item.ProjectId).Sum(d => d.Minutes);
                 addItem.Hour = DateUtility.ConvertToTimeSpan(hour);
                 result.Add(addItem);
             }
@@ -571,7 +572,7 @@ namespace KP.TimeSheets.MVC
                 var addItem = new WorkHourOnProjecstJson();
                 addItem.ProjectId = item.ProjectId;
                 addItem.Title = item.Project.Title;
-                var hour = all.Where(a => a.ProjectId == item.ProjectId).Sum(d => d.Hours);
+                var hour = all.Where(a => a.ProjectId == item.ProjectId).Sum(d => d.Minutes);
                 addItem.Hour = DateUtility.ConvertToTimeSpan(hour);
                 result.Add(addItem);
             }
@@ -623,7 +624,7 @@ namespace KP.TimeSheets.MVC
                 var addItem = new WorkHourOnProjecstJson();
                 addItem.ProjectId = item.ProjectId;
                 addItem.Title = item.Project.Title;
-                var hour = all.Where(a => a.ProjectId == item.ProjectId).Sum(d => d.Hours);
+                var hour = all.Where(a => a.ProjectId == item.ProjectId).Sum(d => d.Minutes);
                 addItem.Hour = DateUtility.ConvertToTimeSpan(hour);
                 result.Add(addItem);
             }

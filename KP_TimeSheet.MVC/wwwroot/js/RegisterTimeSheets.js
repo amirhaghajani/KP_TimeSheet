@@ -1,7 +1,7 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 const common = (function () {
 
-	function version(){return "0.0.0.3";}
+	function version(){return "0.0.0.4";}
 
 	function doExport(selector, params) {
 		var options = {
@@ -92,11 +92,18 @@ const common = (function () {
 	}
 
 	//----------------------------------------------------------
+	
+	function window_width(){
+		let w = $( window ).width();
+		if(w>1000) w=1000;
+		return w + "px";
+	}
 	function window_height(){
 		return ($( window ).height() - 50) + "px";
 	}
 	function addNoScrollToBody(){
 		$("body").addClass("ob-no-scroll");
+		$(".k-widget.k-window").css('top',$("body").scrollTop()+5+'px');
 	}
 	function removeNoScrollToBody(){
 		$("body").removeClass("ob-no-scroll");
@@ -110,6 +117,8 @@ const common = (function () {
 		adjustSize: adjustSize,
 
 		window_height: window_height,
+		window_width: window_width,
+
 		addNoScrollToBody: addNoScrollToBody,
 		removeNoScrollToBody: removeNoScrollToBody,
 
@@ -128,6 +137,8 @@ module.exports = {
 	'adjustSize': common.adjustSize,
 
 	window_height: common.window_height,
+	window_width: common.window_width,
+
 	addNoScrollToBody: common.addNoScrollToBody,
 	removeNoScrollToBody: common.removeNoScrollToBody,
 
@@ -135,6 +146,7 @@ module.exports = {
 };
 
 },{}],2:[function(require,module,exports){
+const { RefreshTimeSheet } = require("../registerTimeSheet/mainGrid");
 
 const timeSheet = (function () {
 
@@ -172,16 +184,16 @@ const timeSheet = (function () {
     timeSheet_Prject.prototype.calcTime = function () {
         var sum = 0;
         for (var i = 0; i < this.workouts.length; i++) {
-            sum += this.workouts[i].hours;
+            sum += this.workouts[i].minutes;
         }
         return sum;
     }
 
 
-    function timeSheet_Workout(id, title, hours, state) {
+    function timeSheet_Workout(id, title, minutes, state) {
         this.id = id;
         this.title = title;
-        this.hours = hours;
+        this.minutes = minutes;
         this.state = state;
     }
 
@@ -204,6 +216,12 @@ const timeSheet = (function () {
         return `${hour}:${minut > 9 ? minut : '0' + minut} ${mainNumber<0 ? '-' : ''}`;
     }
 
+    function convertClockTextToMinute(clock){
+        if(!clock) return 0;
+        var array = clock.split(':');
+        return array[0]*60 + array[1]*1;
+    }
+
 
 
     function convertServerDataToTimeSheet_ForEmployee(response) {
@@ -224,7 +242,6 @@ const timeSheet = (function () {
         const diffHozoorKarkard = new timeSheet_Row(4, null, "اختلاف حضور و کارکرد", "-", "eb96abcb-d37d-4aa1-1004-e1f4a753bee5", []);
         data.push(diffHozoorKarkard);
 
-        debugger;
         const projects = [];
         const times = private_findTimesAndProjects(response, hozoor, hozoorDetail, karkard, diffHozoorKarkard, projects, null);
 
@@ -335,7 +352,7 @@ const timeSheet = (function () {
                     date: t.date,
                     persianDate: t.persianDate,
                     title: t.persianDate,
-                    value: convertNumberToTime(0)
+                    value: convertMinutsToTime(0)
                 };
                 r.workouts.forEach(w => {
                     const newItemForW = { ...newItem };
@@ -343,13 +360,13 @@ const timeSheet = (function () {
 
                     if (i > -1) {
                         var wwIndex = t.projects[i].workouts.findIndex(ww => ww.id == w.uid);
-                        if (wwIndex > -1) newItemForW.value = convertNumberToTime(t.projects[i].workouts[wwIndex].hours);
+                        if (wwIndex > -1) newItemForW.value = convertMinutsToTime(t.projects[i].workouts[wwIndex].minutes);
                     }
 
                 })
 
                 if (i > -1) {
-                    newItem.value = convertNumberToTime(t.projects[i].calcTime());
+                    newItem.value = convertMinutsToTime(t.projects[i].calcTime());
                 }
 
                 r.values.push(newItem);
@@ -389,26 +406,26 @@ const timeSheet = (function () {
 
                     if (wantedState && dbWorkout.state != wantedState) continue;
 
-                    let sumHours = dbWorkout.hours;
+                    let sumMinutes = dbWorkout.minutes;
 
                     // for (let k2 = k + 1; k2 < dbProject.workouts.length; k2++) {
                     //     const dbWorkout2 = dbProject.workouts[k2];
                     //     if (dbWorkout2.id == dbWorkout.id && (!wantedState || cWorkout2.state == wantedState)) {
-                    //         sumHours += dbWorkout2.hours;
+                    //         sumMinutes += dbWorkout2.minutes;
                     //     }
                     // }
 
-                    const cWorkout = new timeSheet_Workout(dbWorkout.id, dbWorkout.title, sumHours, dbWorkout.state);
+                    const cWorkout = new timeSheet_Workout(dbWorkout.id, dbWorkout.title, sumMinutes, dbWorkout.state);
 
                     cProject.workouts.push(cWorkout);
 
                     const index = savedProject.workouts.findIndex(p => p.id == cWorkout.id);
                     if (index == -1) {
                         savedProject.workouts.push({
-                            id: cWorkout.id, title: cWorkout.title, state: cWorkout.state, hours: sumHours
+                            id: cWorkout.id, title: cWorkout.title, state: cWorkout.state, minutes: sumMinutes
                         })
                     } else {
-                        savedProject.workouts[index].hours += sumHours;
+                        savedProject.workouts[index].minutes += sumMinutes;
                     }
                 }
 
@@ -440,7 +457,7 @@ const timeSheet = (function () {
                 persianDate: cTime.persianDate,
                 persianDay: cTime.persianDay,
                 title: cTime.persianDate,
-                value: convertNumberToTime(cTime.calcTime()),
+                value: convertMinutsToTime(cTime.calcTime()),
                 minute: cTime.calcTime()
             });
             if (diffHozoorKarkard) diffHozoorKarkard.values.push({
@@ -448,12 +465,27 @@ const timeSheet = (function () {
                 persianDate: cTime.persianDate,
                 persianDay: cTime.persianDay,
                 title: cTime.persianDate,
-                value: convertMinutsToTime(dbTime.hozoor - (cTime.calcTime() * 60)),
-                minute: dbTime.hozoor - (cTime.calcTime()*60)
+                value: convertMinutsToTime(dbTime.hozoor - cTime.calcTime() ),
+                minute: dbTime.hozoor - cTime.calcTime()
             });
         }
 
         return times;
+    }
+
+    function calcPercent(inputs, wanted){
+
+        if(wanted<0) return 0;
+
+        var max = 0;
+
+        for(var k in inputs){
+            if(inputs[k]> max) max = inputs[k];
+        }
+
+        if(max<6000) max=6000;
+
+        return 100 * wanted / max;
     }
 
 
@@ -461,7 +493,9 @@ const timeSheet = (function () {
     return {
         convertServerDataToTimeSheet_ForEmployee: convertServerDataToTimeSheet_ForEmployee,
         convertServerDataToTimeSheet_ForApprove: convertServerDataToTimeSheet_ForApprove,
-        convertNumberToTime: convertNumberToTime
+        convertMinutsToTime: convertMinutsToTime,
+        convertClockTextToMinute:convertClockTextToMinute,
+        calcPercent: calcPercent
     }
 
 })();
@@ -469,9 +503,11 @@ const timeSheet = (function () {
 module.exports = {
     convertServerDataToTimeSheet_ForEmployee: timeSheet.convertServerDataToTimeSheet_ForEmployee,
     convertServerDataToTimeSheet_ForApprove: timeSheet.convertServerDataToTimeSheet_ForApprove,
-    convertNumberToTime: timeSheet.convertNumberToTime
+    convertMinutsToTime: timeSheet.convertMinutsToTime,
+    convertClockTextToMinute: timeSheet.convertClockTextToMinute,
+    calcPercent: timeSheet.calcPercent
 };
-},{}],3:[function(require,module,exports){
+},{"../registerTimeSheet/mainGrid":13}],3:[function(require,module,exports){
 const service = (function () {
 
 	const moduleData = {};
@@ -768,9 +804,9 @@ $(document).ready(function () {
     common.loaderShow();
 
     data.init();
-    bottomPage_monthlyGrid.init(data);
-    bottomPage_priodlyGrid.init(data);
-    service.init(data, common_timeSheet);
+    bottomPage_monthlyGrid.init(data, common_timeSheet);
+    bottomPage_priodlyGrid.init(data, common_timeSheet);
+    service.init(data, common_timeSheet, common);
 
     $('#registerTiemSheet_exportToExcel').off().on('click', function () {
         common.doExport('#ktrlTimeSheets', { type: 'excel' });
@@ -779,8 +815,8 @@ $(document).ready(function () {
         common.doExport('#ktrlTimeSheets', { type: 'doc' });
     });
 
-    editWindow.init(mainGrid, common, common_register, data);
-    history_sentWorkHour.init(common, common_register, history_workHour, data);
+    editWindow.init(mainGrid, common, common_register, data, common_timeSheet);
+    history_sentWorkHour.init(common, common_register, history_workHour, data, common_timeSheet);
 
     mainGrid.init(common, common_register, createNewWorkHour, history_sentWorkHour, sendWorkHour, data, 
         service, editWindow,history_sentWorkHour, bottomPage_priodlyGrid, bottomPage_monthlyGrid);
@@ -793,8 +829,8 @@ $(document).ready(function () {
         period_next_pervious.init(common, common_register, mainGrid,
             bottomPage_monthlyGrid, history_sentWorkHour, bottomPage_priodlyGrid, editWindow, data, service,serviceConfirm);
 
-        createNewWorkHour.init(common, common_register, period_next_pervious, data, service);
-        sendWorkHour.init(mainGrid, common, common_register, data);
+        createNewWorkHour.init(common, common_register, period_next_pervious, data, service,common_timeSheet);
+        sendWorkHour.init(mainGrid, common, common_register, data, common_timeSheet);
 
         history_workHour.init(common, data);
         
@@ -849,8 +885,10 @@ const monthlyGrid =(function(){
 
     const moduleData={};
 
-    function init(data){
+    function init(data, common_timeSheet){
         moduleData.data = data;
+        moduleData.common_timeSheet = common_timeSheet;
+
     }
 
     function InitMonthlyByProjectsGrid() {
@@ -862,13 +900,18 @@ const monthlyGrid =(function(){
             dataType: "json",
             data: prmData,
             success: function (response) {
+                const items = [response.presencepercent, response.workpercent, response.defferencepercent];
+                const v1= moduleData.common_timeSheet.calcPercent(items, response.presencepercent);
+                const v2 = moduleData.common_timeSheet.calcPercent(items, response.workpercent);
+                const v3 = moduleData.common_timeSheet.calcPercent(items, response.defferencepercent);
+
                 moduleData.data.thisMonthdata_set(response);
-                $("#MonthlyPresence").text(response.presence);
-                $("#MonthlyWorkHour").text(response.work);
-                $("#MonthlyDefference").text(response.defference);
-                $("#MonthlyPresencePercent").width(response.presencepercent);
-                $("#MonthlyWorkHourPercent").width(response.workpercent);
-                $("#MonthlyDefferencePercent").width(response.defferencepercent);
+                $("#MonthlyPresence").text(moduleData.common_timeSheet.convertMinutsToTime(response.presence));
+                $("#MonthlyWorkHour").text(moduleData.common_timeSheet.convertMinutsToTime(response.work));
+                $("#MonthlyDefference").text(moduleData.common_timeSheet.convertMinutsToTime(response.defference));
+                $("#MonthlyPresencePercent").css('width', v1+'%').attr('aria-valuenow', v1);
+                $("#MonthlyWorkHourPercent").css('width', v2+'%').attr('aria-valuenow', v2);
+                $("#MonthlyDefferencePercent").css('width', v3+'%').attr('aria-valuenow', v3);
             },
             error: function (e) {
     
@@ -936,8 +979,9 @@ const priodGrid = (function () {
 
     const moduleData={};
 
-    function init(data) {
+    function init(data,common_timeSheet) {
         moduleData.data = data;
+        moduleData.common_timeSheet = common_timeSheet;
     }
 
     function InitPeriodlyByProjectsGrid() {
@@ -951,12 +995,18 @@ const priodGrid = (function () {
             data: prmData,
             success: function (response) {
                 _thisPerioddata = response;
-                $("#LblperHourCurrPeriod").text(response.presence);
-                $("#LblworkHourCurrPeriod").text(response.work);
-                $("#LblPeriodicallyDefference").text(response.defference);
-                $("#PRBperHourCurrPeriod").width(response.presencepercent);
-                $("#PRBworkHourCurrPeriod").width(response.workpercent);
-                $("#PRGPeriodicallyDefferencePercent").width(response.defferencepercent);
+
+                const items = [response.presencepercent, response.workpercent, response.defferencepercent];
+                const v1= moduleData.common_timeSheet.calcPercent(items, response.presencepercent);
+                const v2 = moduleData.common_timeSheet.calcPercent(items, response.workpercent);
+                const v3 = moduleData.common_timeSheet.calcPercent(items, response.defferencepercent);
+
+                $("#LblperHourCurrPeriod").text(moduleData.common_timeSheet.convertMinutsToTime(response.presence));
+                $("#LblworkHourCurrPeriod").text(moduleData.common_timeSheet.convertMinutsToTime(response.work));
+                $("#LblPeriodicallyDefference").text(moduleData.common_timeSheet.convertMinutsToTime(response.defference));
+                $("#PRBperHourCurrPeriod").css('width', v1+'%').attr('aria-valuenow', v1);
+                $("#PRBworkHourCurrPeriod").css('width', v2+'%').attr('aria-valuenow', v2);
+                $("#PRGPeriodicallyDefferencePercent").css('width', v3+'%').attr('aria-valuenow', v3);
             },
             error: function (e) {
 
@@ -1037,38 +1087,39 @@ module.exports={
 
 
 //_____________________پنجره ذخیره
-const module_createNewRorkHour =(function(){
+const module_createNewRorkHour = (function () {
 
-    const moduleData={};
+    const moduleData = {};
 
-    function init(common,common_register,period_next_pervious,data, service){
+    function init(common, common_register, period_next_pervious, data, service, common_timeSheet) {
         moduleData.common = common;
         moduleData.common_register = common_register;
         moduleData.period_next_pervious = period_next_pervious;
         moduleData.data = data;
         moduleData.service = service;
+        moduleData.common_timeSheet = common_timeSheet;
 
-        $('#btnCancel_kwndSaveWHs').off().on('click',function(){
+        $('#btnCancel_kwndSaveWHs').off().on('click', function () {
             kwndSaveWHs_OnClose();
         });
-        $('#btnSaveWorkHours_kwndSaveWHs').off().on('click',function(){
+        $('#btnSaveWorkHours_kwndSaveWHs').off().on('click', function () {
             btnSaveWorkHours_Onclick();
         });
     }
-    
+
     function kwndSaveWHs_OnInit(dayIndex) {
-    
+
         var timeSheetData = moduleData.data.timeSheetData_get();
         moduleData.data.selDate_set(timeSheetData[0].values[dayIndex]);
 
         GetProjects();
     }
-    
+
     function kwndSaveWHs_OnClose() {
-        var w= $("#kwndSaveWorkHours").data("kendoWindow");
-        if(w) w.close();
+        var w = $("#kwndSaveWorkHours").data("kendoWindow");
+        if (w) w.close();
     }
-    
+
     function GetProjects() {
         $.ajax({
             type: "Get",
@@ -1077,19 +1128,19 @@ const module_createNewRorkHour =(function(){
             dataType: "json",
             success: ddlProjects_OnInit,
             error: function (e) {
-    
+
             }
         });
     }
-    
+
     function ddlProjects_OnInit(response) {
-    
-        if (response.length == 0 ) {
+
+        if (response.length == 0) {
             moduleData.common.notify("کاربر گرامی شما فاقد پروژه میباشید", "danger");
             kwndSaveWHs_OnClose();
             return
         } else {
-    
+
             $("#ddlProjects").kendoDropDownList({
                 dataSource: {
                     data: response,
@@ -1110,16 +1161,16 @@ const module_createNewRorkHour =(function(){
             });
             var kwndSaveWHs = $("#kwndSaveWorkHours");
 
-            
+
 
             kwndSaveWHs.kendoWindow({
-                width: "500px",
+                width: moduleData.common.window_width(),
                 height: moduleData.common.window_height(),
 
                 activate: moduleData.common.addNoScrollToBody,
-                deactivate: moduleData.common.removeNoScrollToBody ,
-    
-                scrollable: false,
+                deactivate: moduleData.common.removeNoScrollToBody,
+
+                scrollable: true,
                 visible: false,
                 modal: true,
                 actions: [
@@ -1133,9 +1184,9 @@ const module_createNewRorkHour =(function(){
             }).data("kendoWindow").center().open();
         }
     }
-    
+
     function GetTasks() {
-    
+
         var projID = $("#ddlProjects").data("kendoDropDownList").value();
         var prmData = { id: projID };
         $.ajax({
@@ -1146,13 +1197,13 @@ const module_createNewRorkHour =(function(){
             data: prmData,
             success: ddlTasks_OnInit,
             error: function (e) {
-    
+
             }
         });
     }
-    
+
     function ddlTasks_OnInit(response) {
-    
+
         $("#ddlTasks").kendoDropDownList({
             dataSource: {
                 data: response,
@@ -1170,76 +1221,76 @@ const module_createNewRorkHour =(function(){
         });
         $("#TaskPanel").show(100);
         $("#TimeSpanPanel").show(100);
-    
+
     }
-    
+
     function btnSaveWorkHours_Onclick() {
-        
+
         $("span[for='ktpWorkHour']").text(""); //جایی که خطاها را نشان می دهد را پاک میک می کند
         $("span[for='ddlTasks']").text("");
-    
+
         var workHourJson = {
             ID: null,
             Date: moduleData.data.selDate_get().date,
             EmployeeID: null,
             TaskID: $("#ddlTasks").data("kendoDropDownList").value(),
-            Hours: $("#ktpWorkHour").data("kendoTimePicker")._oldText,
+            Minutes: moduleData.common_timeSheet.convertClockTextToMinute($("#ktpWorkHour").data("kendoTimePicker")._oldText),
             ProjectID: $("#ddlProjects").data("kendoDropDownList").value(),
             Description: $("#txtDescription").val()
         };
-    
+
         if (!workHourJson.TaskID) {
             $("span[for='ddlTasks']").text("وظیفه ضروری است");
             return;
         }
-    
-        if (!workHourJson.Hours) {
+
+        if (!workHourJson.Minutes) {
             $("#ktpWorkHour").val("");
             $("span[for='ktpWorkHour']").text("ساعت ضروری است");
             return;
         }
-    
-    
+
+
         moduleData.common.loaderShow();
-    
+
         kwndSaveWHs_OnClose();
         var prmData = JSON.stringify(workHourJson);
 
         moduleData.service.saveWorkHours(prmData, SaveWorkHours_OnSuccess);
     }
-    
+
     function SaveWorkHours_OnSuccess(response) {
 
         moduleData.period_next_pervious.GetCurrentPeriod();
         kwndSaveWHs_OnClose();
-        if(response.lenth > 0){
+        if (response.lenth > 0) {
             for (var i = 0; i < response.length; i++) {
                 moduleData.common.notify(response[i], "danger");
-            } 
+            }
         }
         else {
             moduleData.common.notify("ثبت کاکرد با موفقیت انجام شد", "success");
         }
     }
-    
+
     function ResetSaveWindow() {
         var item = $("#ddlProjects").data("kendoDropDownList");
         if (item && item.select) item.select(0);
-    
+
         item = $("#ddlTasks").data("kendoDropDownList");
         if (item && item.select) item.select(0);
-    
+
         $("span[for='ktpWorkHour']").text("");
         $("span[for='ddlTasks']").text("");
-    
+
         $("#ktpWorkHour").val("");
-    
-        $("#txtDescription").val(""); 
+
+        $("#txtDescription").val("");
         $("#TaskPanel").hide();
     }
 
     return {
-        kwndSaveWHs_OnInit : kwndSaveWHs_OnInit,
+        kwndSaveWHs_OnInit: kwndSaveWHs_OnInit,
         init: init
     };
 
@@ -1248,10 +1299,10 @@ const module_createNewRorkHour =(function(){
 
 
 
-module.exports={
-    
-    'kwndSaveWHs_OnInit':module_createNewRorkHour.kwndSaveWHs_OnInit,
-    'init':module_createNewRorkHour.init
+module.exports = {
+
+    'kwndSaveWHs_OnInit': module_createNewRorkHour.kwndSaveWHs_OnInit,
+    'init': module_createNewRorkHour.init
 }
 },{}],9:[function(require,module,exports){
 const dataM = (function () {
@@ -1311,13 +1362,14 @@ module.exports = {
 //____________ویرایش
 const editWorkHour = (function () {
 
-	const moduleData={};
+	const moduleData = {};
 
-	function init(mainGrid, common,common_register, data) {
+	function init(mainGrid, common, common_register, data, common_timeSheet) {
 		moduleData.mainGrid = mainGrid;
 		moduleData.common = common;
 		moduleData.common_register = common_register;
 		moduleData.data = data;
+		moduleData.common_timeSheet = common_timeSheet;
 
 		$('#btnEditWorkHour').off().on('click', function () {
 			WndEditWorkHours_OnInit();
@@ -1334,10 +1386,13 @@ const editWorkHour = (function () {
 
 		var kwndSaveWHs = $("#WndEditWorkHours");
 		kwndSaveWHs.kendoWindow({
-			width: "900px",
-			height: "650",
+			width: moduleData.common.window_width(),
+			height: moduleData.common.window_height(),
 
-			scrollable: false,
+			activate: moduleData.common.addNoScrollToBody,
+			deactivate: moduleData.common.removeNoScrollToBody,
+
+			scrollable: true,
 			visible: false,
 			modal: true,
 			actions: [
@@ -1365,6 +1420,10 @@ const editWorkHour = (function () {
 			dataType: "json",
 			data: prmData,
 			success: function (response) {
+				for (var k in response) {
+					const item = response[k];
+					item.time = moduleData.common_timeSheet.convertMinutsToTime(item.minutes);
+				}
 				moduleData.data.workHours_set(response);
 				Init_GrdEditWorkHour();
 			},
@@ -1402,7 +1461,7 @@ const editWorkHour = (function () {
 				field: "taskTitle",
 				title: "وظیفه"
 			}, {
-				field: "hours",
+				field: "time",
 				title: "ساعت کار ثبت شده    "
 			},
 
@@ -1421,8 +1480,8 @@ const editWorkHour = (function () {
 		});
 	}
 
-	function GrdEditWorkHour_DataBound(e){
-		$('.forFound_DeleteWorkHourEditGrid').off().on('click',function(){
+	function GrdEditWorkHour_DataBound(e) {
+		$('.forFound_DeleteWorkHourEditGrid').off().on('click', function () {
 			DeleteWorkHourEditGrid(this);
 		});
 	}
@@ -1619,14 +1678,15 @@ module.exports = {
 //______________________نمایش کارکرد های ارسال شده
 const hisotrSentWorkHour = (function () {
 
-	const moduleData={};
+	const moduleData = {};
 
-	function init(common, common_register, hisotory_workHour, data) {
+	function init(common, common_register, hisotory_workHour, data, common_timeSheet) {
 
 		moduleData.data = data;
 		moduleData.common = common;
 		moduleData.common_register = common_register;
 		moduleData.hisotory_workHour = hisotory_workHour;
+		moduleData.common_timeSheet = common_timeSheet;
 
 		$('#btnMonitorSent').off().on('click', function () {
 			GetWorkHours_MonitorSentWorkHour();
@@ -1646,8 +1706,6 @@ const hisotrSentWorkHour = (function () {
 	}
 
 	function GetWorkHours_MonitorSentWorkHour() {
-
-
 		var prmData = JSON.stringify(moduleData.data.timeSheetData_get()[0].values);
 
 		$.ajax({
@@ -1657,6 +1715,11 @@ const hisotrSentWorkHour = (function () {
 			dataType: "json",
 			data: prmData,
 			success: function (response) {
+
+				for (var k in response) {
+					const item = response[k];
+					item.time = moduleData.common_timeSheet.convertMinutsToTime(item.minutes);
+				}
 
 				_MonitorSentWorkHours = response;
 				Init_GrdMonitorSentWorkHour();
@@ -1672,9 +1735,14 @@ const hisotrSentWorkHour = (function () {
 		moduleData.hisotory_workHour.Create_GrdHistory();
 		moduleData.hisotory_workHour.HideHistory();
 		$("#WndMonitorSentWorkHours").kendoWindow({
-			width: "1000px",
-			height: "600px",
-			scrollable: false,
+
+			width: moduleData.common.window_width(),
+			height: moduleData.common.window_height(),
+
+			activate: moduleData.common.addNoScrollToBody,
+			deactivate: moduleData.common.removeNoScrollToBody,
+
+			scrollable: true,
 			visible: false,
 			modal: true,
 			actions: [
@@ -1692,7 +1760,7 @@ const hisotrSentWorkHour = (function () {
 					read: function (e) {
 						e.success(_MonitorSentWorkHours);
 
-						$('.forFound_Init_GRDHistory').off().on('click',function(){
+						$('.forFound_Init_GRDHistory').off().on('click', function () {
 							moduleData.hisotory_workHour.Init_GRDHistory(this);
 						});
 					}
@@ -1715,7 +1783,7 @@ const hisotrSentWorkHour = (function () {
 				field: "taskTitle",
 				title: "وظیفه"
 			}, {
-				field: "hours",
+				field: "time",
 				title: "ساعت کار",
 				width: 80
 
@@ -1736,7 +1804,7 @@ const hisotrSentWorkHour = (function () {
 
 		});
 
-		
+
 	}
 
 	function Refresh_GrdMonitorSentWorkHour() {
@@ -1748,6 +1816,12 @@ const hisotrSentWorkHour = (function () {
 			dataType: "json",
 			data: prmData,
 			success: function (response) {
+
+				for (var k in response) {
+					const item = response[k];
+					item.time = moduleData.common_timeSheet.convertMinutsToTime(item.minutes);
+				}
+
 				_MonitorSentWorkHours = response;
 				var g = $("#GrdMonitorSentWorkHour").data("kendoGrid");
 
@@ -1763,7 +1837,7 @@ const hisotrSentWorkHour = (function () {
 		moduleData.hisotory_workHour.Create_GrdHistory();
 
 		var timeSheetData = moduleData.data.timeSheetData_get();
-        moduleData.data.selDate_set(timeSheetData[0].values[dayIndex]);
+		moduleData.data.selDate_set(timeSheetData[0].values[dayIndex]);
 
 		var workHourJson = {
 			ID: null,
@@ -1780,6 +1854,11 @@ const hisotrSentWorkHour = (function () {
 			data: prmData,
 			success: function (response) {
 
+				for (var k in response) {
+					const item = response[k];
+					item.time = moduleData.common_timeSheet.convertMinutsToTime(item.minutes);
+				}
+				
 				_MonitorSentWorkHours = response;
 				Init_GrdMonitorSentWorkHour();
 				$("#GrdMonitorSentWorkHour").data("kendoGrid").dataSource.read();
@@ -2195,9 +2274,12 @@ const period_next_pervious = (function () {
 
         var kwndSendWHs = $("#kwndSelectTimePeriod");
         kwndSendWHs.kendoWindow({
-            width: "600px",
-            height: "290px",
-            scrollable: false,
+            width: moduleData.common.window_width(),
+			height: moduleData.common.window_height(),
+
+			activate: moduleData.common.addNoScrollToBody,
+			deactivate: moduleData.common.removeNoScrollToBody,
+            scrollable: true,
             visible: false,
             modal: true,
             actions: [
@@ -2266,11 +2348,12 @@ const sendWorkHour = (function () {
 
 	const moduleData={};
 
-	function init(mainGrid, common, common_register, data) {
+	function init(mainGrid, common, common_register, data, common_timeSheet) {
 		moduleData.mainGrid = mainGrid;
 		moduleData.common = common;
 		moduleData.data = data;
 		moduleData.common_register = common_register;
+		moduleData.common_timeSheet = common_timeSheet;
 
 		$('#btn_sendAllWorkHoursClick').off().on('click',function(){
 			SendAllWorkHours_OnClick();
@@ -2305,9 +2388,11 @@ const sendWorkHour = (function () {
 			success: function (response) {
 				_AllReadyForSent = 0
 				for (var i = 0; i < response.length; i++) {
-					_AllReadyForSent = _AllReadyForSent + response[i].hours
+					const item = response[i];
+					item.time = moduleData.common_timeSheet.convertMinutsToTime(item.minutes);
+					_AllReadyForSent = _AllReadyForSent + item.minutes
 				}
-				$("#SumReadyForSentWorkHours").text(_AllReadyForSent);
+				$("#SumReadyForSentWorkHours").text(moduleData.common_timeSheet.convertMinutsToTime(_AllReadyForSent));
 
 				$.ajax({
 					type: "Post",
@@ -2316,7 +2401,7 @@ const sendWorkHour = (function () {
 					dataType: "json",
 					data: prmData,
 					success: function (response) {
-						_presenceHour = response.hours;
+						_presenceHour =  moduleData.common_timeSheet.convertMinutsToTime(response.minutes);
 
 						$("#presenceHour").text(_presenceHour);
 
@@ -2333,9 +2418,9 @@ const sendWorkHour = (function () {
 					success: function (response) {
 						_AllSentCount = 0
 						for (var i = 0; i < response.length; i++) {
-							_AllSentCount = _AllSentCount + response[i].hours
+							_AllSentCount = _AllSentCount + response[i].minutes
 						}
-						$("#SumSentWorkHours").text(_AllSentCount);
+						$("#SumSentWorkHours").text(moduleData.common_timeSheet.convertMinutsToTime(_AllSentCount));
 						$("#GRDSendWorkHours").data("kendoGrid").dataSource.read();
 					},
 					error: function (e) {
@@ -2366,7 +2451,7 @@ const sendWorkHour = (function () {
 						field: "taskTitle",
 						title: "وظیفه"
 					}, {
-						field: "hours",
+						field: "time",
 						title: "ساعت کار ثبت شده    "
 					},
 
@@ -2413,10 +2498,13 @@ const sendWorkHour = (function () {
 
 		var wndSendWorkHour = $("#wndSendWorkHour");
 		wndSendWorkHour.kendoWindow({
-			width: "750px",
-			height: "670",
+			width: moduleData.common.window_width(),
+			height: moduleData.common.window_height(),
 
-			scrollable: false,
+			activate: moduleData.common.addNoScrollToBody,
+			deactivate: moduleData.common.removeNoScrollToBody,
+
+			scrollable: true,
 			visible: false,
 			modal: true,
 			actions: [
@@ -2452,7 +2540,9 @@ const sendWorkHour = (function () {
 				_AllSentCount = 0
 
 				for (var i = 0; i < response.length; i++) {
-					_AllSentCount = _AllSentCount + response[i].Hours
+					const item = response[i];
+					item.time = moduleData.common_timeSheet.convertMinutsToTime(item.minutes);
+					_AllSentCount = _AllSentCount + item.minutes
 				}
 				$("#SumSentWorkHours").text(_AllSentCount);
 				for (var i = 0; i < response.length; i++) {
@@ -2542,9 +2632,11 @@ const sendWorkHour = (function () {
 				_AllReadyForSent = 0
 
 				for (var i = 0; i < response.length; i++) {
-					_AllReadyForSent = _AllReadyForSent + response[i].Hours
+					const item = response[i];
+					item.time = moduleData.common_timeSheet.convertMinutsToTime(item.minutes);
+					_AllReadyForSent = _AllReadyForSent + item.minutes
 				}
-				$("#SumReadyForSentWorkHours").text(_AllReadyForSent);
+				$("#SumReadyForSentWorkHours").text(moduleData.common_timeSheet.convertMinutsToTime(_AllReadyForSent));
 				$.ajax({
 					type: "Post",
 					url: "/api/TimeSheetsAPI/GetPresenceHourByDate",
@@ -2552,7 +2644,7 @@ const sendWorkHour = (function () {
 					dataType: "json",
 					data: prmData,
 					success: function (response) {
-						_presenceHour = response.Hour
+						_presenceHour = moduleData.common_timeSheet.convertMinutsToTime(response.minutes);
 
 						$("#presenceHour").text(_presenceHour);
 
@@ -2570,9 +2662,9 @@ const sendWorkHour = (function () {
 					success: function (response) {
 						_AllSentCount = 0
 						for (var i = 0; i < response.length; i++) {
-							_AllSentCount = _AllSentCount + response[i].Hours
+							_AllSentCount = _AllSentCount + response[i].minutes
 						}
-						$("#SumSentWorkHours").text(_AllSentCount);
+						$("#SumSentWorkHours").text(moduleData.common_timeSheet.convertMinutsToTime(_AllSentCount));
 						$("#GRDSendWorkHours").data("kendoGrid").dataSource.read();
 					},
 					error: function (e) {
@@ -2610,67 +2702,72 @@ var service = (function () {
 
     const moduleData = {};
 
-    function init(data, common_timeSheet) {
+    function init(data, common_timeSheet, common) {
         moduleData.data = data;
         moduleData.common_timeSheet = common_timeSheet;
+        moduleData.common = common;
     }
 
 
     //اون اول اطلاعات کل تایم شیت ها را می دهد
-    function getTimeSheets(fromDate,toDate, success_callBack, error_callBack) {
+    function getTimeSheets(fromDate, toDate, success_callBack, error_callBack) {
 
         let url = "/api/Confirm/employee";
 
-        if(fromDate){
+        if (fromDate) {
             url = `/api/Confirm/employeeTimeSheet/${fromDate}/${toDate}`;
         }
 
         $.ajax({
-			type: "Get",
-			url: url,
-			contentType: "application/json; charset=utf-8",
-			dataType: "json",
+            type: "Get",
+            url: url,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
 
-			success: function (response) {
-                
-				var data = moduleData.common_timeSheet.convertServerDataToTimeSheet_ForEmployee(response);
+            success: function (response) {
+
+                var data = moduleData.common_timeSheet.convertServerDataToTimeSheet_ForEmployee(response);
 
                 moduleData.data.timeSheetData_set(data);
                 if (success_callBack) success_callBack(data);
-			},
-			error: error_callBack ? () => error_callBack() : () => { }
-		});
+            },
+            error: error_callBack ? () => error_callBack() : () => { }
+        });
     }
 
-    function getNextTimeSheets(type,date, success_callBack, error_callBack) {
+    function getNextTimeSheets(type, date, success_callBack, error_callBack) {
 
         $.ajax({
-			type: "Get",
-			url: `/api/Confirm/employee/${type}/${date}`,
-			contentType: "application/json; charset=utf-8",
-			dataType: "json",
+            type: "Get",
+            url: `/api/Confirm/employee/${type}/${date}`,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
 
-			success: function (response) {
-                
-				var data = moduleData.common_timeSheet.convertServerDataToTimeSheet_ForEmployee(response);
+            success: function (response) {
+
+                var data = moduleData.common_timeSheet.convertServerDataToTimeSheet_ForEmployee(response);
 
                 moduleData.data.timeSheetData_set(data);
                 if (success_callBack) success_callBack(data);
-			},
-			error: error_callBack ? () => error_callBack() : () => { }
-		});
+            },
+            error: error_callBack ? () => error_callBack() : () => { }
+        });
     }
 
 
-    function saveWorkHours(prmData, success_callBack, error_callBack){
+    function saveWorkHours(prmData, success_callBack, error_callBack) {
         $.ajax({
             type: "Post",
             url: "/api/TimeSheetsAPI/SaveWorkHours",
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             data: prmData,
-            success: success_callBack ? (response) => success_callBack(response) : ()=>{},
-            error: error_callBack ? () => error_callBack() : () => { }
+            success: success_callBack ? (response) => success_callBack(response) : () => { },
+            error: (error) => {
+                moduleData.common.notify(error.responseText, 'danger');
+                if (error_callBack) error_callBack();
+
+            }
         });
     }
 

@@ -94,7 +94,7 @@ namespace KP.TimeSheets.MVC
                             id = ww.Key.TaskId,
                             state = ww.Key.State,
                             title = ww.First().Title,
-                            hours = ww.First().Hours
+                            minutes = ww.First().Minutes
                         }).ToList()
                     }).ToList()
                 }).ToList();
@@ -103,7 +103,7 @@ namespace KP.TimeSheets.MVC
             }
             catch (Exception ex)
             {
-                return this.ReturnError(ex, "خطا در ثبت اطلاعات اقدام");
+                return this.ReturnError(ex, "خطا در دریافت اطلاعات تایم شیت");
             }
         }
 

@@ -29,7 +29,7 @@ namespace KP.TimeSheets.Domain
             hourlyMission.Date = DateUtility.GetMiladiDate(hourlyMission.PersianMissionDate);
             hourlyMission.From = DateUtility.ConvertStringTimeToDateTime(hourlyMission.PersianTimeFrom);
             hourlyMission.To = DateUtility.ConvertStringTimeToDateTime(hourlyMission.PersianTimeTo);
-            hourlyMission.Hours = DateUtility.SubtarctToANdFromDateTimeToDouble(hourlyMission.From, hourlyMission.To);
+            hourlyMission.Minutes = DateUtility.SubtarctToANdFromDateTimeToInt(hourlyMission.From, hourlyMission.To);
             hourlyMission.RegisterDate = DateTime.Now;
             _UOW.HourlyMissionRepository.Add(hourlyMission);
             _UOW.SaveChanges();

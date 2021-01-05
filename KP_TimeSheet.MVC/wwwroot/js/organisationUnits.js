@@ -1,7 +1,7 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 const common = (function () {
 
-	function version(){return "0.0.0.3";}
+	function version(){return "0.0.0.4";}
 
 	function doExport(selector, params) {
 		var options = {
@@ -92,11 +92,18 @@ const common = (function () {
 	}
 
 	//----------------------------------------------------------
+	
+	function window_width(){
+		let w = $( window ).width();
+		if(w>1000) w=1000;
+		return w + "px";
+	}
 	function window_height(){
 		return ($( window ).height() - 50) + "px";
 	}
 	function addNoScrollToBody(){
 		$("body").addClass("ob-no-scroll");
+		$(".k-widget.k-window").css('top',$("body").scrollTop()+5+'px');
 	}
 	function removeNoScrollToBody(){
 		$("body").removeClass("ob-no-scroll");
@@ -110,6 +117,8 @@ const common = (function () {
 		adjustSize: adjustSize,
 
 		window_height: window_height,
+		window_width: window_width,
+
 		addNoScrollToBody: addNoScrollToBody,
 		removeNoScrollToBody: removeNoScrollToBody,
 
@@ -128,6 +137,8 @@ module.exports = {
 	'adjustSize': common.adjustSize,
 
 	window_height: common.window_height,
+	window_width: common.window_width,
+
 	addNoScrollToBody: common.addNoScrollToBody,
 	removeNoScrollToBody: common.removeNoScrollToBody,
 

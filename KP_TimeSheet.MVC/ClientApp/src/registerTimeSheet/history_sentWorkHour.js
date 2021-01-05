@@ -6,14 +6,15 @@
 //______________________نمایش کارکرد های ارسال شده
 const hisotrSentWorkHour = (function () {
 
-	const moduleData={};
+	const moduleData = {};
 
-	function init(common, common_register, hisotory_workHour, data) {
+	function init(common, common_register, hisotory_workHour, data, common_timeSheet) {
 
 		moduleData.data = data;
 		moduleData.common = common;
 		moduleData.common_register = common_register;
 		moduleData.hisotory_workHour = hisotory_workHour;
+		moduleData.common_timeSheet = common_timeSheet;
 
 		$('#btnMonitorSent').off().on('click', function () {
 			GetWorkHours_MonitorSentWorkHour();
@@ -33,8 +34,6 @@ const hisotrSentWorkHour = (function () {
 	}
 
 	function GetWorkHours_MonitorSentWorkHour() {
-
-
 		var prmData = JSON.stringify(moduleData.data.timeSheetData_get()[0].values);
 
 		$.ajax({
@@ -44,6 +43,11 @@ const hisotrSentWorkHour = (function () {
 			dataType: "json",
 			data: prmData,
 			success: function (response) {
+
+				for (var k in response) {
+					const item = response[k];
+					item.time = moduleData.common_timeSheet.convertMinutsToTime(item.minutes);
+				}
 
 				_MonitorSentWorkHours = response;
 				Init_GrdMonitorSentWorkHour();
@@ -59,9 +63,14 @@ const hisotrSentWorkHour = (function () {
 		moduleData.hisotory_workHour.Create_GrdHistory();
 		moduleData.hisotory_workHour.HideHistory();
 		$("#WndMonitorSentWorkHours").kendoWindow({
-			width: "1000px",
-			height: "600px",
-			scrollable: false,
+
+			width: moduleData.common.window_width(),
+			height: moduleData.common.window_height(),
+
+			activate: moduleData.common.addNoScrollToBody,
+			deactivate: moduleData.common.removeNoScrollToBody,
+
+			scrollable: true,
 			visible: false,
 			modal: true,
 			actions: [
@@ -79,7 +88,7 @@ const hisotrSentWorkHour = (function () {
 					read: function (e) {
 						e.success(_MonitorSentWorkHours);
 
-						$('.forFound_Init_GRDHistory').off().on('click',function(){
+						$('.forFound_Init_GRDHistory').off().on('click', function () {
 							moduleData.hisotory_workHour.Init_GRDHistory(this);
 						});
 					}
@@ -102,7 +111,7 @@ const hisotrSentWorkHour = (function () {
 				field: "taskTitle",
 				title: "وظیفه"
 			}, {
-				field: "hours",
+				field: "time",
 				title: "ساعت کار",
 				width: 80
 
@@ -123,7 +132,7 @@ const hisotrSentWorkHour = (function () {
 
 		});
 
-		
+
 	}
 
 	function Refresh_GrdMonitorSentWorkHour() {
@@ -135,6 +144,12 @@ const hisotrSentWorkHour = (function () {
 			dataType: "json",
 			data: prmData,
 			success: function (response) {
+
+				for (var k in response) {
+					const item = response[k];
+					item.time = moduleData.common_timeSheet.convertMinutsToTime(item.minutes);
+				}
+
 				_MonitorSentWorkHours = response;
 				var g = $("#GrdMonitorSentWorkHour").data("kendoGrid");
 
@@ -150,7 +165,7 @@ const hisotrSentWorkHour = (function () {
 		moduleData.hisotory_workHour.Create_GrdHistory();
 
 		var timeSheetData = moduleData.data.timeSheetData_get();
-        moduleData.data.selDate_set(timeSheetData[0].values[dayIndex]);
+		moduleData.data.selDate_set(timeSheetData[0].values[dayIndex]);
 
 		var workHourJson = {
 			ID: null,
@@ -167,6 +182,11 @@ const hisotrSentWorkHour = (function () {
 			data: prmData,
 			success: function (response) {
 
+				for (var k in response) {
+					const item = response[k];
+					item.time = moduleData.common_timeSheet.convertMinutsToTime(item.minutes);
+				}
+				
 				_MonitorSentWorkHours = response;
 				Init_GrdMonitorSentWorkHour();
 				$("#GrdMonitorSentWorkHour").data("kendoGrid").dataSource.read();

@@ -68,8 +68,13 @@ function WNDSelectPeriod_OnInit() {
 
 	var kwndSendWHs = $("#kwndSelectTimePeriodConfirm");
 	kwndSendWHs.kendoWindow({
-		width: "600px",
-		height: "290px",
+
+		width: common.window_width(),
+		height: common.window_height(),
+
+		activate: common.addNoScrollToBody,
+		deactivate: common.removeNoScrollToBody,
+
 		scrollable: false,
 		visible: false,
 		modal: true,
@@ -94,8 +99,12 @@ function WNDSelectPeriod_OnClose() {
 function WndDeny_OnInit() {
 	var kwndDeny = $("#WndDeny");
 	kwndDeny.kendoWindow({
-		width: "380px",
-		height: "290px",
+		width: common.window_width(),
+		height: common.window_height(),
+
+		activate: common.addNoScrollToBody,
+		deactivate: common.removeNoScrollToBody,
+
 		scrollable: false,
 		visible: false,
 		modal: true,
@@ -125,12 +134,12 @@ function RefreshTimeSheetConfirm() {
 	service.getTimeSheetsByUserIdForFirstTime((response) => {
 
 		private_Refresh(response);
-		
+
 	});
 
 }
 
-function private_Refresh(response){
+function private_Refresh(response) {
 	removeAndRecreateTreelisConfirmDiv();
 
 	Init_TimeSheetTreeListConfirm(response);
@@ -144,7 +153,7 @@ function private_Refresh(response){
 
 function removeAndRecreateTreelisConfirmDiv() {
 
-	if(!$("#ktrlTimeSheetsConfirm").data("kendoTreeList")) return;
+	if (!$("#ktrlTimeSheetsConfirm").data("kendoTreeList")) return;
 	$("#ktrlTimeSheetsConfirm").data("kendoTreeList").destroy();
 	$("#ktrlTimeSheetsConfirm").remove();
 	$("#KTLContainerRegisterConfirm").append("<div id='ktrlTimeSheetsConfirm'></div>");

@@ -129,9 +129,12 @@ const period_next_pervious = (function () {
 
         var kwndSendWHs = $("#kwndSelectTimePeriod");
         kwndSendWHs.kendoWindow({
-            width: "600px",
-            height: "290px",
-            scrollable: false,
+            width: moduleData.common.window_width(),
+			height: moduleData.common.window_height(),
+
+			activate: moduleData.common.addNoScrollToBody,
+			deactivate: moduleData.common.removeNoScrollToBody,
+            scrollable: true,
             visible: false,
             modal: true,
             actions: [

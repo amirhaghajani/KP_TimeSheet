@@ -10,7 +10,7 @@ namespace KP.TimeSheets.MVC
         public Guid FieldId { get; set; }
         public Guid RowId { get; set; }
         public string Value { get; set; }
-        public double CalculativeValue { get; set; }
+        public int CalculativeValue { get; set; }
 
     }
 }

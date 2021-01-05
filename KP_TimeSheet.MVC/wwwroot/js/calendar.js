@@ -610,7 +610,7 @@ function adjustSize() {
 },{"../common/common":2}],2:[function(require,module,exports){
 const common = (function () {
 
-	function version(){return "0.0.0.3";}
+	function version(){return "0.0.0.4";}
 
 	function doExport(selector, params) {
 		var options = {
@@ -701,11 +701,18 @@ const common = (function () {
 	}
 
 	//----------------------------------------------------------
+	
+	function window_width(){
+		let w = $( window ).width();
+		if(w>1000) w=1000;
+		return w + "px";
+	}
 	function window_height(){
 		return ($( window ).height() - 50) + "px";
 	}
 	function addNoScrollToBody(){
 		$("body").addClass("ob-no-scroll");
+		$(".k-widget.k-window").css('top',$("body").scrollTop()+5+'px');
 	}
 	function removeNoScrollToBody(){
 		$("body").removeClass("ob-no-scroll");
@@ -719,6 +726,8 @@ const common = (function () {
 		adjustSize: adjustSize,
 
 		window_height: window_height,
+		window_width: window_width,
+
 		addNoScrollToBody: addNoScrollToBody,
 		removeNoScrollToBody: removeNoScrollToBody,
 
@@ -737,6 +746,8 @@ module.exports = {
 	'adjustSize': common.adjustSize,
 
 	window_height: common.window_height,
+	window_width: common.window_width,
+
 	addNoScrollToBody: common.addNoScrollToBody,
 	removeNoScrollToBody: common.removeNoScrollToBody,
 

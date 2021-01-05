@@ -32,7 +32,7 @@ namespace KP.TimeSheets.Domain
         public Guid? OrganisationId { get; set; }
         public DateTime RegisterDate { get; set; }
 
-        public double  Hours { get; set; }
+        public int  Minutes { get; set; }
 
         [Column(TypeName = "DateTime2")]
         public DateTime Date { get; set; }

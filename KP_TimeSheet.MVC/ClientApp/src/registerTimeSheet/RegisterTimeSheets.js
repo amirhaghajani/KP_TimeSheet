@@ -28,9 +28,9 @@ $(document).ready(function () {
     common.loaderShow();
 
     data.init();
-    bottomPage_monthlyGrid.init(data);
-    bottomPage_priodlyGrid.init(data);
-    service.init(data, common_timeSheet);
+    bottomPage_monthlyGrid.init(data, common_timeSheet);
+    bottomPage_priodlyGrid.init(data, common_timeSheet);
+    service.init(data, common_timeSheet, common);
 
     $('#registerTiemSheet_exportToExcel').off().on('click', function () {
         common.doExport('#ktrlTimeSheets', { type: 'excel' });
@@ -39,8 +39,8 @@ $(document).ready(function () {
         common.doExport('#ktrlTimeSheets', { type: 'doc' });
     });
 
-    editWindow.init(mainGrid, common, common_register, data);
-    history_sentWorkHour.init(common, common_register, history_workHour, data);
+    editWindow.init(mainGrid, common, common_register, data, common_timeSheet);
+    history_sentWorkHour.init(common, common_register, history_workHour, data, common_timeSheet);
 
     mainGrid.init(common, common_register, createNewWorkHour, history_sentWorkHour, sendWorkHour, data, 
         service, editWindow,history_sentWorkHour, bottomPage_priodlyGrid, bottomPage_monthlyGrid);
@@ -53,8 +53,8 @@ $(document).ready(function () {
         period_next_pervious.init(common, common_register, mainGrid,
             bottomPage_monthlyGrid, history_sentWorkHour, bottomPage_priodlyGrid, editWindow, data, service,serviceConfirm);
 
-        createNewWorkHour.init(common, common_register, period_next_pervious, data, service);
-        sendWorkHour.init(mainGrid, common, common_register, data);
+        createNewWorkHour.init(common, common_register, period_next_pervious, data, service,common_timeSheet);
+        sendWorkHour.init(mainGrid, common, common_register, data, common_timeSheet);
 
         history_workHour.init(common, data);
         

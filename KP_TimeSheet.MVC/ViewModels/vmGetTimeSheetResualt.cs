@@ -35,7 +35,7 @@ namespace KP.TimeSheets.MVC.ViewModels
         public Guid? id { get; set; }
         public string title { get; set; }
         public string state { get; set; }
-        public double? hours { get; set; }
+        public int? minutes { get; set; }
     }
 
 }

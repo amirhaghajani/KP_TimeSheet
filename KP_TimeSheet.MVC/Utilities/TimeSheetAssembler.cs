@@ -102,9 +102,9 @@ namespace KP.TimeSheets.MVC
             presenceHours.OrderBy(phItem => phItem.Date)
                 .ToList().ForEach(phItem =>
                 {
-                    double phHours = phItem.Hours;
+                    int phHours = phItem.Minutes;
                     List<WorkHour> selWorkHour = workHours.Where(whItem => whItem.Date.Equals(phItem.Date)).ToList();
-                    double whHours = (selWorkHour != null && selWorkHour.Count >= 0) ? selWorkHour.Sum(x => x.Hours) : 0;
+                    int whHours = (selWorkHour != null && selWorkHour.Count >= 0) ? selWorkHour.Sum(x => x.Minutes) : 0;
                     //Create Columns/Values for Presence Hours
                     TimeSheetValueJson phTSJValue = new TimeSheetValueJson();
                     phTSJValue.Date = phItem.Date;
@@ -139,12 +139,12 @@ namespace KP.TimeSheets.MVC
 
                         if (tsjWorkHours[i].Type == "Project")
                         {
-                            var hourCount = selWorkHour.Where(y => y.ProjectId == tsjWorkHours[i].UID).Sum(x => x.Hours);
+                            var hourCount = selWorkHour.Where(y => y.ProjectId == tsjWorkHours[i].UID).Sum(x => x.Minutes);
                             whTSJValue1.Value = DateUtility.ConvertToTimeSpan(hourCount);
                         }
                         if (tsjWorkHours[i].Type == "Task")
                         {
-                            var hourCount = selWorkHour.Where(y => y.TaskID == tsjWorkHours[i].UID).Sum(x => x.Hours);
+                            var hourCount = selWorkHour.Where(y => y.TaskID == tsjWorkHours[i].UID).Sum(x => x.Minutes);
                             whTSJValue1.Value = DateUtility.ConvertToTimeSpan(hourCount);
                         }
 
@@ -175,9 +175,9 @@ namespace KP.TimeSheets.MVC
 
                     if (phItem.Date >= DateTime.Now.Date )
                                            sendWHTSJValue.Value = "False False";
-                    if (phItem.Hours > 0 && phItem.Date <= DateTime.Now.Date)
+                    if (phItem.Minutes > 0 && phItem.Date <= DateTime.Now.Date)
                         sendWHTSJValue.Value = "True True";
-                    if (phItem.Hours <= 0 && phItem.Date <= DateTime.Now.Date)
+                    if (phItem.Minutes <= 0 && phItem.Date <= DateTime.Now.Date)
                         sendWHTSJValue.Value = "True False";
 
 
@@ -401,15 +401,15 @@ namespace KP.TimeSheets.MVC
             presenceHours.OrderBy(phItem => phItem.Date)
                     .ToList().ForEach(phItem =>
                     {
-                        double phHours = phItem.Hours;
+                        int phHours = phItem.Minutes;
                         List<WorkHour> selWorkHour = workHours.Where(whItem => whItem.Date.Equals(phItem.Date)).ToList();
-                        double whHours = (selWorkHour != null && selWorkHour.Count >= 0) ? selWorkHour.Sum(x => x.Hours) : 0;
+                        int whHours = (selWorkHour != null && selWorkHour.Count >= 0) ? selWorkHour.Sum(x => x.Minutes) : 0;
 
                         List<WorkHour> appWorkHour = approveItems.Where(whItem => whItem.Date.Equals(phItem.Date)).ToList();
-                        double apphours = (appWorkHour != null && appWorkHour.Count >= 0) ? appWorkHour.Sum(x => x.Hours) : 0;
+                        int apphours = (appWorkHour != null && appWorkHour.Count >= 0) ? appWorkHour.Sum(x => x.Minutes) : 0;
 
                         List<WorkHour> notappWorkHour = notApproveItems.Where(whItem => whItem.Date.Equals(phItem.Date)).ToList();
-                        double notapphours = (notappWorkHour != null && notappWorkHour.Count >= 0) ? notappWorkHour.Sum(x => x.Hours) : 0;
+                        int notapphours = (notappWorkHour != null && notappWorkHour.Count >= 0) ? notappWorkHour.Sum(x => x.Minutes) : 0;
 
                         //Create Columns/Values for Presence Hours
                         TimeSheetValueJson phTSJValue = new TimeSheetValueJson();
@@ -448,12 +448,12 @@ namespace KP.TimeSheets.MVC
 
                             if (tsjWorkHours[i].Type == "Project")
                             {
-                                var hourCount = selWorkHour.Where(y => y.ProjectId == tsjWorkHours[i].UID).Sum(x => x.Hours);
+                                var hourCount = selWorkHour.Where(y => y.ProjectId == tsjWorkHours[i].UID).Sum(x => x.Minutes);
                                 whTSJValue1.Value = DateUtility.ConvertToTimeSpan(hourCount);
                             }
                             if (tsjWorkHours[i].Type == "Task")
                             {
-                                var hourCount = selWorkHour.Where(y => y.TaskID == tsjWorkHours[i].UID).Sum(x => x.Hours);
+                                var hourCount = selWorkHour.Where(y => y.TaskID == tsjWorkHours[i].UID).Sum(x => x.Minutes);
                                 whTSJValue1.Value = DateUtility.ConvertToTimeSpan(hourCount);
                             }
 
@@ -498,12 +498,12 @@ namespace KP.TimeSheets.MVC
 
                             if (approveWHs[i].Type == "ProjectApprove")
                             {
-                                var hourCount = appWorkHour.Where(y => y.ProjectId == approveWHs[i].UID).Sum(x => x.Hours);
+                                var hourCount = appWorkHour.Where(y => y.ProjectId == approveWHs[i].UID).Sum(x => x.Minutes);
                                 whTSJValue1.Value = DateUtility.ConvertToTimeSpan(hourCount);
                             }
                             if (approveWHs[i].Type == "TaskApprove")
                             {
-                                var hourCount = appWorkHour.Where(y => y.TaskID == approveWHs[i].UID).Sum(x => x.Hours);
+                                var hourCount = appWorkHour.Where(y => y.TaskID == approveWHs[i].UID).Sum(x => x.Minutes);
                                 whTSJValue1.Value = DateUtility.ConvertToTimeSpan(hourCount);
                             }
 
@@ -535,12 +535,12 @@ namespace KP.TimeSheets.MVC
 
                             if (notApproveWHs[i].Type == "ProjectNotApprove")
                             {
-                                var hourCount = notappWorkHour.Where(y => y.ProjectId == notApproveWHs[i].UID).Sum(x => x.Hours);
+                                var hourCount = notappWorkHour.Where(y => y.ProjectId == notApproveWHs[i].UID).Sum(x => x.Minutes);
                                 whTSJValue1.Value = DateUtility.ConvertToTimeSpan(hourCount);
                             }
                             if (notApproveWHs[i].Type == "TaskNotApprove")
                             {
-                                var hourCount = notappWorkHour.Where(y => y.TaskID == notApproveWHs[i].UID).Sum(x => x.Hours);
+                                var hourCount = notappWorkHour.Where(y => y.TaskID == notApproveWHs[i].UID).Sum(x => x.Minutes);
                                 whTSJValue1.Value = DateUtility.ConvertToTimeSpan(hourCount);
                             }
 

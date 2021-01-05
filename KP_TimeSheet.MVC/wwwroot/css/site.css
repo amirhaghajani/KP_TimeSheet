@@ -93,11 +93,11 @@ div {
 }
 
 /* Set width on the form input elements since they're 100% wide by default */
-input,
+/* input,
 select,
 textarea {
   max-width: 280px;
-}
+} */
 
 .shadow {
   -moz-box-shadow: 1px 2px 4px rgba(0, 0, 0,0.5);
@@ -697,11 +697,11 @@ div[disabled] {
 }
 
 /* Set width on the form input elements since they're 100% wide by default */
-input,
+/* input,
 select,
 textarea {
   max-width: 280px;
-}
+} */
 
 *, *::before, *::after {
   box-sizing: border-box;

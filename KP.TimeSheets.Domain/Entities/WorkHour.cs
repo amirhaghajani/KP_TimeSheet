@@ -58,7 +58,7 @@ namespace KP.TimeSheets.Domain
         /// <summary>
         /// میزان ساعت کاری
         /// </summary>
-        public double Hours { get; set; }
+        public int Minutes { get; set; }
 
         /// <summary>
         /// شناسه مرحله گردش کار جاری مرتبط با ساعت کارکرد 

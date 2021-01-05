@@ -33,7 +33,7 @@ namespace KP.TimeSheets.Domain
         /// <summary>
         /// میزان ساعت حضور
         /// </summary>
-        public double Hours { get; set; }
+        public int Minutes { get; set; }
 
 
         /// <summary>

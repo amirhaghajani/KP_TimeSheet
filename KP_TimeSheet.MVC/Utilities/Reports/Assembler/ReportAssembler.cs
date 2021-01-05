@@ -57,14 +57,14 @@ namespace KP.TimeSheets.MVC
                 field.ID = Guid.NewGuid();
                 field.Title = DateUtility.GetPersianYear(currentDate) + "/" + DateUtility.GetPersianMonth(currentDate);
                 result.Fields.Add(field);
-                double workhours = 0;
-                double presencehours = 0;
+                int workhours = 0;
+                int presencehours = 0;
 
                 foreach (var row in result.Rowes)
                 {
                     if (row.Title == "جمع کل کارکرد")
                     {
-                        var sumWorkHour = workHours.Where(x => x.Date.Date <= LastDayOfMonth && x.Date.Date >= firstDayOfMonth).Sum(x => x.Hours);
+                        var sumWorkHour = workHours.Where(x => x.Date.Date <= LastDayOfMonth && x.Date.Date >= firstDayOfMonth).Sum(x => x.Minutes);
                         workhours = sumWorkHour;
                         var fieldValuesumWorkHour = new FieldValue();
                         fieldValuesumWorkHour.FieldId = field.ID;
@@ -75,7 +75,7 @@ namespace KP.TimeSheets.MVC
                     }
                     else if (row.Title == "جمع کل حضور")
                     {
-                        var sumPresenceHour = TimeSheetManager.GetPresHoursByUser(currentUser, firstDayOfMonth, LastDayOfMonth).Sum(x => x.Hours);
+                        var sumPresenceHour = TimeSheetManager.GetPresHoursByUser(currentUser, firstDayOfMonth, LastDayOfMonth).Sum(x => x.Minutes);
                         presencehours = sumPresenceHour;
                         var fieldValuesumPresenceHour = new FieldValue();
                         fieldValuesumPresenceHour.FieldId = field.ID;
@@ -95,7 +95,7 @@ namespace KP.TimeSheets.MVC
                     }
                     else
                     {
-                        var value = workHours.Where(x => x.ProjectId == row.ID && x.Date.Date <= LastDayOfMonth && x.Date.Date >= firstDayOfMonth).Sum(x => x.Hours);
+                        var value = workHours.Where(x => x.ProjectId == row.ID && x.Date.Date <= LastDayOfMonth && x.Date.Date >= firstDayOfMonth).Sum(x => x.Minutes);
                         var fieldValue = new FieldValue();
                         fieldValue.FieldId = field.ID;
                         fieldValue.RowId = row.ID;
@@ -118,7 +118,7 @@ namespace KP.TimeSheets.MVC
 
             foreach (var row in result.Rowes)
             {
-                var sum = workHours.Where(x => x.ProjectId == row.ID).Sum(y => y.Hours);
+                var sum = workHours.Where(x => x.ProjectId == row.ID).Sum(y => y.Minutes);
                 var fildvalue = new FieldValue();
                 fildvalue.FieldId = Guid.NewGuid();
                 fildvalue.RowId = row.ID;
@@ -182,7 +182,7 @@ namespace KP.TimeSheets.MVC
                 {
                     if (row.Title == "جمع کل")
                     {
-                        var sumWorkHour = workHours.Where(x => x.Date.Date <= LastDayOfMonth && x.Date.Date >= firstDayOfMonth).Sum(x => x.Hours);
+                        var sumWorkHour = workHours.Where(x => x.Date.Date <= LastDayOfMonth && x.Date.Date >= firstDayOfMonth).Sum(x => x.Minutes);
                         workhours = sumWorkHour;
                         var fieldValuesumWorkHour = new FieldValue();
                         fieldValuesumWorkHour.FieldId = field.ID;
@@ -194,7 +194,7 @@ namespace KP.TimeSheets.MVC
 
                     else
                     {
-                        var value = workHours.Where(x => x.TaskID == row.ID && x.Date.Date <= LastDayOfMonth && x.Date.Date >= firstDayOfMonth).Sum(x => x.Hours);
+                        var value = workHours.Where(x => x.TaskID == row.ID && x.Date.Date <= LastDayOfMonth && x.Date.Date >= firstDayOfMonth).Sum(x => x.Minutes);
                         var fieldValue = new FieldValue();
                         fieldValue.FieldId = field.ID;
                         fieldValue.RowId = row.ID;
@@ -209,10 +209,10 @@ namespace KP.TimeSheets.MVC
             Aggregation.Title = "جمع کل";
             Aggregation.ID = Guid.NewGuid();
             result.Fields.Add(Aggregation);
-            double Alltotalsum = 0;
+            int Alltotalsum = 0;
             foreach (var row in result.Rowes)
             {
-                var sum = workHours.Where(x => x.TaskID == row.ID).Sum(y => y.Hours);
+                var sum = workHours.Where(x => x.TaskID == row.ID).Sum(y => y.Minutes);
                 var fieldvalue = new FieldValue();
                 fieldvalue.CalculativeValue = sum;
                 fieldvalue.FieldId = Guid.NewGuid();
@@ -277,7 +277,7 @@ namespace KP.TimeSheets.MVC
                 {
                     if (row.Title == "جمع کل")
                     {
-                        var sumWorkHour = workHours.Where(x => x.ProjectId == wh.ProjectId).Sum(x => x.Hours);
+                        var sumWorkHour = workHours.Where(x => x.ProjectId == wh.ProjectId).Sum(x => x.Minutes);
                         var fieldValuesumWorkHour = new FieldValue();
                         fieldValuesumWorkHour.CalculativeValue = sumWorkHour;
                         fieldValuesumWorkHour.FieldId = field.ID;
@@ -287,7 +287,7 @@ namespace KP.TimeSheets.MVC
                     }
                     else
                     {
-                        var sumWorkHour = workHours.Where(x => x.EmployeeID == row.ID && x.ProjectId == wh.ProjectId).Sum(x => x.Hours);
+                        var sumWorkHour = workHours.Where(x => x.EmployeeID == row.ID && x.ProjectId == wh.ProjectId).Sum(x => x.Minutes);
                         var fieldValuesumWorkHour = new FieldValue();
                         fieldValuesumWorkHour.CalculativeValue = sumWorkHour;
                         fieldValuesumWorkHour.FieldId = field.ID;
@@ -328,7 +328,7 @@ namespace KP.TimeSheets.MVC
                 if (userManager.GetByID(row.ID) != null)
                 {
                     var user = userManager.GetByID(row.ID);
-                    var sumPresenceHour = TimeSheetManager.GetPresHoursByUser(user, from, to).ToList().Sum(x => x.Hours);
+                    var sumPresenceHour = TimeSheetManager.GetPresHoursByUser(user, from, to).ToList().Sum(x => x.Minutes);
                     var fildvaluePresence = new FieldValue();
                     fildvaluePresence.FieldId = Guid.NewGuid();
                     fildvaluePresence.RowId = row.ID;
@@ -342,11 +342,11 @@ namespace KP.TimeSheets.MVC
                 }
                 else
                 {
-                    double sumPresenceHourTotal = 0;
+                    int sumPresenceHourTotal = 0;
                     foreach (var userIds in parametres.UserIds)
                     {
                         var user = userManager.GetByID(userIds);
-                        sumPresenceHourTotal += TimeSheetManager.GetPresHoursByUser(user, from, to).ToList().Sum(x => x.Hours);
+                        sumPresenceHourTotal += TimeSheetManager.GetPresHoursByUser(user, from, to).ToList().Sum(x => x.Minutes);
                     }
 
                     var fildvaluePresenceTotal = new FieldValue();
@@ -415,7 +415,7 @@ namespace KP.TimeSheets.MVC
             {
                 if (row.Title == "جمع کل")
                 {
-                    var sumWorkHour = workHours.Sum(x => x.Hours);
+                    var sumWorkHour = workHours.Sum(x => x.Minutes);
                     workhours = sumWorkHour;
                     var fieldValuesumWorkHour = new FieldValue();
                     fieldValuesumWorkHour.FieldId = field.ID;
@@ -427,7 +427,7 @@ namespace KP.TimeSheets.MVC
 
                 else
                 {
-                    var value = workHours.Where(x => x.ProjectId == row.ID).Sum(x => x.Hours);
+                    var value = workHours.Where(x => x.ProjectId == row.ID).Sum(x => x.Minutes);
                     var fieldValue = new FieldValue();
                     fieldValue.FieldId = field.ID;
                     fieldValue.RowId = row.ID;
@@ -496,7 +496,7 @@ namespace KP.TimeSheets.MVC
                 {
                     if (row.Title == "جمع کل")
                     {
-                        var sumWorkHour = workHours.Where(x => x.ProjectId == wh.ProjectId).Sum(x => x.Hours);
+                        var sumWorkHour = workHours.Where(x => x.ProjectId == wh.ProjectId).Sum(x => x.Minutes);
                         var fieldValuesumWorkHour = new FieldValue();
                         fieldValuesumWorkHour.CalculativeValue = sumWorkHour;
                         fieldValuesumWorkHour.FieldId = field.ID;
@@ -506,7 +506,7 @@ namespace KP.TimeSheets.MVC
                     }
                     else
                     {
-                        var sumWorkHour = workHours.Where(x => x.Date == DateUtility.GetMiladiDate(row.Title) && x.ProjectId == wh.ProjectId).Sum(x => x.Hours);
+                        var sumWorkHour = workHours.Where(x => x.Date == DateUtility.GetMiladiDate(row.Title) && x.ProjectId == wh.ProjectId).Sum(x => x.Minutes);
                         var fieldValuesumWorkHour = new FieldValue();
                         fieldValuesumWorkHour.CalculativeValue = sumWorkHour;
                         fieldValuesumWorkHour.FieldId = field.ID;
@@ -539,15 +539,15 @@ namespace KP.TimeSheets.MVC
                 if (row.Title == "جمع کل")
                 {
 
-                    var sumworkHourTotal = workHours.Sum(X=>X.Hours);
+                    var sumworkHourTotal = workHours.Sum(X=>X.Minutes);
                     var fildvalueWork = new FieldValue();
                     fildvalueWork.FieldId = Guid.NewGuid();
                     fildvalueWork.RowId = row.ID;
                     fildvalueWork.Value = DateUtility.ConvertToTimeSpan(sumworkHourTotal);
                     row.Values.Add(fildvalueWork);
 
-                    double sumPresenceHourTotal = 0;
-                    sumPresenceHourTotal = TimeSheetManager.GetPresHoursByUser(currentUser, from, to).Sum(x=> x.Hours);
+                    int sumPresenceHourTotal = 0;
+                    sumPresenceHourTotal = TimeSheetManager.GetPresHoursByUser(currentUser, from, to).Sum(x=> x.Minutes);
                     var fildvaluePresenceTotal = new FieldValue();
                     fildvaluePresenceTotal.FieldId = Guid.NewGuid();
                     fildvaluePresenceTotal.RowId = row.ID;
@@ -570,10 +570,10 @@ namespace KP.TimeSheets.MVC
                     fildvalueWork.RowId = row.ID;
                     fildvalueWork.Value = DateUtility.ConvertToTimeSpan(sumworkHour);
                     row.Values.Add(fildvalueWork);
-                    double sumPresenceHour = 0;
+                    int sumPresenceHour = 0;
 
                     sumPresenceHour = TimeSheetManager.GetPresenceHourByUserIdAndDate(currentUser.ID, DateUtility.GetMiladiDate(row.Title)) != null
-                    ? TimeSheetManager.GetPresenceHourByUserIdAndDate(currentUser.ID, DateUtility.GetMiladiDate(row.Title)).Hours : 0;
+                    ? TimeSheetManager.GetPresenceHourByUserIdAndDate(currentUser.ID, DateUtility.GetMiladiDate(row.Title)).Minutes : 0;
 
                     var fildvaluePresence = new FieldValue();
                     fildvaluePresence.FieldId = Guid.NewGuid();

@@ -1,7 +1,7 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 const common = (function () {
 
-	function version(){return "0.0.0.3";}
+	function version(){return "0.0.0.4";}
 
 	function doExport(selector, params) {
 		var options = {
@@ -92,11 +92,18 @@ const common = (function () {
 	}
 
 	//----------------------------------------------------------
+	
+	function window_width(){
+		let w = $( window ).width();
+		if(w>1000) w=1000;
+		return w + "px";
+	}
 	function window_height(){
 		return ($( window ).height() - 50) + "px";
 	}
 	function addNoScrollToBody(){
 		$("body").addClass("ob-no-scroll");
+		$(".k-widget.k-window").css('top',$("body").scrollTop()+5+'px');
 	}
 	function removeNoScrollToBody(){
 		$("body").removeClass("ob-no-scroll");
@@ -110,6 +117,8 @@ const common = (function () {
 		adjustSize: adjustSize,
 
 		window_height: window_height,
+		window_width: window_width,
+
 		addNoScrollToBody: addNoScrollToBody,
 		removeNoScrollToBody: removeNoScrollToBody,
 
@@ -128,6 +137,8 @@ module.exports = {
 	'adjustSize': common.adjustSize,
 
 	window_height: common.window_height,
+	window_width: common.window_width,
+
 	addNoScrollToBody: common.addNoScrollToBody,
 	removeNoScrollToBody: common.removeNoScrollToBody,
 
@@ -135,6 +146,7 @@ module.exports = {
 };
 
 },{}],2:[function(require,module,exports){
+const { RefreshTimeSheet } = require("../registerTimeSheet/mainGrid");
 
 const timeSheet = (function () {
 
@@ -172,16 +184,16 @@ const timeSheet = (function () {
     timeSheet_Prject.prototype.calcTime = function () {
         var sum = 0;
         for (var i = 0; i < this.workouts.length; i++) {
-            sum += this.workouts[i].hours;
+            sum += this.workouts[i].minutes;
         }
         return sum;
     }
 
 
-    function timeSheet_Workout(id, title, hours, state) {
+    function timeSheet_Workout(id, title, minutes, state) {
         this.id = id;
         this.title = title;
-        this.hours = hours;
+        this.minutes = minutes;
         this.state = state;
     }
 
@@ -204,6 +216,12 @@ const timeSheet = (function () {
         return `${hour}:${minut > 9 ? minut : '0' + minut} ${mainNumber<0 ? '-' : ''}`;
     }
 
+    function convertClockTextToMinute(clock){
+        if(!clock) return 0;
+        var array = clock.split(':');
+        return array[0]*60 + array[1]*1;
+    }
+
 
 
     function convertServerDataToTimeSheet_ForEmployee(response) {
@@ -224,7 +242,6 @@ const timeSheet = (function () {
         const diffHozoorKarkard = new timeSheet_Row(4, null, "اختلاف حضور و کارکرد", "-", "eb96abcb-d37d-4aa1-1004-e1f4a753bee5", []);
         data.push(diffHozoorKarkard);
 
-        debugger;
         const projects = [];
         const times = private_findTimesAndProjects(response, hozoor, hozoorDetail, karkard, diffHozoorKarkard, projects, null);
 
@@ -335,7 +352,7 @@ const timeSheet = (function () {
                     date: t.date,
                     persianDate: t.persianDate,
                     title: t.persianDate,
-                    value: convertNumberToTime(0)
+                    value: convertMinutsToTime(0)
                 };
                 r.workouts.forEach(w => {
                     const newItemForW = { ...newItem };
@@ -343,13 +360,13 @@ const timeSheet = (function () {
 
                     if (i > -1) {
                         var wwIndex = t.projects[i].workouts.findIndex(ww => ww.id == w.uid);
-                        if (wwIndex > -1) newItemForW.value = convertNumberToTime(t.projects[i].workouts[wwIndex].hours);
+                        if (wwIndex > -1) newItemForW.value = convertMinutsToTime(t.projects[i].workouts[wwIndex].minutes);
                     }
 
                 })
 
                 if (i > -1) {
-                    newItem.value = convertNumberToTime(t.projects[i].calcTime());
+                    newItem.value = convertMinutsToTime(t.projects[i].calcTime());
                 }
 
                 r.values.push(newItem);
@@ -389,26 +406,26 @@ const timeSheet = (function () {
 
                     if (wantedState && dbWorkout.state != wantedState) continue;
 
-                    let sumHours = dbWorkout.hours;
+                    let sumMinutes = dbWorkout.minutes;
 
                     // for (let k2 = k + 1; k2 < dbProject.workouts.length; k2++) {
                     //     const dbWorkout2 = dbProject.workouts[k2];
                     //     if (dbWorkout2.id == dbWorkout.id && (!wantedState || cWorkout2.state == wantedState)) {
-                    //         sumHours += dbWorkout2.hours;
+                    //         sumMinutes += dbWorkout2.minutes;
                     //     }
                     // }
 
-                    const cWorkout = new timeSheet_Workout(dbWorkout.id, dbWorkout.title, sumHours, dbWorkout.state);
+                    const cWorkout = new timeSheet_Workout(dbWorkout.id, dbWorkout.title, sumMinutes, dbWorkout.state);
 
                     cProject.workouts.push(cWorkout);
 
                     const index = savedProject.workouts.findIndex(p => p.id == cWorkout.id);
                     if (index == -1) {
                         savedProject.workouts.push({
-                            id: cWorkout.id, title: cWorkout.title, state: cWorkout.state, hours: sumHours
+                            id: cWorkout.id, title: cWorkout.title, state: cWorkout.state, minutes: sumMinutes
                         })
                     } else {
-                        savedProject.workouts[index].hours += sumHours;
+                        savedProject.workouts[index].minutes += sumMinutes;
                     }
                 }
 
@@ -440,7 +457,7 @@ const timeSheet = (function () {
                 persianDate: cTime.persianDate,
                 persianDay: cTime.persianDay,
                 title: cTime.persianDate,
-                value: convertNumberToTime(cTime.calcTime()),
+                value: convertMinutsToTime(cTime.calcTime()),
                 minute: cTime.calcTime()
             });
             if (diffHozoorKarkard) diffHozoorKarkard.values.push({
@@ -448,12 +465,27 @@ const timeSheet = (function () {
                 persianDate: cTime.persianDate,
                 persianDay: cTime.persianDay,
                 title: cTime.persianDate,
-                value: convertMinutsToTime(dbTime.hozoor - (cTime.calcTime() * 60)),
-                minute: dbTime.hozoor - (cTime.calcTime()*60)
+                value: convertMinutsToTime(dbTime.hozoor - cTime.calcTime() ),
+                minute: dbTime.hozoor - cTime.calcTime()
             });
         }
 
         return times;
+    }
+
+    function calcPercent(inputs, wanted){
+
+        if(wanted<0) return 0;
+
+        var max = 0;
+
+        for(var k in inputs){
+            if(inputs[k]> max) max = inputs[k];
+        }
+
+        if(max<6000) max=6000;
+
+        return 100 * wanted / max;
     }
 
 
@@ -461,7 +493,9 @@ const timeSheet = (function () {
     return {
         convertServerDataToTimeSheet_ForEmployee: convertServerDataToTimeSheet_ForEmployee,
         convertServerDataToTimeSheet_ForApprove: convertServerDataToTimeSheet_ForApprove,
-        convertNumberToTime: convertNumberToTime
+        convertMinutsToTime: convertMinutsToTime,
+        convertClockTextToMinute:convertClockTextToMinute,
+        calcPercent: calcPercent
     }
 
 })();
@@ -469,9 +503,11 @@ const timeSheet = (function () {
 module.exports = {
     convertServerDataToTimeSheet_ForEmployee: timeSheet.convertServerDataToTimeSheet_ForEmployee,
     convertServerDataToTimeSheet_ForApprove: timeSheet.convertServerDataToTimeSheet_ForApprove,
-    convertNumberToTime: timeSheet.convertNumberToTime
+    convertMinutsToTime: timeSheet.convertMinutsToTime,
+    convertClockTextToMinute: timeSheet.convertClockTextToMinute,
+    calcPercent: timeSheet.calcPercent
 };
-},{}],3:[function(require,module,exports){
+},{"../registerTimeSheet/mainGrid":4}],3:[function(require,module,exports){
 const common = require('../common/common');
 const commonTimesheet = require('../common/timesheet');
 
@@ -559,9 +595,259 @@ function Page_OnInitThisMonth(response) {
 
 function Page_OnInitWaitApprove(response) {
 
-    $("#hoursWaitingToApprove").text(commonTimesheet.convertNumberToTime(response.hours));
-    $("#hoursWaitingToApprovePercent").width(response.hours);
+    $("#hoursWaitingToApprove").text(commonTimesheet.convertMinutsToTime(response.minutes));
+    $("#hoursWaitingToApprovePercent").width(response.minutes);
 
 }
 
-},{"../common/common":1,"../common/timesheet":2}]},{},[3]);
+},{"../common/common":1,"../common/timesheet":2}],4:[function(require,module,exports){
+const myMainGrid = (function () {
+
+  const moduleData = {};
+
+  function init(common, common_register, createNewWorkHour, history_sentWorkHour, sendWorkHour,
+    data, service, editWindow, history_sentWorkHour, priodlyGrid, monthlyGrid) {
+
+    moduleData.common = common;
+    moduleData.common_register = common_register;
+    moduleData.data = data;
+    moduleData.history_sentWorkHour = history_sentWorkHour;
+    moduleData.createNewWorkHour = createNewWorkHour;
+    moduleData.sendWorkHour = sendWorkHour;
+    moduleData.service = service;
+
+    moduleData.editWindow = editWindow;
+    moduleData.history_sentWorkHour = history_sentWorkHour;
+
+    moduleData.priodlyGrid = priodlyGrid;
+    moduleData.monthlyGrid = monthlyGrid;
+
+  };
+
+  function KTRColumn() {
+    this.field = "";
+    this.title = "";
+    this.template = "";
+    this.hidden = false;
+    this.width = 40;
+    this.headerTemplate = "";
+    this.filterable = false;
+  };
+
+
+  //________________ جهت باز سازی TreeList اصلی
+
+  function RefreshTimeSheet(reset = false) {
+    moduleData.common.loaderShow();
+
+    let fromDate = null;
+    let toDate = null;
+    if (!reset) {
+      var prmData = moduleData.data.timeSheetData_get()[0].values;
+      fromDate = prmData[0].date;
+      toDate = prmData[prmData.length - 1].date;
+    }
+    GetTimeSheets(() => {
+      moduleData.common_register.removeAndRecreateTreelisDiv();
+
+      moduleData.editWindow.Refresh_GrdEditWorkHour();
+      moduleData.history_sentWorkHour.Refresh_GrdMonitorSentWorkHour();
+
+
+      moduleData.priodlyGrid.InitPeriodlyByProjectsGrid();
+      moduleData.monthlyGrid.InitMonthlyByProjectsGrid();
+
+
+
+      moduleData.common.loaderHide();
+    }, fromDate, toDate);
+  }
+  //----------
+
+  function GetTimeSheets(callBackFn,fromDate, toDate) {
+
+    moduleData.service.getTimeSheets(fromDate, toDate, (response) => {
+      if (callBackFn) callBackFn(response);
+      Init_TimeSheetTreeList();
+    });
+  }
+
+  function Init_TimeSheetTreeList() {
+    const timeSheetData = moduleData.data.timeSheetData_get();
+    const timeSheetData2 = timeSheetData.slice(1);
+
+    var ktrlTSColumns = ktrlTimeSheets_OnInitColumns(timeSheetData);
+
+    $("#ktrlTimeSheets").kendoTreeList({
+      dataSource: {
+        transport: {
+          read: function (e) {
+            e.success(timeSheetData2);
+          },
+        }
+      },
+      schema: {
+        model: {
+          id: "id",
+          parentId: "parentId"
+        }
+      },
+      height: 400,
+      width: 'auto',
+      columns: ktrlTSColumns,
+      scrollable: true,
+      selectable: true,
+      dataBound: ktrlTimeSheets_DataBound
+    });
+
+    //تول تیپ درست کار نمی کرد برداشتم. جاش را اشتباه نشان می داد
+
+    // var tooltip = $("#ktrlTimeSheets").kendoTooltip({
+    //   filter: 'td',
+    //   content: function (e) {
+    //     var treelist = $("#ktrlTimeSheets").data("kendoTreeList");
+    //     var targetRow = $(e.target).closest('tr');
+    //     var dataItem = treelist.dataItem(targetRow);
+    //     return dataItem.title;
+    //   },
+    //   position: "left",
+    //   animation: {
+    //     open: {
+    //       effects: "zoom",
+    //       duration: 150
+    //     }
+    //   }
+    // }).data("kendoTooltip");
+
+    $("#ktrlTimeSheets tbody").on("dblclick", "td", function (e) {
+      var cell = $(e.currentTarget);
+      var cellIndex = cell[0].cellIndex;
+      var grid = $("#ktrlTimeSheets").data("kendoTreeList");
+      var column = grid.columns[cellIndex];
+      var dataItem = grid.dataItem(cell.closest("tr"));
+      alert("Satr: " + dataItem.title + " - Sotoon: " + dataItem.values[cellIndex - 3].title);
+    });
+
+
+
+  }
+
+  function ktrlTimeSheets_OnInitColumns(response) {
+
+    var x = JSON.stringify(response);
+    var columns = [];
+    var colId = new KTRColumn();
+    colId.field = "id";
+    colId.title = "شناسه";
+    colId.hidden = true;
+    colId.width = 10;
+    columns.push(colId);
+
+    var colParentId = new KTRColumn();
+    colParentId.field = "parentId";
+    colParentId.title = "شناسه پدر";
+    colParentId.hidden = true;
+    colParentId.width = 10;
+    columns.push(colParentId);
+
+    var colTitle = new KTRColumn();
+
+    colTitle.field = "title";
+    colTitle.title = "عنوان";
+    colTitle.hidden = false,
+
+      colTitle.width = 240;
+    columns.push(colTitle);
+
+    for (var i = 0; i < response[0].values.length; i++) {
+
+      var tsDate = response[0].values[i];
+      var colDate = new KTRColumn();
+      colDate.field = "values[" + i + "].value";
+      //colDate.template = "#= type=='Defference' ? '<span title=\"تایید شده\">1:00</span> | <span title=\"برگشت شده\">2:00</span>' :  (values[ " + i + " ].value) #";
+      colDate.format = "";
+      colDate.title = tsDate.title;
+      colDate.headerTemplate = "<h6 style='text-align:center'><b>" + tsDate.persianDate + "</b></h6><h6 style='text-align:center'>" + tsDate.persianDay + "</h6>";
+
+      var inner = tsDate.value;
+
+      colDate.headerTemplate += "<div style='text-align:center'>";
+
+      if (!inner.isOpen && !inner.has_NotSendData && !inner.hasKarkard) {
+        colDate.headerTemplate += "<label title=' ' class='text-warning' ><i class='glyphicon glyphicon-ban-circle'></i> </label>"
+      }
+
+      if (inner.isOpen) {
+
+        colDate.headerTemplate += `<button title='ثبت ساعت کارکرد' 
+                          class='btn btn-success btn-xs forFound_kwndSaveWHs_OnInit' style='width:10px;height:15px'
+                          data-day-index='${i}'>+</button>`;
+      }
+      if (inner.hasKarkard) {
+
+        colDate.headerTemplate += `<button title='نمایش کارکردهای این روز'   
+              class='btn btn-info btn-xs forFound_ShowCurrentDaySendWorkHours' style='width:10px;height:15px;margin-right:5px;' 
+              data-day-index='${i}'><i class="glyphicon glyphicon-exclamation-sign"></i></button>`;
+      }
+
+      if (inner.has_NotSendData) {
+
+        colDate.headerTemplate += `<button title='ارسال ساعت کارکرد'
+              class='btn btn-warning btn-xs forFound_wndSendWorkHour_OnInit' style='width:10px;height:15px;margin-right:5px;'
+              data-day-index='${i}'><b>↑</b></button>`;
+
+      }
+      colDate.headerTemplate += "</div>";
+
+      colDate.hidden = false;
+      colDate.width = 100;
+      columns.push(colDate);
+    }
+
+    return columns;
+  }
+
+  function ktrlTimeSheets_DataBound(e) {
+
+    $('.forFound_kwndSaveWHs_OnInit').off().on('click', function () {
+      var id = $(this).data("dayIndex");
+      moduleData.createNewWorkHour.kwndSaveWHs_OnInit(id);
+    });
+
+    $('.forFound_ShowCurrentDaySendWorkHours').off().on('click', function () {
+      var sendId = $(this).data("dayIndex");
+      moduleData.history_sentWorkHour.ShowCurrentDaySendWorkHours(sendId);
+    });
+
+    $('.forFound_wndSendWorkHour_OnInit').off().on('click', function () {
+      var semlId = $(this).data("dayIndex");
+      moduleData.sendWorkHour.wndSendWorkHour_OnInit(semlId);
+    });
+  }
+
+
+
+
+  return {
+    GetTimeSheets: GetTimeSheets,
+    Init_TimeSheetTreeList: Init_TimeSheetTreeList,
+    RefreshTimeSheet: RefreshTimeSheet,
+    init: init
+  };
+
+})();
+
+
+
+
+//________________
+
+module.exports = {
+
+  'GetTimeSheets': myMainGrid.GetTimeSheets,
+  'Init_TimeSheetTreeList': myMainGrid.Init_TimeSheetTreeList,
+  'RefreshTimeSheet': myMainGrid.RefreshTimeSheet,
+  'init': myMainGrid.init
+
+};
+},{}]},{},[3]);

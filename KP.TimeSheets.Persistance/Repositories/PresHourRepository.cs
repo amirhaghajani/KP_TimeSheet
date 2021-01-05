@@ -71,7 +71,7 @@ namespace KP.TimeSheets.Persistance
         public void Edit(PresenceHour presenceHour)
         {
             var entity = _RASContext.PresenceHours.Find(presenceHour.ID);
-            entity.Hours = presenceHour.Hours;
+            entity.Minutes = presenceHour.Minutes;
         }
 
         /// <summary>
@@ -113,7 +113,7 @@ namespace KP.TimeSheets.Persistance
             entity = new PresenceHour();
             entity.Date = yesterday;
             entity.EmployeeID = UserId;
-            entity.Hours = 0;
+            entity.Minutes = 0;
             return entity;
         }
         public IEnumerable<PresenceHour> GetThisPeriodByUserId(Guid UserId, DateTime from, DateTime to)

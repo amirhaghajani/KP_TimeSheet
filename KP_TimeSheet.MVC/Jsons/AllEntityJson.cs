@@ -7,12 +7,12 @@ namespace KP.TimeSheets.MVC
 {
     public class AllEntityJson
     {
-        public string Presence { get; set; }
-        public string Work { get; set; }
-        public string Defference { get; set; }
-        public double Presencepercent { get; set; }
-        public double Workpercent { get; set; }
-        public double Defferencepercent { get; set; }
+        public int Presence { get; set; }
+        public int Work { get; set; }
+        public int Defference { get; set; }
+        public int Presencepercent { get; set; }
+        public int Workpercent { get; set; }
+        public int Defferencepercent { get; set; }
         public string CurrentUser { get; set; }
     }
 }

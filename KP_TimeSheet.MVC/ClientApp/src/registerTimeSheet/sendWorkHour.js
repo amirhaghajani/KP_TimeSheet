@@ -6,11 +6,12 @@ const sendWorkHour = (function () {
 
 	const moduleData={};
 
-	function init(mainGrid, common, common_register, data) {
+	function init(mainGrid, common, common_register, data, common_timeSheet) {
 		moduleData.mainGrid = mainGrid;
 		moduleData.common = common;
 		moduleData.data = data;
 		moduleData.common_register = common_register;
+		moduleData.common_timeSheet = common_timeSheet;
 
 		$('#btn_sendAllWorkHoursClick').off().on('click',function(){
 			SendAllWorkHours_OnClick();
@@ -45,9 +46,11 @@ const sendWorkHour = (function () {
 			success: function (response) {
 				_AllReadyForSent = 0
 				for (var i = 0; i < response.length; i++) {
-					_AllReadyForSent = _AllReadyForSent + response[i].hours
+					const item = response[i];
+					item.time = moduleData.common_timeSheet.convertMinutsToTime(item.minutes);
+					_AllReadyForSent = _AllReadyForSent + item.minutes
 				}
-				$("#SumReadyForSentWorkHours").text(_AllReadyForSent);
+				$("#SumReadyForSentWorkHours").text(moduleData.common_timeSheet.convertMinutsToTime(_AllReadyForSent));
 
 				$.ajax({
 					type: "Post",
@@ -56,7 +59,7 @@ const sendWorkHour = (function () {
 					dataType: "json",
 					data: prmData,
 					success: function (response) {
-						_presenceHour = response.hours;
+						_presenceHour =  moduleData.common_timeSheet.convertMinutsToTime(response.minutes);
 
 						$("#presenceHour").text(_presenceHour);
 
@@ -73,9 +76,9 @@ const sendWorkHour = (function () {
 					success: function (response) {
 						_AllSentCount = 0
 						for (var i = 0; i < response.length; i++) {
-							_AllSentCount = _AllSentCount + response[i].hours
+							_AllSentCount = _AllSentCount + response[i].minutes
 						}
-						$("#SumSentWorkHours").text(_AllSentCount);
+						$("#SumSentWorkHours").text(moduleData.common_timeSheet.convertMinutsToTime(_AllSentCount));
 						$("#GRDSendWorkHours").data("kendoGrid").dataSource.read();
 					},
 					error: function (e) {
@@ -106,7 +109,7 @@ const sendWorkHour = (function () {
 						field: "taskTitle",
 						title: "وظیفه"
 					}, {
-						field: "hours",
+						field: "time",
 						title: "ساعت کار ثبت شده    "
 					},
 
@@ -153,10 +156,13 @@ const sendWorkHour = (function () {
 
 		var wndSendWorkHour = $("#wndSendWorkHour");
 		wndSendWorkHour.kendoWindow({
-			width: "750px",
-			height: "670",
+			width: moduleData.common.window_width(),
+			height: moduleData.common.window_height(),
 
-			scrollable: false,
+			activate: moduleData.common.addNoScrollToBody,
+			deactivate: moduleData.common.removeNoScrollToBody,
+
+			scrollable: true,
 			visible: false,
 			modal: true,
 			actions: [
@@ -192,7 +198,9 @@ const sendWorkHour = (function () {
 				_AllSentCount = 0
 
 				for (var i = 0; i < response.length; i++) {
-					_AllSentCount = _AllSentCount + response[i].Hours
+					const item = response[i];
+					item.time = moduleData.common_timeSheet.convertMinutsToTime(item.minutes);
+					_AllSentCount = _AllSentCount + item.minutes
 				}
 				$("#SumSentWorkHours").text(_AllSentCount);
 				for (var i = 0; i < response.length; i++) {
@@ -282,9 +290,11 @@ const sendWorkHour = (function () {
 				_AllReadyForSent = 0
 
 				for (var i = 0; i < response.length; i++) {
-					_AllReadyForSent = _AllReadyForSent + response[i].Hours
+					const item = response[i];
+					item.time = moduleData.common_timeSheet.convertMinutsToTime(item.minutes);
+					_AllReadyForSent = _AllReadyForSent + item.minutes
 				}
-				$("#SumReadyForSentWorkHours").text(_AllReadyForSent);
+				$("#SumReadyForSentWorkHours").text(moduleData.common_timeSheet.convertMinutsToTime(_AllReadyForSent));
 				$.ajax({
 					type: "Post",
 					url: "/api/TimeSheetsAPI/GetPresenceHourByDate",
@@ -292,7 +302,7 @@ const sendWorkHour = (function () {
 					dataType: "json",
 					data: prmData,
 					success: function (response) {
-						_presenceHour = response.Hour
+						_presenceHour = moduleData.common_timeSheet.convertMinutsToTime(response.minutes);
 
 						$("#presenceHour").text(_presenceHour);
 
@@ -310,9 +320,9 @@ const sendWorkHour = (function () {
 					success: function (response) {
 						_AllSentCount = 0
 						for (var i = 0; i < response.length; i++) {
-							_AllSentCount = _AllSentCount + response[i].Hours
+							_AllSentCount = _AllSentCount + response[i].minutes
 						}
-						$("#SumSentWorkHours").text(_AllSentCount);
+						$("#SumSentWorkHours").text(moduleData.common_timeSheet.convertMinutsToTime(_AllSentCount));
 						$("#GRDSendWorkHours").data("kendoGrid").dataSource.read();
 					},
 					error: function (e) {

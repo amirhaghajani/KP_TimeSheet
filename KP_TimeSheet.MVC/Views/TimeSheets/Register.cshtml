@@ -101,7 +101,7 @@
 
 
     <div id="kwndSaveWorkHours" class="k-rtl" style="display:none; background-color:transparent">
-        <div class="row">
+        <div class="row" style="margin: 0;">
             <img class="img-responsive img-rounded" src="~/Images/ersal karkard.jpg" />
         </div>
         <div class="row jumbotron jumbotron-fluid shadow" style="margin-right:10px; margin-top:10px;margin-left:10px">
@@ -129,7 +129,8 @@
                         <div class="form-group" style="margin-top: 3%">
                             <div class="panel panel-info">
                                 <div style="text-align:center" class="panel-heading">  توضیحات </div>
-                                <textarea id="txtDescription" class="panel-body" cols="35" rows="3" placeholder="توضیحات"></textarea>
+                                <textarea id="txtDescription" class="panel-body" cols="35" rows="3" 
+                                    placeholder="توضیحات" style="box-sizing:border-box; width:99%;margin:2px;"></textarea>
                             </div>
                         </div>
                     </div>
@@ -229,7 +230,7 @@
                 <tbody>
                     <tr style="height:40px">
                         <td>
-                            <label id="presenceHour"></label><b>ساعت</b>
+                            <label id="presenceHour"></label> <b>ساعت</b>
                         </td>
                         <td>
                             <label id="SumReadyForSentWorkHours"></label> <b>ساعت</b>
@@ -253,10 +254,10 @@
 </div>
 
 
-<table class="row" style="margin-top:10px; border:none;width:100%; padding-right:1.7%">
+<table class="row" style="margin:10px 15px; border:none; padding-right:1.7%">
     <tbody>
         <tr>
-            <td class="raspanel shadow ">
+            <td class="raspanel shadow " style="max-width: calc(100vw / 2 - 30px); width:calc(100vw / 2 - 30px);">
                 <h4 class="text-center">ماه جاری</h4>
                 <hr />
                 <div class="row" style="margin-top:5px">
@@ -300,10 +301,10 @@
             </td>
 
 
-            <td style="color:transparent;">
-                ____
+            <td style="color:transparent;width:10px">
+                _
             </td>
-            <td class="raspanel shadow">
+            <td class="raspanel shadow" style="max-width: calc(100vw / 2 - 30px); width:calc(100vw / 2 - 30px);">
                 <h4 class="text-center">دوره جاری</h4>
                 <hr />
                 <div class="row" style="margin-top:5px">
