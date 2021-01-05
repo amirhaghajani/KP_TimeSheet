@@ -343,7 +343,7 @@ function GRDOrganUsers_OnInit() {
         sortable: true,
         selectable: true,
         columns: [
-            { field: "FullName", title: "نام فرد", width: 50 },
+            { field: "fullName", title: "نام فرد", width: 50 },
             {
                 title: "حذف",
                 template: "<button onclick='DeleteFromUsers(this)' class='btn btn-warning btn-sm edit' name='info' title='حذف' > حذف</button>",
