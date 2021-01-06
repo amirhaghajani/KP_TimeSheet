@@ -553,29 +553,40 @@ function Page_OnInitYesterday(response) {
         }
     });
 
-
     _YesterdayData = response;
 
     $("#UsenNameSidebar").text(response.currentUser);
     $("#currentUser").text(response.currentUser);
-    $("#PresenceYesterday").text(response.presence);
-    $("#WorkYesterday").text(response.work);
-    $("#differenceYesterday").text(response.defference);
-    $("#PresenceYesterdaypercent").width(response.presencepercent * 10);
-    $("#workYesterdaypercent").width(response.workpercent * 10);
-    $("#differentYesterdaypercent").width(response.defferencepercent * 10);
+
+debugger;
+    const items = [response.presence, response.work, response.defference];
+    const v1 = commonTimesheet.calcPercent(items, response.presence);
+    const v2 = commonTimesheet.calcPercent(items, response.work);
+    const v3 = commonTimesheet.calcPercent(items, response.defference);
+
+    $("#PresenceYesterday").text(commonTimesheet.convertMinutsToTime(response.presence));
+    $("#WorkYesterday").text(commonTimesheet.convertMinutsToTime(response.work));
+    $("#differenceYesterday").text(commonTimesheet.convertMinutsToTime(response.defference));
+    $("#PresenceYesterdaypercent").css('width', v1+'%').attr('aria-valuenow', v1);
+    $("#workYesterdaypercent").css('width', v2+'%').attr('aria-valuenow', v2);
+    $("#differentYesterdaypercent").css('width', v3+'%').attr('aria-valuenow', v3);
 
 }
 
 function Page_OnInitThisMonth(response) {
     _ThisMonthData = response
 
-    $("#PresenceThisMonth").text(response.presence);
-    $("#WorkThisMonth").text(response.work);
-    $("#differenceThisMonth").text(response.defference);
-    $("#PresenceThisMonthpercent").width(response.presencepercent);
-    $("#workThisMonthpercent").width(response.workpercent);
-    $("#differentThisMonthpercent").width(response.defferencepercent);
+    const items = [response.presence, response.work, response.defference];
+    const v1 = commonTimesheet.calcPercent(items, response.presence);
+    const v2 = commonTimesheet.calcPercent(items, response.work);
+    const v3 = commonTimesheet.calcPercent(items, response.defference);
+
+    $("#PresenceThisMonth").text(commonTimesheet.convertMinutsToTime(response.presence));
+    $("#WorkThisMonth").text(commonTimesheet.convertMinutsToTime(response.work));
+    $("#differenceThisMonth").text(commonTimesheet.convertMinutsToTime(response.defference));
+    $("#PresenceThisMonthpercent").css('width', v1+'%').attr('aria-valuenow', v1);
+    $("#workThisMonthpercent").css('width', v2+'%').attr('aria-valuenow', v2);
+    $("#differentThisMonthpercent").css('width', v3+'%').attr('aria-valuenow', v3);
 
 
     $.ajax({
@@ -595,8 +606,11 @@ function Page_OnInitThisMonth(response) {
 
 function Page_OnInitWaitApprove(response) {
 
-    $("#hoursWaitingToApprove").text(commonTimesheet.convertMinutsToTime(response.minutes));
-    $("#hoursWaitingToApprovePercent").width(response.minutes);
+    const items = [response.minutes];
+    const v1 = commonTimesheet.calcPercent(items, response.minutes);
+
+    $("#hoursWaitingToApprove").text(commonTimesheet.convertMinutsToTime(response.presence));
+    $("#hoursWaitingToApprovePercent").css('width', v1 + '%').attr('aria-valuenow', v1);
 
 }
 
