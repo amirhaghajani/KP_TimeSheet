@@ -159,20 +159,20 @@ var SelectedManager = {};
 $("document").ready(function () {
     BuildNewOrganUnit();
 
-     init();
-     
+    init();
+
 });
 
 
 
-function init(){
+function init() {
     $("#UnitTitle").keyup(function () {
         OrganUnit.title = $("#UnitTitle").val();
     });
 
-    $("#btnAddNewUserToUnit").off().on('click',function(){ AddNewUserToUnit(); });
-    $("#btnApprove").off().on('click',function(){ SendOrganUnit(); });
-    $("#btnCancel").off().on('click',function(){ WNDEditAndAddOrgan_OnClose(); });
+    $("#btnAddNewUserToUnit").off().on('click', function () { AddNewUserToUnit(); });
+    $("#btnApprove").off().on('click', function () { SendOrganUnit(); });
+    $("#btnCancel").off().on('click', function () { WNDEditAndAddOrgan_OnClose(); });
 
 }
 
@@ -206,7 +206,7 @@ function GetUsersOrganUnits() {
         dataType: "json",
         success: function (response) {
             _UsersOrganUnits = response
-            
+
             DDLUnitManager_OnInit();
             DDLtParentOrgan_OnInit();
             DDLAddUser_OnInit();
@@ -253,11 +253,16 @@ function OnGetOrganUnits(response) {
 function WNDEditAndAddOrgan_OnInit() {
     var kwndaddorganWHs = $("#WNDEditAndAddOrgan");
     kwndaddorganWHs.kendoWindow({
-        width: "800px",
-        height: "650px",
+        width: common.window_width(),
+        height: common.window_height(),
+
+        activate: common.addNoScrollToBody,
+        deactivate: common.removeNoScrollToBody,
+
         scrollable: true,
+
         visible: false,
-       
+
         modal: true,
         actions: [
             "Pin",
@@ -278,7 +283,7 @@ function WNDEditAndAddOrgan_OnClose() {
 }
 
 function GRDOrganisationUnits_OnInit() {
- 
+
     $("#GRDOrganisationUnits").kendoGrid({
         dataSource: {
             transport: {
@@ -318,13 +323,13 @@ function GRDOrganisationUnits_OnInit() {
             pageSize: 15,
             pageSizes: true
         },
-        dataBound: dataBound
+        dataBound: dataBoundOrganisationUnits
     });
 }
 
-function dataBound(){
-    $("#btnAddNewUnit").off().on('click',function(){ AddNewUnit(); });
-    $(".forFoundBtnEdit").off().on('click',function(){ EditOrganUnit(this); });
+function dataBoundOrganisationUnits() {
+    $("#btnAddNewUnit").off().on('click', function () { AddNewUnit(); });
+    $(".forFoundBtnEdit").off().on('click', function () { EditOrganUnit(this); });
 }
 
 function AddNewUnit() {
@@ -417,7 +422,7 @@ function SelectUnitParent() {
 }
 
 function SelectUnitManager() {
-    SelectedManager = FindUserById( $("#DDLtUnitManager").data("kendoDropDownList").value())
+    SelectedManager = FindUserById($("#DDLtUnitManager").data("kendoDropDownList").value())
     OrganUnit.managerID = SelectedManager.id;
 }
 
@@ -450,12 +455,10 @@ function FindUserById(id) {
 }
 
 function EditOrganUnit(e) {
-debugger;
+    debugger;
     var grid = $("#GRDOrganisationUnits").data("kendoGrid");
     var dataItem = grid.dataItem($(e).closest("tr"));
 
-    debugger;
-    
     OrganUnit = dataItem;
     FillFormEditUnit();
     WNDEditAndAddOrgan_OnOpen();
@@ -486,7 +489,7 @@ function GRDOrganUsers_OnInit() {
                 model: {
                     id: "id"
                 },
-               
+
             }
         },
         height: 300,
@@ -497,7 +500,7 @@ function GRDOrganUsers_OnInit() {
             { field: "fullName", title: "نام فرد", width: 50 },
             {
                 title: "حذف",
-                template: "<button onclick='DeleteFromUsers(this)' class='btn btn-warning btn-sm edit' name='info' title='حذف' > حذف</button>",
+                template: "<button class='btn btn-warning btn-sm edit forFoundDeleteFromUsers' name='info' title='حذف' > حذف</button>",
                 headerTemplate: "<label class='text-center'> حذف </label>",
                 filterable: false,
                 sortable: false,
@@ -507,8 +510,13 @@ function GRDOrganUsers_OnInit() {
         pageable: {
             pageSize: 5,
             pageSizes: false
-        }
+        },
+        dataBound: dataBoundOrganUsers
     });
+}
+
+function dataBoundOrganUsers() {
+    $(".forFoundDeleteFromUsers").off().on('click', function () { DeleteFromUsers(this); });
 }
 
 function FillFormAddUnit() {
@@ -555,8 +563,8 @@ function SendOrganUnit() {
         success: function (response) {
             WNDEditAndAddOrgan_OnClose();
             RefreshGRDOrganUnits();
-           
-            
+
+
         },
         error: function (e) {
 
@@ -574,8 +582,8 @@ function DeleteFromUsers(e) {
             OrganUnit.users.splice(i, 1);
         }
         $("#GRDOrganUsers").data("kendoGrid").dataSource.read();
-        
-       
+
+
     }
 }
 
