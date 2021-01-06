@@ -42,7 +42,7 @@ $(document).ready(function () {
     editWindow.init(mainGrid, common, common_register, data, common_timeSheet);
     history_sentWorkHour.init(common, common_register, history_workHour, data, common_timeSheet);
 
-    mainGrid.init(common, common_register, createNewWorkHour, history_sentWorkHour, sendWorkHour, data, 
+    mainGrid.init(common, common_register, common_timeSheet, createNewWorkHour, history_sentWorkHour, sendWorkHour, data, 
         service, editWindow,history_sentWorkHour, bottomPage_priodlyGrid, bottomPage_monthlyGrid);
 
     mainGrid.GetTimeSheets(function () {

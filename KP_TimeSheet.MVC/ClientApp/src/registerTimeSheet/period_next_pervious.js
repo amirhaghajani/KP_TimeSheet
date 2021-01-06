@@ -79,13 +79,8 @@ const period_next_pervious = (function () {
 
         moduleData.service.getNextTimeSheets(type, prmData.date, (response) => {
 
-            moduleData.common_register.removeAndRecreateTreelisDiv();
+            moduleData.mainGrid.ResetAllThings();
             moduleData.mainGrid.Init_TimeSheetTreeList();
-            moduleData.editWindow.Refresh_GrdEditWorkHour();
-            moduleData.history_sentWorkHour.Refresh_GrdMonitorSentWorkHour();
-            moduleData.priodlyGrid.InitPeriodlyByProjectsGrid();
-            moduleData.monthlyGrid.InitMonthlyByProjectsGrid();
-            moduleData.common.loaderHide();
 
         });
     }

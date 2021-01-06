@@ -54,24 +54,24 @@ const timeSheet = (function () {
 
         var number = Math.abs(mainNumber);
 
-        const hour =  parseInt(number);
+        const hour = parseInt(number);
         const minut = Math.round((number - hour) * 60);
-        return `${hour}:${minut > 9 ? minut : '0' + minut} ${mainNumber<0 ? '-' : ''}`;
+        return `${hour}:${minut > 9 ? minut : '0' + minut} ${mainNumber < 0 ? '-' : ''}`;
     }
     function convertMinutsToTime(mainNumber) {
         if (!mainNumber) return '0:00';
 
         var number = Math.abs(mainNumber);
 
-        const hour =  parseInt(number / 60);
+        const hour = parseInt(number / 60);
         const minut = number - (hour * 60);
-        return `${hour}:${minut > 9 ? minut : '0' + minut} ${mainNumber<0 ? '-' : ''}`;
+        return `${hour}:${minut > 9 ? minut : '0' + minut} ${mainNumber < 0 ? '-' : ''}`;
     }
 
-    function convertClockTextToMinute(clock){
-        if(!clock) return 0;
+    function convertClockTextToMinute(clock) {
+        if (!clock) return 0;
         var array = clock.split(':');
-        return array[0]*60 + array[1]*1;
+        return array[0] * 60 + array[1] * 1;
     }
 
 
@@ -317,7 +317,7 @@ const timeSheet = (function () {
                 persianDate: cTime.persianDate,
                 persianDay: cTime.persianDay,
                 title: cTime.persianDate,
-                value: convertMinutsToTime(dbTime.hozoor - cTime.calcTime() ),
+                value: convertMinutsToTime(dbTime.hozoor - cTime.calcTime()),
                 minute: dbTime.hozoor - cTime.calcTime()
             });
         }
@@ -325,19 +325,51 @@ const timeSheet = (function () {
         return times;
     }
 
-    function calcPercent(inputs, wanted){
+    function calcPercent(inputs, wanted) {
 
-        if(wanted<0) return 0;
+        if (wanted < 0) return 0;
 
         var max = 0;
 
-        for(var k in inputs){
-            if(inputs[k]> max) max = inputs[k];
+        for (var k in inputs) {
+            if (inputs[k] > max) max = inputs[k];
         }
 
-        if(max<6000) max=6000;
+        if (max < 6000) max = 6000;
 
         return 100 * wanted / max;
+    }
+
+
+
+
+    function foundExpandedTreeListTitle(treeList) {
+        if (!treeList) return [];
+
+        var rows = $("[aria-expanded=true]", treeList.tbody);
+
+        var expandedRows = $.map(rows, function (row) {
+            return $(row).children()[2].innerText;
+        });
+
+        return expandedRows;
+    }
+    function expandTreeListItems(treeList, expandedRowsTitle) {
+
+        if (!treeList || !expandedRowsTitle || !expandedRowsTitle.length) return;
+
+        var rows = $("tr.k-treelist-group", treeList.tbody);
+
+        var co = 0;
+        for (var k = 0; k < rows.length; k++) {
+            var row = rows[k];
+            if ($(row).children()[2] && $(row).children()[2].innerText == expandedRowsTitle[co]) {
+                treeList.expand(row);
+                co++;
+                if (co >= expandedRowsTitle.length) break;
+            }
+        }
+
     }
 
 
@@ -346,8 +378,11 @@ const timeSheet = (function () {
         convertServerDataToTimeSheet_ForEmployee: convertServerDataToTimeSheet_ForEmployee,
         convertServerDataToTimeSheet_ForApprove: convertServerDataToTimeSheet_ForApprove,
         convertMinutsToTime: convertMinutsToTime,
-        convertClockTextToMinute:convertClockTextToMinute,
-        calcPercent: calcPercent
+        convertClockTextToMinute: convertClockTextToMinute,
+        calcPercent: calcPercent,
+
+        foundExpandedTreeListTitle: foundExpandedTreeListTitle,
+        expandTreeListItems: expandTreeListItems
     }
 
 })();
@@ -357,5 +392,8 @@ module.exports = {
     convertServerDataToTimeSheet_ForApprove: timeSheet.convertServerDataToTimeSheet_ForApprove,
     convertMinutsToTime: timeSheet.convertMinutsToTime,
     convertClockTextToMinute: timeSheet.convertClockTextToMinute,
-    calcPercent: timeSheet.calcPercent
+    calcPercent: timeSheet.calcPercent,
+
+    foundExpandedTreeListTitle: timeSheet.foundExpandedTreeListTitle,
+    expandTreeListItems: timeSheet.expandTreeListItems
 };

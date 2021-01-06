@@ -202,24 +202,24 @@ const timeSheet = (function () {
 
         var number = Math.abs(mainNumber);
 
-        const hour =  parseInt(number);
+        const hour = parseInt(number);
         const minut = Math.round((number - hour) * 60);
-        return `${hour}:${minut > 9 ? minut : '0' + minut} ${mainNumber<0 ? '-' : ''}`;
+        return `${hour}:${minut > 9 ? minut : '0' + minut} ${mainNumber < 0 ? '-' : ''}`;
     }
     function convertMinutsToTime(mainNumber) {
         if (!mainNumber) return '0:00';
 
         var number = Math.abs(mainNumber);
 
-        const hour =  parseInt(number / 60);
+        const hour = parseInt(number / 60);
         const minut = number - (hour * 60);
-        return `${hour}:${minut > 9 ? minut : '0' + minut} ${mainNumber<0 ? '-' : ''}`;
+        return `${hour}:${minut > 9 ? minut : '0' + minut} ${mainNumber < 0 ? '-' : ''}`;
     }
 
-    function convertClockTextToMinute(clock){
-        if(!clock) return 0;
+    function convertClockTextToMinute(clock) {
+        if (!clock) return 0;
         var array = clock.split(':');
-        return array[0]*60 + array[1]*1;
+        return array[0] * 60 + array[1] * 1;
     }
 
 
@@ -465,7 +465,7 @@ const timeSheet = (function () {
                 persianDate: cTime.persianDate,
                 persianDay: cTime.persianDay,
                 title: cTime.persianDate,
-                value: convertMinutsToTime(dbTime.hozoor - cTime.calcTime() ),
+                value: convertMinutsToTime(dbTime.hozoor - cTime.calcTime()),
                 minute: dbTime.hozoor - cTime.calcTime()
             });
         }
@@ -473,19 +473,51 @@ const timeSheet = (function () {
         return times;
     }
 
-    function calcPercent(inputs, wanted){
+    function calcPercent(inputs, wanted) {
 
-        if(wanted<0) return 0;
+        if (wanted < 0) return 0;
 
         var max = 0;
 
-        for(var k in inputs){
-            if(inputs[k]> max) max = inputs[k];
+        for (var k in inputs) {
+            if (inputs[k] > max) max = inputs[k];
         }
 
-        if(max<6000) max=6000;
+        if (max < 6000) max = 6000;
 
         return 100 * wanted / max;
+    }
+
+
+
+
+    function foundExpandedTreeListTitle(treeList) {
+        if (!treeList) return [];
+
+        var rows = $("[aria-expanded=true]", treeList.tbody);
+
+        var expandedRows = $.map(rows, function (row) {
+            return $(row).children()[2].innerText;
+        });
+
+        return expandedRows;
+    }
+    function expandTreeListItems(treeList, expandedRowsTitle) {
+
+        if (!treeList || !expandedRowsTitle || !expandedRowsTitle.length) return;
+
+        var rows = $("tr.k-treelist-group", treeList.tbody);
+
+        var co = 0;
+        for (var k = 0; k < rows.length; k++) {
+            var row = rows[k];
+            if ($(row).children()[2] && $(row).children()[2].innerText == expandedRowsTitle[co]) {
+                treeList.expand(row);
+                co++;
+                if (co >= expandedRowsTitle.length) break;
+            }
+        }
+
     }
 
 
@@ -494,8 +526,11 @@ const timeSheet = (function () {
         convertServerDataToTimeSheet_ForEmployee: convertServerDataToTimeSheet_ForEmployee,
         convertServerDataToTimeSheet_ForApprove: convertServerDataToTimeSheet_ForApprove,
         convertMinutsToTime: convertMinutsToTime,
-        convertClockTextToMinute:convertClockTextToMinute,
-        calcPercent: calcPercent
+        convertClockTextToMinute: convertClockTextToMinute,
+        calcPercent: calcPercent,
+
+        foundExpandedTreeListTitle: foundExpandedTreeListTitle,
+        expandTreeListItems: expandTreeListItems
     }
 
 })();
@@ -505,7 +540,10 @@ module.exports = {
     convertServerDataToTimeSheet_ForApprove: timeSheet.convertServerDataToTimeSheet_ForApprove,
     convertMinutsToTime: timeSheet.convertMinutsToTime,
     convertClockTextToMinute: timeSheet.convertClockTextToMinute,
-    calcPercent: timeSheet.calcPercent
+    calcPercent: timeSheet.calcPercent,
+
+    foundExpandedTreeListTitle: timeSheet.foundExpandedTreeListTitle,
+    expandTreeListItems: timeSheet.expandTreeListItems
 };
 },{"../registerTimeSheet/mainGrid":13}],3:[function(require,module,exports){
 const service = (function () {
@@ -818,7 +856,7 @@ $(document).ready(function () {
     editWindow.init(mainGrid, common, common_register, data, common_timeSheet);
     history_sentWorkHour.init(common, common_register, history_workHour, data, common_timeSheet);
 
-    mainGrid.init(common, common_register, createNewWorkHour, history_sentWorkHour, sendWorkHour, data, 
+    mainGrid.init(common, common_register, common_timeSheet, createNewWorkHour, history_sentWorkHour, sendWorkHour, data, 
         service, editWindow,history_sentWorkHour, bottomPage_priodlyGrid, bottomPage_monthlyGrid);
 
     mainGrid.GetTimeSheets(function () {
@@ -1897,11 +1935,13 @@ const myMainGrid = (function () {
 
   const moduleData = {};
 
-  function init(common, common_register, createNewWorkHour, history_sentWorkHour, sendWorkHour,
+  function init(common, common_register, common_timeSheet, createNewWorkHour, history_sentWorkHour, sendWorkHour,
     data, service, editWindow, history_sentWorkHour, priodlyGrid, monthlyGrid) {
 
     moduleData.common = common;
     moduleData.common_register = common_register;
+    moduleData.common_timeSheet = common_timeSheet;
+
     moduleData.data = data;
     moduleData.history_sentWorkHour = history_sentWorkHour;
     moduleData.createNewWorkHour = createNewWorkHour;
@@ -1914,6 +1954,7 @@ const myMainGrid = (function () {
     moduleData.priodlyGrid = priodlyGrid;
     moduleData.monthlyGrid = monthlyGrid;
 
+    moduleData.expandedRows = [];
   };
 
   function KTRColumn() {
@@ -1940,23 +1981,31 @@ const myMainGrid = (function () {
       toDate = prmData[prmData.length - 1].date;
     }
     GetTimeSheets(() => {
-      moduleData.common_register.removeAndRecreateTreelisDiv();
+      ResetAllThings();
 
-      moduleData.editWindow.Refresh_GrdEditWorkHour();
-      moduleData.history_sentWorkHour.Refresh_GrdMonitorSentWorkHour();
-
-
-      moduleData.priodlyGrid.InitPeriodlyByProjectsGrid();
-      moduleData.monthlyGrid.InitMonthlyByProjectsGrid();
-
-
-
-      moduleData.common.loaderHide();
     }, fromDate, toDate);
+  }
+
+  function ResetAllThings() {
+
+    var treeList = $("#ktrlTimeSheets").data("kendoTreeList");
+    moduleData.expandedRows = moduleData.common_timeSheet.foundExpandedTreeListTitle(treeList);
+    
+
+    moduleData.common_register.removeAndRecreateTreelisDiv();
+
+    moduleData.editWindow.Refresh_GrdEditWorkHour();
+    moduleData.history_sentWorkHour.Refresh_GrdMonitorSentWorkHour();
+
+
+    moduleData.priodlyGrid.InitPeriodlyByProjectsGrid();
+    moduleData.monthlyGrid.InitMonthlyByProjectsGrid();
+
+    moduleData.common.loaderHide();
   }
   //----------
 
-  function GetTimeSheets(callBackFn,fromDate, toDate) {
+  function GetTimeSheets(callBackFn, fromDate, toDate) {
 
     moduleData.service.getTimeSheets(fromDate, toDate, (response) => {
       if (callBackFn) callBackFn(response);
@@ -1965,6 +2014,7 @@ const myMainGrid = (function () {
   }
 
   function Init_TimeSheetTreeList() {
+
     const timeSheetData = moduleData.data.timeSheetData_get();
     const timeSheetData2 = timeSheetData.slice(1);
 
@@ -2101,6 +2151,10 @@ const myMainGrid = (function () {
 
   function ktrlTimeSheets_DataBound(e) {
 
+    var treeList = $("#ktrlTimeSheets").data("kendoTreeList");
+    moduleData.common_timeSheet.expandTreeListItems(treeList,moduleData.expandedRows);
+
+
     $('.forFound_kwndSaveWHs_OnInit').off().on('click', function () {
       var id = $(this).data("dayIndex");
       moduleData.createNewWorkHour.kwndSaveWHs_OnInit(id);
@@ -2117,6 +2171,8 @@ const myMainGrid = (function () {
     });
   }
 
+  
+
 
 
 
@@ -2124,7 +2180,8 @@ const myMainGrid = (function () {
     GetTimeSheets: GetTimeSheets,
     Init_TimeSheetTreeList: Init_TimeSheetTreeList,
     RefreshTimeSheet: RefreshTimeSheet,
-    init: init
+    init: init,
+    ResetAllThings: ResetAllThings
   };
 
 })();
@@ -2139,7 +2196,8 @@ module.exports = {
   'GetTimeSheets': myMainGrid.GetTimeSheets,
   'Init_TimeSheetTreeList': myMainGrid.Init_TimeSheetTreeList,
   'RefreshTimeSheet': myMainGrid.RefreshTimeSheet,
-  'init': myMainGrid.init
+  'init': myMainGrid.init,
+  ResetAllThings: myMainGrid.ResetAllThings
 
 };
 },{}],14:[function(require,module,exports){
@@ -2224,13 +2282,8 @@ const period_next_pervious = (function () {
 
         moduleData.service.getNextTimeSheets(type, prmData.date, (response) => {
 
-            moduleData.common_register.removeAndRecreateTreelisDiv();
+            moduleData.mainGrid.ResetAllThings();
             moduleData.mainGrid.Init_TimeSheetTreeList();
-            moduleData.editWindow.Refresh_GrdEditWorkHour();
-            moduleData.history_sentWorkHour.Refresh_GrdMonitorSentWorkHour();
-            moduleData.priodlyGrid.InitPeriodlyByProjectsGrid();
-            moduleData.monthlyGrid.InitMonthlyByProjectsGrid();
-            moduleData.common.loaderHide();
 
         });
     }

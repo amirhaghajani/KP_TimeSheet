@@ -2,11 +2,13 @@ const myMainGrid = (function () {
 
   const moduleData = {};
 
-  function init(common, common_register, createNewWorkHour, history_sentWorkHour, sendWorkHour,
+  function init(common, common_register, common_timeSheet, createNewWorkHour, history_sentWorkHour, sendWorkHour,
     data, service, editWindow, history_sentWorkHour, priodlyGrid, monthlyGrid) {
 
     moduleData.common = common;
     moduleData.common_register = common_register;
+    moduleData.common_timeSheet = common_timeSheet;
+
     moduleData.data = data;
     moduleData.history_sentWorkHour = history_sentWorkHour;
     moduleData.createNewWorkHour = createNewWorkHour;
@@ -19,6 +21,7 @@ const myMainGrid = (function () {
     moduleData.priodlyGrid = priodlyGrid;
     moduleData.monthlyGrid = monthlyGrid;
 
+    moduleData.expandedRows = [];
   };
 
   function KTRColumn() {
@@ -45,23 +48,31 @@ const myMainGrid = (function () {
       toDate = prmData[prmData.length - 1].date;
     }
     GetTimeSheets(() => {
-      moduleData.common_register.removeAndRecreateTreelisDiv();
+      ResetAllThings();
 
-      moduleData.editWindow.Refresh_GrdEditWorkHour();
-      moduleData.history_sentWorkHour.Refresh_GrdMonitorSentWorkHour();
-
-
-      moduleData.priodlyGrid.InitPeriodlyByProjectsGrid();
-      moduleData.monthlyGrid.InitMonthlyByProjectsGrid();
-
-
-
-      moduleData.common.loaderHide();
     }, fromDate, toDate);
+  }
+
+  function ResetAllThings() {
+
+    var treeList = $("#ktrlTimeSheets").data("kendoTreeList");
+    moduleData.expandedRows = moduleData.common_timeSheet.foundExpandedTreeListTitle(treeList);
+    
+
+    moduleData.common_register.removeAndRecreateTreelisDiv();
+
+    moduleData.editWindow.Refresh_GrdEditWorkHour();
+    moduleData.history_sentWorkHour.Refresh_GrdMonitorSentWorkHour();
+
+
+    moduleData.priodlyGrid.InitPeriodlyByProjectsGrid();
+    moduleData.monthlyGrid.InitMonthlyByProjectsGrid();
+
+    moduleData.common.loaderHide();
   }
   //----------
 
-  function GetTimeSheets(callBackFn,fromDate, toDate) {
+  function GetTimeSheets(callBackFn, fromDate, toDate) {
 
     moduleData.service.getTimeSheets(fromDate, toDate, (response) => {
       if (callBackFn) callBackFn(response);
@@ -70,6 +81,7 @@ const myMainGrid = (function () {
   }
 
   function Init_TimeSheetTreeList() {
+
     const timeSheetData = moduleData.data.timeSheetData_get();
     const timeSheetData2 = timeSheetData.slice(1);
 
@@ -206,6 +218,10 @@ const myMainGrid = (function () {
 
   function ktrlTimeSheets_DataBound(e) {
 
+    var treeList = $("#ktrlTimeSheets").data("kendoTreeList");
+    moduleData.common_timeSheet.expandTreeListItems(treeList,moduleData.expandedRows);
+
+
     $('.forFound_kwndSaveWHs_OnInit').off().on('click', function () {
       var id = $(this).data("dayIndex");
       moduleData.createNewWorkHour.kwndSaveWHs_OnInit(id);
@@ -222,6 +238,8 @@ const myMainGrid = (function () {
     });
   }
 
+  
+
 
 
 
@@ -229,7 +247,8 @@ const myMainGrid = (function () {
     GetTimeSheets: GetTimeSheets,
     Init_TimeSheetTreeList: Init_TimeSheetTreeList,
     RefreshTimeSheet: RefreshTimeSheet,
-    init: init
+    init: init,
+    ResetAllThings: ResetAllThings
   };
 
 })();
@@ -244,6 +263,7 @@ module.exports = {
   'GetTimeSheets': myMainGrid.GetTimeSheets,
   'Init_TimeSheetTreeList': myMainGrid.Init_TimeSheetTreeList,
   'RefreshTimeSheet': myMainGrid.RefreshTimeSheet,
-  'init': myMainGrid.init
+  'init': myMainGrid.init,
+  ResetAllThings: myMainGrid.ResetAllThings
 
 };
