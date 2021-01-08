@@ -33,6 +33,7 @@ namespace KP.TimeSheets.MVC
             result.ProjectTitle = entity.Project.Title;
             result.TaskTitle = entity.Task.Title;
             result.WorkFlowStageTitle = entity.WorkflowStage.Title;
+            result.WorkFlowStageType = entity.WorkflowStage.Type;
             return result;
         }
 

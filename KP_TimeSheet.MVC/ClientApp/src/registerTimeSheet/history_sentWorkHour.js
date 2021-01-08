@@ -21,13 +21,11 @@ const hisotrSentWorkHour = (function () {
 		});
 
 		$('#GrdMonitorSentWorkHour_Hide').off().on('click', function () {
-			Close_WndMonitorSentWorkHours();
+			$("#WndMonitorSentWorkHours").data("kendoWindow").close();
 		});
 	}
 
-	function Close_WndMonitorSentWorkHours() {
-		$("#WndMonitorSentWorkHours").data("kendoWindow").close()
-	}
+	
 
 	function Open_WndMonitorSentWorkHours() {
 		$("#WndMonitorSentWorkHours").data("kendoWindow").open()
@@ -79,7 +77,7 @@ const hisotrSentWorkHour = (function () {
 				"Maximize",
 				"Close"
 			],
-			open: moduleData.common.adjustSize,
+			//open: moduleData.common.adjustSize,
 		}).data("kendoWindow").center().open();
 
 		$("#GrdMonitorSentWorkHour").kendoGrid({
@@ -135,6 +133,15 @@ const hisotrSentWorkHour = (function () {
 
 	}
 
+
+	function ShowDataOnGrid(data) {
+
+		debugger;
+
+		_MonitorSentWorkHours = data;
+		Init_GrdMonitorSentWorkHour();
+	}
+
 	function Refresh_GrdMonitorSentWorkHour() {
 		var prmData = JSON.stringify(moduleData.data.timeSheetData_get()[0].values);
 		$.ajax({
@@ -161,6 +168,10 @@ const hisotrSentWorkHour = (function () {
 	}
 
 	function ShowCurrentDaySendWorkHours(dayIndex) {
+
+		// debugger;
+		// var a = moduleData.data.timeSheetData_beforProcess_get();
+
 		moduleData.common.loaderShow();
 		moduleData.hisotory_workHour.Create_GrdHistory();
 
@@ -206,7 +217,9 @@ const hisotrSentWorkHour = (function () {
 		Refresh_GrdMonitorSentWorkHour: Refresh_GrdMonitorSentWorkHour,
 		Init_GrdMonitorSentWorkHour: Init_GrdMonitorSentWorkHour,
 		init: init,
-		ShowCurrentDaySendWorkHours: ShowCurrentDaySendWorkHours
+		ShowCurrentDaySendWorkHours: ShowCurrentDaySendWorkHours,
+
+		ShowDataOnGrid: ShowDataOnGrid
 	};
 
 })();
@@ -217,5 +230,7 @@ module.exports = {
 	'Refresh_GrdMonitorSentWorkHour': hisotrSentWorkHour.Refresh_GrdMonitorSentWorkHour,
 	'Init_GrdMonitorSentWorkHour': hisotrSentWorkHour.Init_GrdMonitorSentWorkHour,
 	'init': hisotrSentWorkHour.init,
-	'ShowCurrentDaySendWorkHours': hisotrSentWorkHour.ShowCurrentDaySendWorkHours
+	'ShowCurrentDaySendWorkHours': hisotrSentWorkHour.ShowCurrentDaySendWorkHours,
+
+	ShowDataOnGrid: hisotrSentWorkHour.ShowDataOnGrid
 }

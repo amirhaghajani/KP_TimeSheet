@@ -56,6 +56,8 @@ namespace KP.TimeSheets.MVC
         public Guid WorkflowStageID { get; set; }
 
         public string WorkFlowStageTitle { get; set; }
+        public string WorkFlowStageType { get; set; }
+        
 
         /// <summary>
         /// آخرین اقدام صورت گرفته برای ساعت کارکرد

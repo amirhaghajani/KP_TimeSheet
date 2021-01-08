@@ -84,7 +84,7 @@ function WNDSelectPeriod_OnInit() {
 			"Maximize",
 			"Close"
 		],
-		open: common.adjustSize,
+		//open: common.adjustSize,
 	}).data("kendoWindow").center();
 }
 
@@ -114,7 +114,7 @@ function WndDeny_OnInit() {
 			"Maximize",
 			"Close"
 		],
-		open: common.adjustSize,
+		//open: common.adjustSize,
 	}).data("kendoWindow").center();
 }
 

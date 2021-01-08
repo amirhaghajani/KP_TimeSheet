@@ -10,20 +10,20 @@ namespace KP.TimeSheets.Persistance
     internal class WorkHourRepository : IWorkHourRepository
     {
 
-       
-       
+
+
         //string _PWAConnString;
         RASContext _RASContext;
 
-        public WorkHourRepository( RASContext rasContext)
+        public WorkHourRepository(RASContext rasContext)
         {
             //_PWAConnString = pwaConnString;
             _RASContext = rasContext;
         }
 
-      
 
-       
+
+
 
         /// <summary>
         /// بدست آوردن ساعت کاری بر اساس شناسه آن
@@ -32,22 +32,22 @@ namespace KP.TimeSheets.Persistance
         /// <returns>ساعت کاری که در بررسی پایگاه داده بدست می آید.</returns>
         public WorkHour GetByID(Guid id)
         {
-             return DefaultQuery().First(x => x.ID == id);
+            return DefaultQuery().First(x => x.ID == id);
         }
 
-        public IEnumerable< WorkHour> GetByProjectID(Guid projectId)
+        public IEnumerable<WorkHour> GetByProjectID(Guid projectId)
         {
             return DefaultQuery().Where(x => x.ProjectId == projectId);
         }
-      
+
 
         public IEnumerable<WorkHour> GetByProjectID(Guid projectId, DateTime? from, DateTime? to)
         {
-            return DefaultQuery().Where(x => x.ProjectId == projectId && x.Date >= from && x.Date <=to);
+            return DefaultQuery().Where(x => x.ProjectId == projectId && x.Date >= from && x.Date <= to);
         }
         public IEnumerable<WorkHour> GetSentWorkHours(Guid UserId)
         {
-            return DefaultQuery().Where(x=>x.EmployeeID == UserId && x.WorkflowStage.Order == 2);
+            return DefaultQuery().Where(x => x.EmployeeID == UserId && x.WorkflowStage.Order == 2);
         }
 
 
@@ -58,11 +58,13 @@ namespace KP.TimeSheets.Persistance
         /// <param name="fromDate">از تاریخ</param>
         /// <param name="toDate">تا تاریخ</param>
         /// <returns>ساعات کاری که در بررسی پایگاه داده بدست می آید.</returns>
-        public IEnumerable<WorkHour> GetByEpmloyeeID(Guid employeeID, DateTime? fromDate, DateTime? toDate)
+        public IEnumerable<WorkHour> GetByEpmloyeeID(Guid employeeID, DateTime? fromDate, DateTime? toDate, Guid? projectId, Guid? taskId)
         {
             return DefaultQuery()
                 .Where(wh => (wh.EmployeeID.Equals(employeeID)
-                && wh.Date >= fromDate && wh.Date <= toDate));
+                && wh.Date >= fromDate && wh.Date <= toDate)
+                && (projectId.HasValue ? wh.ProjectId == projectId : true)
+                && (taskId.HasValue ? wh.TaskID == taskId : true));
         }
         public IEnumerable<WorkHour> GetByEpmloyeeID(Guid employeeID)
         {
@@ -104,7 +106,7 @@ namespace KP.TimeSheets.Persistance
             entity.ID = workHour.ID;
             entity.Action = workHour.Action;
             entity.Description = workHour.Description;
-            
+
         }
 
         /// <summary>
@@ -177,20 +179,20 @@ namespace KP.TimeSheets.Persistance
         public IEnumerable<WorkHour> GetRegisteredWorkHours(Guid UserId)
         {
             var entity = _RASContext.WorkflowStages.FirstOrDefault(X => X.IsFirst);
-            return  DefaultQuery().Where(x => x.EmployeeID == UserId && x.WorkflowStageID == entity.ID);
+            return DefaultQuery().Where(x => x.EmployeeID == UserId && x.WorkflowStageID == entity.ID);
         }
 
-        public IEnumerable<WorkHour> GetUnConfirmedWorkHours(DateTime date,Guid UserId)
+        public IEnumerable<WorkHour> GetUnConfirmedWorkHours(DateTime date, Guid UserId)
         {
-           
+
             return DefaultQuery().Where(x => x.Date == date && x.WorkflowStage.Order == 1 && x.EmployeeID == UserId); ;
         }
 
-       
 
-        public IEnumerable< WorkHour> GetByDateAndTaskId(DateTime date, Guid Taskid)
+
+        public IEnumerable<WorkHour> GetByDateAndTaskId(DateTime date, Guid Taskid)
         {
-            return DefaultQuery().Where(x => x.Date == date &&  x.TaskID == Taskid);
+            return DefaultQuery().Where(x => x.Date == date && x.TaskID == Taskid);
         }
 
 
@@ -200,10 +202,10 @@ namespace KP.TimeSheets.Persistance
                 .Include(x => x.Employee)
                 .Include(y => y.Project)
                 .Include(z => z.Task)
-                .Include(s=>s.WorkflowStage);
+                .Include(s => s.WorkflowStage);
         }
 
-      
+
         public IEnumerable<WorkHour> GetConfirmedWorkHours(DateTime date, Guid userId)
         {
             return DefaultQuery().Where(x => x.Date == date && x.WorkflowStage.Order > 1 && x.EmployeeID == userId);

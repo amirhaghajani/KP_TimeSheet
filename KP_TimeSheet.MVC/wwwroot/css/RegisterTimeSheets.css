@@ -1,1 +1,9 @@
-﻿
+﻿.registerWindow_header{
+    margin: 0;
+    background-image: url('/Images/insert Time sheet.jpg');
+    height: 30px;
+    background-size: cover;
+    color: white;
+    padding: 20px;
+    text-align: left;
+}

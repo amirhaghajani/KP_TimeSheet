@@ -227,19 +227,19 @@ const timeSheet = (function () {
     function convertServerDataToTimeSheet_ForEmployee(response) {
         const data = [];
 
-        const amaliat = new timeSheet_Row(0, null, "عملیات", "-", "eb96abcb-d37d-4aa1-1000-e1f4a753bee5", []);
+        const amaliat = new timeSheet_Row(0, null, "عملیات", "Amaliat", "11111111-d37d-4aa1-1000-e1f4a753bee5", []);
         data.push(amaliat);
 
-        const hozoor = new timeSheet_Row(1, null, "حضور", "-", "eb96abcb-d37d-4aa1-1001-e1f4a753bee5", []);
+        const hozoor = new timeSheet_Row(1, null, "حضور", "Hozoor", "22222222-d37d-4aa1-1001-e1f4a753bee5", []);
         data.push(hozoor);
 
-        const hozoorDetail = new timeSheet_Row(2, 1, "جزئیات", "-", "eb96abcb-d37d-4aa1-1002-e1f4a753bee5", []);
+        const hozoorDetail = new timeSheet_Row(2, 1, "جزئیات", "HozoorDetail", "33333333-d37d-4aa1-1002-e1f4a753bee5", []);
         data.push(hozoorDetail);
 
-        const karkard = new timeSheet_Row(3, null, "کارکرد", "-", "eb96abcb-d37d-4aa1-1003-e1f4a753bee5", []);
+        const karkard = new timeSheet_Row(3, null, "کارکرد", "Karkard", "44444444-d37d-4aa1-1003-e1f4a753bee5", []);
         data.push(karkard);
 
-        const diffHozoorKarkard = new timeSheet_Row(4, null, "اختلاف حضور و کارکرد", "-", "eb96abcb-d37d-4aa1-1004-e1f4a753bee5", []);
+        const diffHozoorKarkard = new timeSheet_Row(4, null, "اختلاف حضور و کارکرد", "Diff_Karkard_Hozoor", "55555555-d37d-4aa1-1004-e1f4a753bee5", []);
         data.push(diffHozoorKarkard);
 
         const projects = [];
@@ -248,7 +248,7 @@ const timeSheet = (function () {
         private_addProjectsAndTasksTimes(data, times, projects, 3);
 
         const notSendId = data.length + 1
-        const karkard_notSend = new timeSheet_Row(notSendId, null, "ارسال نشده", "-", "eb96abcb-d37d-1001-0000-e1f4a753bee5", []);
+        const karkard_notSend = new timeSheet_Row(notSendId, null, "ارسال نشده", "DontSend", "66666666-d37d-1001-0000-e1f4a753bee5", []);
         data.push(karkard_notSend);
 
 
@@ -632,7 +632,7 @@ function WNDSelectPeriod_OnInit() {
 			"Maximize",
 			"Close"
 		],
-		open: common.adjustSize,
+		//open: common.adjustSize,
 	}).data("kendoWindow").center();
 }
 
@@ -662,7 +662,7 @@ function WndDeny_OnInit() {
 			"Maximize",
 			"Close"
 		],
-		open: common.adjustSize,
+		//open: common.adjustSize,
 	}).data("kendoWindow").center();
 }
 
@@ -1459,7 +1459,7 @@ const myMainGrid = (function () {
 
     var treeList = $("#ktrlTimeSheets").data("kendoTreeList");
     moduleData.expandedRows = moduleData.common_timeSheet.foundExpandedTreeListTitle(treeList);
-    
+
 
     moduleData.common_register.removeAndRecreateTreelisDiv();
 
@@ -1531,12 +1531,99 @@ const myMainGrid = (function () {
     // }).data("kendoTooltip");
 
     $("#ktrlTimeSheets tbody").on("dblclick", "td", function (e) {
+
       var cell = $(e.currentTarget);
       var cellIndex = cell[0].cellIndex;
       var grid = $("#ktrlTimeSheets").data("kendoTreeList");
       var column = grid.columns[cellIndex];
       var dataItem = grid.dataItem(cell.closest("tr"));
-      alert("Satr: " + dataItem.title + " - Sotoon: " + dataItem.values[cellIndex - 3].title);
+
+      if (dataItem.type != 'Karkard' && dataItem.type != 'Project' && dataItem.type != 'Workout') return;
+
+      if (cellIndex<3 || !dataItem.values) return;
+      var sotoon = dataItem.values[cellIndex - 3];
+
+      if (dataItem.type == 'Workout') {
+
+        const items = [];
+        const item = {};
+        const taskId = dataItem.uuiidd;
+
+        var parent = grid.dataSource.parentNode(dataItem);
+        var projectId = parent.uuiidd;
+        item.projectTitle = parent.title;
+
+        if (sotoon.value.indexOf('0:00') == 0) {
+
+          moduleData.createNewWorkHour.kwndSaveWHs_OnInit_ForEdit(cellIndex - 3, projectId, taskId, null);
+          return;
+        } else {
+
+          $.ajax({
+            type: "Post",
+            url: "/api/TimeSheetsAPI/GetWorkHoursByDate",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify({ date: sotoon.date, taskId: taskId }),
+            success: function (response) {
+              debugger;
+              if (response && response.length == 1 && response[0].workFlowStageType=='Resource') {
+                moduleData.createNewWorkHour.kwndSaveWHs_OnInit_ForEdit(cellIndex - 3, projectId, taskId, sotoon.value);
+              } else {
+                for (var k in response) {
+                  const item = response[k];
+                  item.time = moduleData.common_timeSheet.convertMinutsToTime(item.minutes);
+                }
+                moduleData.history_sentWorkHour.ShowDataOnGrid(response);
+              }
+            },
+            error: function (e) {
+              var a = e;
+            }
+          });
+
+        }
+        return;
+      }
+
+      if (dataItem.type == 'Project') {
+        debugger;
+        $.ajax({
+          type: "Post",
+          url: "/api/TimeSheetsAPI/GetWorkHoursByDate",
+          contentType: "application/json; charset=utf-8",
+          dataType: "json",
+          data: JSON.stringify({ date: sotoon.date, projectId: dataItem.uuiidd }),
+          success: function (response) {
+
+            for (var k in response) {
+              const item = response[k];
+              item.time = moduleData.common_timeSheet.convertMinutsToTime(item.minutes);
+            }
+            moduleData.history_sentWorkHour.ShowDataOnGrid(response);
+
+          },
+          error: function (e) {
+            var a = e;
+          }
+        });
+
+        return;
+      }
+
+      if (dataItem.type == 'Karkard') {
+        moduleData.history_sentWorkHour.ShowCurrentDaySendWorkHours(cellIndex - 3);
+        return;
+      }
+
+
+
+
+      //alert("Satr: " + dataItem.title + " - Sotoon: " + dataItem.values[cellIndex - 3].title + " - type: "+dataItem.type);
+
+
+
+
     });
 
 
@@ -1621,7 +1708,7 @@ const myMainGrid = (function () {
   function ktrlTimeSheets_DataBound(e) {
 
     var treeList = $("#ktrlTimeSheets").data("kendoTreeList");
-    moduleData.common_timeSheet.expandTreeListItems(treeList,moduleData.expandedRows);
+    moduleData.common_timeSheet.expandTreeListItems(treeList, moduleData.expandedRows);
 
 
     $('.forFound_kwndSaveWHs_OnInit').off().on('click', function () {
@@ -1640,7 +1727,7 @@ const myMainGrid = (function () {
     });
   }
 
-  
+
 
 
 

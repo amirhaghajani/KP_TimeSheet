@@ -47,12 +47,12 @@ namespace KP.TimeSheets.Domain
             _UOW.SaveChanges();
 
         }
-        public IEnumerable<WorkHour> GetWorkHoursByUser(User user, DateTime? fromDate = null, DateTime? toDate = null)
+        public IEnumerable<WorkHour> GetWorkHoursByUser(User user, DateTime? fromDate = null, DateTime? toDate = null,Guid? projectId=null, Guid? taskId=null)
         {
 
             fromDate = fromDate ?? DateTime.MinValue;
             toDate = toDate ?? DateTime.MaxValue;
-            return _UOW.WorkHourRepository.GetByEpmloyeeID(user.ID, fromDate, toDate);
+            return _UOW.WorkHourRepository.GetByEpmloyeeID(user.ID, fromDate, toDate, projectId, taskId);
         }
         public IEnumerable<WorkHour> GetWorkHoursByUser(User user)
         {
@@ -68,7 +68,7 @@ namespace KP.TimeSheets.Domain
                 to = DateUtility.GetMiladiDate(year.ToString() + "/" + month + "/" + "30");
             else
                 to = DateUtility.GetMiladiDate(year.ToString() + "/" + month + "/" + "31");
-            return _UOW.WorkHourRepository.GetByEpmloyeeID(userId, from, to);
+            return _UOW.WorkHourRepository.GetByEpmloyeeID(userId, from, to, null);
         }
 
         public void SaveWorkHour(WorkHour workHour)

@@ -227,19 +227,19 @@ const timeSheet = (function () {
     function convertServerDataToTimeSheet_ForEmployee(response) {
         const data = [];
 
-        const amaliat = new timeSheet_Row(0, null, "عملیات", "-", "eb96abcb-d37d-4aa1-1000-e1f4a753bee5", []);
+        const amaliat = new timeSheet_Row(0, null, "عملیات", "Amaliat", "11111111-d37d-4aa1-1000-e1f4a753bee5", []);
         data.push(amaliat);
 
-        const hozoor = new timeSheet_Row(1, null, "حضور", "-", "eb96abcb-d37d-4aa1-1001-e1f4a753bee5", []);
+        const hozoor = new timeSheet_Row(1, null, "حضور", "Hozoor", "22222222-d37d-4aa1-1001-e1f4a753bee5", []);
         data.push(hozoor);
 
-        const hozoorDetail = new timeSheet_Row(2, 1, "جزئیات", "-", "eb96abcb-d37d-4aa1-1002-e1f4a753bee5", []);
+        const hozoorDetail = new timeSheet_Row(2, 1, "جزئیات", "HozoorDetail", "33333333-d37d-4aa1-1002-e1f4a753bee5", []);
         data.push(hozoorDetail);
 
-        const karkard = new timeSheet_Row(3, null, "کارکرد", "-", "eb96abcb-d37d-4aa1-1003-e1f4a753bee5", []);
+        const karkard = new timeSheet_Row(3, null, "کارکرد", "Karkard", "44444444-d37d-4aa1-1003-e1f4a753bee5", []);
         data.push(karkard);
 
-        const diffHozoorKarkard = new timeSheet_Row(4, null, "اختلاف حضور و کارکرد", "-", "eb96abcb-d37d-4aa1-1004-e1f4a753bee5", []);
+        const diffHozoorKarkard = new timeSheet_Row(4, null, "اختلاف حضور و کارکرد", "Diff_Karkard_Hozoor", "55555555-d37d-4aa1-1004-e1f4a753bee5", []);
         data.push(diffHozoorKarkard);
 
         const projects = [];
@@ -248,7 +248,7 @@ const timeSheet = (function () {
         private_addProjectsAndTasksTimes(data, times, projects, 3);
 
         const notSendId = data.length + 1
-        const karkard_notSend = new timeSheet_Row(notSendId, null, "ارسال نشده", "-", "eb96abcb-d37d-1001-0000-e1f4a753bee5", []);
+        const karkard_notSend = new timeSheet_Row(notSendId, null, "ارسال نشده", "DontSend", "66666666-d37d-1001-0000-e1f4a753bee5", []);
         data.push(karkard_notSend);
 
 
@@ -1137,6 +1137,8 @@ const module_createNewRorkHour = (function () {
         moduleData.service = service;
         moduleData.common_timeSheet = common_timeSheet;
 
+        moduleData.afterGetTasksEnd = null;
+
         $('#btnCancel_kwndSaveWHs').off().on('click', function () {
             kwndSaveWHs_OnClose();
         });
@@ -1145,10 +1147,49 @@ const module_createNewRorkHour = (function () {
         });
     }
 
+    function kwndSaveWHs_OnInit_ForEdit(dayIndex, projectId, taskId_nullable, time_nullable) {
+        moduleData.afterGetTasksEnd = null;
+        debugger;
+        var timeSheetData = moduleData.data.timeSheetData_get();
+        var item = timeSheetData[0].values[dayIndex];
+
+        $('#registerWindo_headerDiv').text(item.persianDay + " " + item.persianDate);
+
+        moduleData.data.selDate_set(item);
+
+        moduleData.whenGetProjectsTasksEnd = () => {
+
+        }
+
+        if (taskId_nullable) {
+            moduleData.afterGetProjectsEnd = () => {
+                var dropdownlist = $("#ddlTasks").data("kendoDropDownList");
+                dropdownlist.select(function (dataItem) {
+                    return dataItem.id == taskId_nullable;
+                });
+            }
+        }
+
+        GetProjects(() => {
+            var dropdownlist = $("#ddlProjects").data("kendoDropDownList");
+            dropdownlist.select(function (dataItem) {
+                return dataItem.id == projectId;
+            });
+            GetTasks();
+        });
+
+        if(time_nullable) $("#ktpWorkHour").val(time_nullable);
+    }
+
     function kwndSaveWHs_OnInit(dayIndex) {
+        moduleData.afterGetTasksEnd = null;
 
         var timeSheetData = moduleData.data.timeSheetData_get();
-        moduleData.data.selDate_set(timeSheetData[0].values[dayIndex]);
+        var item = timeSheetData[0].values[dayIndex];
+
+        $('#registerWindo_headerDiv').text(item.persianDay + " " + item.persianDate);
+
+        moduleData.data.selDate_set(item);
 
         GetProjects();
     }
@@ -1158,13 +1199,16 @@ const module_createNewRorkHour = (function () {
         if (w) w.close();
     }
 
-    function GetProjects() {
+    function GetProjects(afterGetProjectsEnd) {
         $.ajax({
             type: "Get",
             url: "/api/ProjectsAPI/GetProjects",
             contentType: "application/json; charset=utf-8",
             dataType: "json",
-            success: ddlProjects_OnInit,
+            success: (response) => {
+                ddlProjects_OnInit(response);
+                if (afterGetProjectsEnd) afterGetProjectsEnd();
+            },
             error: function (e) {
 
             }
@@ -1217,7 +1261,7 @@ const module_createNewRorkHour = (function () {
                     "Maximize",
                     "Close"
                 ],
-                open: moduleData.common.adjustSize,
+                //open: moduleData.common.adjustSize,
                 close: ResetSaveWindow
             }).data("kendoWindow").center().open();
         }
@@ -1233,7 +1277,12 @@ const module_createNewRorkHour = (function () {
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             data: prmData,
-            success: ddlTasks_OnInit,
+            success: (response) => {
+
+                ddlTasks_OnInit(response);
+                if (moduleData.afterGetProjectsEnd) moduleData.afterGetProjectsEnd();
+
+            },
             error: function (e) {
 
             }
@@ -1329,6 +1378,7 @@ const module_createNewRorkHour = (function () {
 
     return {
         kwndSaveWHs_OnInit: kwndSaveWHs_OnInit,
+        kwndSaveWHs_OnInit_ForEdit: kwndSaveWHs_OnInit_ForEdit,
         init: init
     };
 
@@ -1340,6 +1390,7 @@ const module_createNewRorkHour = (function () {
 module.exports = {
 
     'kwndSaveWHs_OnInit': module_createNewRorkHour.kwndSaveWHs_OnInit,
+    kwndSaveWHs_OnInit_ForEdit: module_createNewRorkHour.kwndSaveWHs_OnInit_ForEdit,
     'init': module_createNewRorkHour.init
 }
 },{}],9:[function(require,module,exports){
@@ -1351,6 +1402,7 @@ const dataM = (function () {
         moduleData._SelDate = {};
         moduleData.CurrentUser = {};
         moduleData._TimeSheetData = [];
+        moduleData._TimeSheetData_BeforProcess = [];
         moduleData._WorkHourOnProjects = [];
         moduleData._thisMonthdata = {};
         moduleData._WorkHours = [];
@@ -1380,6 +1432,9 @@ module.exports = {
 
     'timeSheetData_get': function () { return dataM.moduleData._TimeSheetData; },
     'timeSheetData_set': function (data) { dataM.moduleData._TimeSheetData = data; },
+
+    'timeSheetData_beforProcess_get': function () { return dataM.moduleData._TimeSheetData_BeforProcess; },
+    'timeSheetData_beforProcess_set': function (data) { dataM.moduleData._TimeSheetData_BeforProcess = data; },
 
     'todayHistory_get': function () { return dataM.moduleData._TodayHistorys; },
     'todayHistory_set': function (data) { dataM.moduleData._TodayHistorys = data; },
@@ -1439,7 +1494,7 @@ const editWorkHour = (function () {
 				"Maximize",
 				"Close"
 			],
-			open: moduleData.common.adjustSize,
+			//open: moduleData.common.adjustSize,
 		}).data("kendoWindow").center().open();
 	}
 
@@ -1731,13 +1786,11 @@ const hisotrSentWorkHour = (function () {
 		});
 
 		$('#GrdMonitorSentWorkHour_Hide').off().on('click', function () {
-			Close_WndMonitorSentWorkHours();
+			$("#WndMonitorSentWorkHours").data("kendoWindow").close();
 		});
 	}
 
-	function Close_WndMonitorSentWorkHours() {
-		$("#WndMonitorSentWorkHours").data("kendoWindow").close()
-	}
+	
 
 	function Open_WndMonitorSentWorkHours() {
 		$("#WndMonitorSentWorkHours").data("kendoWindow").open()
@@ -1789,7 +1842,7 @@ const hisotrSentWorkHour = (function () {
 				"Maximize",
 				"Close"
 			],
-			open: moduleData.common.adjustSize,
+			//open: moduleData.common.adjustSize,
 		}).data("kendoWindow").center().open();
 
 		$("#GrdMonitorSentWorkHour").kendoGrid({
@@ -1845,6 +1898,15 @@ const hisotrSentWorkHour = (function () {
 
 	}
 
+
+	function ShowDataOnGrid(data) {
+
+		debugger;
+
+		_MonitorSentWorkHours = data;
+		Init_GrdMonitorSentWorkHour();
+	}
+
 	function Refresh_GrdMonitorSentWorkHour() {
 		var prmData = JSON.stringify(moduleData.data.timeSheetData_get()[0].values);
 		$.ajax({
@@ -1871,6 +1933,10 @@ const hisotrSentWorkHour = (function () {
 	}
 
 	function ShowCurrentDaySendWorkHours(dayIndex) {
+
+		// debugger;
+		// var a = moduleData.data.timeSheetData_beforProcess_get();
+
 		moduleData.common.loaderShow();
 		moduleData.hisotory_workHour.Create_GrdHistory();
 
@@ -1916,7 +1982,9 @@ const hisotrSentWorkHour = (function () {
 		Refresh_GrdMonitorSentWorkHour: Refresh_GrdMonitorSentWorkHour,
 		Init_GrdMonitorSentWorkHour: Init_GrdMonitorSentWorkHour,
 		init: init,
-		ShowCurrentDaySendWorkHours: ShowCurrentDaySendWorkHours
+		ShowCurrentDaySendWorkHours: ShowCurrentDaySendWorkHours,
+
+		ShowDataOnGrid: ShowDataOnGrid
 	};
 
 })();
@@ -1927,7 +1995,9 @@ module.exports = {
 	'Refresh_GrdMonitorSentWorkHour': hisotrSentWorkHour.Refresh_GrdMonitorSentWorkHour,
 	'Init_GrdMonitorSentWorkHour': hisotrSentWorkHour.Init_GrdMonitorSentWorkHour,
 	'init': hisotrSentWorkHour.init,
-	'ShowCurrentDaySendWorkHours': hisotrSentWorkHour.ShowCurrentDaySendWorkHours
+	'ShowCurrentDaySendWorkHours': hisotrSentWorkHour.ShowCurrentDaySendWorkHours,
+
+	ShowDataOnGrid: hisotrSentWorkHour.ShowDataOnGrid
 }
 
 },{}],13:[function(require,module,exports){
@@ -1990,7 +2060,7 @@ const myMainGrid = (function () {
 
     var treeList = $("#ktrlTimeSheets").data("kendoTreeList");
     moduleData.expandedRows = moduleData.common_timeSheet.foundExpandedTreeListTitle(treeList);
-    
+
 
     moduleData.common_register.removeAndRecreateTreelisDiv();
 
@@ -2062,12 +2132,99 @@ const myMainGrid = (function () {
     // }).data("kendoTooltip");
 
     $("#ktrlTimeSheets tbody").on("dblclick", "td", function (e) {
+
       var cell = $(e.currentTarget);
       var cellIndex = cell[0].cellIndex;
       var grid = $("#ktrlTimeSheets").data("kendoTreeList");
       var column = grid.columns[cellIndex];
       var dataItem = grid.dataItem(cell.closest("tr"));
-      alert("Satr: " + dataItem.title + " - Sotoon: " + dataItem.values[cellIndex - 3].title);
+
+      if (dataItem.type != 'Karkard' && dataItem.type != 'Project' && dataItem.type != 'Workout') return;
+
+      if (cellIndex<3 || !dataItem.values) return;
+      var sotoon = dataItem.values[cellIndex - 3];
+
+      if (dataItem.type == 'Workout') {
+
+        const items = [];
+        const item = {};
+        const taskId = dataItem.uuiidd;
+
+        var parent = grid.dataSource.parentNode(dataItem);
+        var projectId = parent.uuiidd;
+        item.projectTitle = parent.title;
+
+        if (sotoon.value.indexOf('0:00') == 0) {
+
+          moduleData.createNewWorkHour.kwndSaveWHs_OnInit_ForEdit(cellIndex - 3, projectId, taskId, null);
+          return;
+        } else {
+
+          $.ajax({
+            type: "Post",
+            url: "/api/TimeSheetsAPI/GetWorkHoursByDate",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify({ date: sotoon.date, taskId: taskId }),
+            success: function (response) {
+              debugger;
+              if (response && response.length == 1 && response[0].workFlowStageType=='Resource') {
+                moduleData.createNewWorkHour.kwndSaveWHs_OnInit_ForEdit(cellIndex - 3, projectId, taskId, sotoon.value);
+              } else {
+                for (var k in response) {
+                  const item = response[k];
+                  item.time = moduleData.common_timeSheet.convertMinutsToTime(item.minutes);
+                }
+                moduleData.history_sentWorkHour.ShowDataOnGrid(response);
+              }
+            },
+            error: function (e) {
+              var a = e;
+            }
+          });
+
+        }
+        return;
+      }
+
+      if (dataItem.type == 'Project') {
+        debugger;
+        $.ajax({
+          type: "Post",
+          url: "/api/TimeSheetsAPI/GetWorkHoursByDate",
+          contentType: "application/json; charset=utf-8",
+          dataType: "json",
+          data: JSON.stringify({ date: sotoon.date, projectId: dataItem.uuiidd }),
+          success: function (response) {
+
+            for (var k in response) {
+              const item = response[k];
+              item.time = moduleData.common_timeSheet.convertMinutsToTime(item.minutes);
+            }
+            moduleData.history_sentWorkHour.ShowDataOnGrid(response);
+
+          },
+          error: function (e) {
+            var a = e;
+          }
+        });
+
+        return;
+      }
+
+      if (dataItem.type == 'Karkard') {
+        moduleData.history_sentWorkHour.ShowCurrentDaySendWorkHours(cellIndex - 3);
+        return;
+      }
+
+
+
+
+      //alert("Satr: " + dataItem.title + " - Sotoon: " + dataItem.values[cellIndex - 3].title + " - type: "+dataItem.type);
+
+
+
+
     });
 
 
@@ -2152,7 +2309,7 @@ const myMainGrid = (function () {
   function ktrlTimeSheets_DataBound(e) {
 
     var treeList = $("#ktrlTimeSheets").data("kendoTreeList");
-    moduleData.common_timeSheet.expandTreeListItems(treeList,moduleData.expandedRows);
+    moduleData.common_timeSheet.expandTreeListItems(treeList, moduleData.expandedRows);
 
 
     $('.forFound_kwndSaveWHs_OnInit').off().on('click', function () {
@@ -2171,7 +2328,7 @@ const myMainGrid = (function () {
     });
   }
 
-  
+
 
 
 
@@ -2341,7 +2498,7 @@ const period_next_pervious = (function () {
                 "Maximize",
                 "Close"
             ],
-            open: moduleData.common.adjustSize,
+            //open: moduleData.common.adjustSize,
         }).data("kendoWindow").center().open();
     }
 
@@ -2566,7 +2723,7 @@ const sendWorkHour = (function () {
 				"Maximize",
 				"Close"
 			],
-			open: moduleData.common.adjustSize,
+			//open: moduleData.common.adjustSize,
 		}).data("kendoWindow").center().open();
 
 		GRDSendWorkHours_onInit(moduleData.data.dayIndex_get());
@@ -2778,6 +2935,8 @@ var service = (function () {
             dataType: "json",
 
             success: function (response) {
+
+                moduleData.data.timeSheetData_beforProcess_set(response);
 
                 var data = moduleData.common_timeSheet.convertServerDataToTimeSheet_ForEmployee(response);
 

@@ -18,6 +18,8 @@ const module_createNewRorkHour = (function () {
         moduleData.service = service;
         moduleData.common_timeSheet = common_timeSheet;
 
+        moduleData.afterGetTasksEnd = null;
+
         $('#btnCancel_kwndSaveWHs').off().on('click', function () {
             kwndSaveWHs_OnClose();
         });
@@ -26,10 +28,49 @@ const module_createNewRorkHour = (function () {
         });
     }
 
+    function kwndSaveWHs_OnInit_ForEdit(dayIndex, projectId, taskId_nullable, time_nullable) {
+        moduleData.afterGetTasksEnd = null;
+        debugger;
+        var timeSheetData = moduleData.data.timeSheetData_get();
+        var item = timeSheetData[0].values[dayIndex];
+
+        $('#registerWindo_headerDiv').text(item.persianDay + " " + item.persianDate);
+
+        moduleData.data.selDate_set(item);
+
+        moduleData.whenGetProjectsTasksEnd = () => {
+
+        }
+
+        if (taskId_nullable) {
+            moduleData.afterGetProjectsEnd = () => {
+                var dropdownlist = $("#ddlTasks").data("kendoDropDownList");
+                dropdownlist.select(function (dataItem) {
+                    return dataItem.id == taskId_nullable;
+                });
+            }
+        }
+
+        GetProjects(() => {
+            var dropdownlist = $("#ddlProjects").data("kendoDropDownList");
+            dropdownlist.select(function (dataItem) {
+                return dataItem.id == projectId;
+            });
+            GetTasks();
+        });
+
+        if(time_nullable) $("#ktpWorkHour").val(time_nullable);
+    }
+
     function kwndSaveWHs_OnInit(dayIndex) {
+        moduleData.afterGetTasksEnd = null;
 
         var timeSheetData = moduleData.data.timeSheetData_get();
-        moduleData.data.selDate_set(timeSheetData[0].values[dayIndex]);
+        var item = timeSheetData[0].values[dayIndex];
+
+        $('#registerWindo_headerDiv').text(item.persianDay + " " + item.persianDate);
+
+        moduleData.data.selDate_set(item);
 
         GetProjects();
     }
@@ -39,13 +80,16 @@ const module_createNewRorkHour = (function () {
         if (w) w.close();
     }
 
-    function GetProjects() {
+    function GetProjects(afterGetProjectsEnd) {
         $.ajax({
             type: "Get",
             url: "/api/ProjectsAPI/GetProjects",
             contentType: "application/json; charset=utf-8",
             dataType: "json",
-            success: ddlProjects_OnInit,
+            success: (response) => {
+                ddlProjects_OnInit(response);
+                if (afterGetProjectsEnd) afterGetProjectsEnd();
+            },
             error: function (e) {
 
             }
@@ -98,7 +142,7 @@ const module_createNewRorkHour = (function () {
                     "Maximize",
                     "Close"
                 ],
-                open: moduleData.common.adjustSize,
+                //open: moduleData.common.adjustSize,
                 close: ResetSaveWindow
             }).data("kendoWindow").center().open();
         }
@@ -114,7 +158,12 @@ const module_createNewRorkHour = (function () {
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             data: prmData,
-            success: ddlTasks_OnInit,
+            success: (response) => {
+
+                ddlTasks_OnInit(response);
+                if (moduleData.afterGetProjectsEnd) moduleData.afterGetProjectsEnd();
+
+            },
             error: function (e) {
 
             }
@@ -210,6 +259,7 @@ const module_createNewRorkHour = (function () {
 
     return {
         kwndSaveWHs_OnInit: kwndSaveWHs_OnInit,
+        kwndSaveWHs_OnInit_ForEdit: kwndSaveWHs_OnInit_ForEdit,
         init: init
     };
 
@@ -221,5 +271,6 @@ const module_createNewRorkHour = (function () {
 module.exports = {
 
     'kwndSaveWHs_OnInit': module_createNewRorkHour.kwndSaveWHs_OnInit,
+    kwndSaveWHs_OnInit_ForEdit: module_createNewRorkHour.kwndSaveWHs_OnInit_ForEdit,
     'init': module_createNewRorkHour.init
 }

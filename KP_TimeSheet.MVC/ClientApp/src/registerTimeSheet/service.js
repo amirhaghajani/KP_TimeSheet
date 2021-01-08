@@ -27,6 +27,8 @@ var service = (function () {
 
             success: function (response) {
 
+                moduleData.data.timeSheetData_beforProcess_set(response);
+
                 var data = moduleData.common_timeSheet.convertServerDataToTimeSheet_ForEmployee(response);
 
                 moduleData.data.timeSheetData_set(data);

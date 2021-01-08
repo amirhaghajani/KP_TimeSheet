@@ -85,13 +85,13 @@ namespace KP.TimeSheets.MVC
         }
 
         [HttpPost("[action]")]
-        public IEnumerable<WorkHourJson> GetWorkHoursByDate(WorkHourJson WorkHourJson)
+        public IEnumerable<WorkHourJson> GetWorkHoursByDate(GetWorkHoursByDateJson WorkHourJson)
         {
             var result = new List<WorkHourJson>();
             UserManager userManager = new UserManager(this._uow);
             TimeSheetManager timeSheetManager = new TimeSheetManager(this._uow);
             User currUser = new UserHelper().GetCurrent(this._uow, this.UserName);
-            result = new WorkHourAssembler().ToJsons(timeSheetManager.GetWorkHoursByUser(currUser, WorkHourJson.Date, WorkHourJson.Date)).ToList();
+            result = new WorkHourAssembler().ToJsons(timeSheetManager.GetWorkHoursByUser(currUser, WorkHourJson.date, WorkHourJson.date, WorkHourJson.projectId, WorkHourJson.taskId)).ToList();
             return result;
         }
 

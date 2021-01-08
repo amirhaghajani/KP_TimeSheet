@@ -6,6 +6,7 @@ const dataM = (function () {
         moduleData._SelDate = {};
         moduleData.CurrentUser = {};
         moduleData._TimeSheetData = [];
+        moduleData._TimeSheetData_BeforProcess = [];
         moduleData._WorkHourOnProjects = [];
         moduleData._thisMonthdata = {};
         moduleData._WorkHours = [];
@@ -35,6 +36,9 @@ module.exports = {
 
     'timeSheetData_get': function () { return dataM.moduleData._TimeSheetData; },
     'timeSheetData_set': function (data) { dataM.moduleData._TimeSheetData = data; },
+
+    'timeSheetData_beforProcess_get': function () { return dataM.moduleData._TimeSheetData_BeforProcess; },
+    'timeSheetData_beforProcess_set': function (data) { dataM.moduleData._TimeSheetData_BeforProcess = data; },
 
     'todayHistory_get': function () { return dataM.moduleData._TodayHistorys; },
     'todayHistory_set': function (data) { dataM.moduleData._TodayHistorys = data; },

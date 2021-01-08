@@ -122,7 +122,7 @@ function WNDEditAndAddOrgan_OnInit() {
             "Maximize",
             "Close"
         ],
-        open: common.adjustSize,
+        //open: common.adjustSize,
     }).data("kendoWindow").center();
 }
 

@@ -138,7 +138,7 @@ const period_next_pervious = (function () {
                 "Maximize",
                 "Close"
             ],
-            open: moduleData.common.adjustSize,
+            //open: moduleData.common.adjustSize,
         }).data("kendoWindow").center().open();
     }
 

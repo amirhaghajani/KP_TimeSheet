@@ -48,7 +48,7 @@ namespace KP.TimeSheets.Domain
         /// <param name="fromDate">از تاریخ</param>
         /// <param name="toDate">تا تاریخ</param>
         /// <returns>ساعات کاری که در بررسی پایگاه داده بدست می آید.</returns>
-        IEnumerable<WorkHour> GetByEpmloyeeID(Guid employeeID, DateTime? fromDate = null, DateTime? toDate = null);
+        IEnumerable<WorkHour> GetByEpmloyeeID(Guid employeeID, DateTime? fromDate = null, DateTime? toDate = null, Guid? projectId=null, Guid? taskId=null);
         IEnumerable<WorkHour> GetByEpmloyeeID(Guid employeeID);
         // <summary>
         /// بدست آوردن ساعات کاری دیروز بر اساس شناسه کارمند  

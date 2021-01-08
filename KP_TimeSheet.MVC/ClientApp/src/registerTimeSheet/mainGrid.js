@@ -57,7 +57,7 @@ const myMainGrid = (function () {
 
     var treeList = $("#ktrlTimeSheets").data("kendoTreeList");
     moduleData.expandedRows = moduleData.common_timeSheet.foundExpandedTreeListTitle(treeList);
-    
+
 
     moduleData.common_register.removeAndRecreateTreelisDiv();
 
@@ -129,12 +129,99 @@ const myMainGrid = (function () {
     // }).data("kendoTooltip");
 
     $("#ktrlTimeSheets tbody").on("dblclick", "td", function (e) {
+
       var cell = $(e.currentTarget);
       var cellIndex = cell[0].cellIndex;
       var grid = $("#ktrlTimeSheets").data("kendoTreeList");
       var column = grid.columns[cellIndex];
       var dataItem = grid.dataItem(cell.closest("tr"));
-      alert("Satr: " + dataItem.title + " - Sotoon: " + dataItem.values[cellIndex - 3].title);
+
+      if (dataItem.type != 'Karkard' && dataItem.type != 'Project' && dataItem.type != 'Workout') return;
+
+      if (cellIndex<3 || !dataItem.values) return;
+      var sotoon = dataItem.values[cellIndex - 3];
+
+      if (dataItem.type == 'Workout') {
+
+        const items = [];
+        const item = {};
+        const taskId = dataItem.uuiidd;
+
+        var parent = grid.dataSource.parentNode(dataItem);
+        var projectId = parent.uuiidd;
+        item.projectTitle = parent.title;
+
+        if (sotoon.value.indexOf('0:00') == 0) {
+
+          moduleData.createNewWorkHour.kwndSaveWHs_OnInit_ForEdit(cellIndex - 3, projectId, taskId, null);
+          return;
+        } else {
+
+          $.ajax({
+            type: "Post",
+            url: "/api/TimeSheetsAPI/GetWorkHoursByDate",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify({ date: sotoon.date, taskId: taskId }),
+            success: function (response) {
+              debugger;
+              if (response && response.length == 1 && response[0].workFlowStageType=='Resource') {
+                moduleData.createNewWorkHour.kwndSaveWHs_OnInit_ForEdit(cellIndex - 3, projectId, taskId, sotoon.value);
+              } else {
+                for (var k in response) {
+                  const item = response[k];
+                  item.time = moduleData.common_timeSheet.convertMinutsToTime(item.minutes);
+                }
+                moduleData.history_sentWorkHour.ShowDataOnGrid(response);
+              }
+            },
+            error: function (e) {
+              var a = e;
+            }
+          });
+
+        }
+        return;
+      }
+
+      if (dataItem.type == 'Project') {
+        debugger;
+        $.ajax({
+          type: "Post",
+          url: "/api/TimeSheetsAPI/GetWorkHoursByDate",
+          contentType: "application/json; charset=utf-8",
+          dataType: "json",
+          data: JSON.stringify({ date: sotoon.date, projectId: dataItem.uuiidd }),
+          success: function (response) {
+
+            for (var k in response) {
+              const item = response[k];
+              item.time = moduleData.common_timeSheet.convertMinutsToTime(item.minutes);
+            }
+            moduleData.history_sentWorkHour.ShowDataOnGrid(response);
+
+          },
+          error: function (e) {
+            var a = e;
+          }
+        });
+
+        return;
+      }
+
+      if (dataItem.type == 'Karkard') {
+        moduleData.history_sentWorkHour.ShowCurrentDaySendWorkHours(cellIndex - 3);
+        return;
+      }
+
+
+
+
+      //alert("Satr: " + dataItem.title + " - Sotoon: " + dataItem.values[cellIndex - 3].title + " - type: "+dataItem.type);
+
+
+
+
     });
 
 
@@ -219,7 +306,7 @@ const myMainGrid = (function () {
   function ktrlTimeSheets_DataBound(e) {
 
     var treeList = $("#ktrlTimeSheets").data("kendoTreeList");
-    moduleData.common_timeSheet.expandTreeListItems(treeList,moduleData.expandedRows);
+    moduleData.common_timeSheet.expandTreeListItems(treeList, moduleData.expandedRows);
 
 
     $('.forFound_kwndSaveWHs_OnInit').off().on('click', function () {
@@ -238,7 +325,7 @@ const myMainGrid = (function () {
     });
   }
 
-  
+
 
 
 

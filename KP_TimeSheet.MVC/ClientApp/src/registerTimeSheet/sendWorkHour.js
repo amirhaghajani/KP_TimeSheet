@@ -171,7 +171,7 @@ const sendWorkHour = (function () {
 				"Maximize",
 				"Close"
 			],
-			open: moduleData.common.adjustSize,
+			//open: moduleData.common.adjustSize,
 		}).data("kendoWindow").center().open();
 
 		GRDSendWorkHours_onInit(moduleData.data.dayIndex_get());

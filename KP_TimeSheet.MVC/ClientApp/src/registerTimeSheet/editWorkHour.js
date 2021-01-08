@@ -43,7 +43,7 @@ const editWorkHour = (function () {
 				"Maximize",
 				"Close"
 			],
-			open: moduleData.common.adjustSize,
+			//open: moduleData.common.adjustSize,
 		}).data("kendoWindow").center().open();
 	}
 
