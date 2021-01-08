@@ -324,6 +324,7 @@ namespace KP.TimeSheets.MVC
                 Validations validate = new Validations();
                 User currUser = new UserHelper().GetCurrent(this._uow, this.UserName);
                 WorkHour workHour = workHourJson.ToWorkHour();
+                
                 workHour.Task = taskManager.GetByID(workHour.TaskID);
                 workHour.TaskID = workHour.Task.ID;
                 workHour.Project = prjManager.GetByID(workHourJson.ProjectID);

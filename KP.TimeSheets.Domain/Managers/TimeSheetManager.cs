@@ -73,7 +73,6 @@ namespace KP.TimeSheets.Domain
 
         public void SaveWorkHour(WorkHour workHour)
         {
-
             var erros = new Validations().ValidateRegisterWorkHour(workHour);
             if (erros.Any())
                 throw new ValidationException(erros);

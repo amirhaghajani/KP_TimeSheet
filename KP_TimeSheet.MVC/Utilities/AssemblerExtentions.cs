@@ -19,17 +19,17 @@ namespace KP.TimeSheets.MVC
             result.Title = entity.Title;
             result.CalendarId = entity.CalendarID;
             result.OwnerId = entity.OwnerID;
-            result.OwnerFullName = entity.Owner !=null ? entity.Owner.UserTitle : "فاقد مدیر";
-            result.CalendarTitle =  entity.Calendar != null ? entity.Calendar.Title : "فاقد تقویم";
+            result.OwnerFullName = entity.Owner != null ? entity.Owner.UserTitle : "فاقد مدیر";
+            result.CalendarTitle = entity.Calendar != null ? entity.Calendar.Title : "فاقد تقویم";
             return result;
         }
 
         public static IEnumerable<ProjectJson> ToJsons(this IEnumerable<Project> entities)
         {
             List<ProjectJson> result = new List<ProjectJson>();
-                foreach (var entity in entities)
-                    result.Add(ToJson(entity));
-           
+            foreach (var entity in entities)
+                result.Add(ToJson(entity));
+
             return result;
         }
 
@@ -51,10 +51,10 @@ namespace KP.TimeSheets.MVC
         public static IEnumerable<TaskJson> ToJsons(this IEnumerable<Task> entities)
         {
             List<TaskJson> result = new List<TaskJson>();
-           
-                foreach (var entity in entities)
-                    result.Add(ToJson(entity));
-           
+
+            foreach (var entity in entities)
+                result.Add(ToJson(entity));
+
             return result;
         }
 
@@ -65,41 +65,41 @@ namespace KP.TimeSheets.MVC
         public static WorkHourJson ToJson(this WorkHour entity)
         {
             var result = new WorkHourJson();
-           
-                result.ID = entity.ID;
-                result.Date = entity.Date;
-                result.TaskID = entity.Task.ID;
-                result.Minutes = entity.Minutes;
-          
+
+            result.ID = entity.ID;
+            result.Date = entity.Date;
+            result.TaskID = entity.Task.ID;
+            result.Minutes = entity.Minutes;
+
             return result;
         }
 
         public static IEnumerable<WorkHourJson> ToJsons(this IEnumerable<WorkHour> entities)
         {
             List<WorkHourJson> result = new List<WorkHourJson>();
-           
-                foreach (var entity in entities)
-                    result.Add(ToJson(entity));
-         
+
+            foreach (var entity in entities)
+                result.Add(ToJson(entity));
+
             return result;
         }
 
         public static WorkHour ToWorkHour(this WorkHourJson jsonObject)
         {
             WorkHour result = new WorkHour();
-            
-            if(!jsonObject.EmployeeID.HasValue) jsonObject.EmployeeID=Guid.Empty;
 
-                result.ID =  Guid.NewGuid();
-                result.Date = jsonObject.Date;
-                result.EmployeeID = jsonObject.EmployeeID.Value;
-                result.TaskID = jsonObject.TaskID;
-                result.ProjectId = jsonObject.ProjectID;
-                result.Minutes = jsonObject.Minutes;
-                result.WorkflowStageID = jsonObject.WorkflowStageID;
-           
-              
-           
+            if (!jsonObject.EmployeeID.HasValue) jsonObject.EmployeeID = Guid.Empty;
+
+            result.ID = jsonObject.ID.HasValue ? jsonObject.ID.Value : Guid.NewGuid();
+            result.Date = jsonObject.Date;
+            result.EmployeeID = jsonObject.EmployeeID.Value;
+            result.TaskID = jsonObject.TaskID;
+            result.ProjectId = jsonObject.ProjectID;
+            result.Minutes = jsonObject.Minutes;
+            result.WorkflowStageID = jsonObject.WorkflowStageID;
+
+
+
             return result;
         }
 

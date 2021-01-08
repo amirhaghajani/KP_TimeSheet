@@ -820,13 +820,17 @@ const myMainGrid = (function () {
             success: function (response) {
 
               if (response && response.length == 1 && response[0].workFlowStageType=='Resource') {
-                moduleData.createNewWorkHour.kwndSaveWHs_OnInit_ForEdit(cellIndex - 3, projectId, taskId, sotoon.value);
+                moduleData.createNewWorkHour.kwndSaveWHs_OnInit_ForEdit(cellIndex - 3, 
+                  projectId, taskId, moduleData.common_timeSheet.convertMinutsToTime(response[0].minutes), response[0].id);
+
               } else {
+
                 for (var k in response) {
                   const item = response[k];
                   item.time = moduleData.common_timeSheet.convertMinutsToTime(item.minutes);
                 }
-                moduleData.history_sentWorkHour.ShowDataOnGrid(response);
+                moduleData.history_sentWorkHour.ShowDataOnGrid(response, 'کارکردهای '+ dataItem.title + ' در ' + sotoon.persianDate);
+                
               }
             },
             error: function (e) {
@@ -852,7 +856,9 @@ const myMainGrid = (function () {
               const item = response[k];
               item.time = moduleData.common_timeSheet.convertMinutsToTime(item.minutes);
             }
-            moduleData.history_sentWorkHour.ShowDataOnGrid(response);
+
+            debugger;
+            moduleData.history_sentWorkHour.ShowDataOnGrid(response, 'کارکردهای ' + dataItem.title + ' در ' + sotoon.persianDate);
 
           },
           error: function (e) {
@@ -864,7 +870,7 @@ const myMainGrid = (function () {
       }
 
       if (dataItem.type == 'Karkard') {
-        moduleData.history_sentWorkHour.ShowCurrentDaySendWorkHours(cellIndex - 3);
+        moduleData.history_sentWorkHour.ShowCurrentDaySendWorkHours(cellIndex - 3, 'کارکردها در ' + sotoon.persianDate);
         return;
       }
 
@@ -963,7 +969,7 @@ const myMainGrid = (function () {
 
     $('.forFound_ShowCurrentDaySendWorkHours').off().on('click', function () {
       var sendId = $(this).data("dayIndex");
-      moduleData.history_sentWorkHour.ShowCurrentDaySendWorkHours(sendId);
+      moduleData.history_sentWorkHour.ShowCurrentDaySendWorkHours(sendId, 'نمایش کارکردها');
     });
 
     $('.forFound_wndSendWorkHour_OnInit').off().on('click', function () {

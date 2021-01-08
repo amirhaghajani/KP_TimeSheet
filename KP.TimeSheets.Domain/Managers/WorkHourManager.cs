@@ -15,18 +15,21 @@ namespace KP.TimeSheets.Domain
         public WorkHourManager(IUnitOfWork unitOfWork)
         {
             _UOW = unitOfWork;
-
-
         }
         public IEnumerable<WorkHour> GetBydateAndUserId(DateTime date, Guid userId)
         {
             return _UOW.WorkHourRepository.GetBydateAndUserId(date, userId);
-            }
+        }
 
-
-        public void  SetNewStage(WorkHour workHour)
+        public WorkHour GetById(Guid id)
         {
-             _UOW.WorkHourRepository.SetNewStage(workHour);
+            return _UOW.WorkHourRepository.GetByID(id);
+        }
+
+
+        public void SetNewStage(WorkHour workHour)
+        {
+            _UOW.WorkHourRepository.SetNewStage(workHour);
         }
     }
 }

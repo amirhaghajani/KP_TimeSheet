@@ -32,6 +32,7 @@ const hisotrSentWorkHour = (function () {
 	}
 
 	function GetWorkHours_MonitorSentWorkHour() {
+		$('#headerText_MonitorSendWorkHours').text('نمایش کارکردهای ارسال شده');
 		var prmData = JSON.stringify(moduleData.data.timeSheetData_get()[0].values);
 
 		$.ajax({
@@ -89,6 +90,9 @@ const hisotrSentWorkHour = (function () {
 						$('.forFound_Init_GRDHistory').off().on('click', function () {
 							moduleData.hisotory_workHour.Init_GRDHistory(this);
 						});
+						$('.forFound_EditWorkhoure').off().on('click', function () {
+							editWorkout(this);
+						});
 					}
 				},
 				pageSize: 10
@@ -124,7 +128,7 @@ const hisotrSentWorkHour = (function () {
 				template: function(dataItem,b,c){
 					let answer = "<button type='button' class='btn btn-info btn-sm forFound_Init_GRDHistory' title='نمایش تاریخچه' name='info'>تاریخچه</button>";
 					if(dataItem.workFlowStageType=='Resource'){
-						answer+="<button type='button' style='margin-right:2px;' class='btn btn-success btn-sm forFound_Init_GRDHistory'>ویرایش</button>"
+						answer+="<button type='button' style='margin-right:2px;' class='btn btn-success btn-sm forFound_EditWorkhoure'>ویرایش</button>"
 					}
 					return answer;
 				},
@@ -140,8 +144,16 @@ const hisotrSentWorkHour = (function () {
 
 	}
 
+	function editWorkout(e){
+		debugger;
+		var grid = $("#GrdMonitorSentWorkHour").data("kendoGrid");
+		var dataItem = grid.dataItem($(e).closest("tr"));
+		var prmData = JSON.stringify(dataItem);
+	}
 
-	function ShowDataOnGrid(data) {
+	function ShowDataOnGrid(data, headerTitle) {
+		if(headerTitle) $('#headerText_MonitorSendWorkHours').text(headerTitle);
+
 		_MonitorSentWorkHours = data;
 		Init_GrdMonitorSentWorkHour();
 	}
@@ -171,9 +183,9 @@ const hisotrSentWorkHour = (function () {
 		});
 	}
 
-	function ShowCurrentDaySendWorkHours(dayIndex) {
+	function ShowCurrentDaySendWorkHours(dayIndex, headerTitle) {
 
-		// var a = moduleData.data.timeSheetData_beforProcess_get();
+		if(headerTitle) $('#headerText_MonitorSendWorkHours').text(headerTitle);
 
 		moduleData.common.loaderShow();
 		moduleData.hisotory_workHour.Create_GrdHistory();

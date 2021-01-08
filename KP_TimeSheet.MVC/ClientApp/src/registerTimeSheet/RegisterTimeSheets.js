@@ -39,7 +39,7 @@ $(document).ready(function () {
         common.doExport('#ktrlTimeSheets', { type: 'doc' });
     });
 
-    editWindow.init(mainGrid, common, common_register, data, common_timeSheet);
+    editWindow.init(mainGrid, common, common_register, data, common_timeSheet, service);
     history_sentWorkHour.init(common, common_register, history_workHour, data, common_timeSheet);
 
     mainGrid.init(common, common_register, common_timeSheet, createNewWorkHour, history_sentWorkHour, sendWorkHour, data, 

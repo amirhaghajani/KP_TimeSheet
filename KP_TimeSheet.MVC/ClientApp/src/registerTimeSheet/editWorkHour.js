@@ -1,17 +1,19 @@
 // const data = require('./data');
 // const common_register = require('./common');
 
+//اون دکمه بالا سمت راست  ویرایش دوره جاری
 //____________ویرایش
 const editWorkHour = (function () {
 
 	const moduleData = {};
 
-	function init(mainGrid, common, common_register, data, common_timeSheet) {
+	function init(mainGrid, common, common_register, data, common_timeSheet, service) {
 		moduleData.mainGrid = mainGrid;
 		moduleData.common = common;
 		moduleData.common_register = common_register;
 		moduleData.data = data;
 		moduleData.common_timeSheet = common_timeSheet;
+		moduleData.service = service;
 
 		$('#btnEditWorkHour').off().on('click', function () {
 			WndEditWorkHours_OnInit();
@@ -86,7 +88,7 @@ const editWorkHour = (function () {
 				},
 				pageSize: 10
 			},
-			height: 520,
+			height: 450,
 			pageable: true,
 			filterable: true,
 
@@ -136,28 +138,14 @@ const editWorkHour = (function () {
 
 		moduleData.common.loaderShow();
 
-
-		var prmData = JSON.stringify(dataItem);
-
-		$.ajax({
-			type: "Post",
-			url: "/api/TimeSheetsAPI/DeleteWorkHours",
-			contentType: "application/json; charset=utf-8",
-			dataType: "json",
-			data: prmData,
-			success: function (response) {
-				Refresh_GrdEditWorkHour();
+		moduleData.service.deleteWorkHour(dataItem.id,()=>{
+			Refresh_GrdEditWorkHour();
 
 				moduleData.mainGrid.RefreshTimeSheet();
 				moduleData.common.loaderHide();
-			},
-			error: function (e) {
-				alert(dataItem.ID);
-			}
 		});
 
-
-
+		
 	}
 
 	function Refresh_GrdEditWorkHour() {

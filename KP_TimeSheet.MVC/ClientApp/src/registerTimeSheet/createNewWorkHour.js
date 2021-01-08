@@ -20,15 +20,38 @@ const module_createNewRorkHour = (function () {
 
         moduleData.afterGetTasksEnd = null;
 
+        moduleData.currentWorkoutId = null;
+
+        $('#btnDeleteCurrentWorkhour').hide();
+
         $('#btnCancel_kwndSaveWHs').off().on('click', function () {
             kwndSaveWHs_OnClose();
         });
         $('#btnSaveWorkHours_kwndSaveWHs').off().on('click', function () {
             btnSaveWorkHours_Onclick();
         });
+
+        $('#btnDeleteCurrentWorkhour').off().on('click', function () {
+            if (!moduleData.currentWorkoutId) return;
+
+            moduleData.common.loaderShow();
+
+            moduleData.service.deleteWorkHour(moduleData.currentWorkoutId, () => {
+
+                moduleData.period_next_pervious.GetCurrentPeriod();
+                kwndSaveWHs_OnClose();
+                moduleData.common.loaderHide();
+            });
+        });
+
     }
 
-    function kwndSaveWHs_OnInit_ForEdit(dayIndex, projectId, taskId_nullable, time_nullable) {
+    function kwndSaveWHs_OnInit_ForEdit(dayIndex, projectId, taskId_nullable, time_nullable, workoutId) {
+
+        $('#btnDeleteCurrentWorkhour').hide();
+        if (workoutId) $('#btnDeleteCurrentWorkhour').show();
+
+        moduleData.currentWorkoutId = workoutId;
         moduleData.afterGetTasksEnd = null;
         var timeSheetData = moduleData.data.timeSheetData_get();
         var item = timeSheetData[0].values[dayIndex];
@@ -58,10 +81,12 @@ const module_createNewRorkHour = (function () {
             GetTasks();
         });
 
-        if(time_nullable) $("#ktpWorkHour").val(time_nullable);
+        if (time_nullable) $("#ktpWorkHour").val(time_nullable);
     }
 
     function kwndSaveWHs_OnInit(dayIndex) {
+        $('#btnDeleteCurrentWorkhour').hide();
+        moduleData.currentWorkoutId = null;
         moduleData.afterGetTasksEnd = null;
 
         var timeSheetData = moduleData.data.timeSheetData_get();
@@ -197,7 +222,7 @@ const module_createNewRorkHour = (function () {
         $("span[for='ddlTasks']").text("");
 
         var workHourJson = {
-            ID: null,
+            ID: moduleData.currentWorkoutId,
             Date: moduleData.data.selDate_get().date,
             EmployeeID: null,
             TaskID: $("#ddlTasks").data("kendoDropDownList").value(),

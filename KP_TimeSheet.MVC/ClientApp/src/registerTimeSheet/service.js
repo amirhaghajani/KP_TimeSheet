@@ -74,11 +74,27 @@ var service = (function () {
         });
     }
 
+    function deleteWorkHour(workHourId, success_callBack, error_callBack){
+        $.ajax({
+			type: "Post",
+			url: "/api/TimeSheetsAPI/DeleteWorkHours",
+			contentType: "application/json; charset=utf-8",
+			dataType: "json",
+			data: JSON.stringify({id: workHourId}),
+			success: success_callBack ? (response) => success_callBack(response) : () => { },
+            error: (error) => {
+                moduleData.common.notify(error.responseText, 'danger');
+                if (error_callBack) error_callBack();
+            }
+		});
+    }
+
     return {
         init: init,
 
         getTimeSheets: getTimeSheets,
         saveWorkHours: saveWorkHours,
+        deleteWorkHour: deleteWorkHour,
 
         getNextTimeSheets: getNextTimeSheets
     };
@@ -92,6 +108,7 @@ module.exports = {
 
     getTimeSheets: service.getTimeSheets,
     saveWorkHours: service.saveWorkHours,
+    deleteWorkHour: service.deleteWorkHour,
 
     getNextTimeSheets: service.getNextTimeSheets
 }

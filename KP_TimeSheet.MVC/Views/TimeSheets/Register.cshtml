@@ -84,7 +84,7 @@
                 </div>
             </div>
             <div class="carousel-caption" style="top:-20px">
-                <h3 style="font-size:1.5vw;">نمایش کارکرد های ارسال شده</h3>
+                <h4 id="headerText_MonitorSendWorkHours" style="font-size:1.5vw;">نمایش کارکرد های ارسال شده</h4>
             </div>
         </div>
         <div id="PanelMonitorWorkHour">
@@ -105,10 +105,11 @@
             در تاریخ فلان
             @* <img class="img-responsive img-rounded" src="~/Images/insert Time sheet.jpg" /> *@
         </div>
+        
         <div class="row jumbotron jumbotron-fluid shadow" style="margin-right:10px; margin-top:10px;margin-left:10px">
             <div class="col-md-1"></div>
             <div class="col-md-8">
-
+                <button type='button' id="btnDeleteCurrentWorkhour" style="float:left;margin-top:-30px;" title='حذف کارکرد' class='btn btn-danger btn-sm'> حذف کاکرد</button>
                 <div class="form-group">
                     <label for="ddlProjects" class="form-inline ">  پـروژه :</label>
                        
@@ -141,7 +142,7 @@
 
                     <div class="form-group">
                         <button id="btnSaveWorkHours_kwndSaveWHs" type="button" class="btn btn-success btn-sm">ارسال</button>
-                        <button id="btnCancel_kwndSaveWHs" type="button" class="btn btn-danger btn-sm">انصراف</button>
+                        <button id="btnCancel_kwndSaveWHs" type="button" class="btn btn-warning btn-sm">انصراف</button>
                     </div>
                 </div>
             <div class="col-md-1"></div>
