@@ -30,7 +30,6 @@ const module_createNewRorkHour = (function () {
 
     function kwndSaveWHs_OnInit_ForEdit(dayIndex, projectId, taskId_nullable, time_nullable) {
         moduleData.afterGetTasksEnd = null;
-        debugger;
         var timeSheetData = moduleData.data.timeSheetData_get();
         var item = timeSheetData[0].values[dayIndex];
 

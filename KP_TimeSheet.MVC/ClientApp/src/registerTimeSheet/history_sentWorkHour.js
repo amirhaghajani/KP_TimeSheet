@@ -100,7 +100,8 @@ const hisotrSentWorkHour = (function () {
 
 			columns: [{
 				field: "persianDate",
-				title: "تاریخ"
+				title: "تاریخ",
+				width: 100
 			},
 			{
 				field: "projectTitle",
@@ -120,11 +121,17 @@ const hisotrSentWorkHour = (function () {
 			}
 				, {
 				title: "نمایش تاریخچه   ",
-				template: "<button type='button' class='btn btn-primary btn-sm forFound_Init_GRDHistory' name='info' title='نمایش تاریخچه' > نمایش تاریخچه</button>",
+				template: function(dataItem,b,c){
+					let answer = "<button type='button' class='btn btn-info btn-sm forFound_Init_GRDHistory' title='نمایش تاریخچه' name='info'>تاریخچه</button>";
+					if(dataItem.workFlowStageType=='Resource'){
+						answer+="<button type='button' style='margin-right:2px;' class='btn btn-success btn-sm forFound_Init_GRDHistory'>ویرایش</button>"
+					}
+					return answer;
+				},
 				headerTemplate: "<label class='text-center'> نمایش تاریخچه </label>",
 				filterable: false,
 				sortable: false,
-				width: 100
+				width: 140
 			}
 			]
 
@@ -135,9 +142,6 @@ const hisotrSentWorkHour = (function () {
 
 
 	function ShowDataOnGrid(data) {
-
-		debugger;
-
 		_MonitorSentWorkHours = data;
 		Init_GrdMonitorSentWorkHour();
 	}
@@ -169,7 +173,6 @@ const hisotrSentWorkHour = (function () {
 
 	function ShowCurrentDaySendWorkHours(dayIndex) {
 
-		// debugger;
 		// var a = moduleData.data.timeSheetData_beforProcess_get();
 
 		moduleData.common.loaderShow();

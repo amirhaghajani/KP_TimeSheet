@@ -1566,7 +1566,7 @@ const myMainGrid = (function () {
             dataType: "json",
             data: JSON.stringify({ date: sotoon.date, taskId: taskId }),
             success: function (response) {
-              debugger;
+
               if (response && response.length == 1 && response[0].workFlowStageType=='Resource') {
                 moduleData.createNewWorkHour.kwndSaveWHs_OnInit_ForEdit(cellIndex - 3, projectId, taskId, sotoon.value);
               } else {
@@ -1587,7 +1587,7 @@ const myMainGrid = (function () {
       }
 
       if (dataItem.type == 'Project') {
-        debugger;
+
         $.ajax({
           type: "Post",
           url: "/api/TimeSheetsAPI/GetWorkHoursByDate",
@@ -1616,14 +1616,7 @@ const myMainGrid = (function () {
         return;
       }
 
-
-
-
       //alert("Satr: " + dataItem.title + " - Sotoon: " + dataItem.values[cellIndex - 3].title + " - type: "+dataItem.type);
-
-
-
-
     });
 
 

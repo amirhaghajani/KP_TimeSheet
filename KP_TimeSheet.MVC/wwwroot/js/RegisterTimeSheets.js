@@ -1149,7 +1149,6 @@ const module_createNewRorkHour = (function () {
 
     function kwndSaveWHs_OnInit_ForEdit(dayIndex, projectId, taskId_nullable, time_nullable) {
         moduleData.afterGetTasksEnd = null;
-        debugger;
         var timeSheetData = moduleData.data.timeSheetData_get();
         var item = timeSheetData[0].values[dayIndex];
 
@@ -1703,30 +1702,30 @@ const historyWorkHour = (function () {
 			selectable: true,
 
 			columns: [{
-				field: "PersianDate",
+				field: "persianDate",
 				title: "تاریخ",
-				width: 80
+				width: 100
 			},
 			{
-				field: "Time",
+				field: "time",
 				title: "ساعت",
 				width: 80
 			},
 			{
-				field: "ManagerName",
+				field: "managerName",
 				title: "نام مدیر",
 				width: 200
 			}, {
-				field: "Action",
+				field: "action",
 				title: "عملیات",
 				width: 120
 			}, {
-				field: "StageTitle",
+				field: "stageTitle",
 				title: "مرحله",
 				width: 120
 
 			}, {
-				field: "Description",
+				field: "description",
 				title: "توضیحات",
 				width: 400
 
@@ -1738,7 +1737,12 @@ const historyWorkHour = (function () {
 
 	function ShowHistory() {
 		$("#PanelMonitorWorkHour").fadeOut(400);
+		
 		$("#PanelHistory").fadeIn(400);
+		var gridElement = $("#WorkHourHistory");
+		var dataArea = gridElement.find(".k-grid-content");
+		gridElement.height("100%");
+		dataArea.height("372px");
 	}
 
 	function HideHistory() {
@@ -1865,7 +1869,8 @@ const hisotrSentWorkHour = (function () {
 
 			columns: [{
 				field: "persianDate",
-				title: "تاریخ"
+				title: "تاریخ",
+				width: 100
 			},
 			{
 				field: "projectTitle",
@@ -1885,11 +1890,17 @@ const hisotrSentWorkHour = (function () {
 			}
 				, {
 				title: "نمایش تاریخچه   ",
-				template: "<button type='button' class='btn btn-primary btn-sm forFound_Init_GRDHistory' name='info' title='نمایش تاریخچه' > نمایش تاریخچه</button>",
+				template: function(dataItem,b,c){
+					let answer = "<button type='button' class='btn btn-info btn-sm forFound_Init_GRDHistory' title='نمایش تاریخچه' name='info'>تاریخچه</button>";
+					if(dataItem.workFlowStageType=='Resource'){
+						answer+="<button type='button' style='margin-right:2px;' class='btn btn-success btn-sm forFound_Init_GRDHistory'>ویرایش</button>"
+					}
+					return answer;
+				},
 				headerTemplate: "<label class='text-center'> نمایش تاریخچه </label>",
 				filterable: false,
 				sortable: false,
-				width: 100
+				width: 140
 			}
 			]
 
@@ -1900,9 +1911,6 @@ const hisotrSentWorkHour = (function () {
 
 
 	function ShowDataOnGrid(data) {
-
-		debugger;
-
 		_MonitorSentWorkHours = data;
 		Init_GrdMonitorSentWorkHour();
 	}
@@ -1934,7 +1942,6 @@ const hisotrSentWorkHour = (function () {
 
 	function ShowCurrentDaySendWorkHours(dayIndex) {
 
-		// debugger;
 		// var a = moduleData.data.timeSheetData_beforProcess_get();
 
 		moduleData.common.loaderShow();
@@ -2167,7 +2174,7 @@ const myMainGrid = (function () {
             dataType: "json",
             data: JSON.stringify({ date: sotoon.date, taskId: taskId }),
             success: function (response) {
-              debugger;
+
               if (response && response.length == 1 && response[0].workFlowStageType=='Resource') {
                 moduleData.createNewWorkHour.kwndSaveWHs_OnInit_ForEdit(cellIndex - 3, projectId, taskId, sotoon.value);
               } else {
@@ -2188,7 +2195,7 @@ const myMainGrid = (function () {
       }
 
       if (dataItem.type == 'Project') {
-        debugger;
+
         $.ajax({
           type: "Post",
           url: "/api/TimeSheetsAPI/GetWorkHoursByDate",
@@ -2217,14 +2224,7 @@ const myMainGrid = (function () {
         return;
       }
 
-
-
-
       //alert("Satr: " + dataItem.title + " - Sotoon: " + dataItem.values[cellIndex - 3].title + " - type: "+dataItem.type);
-
-
-
-
     });
 
 

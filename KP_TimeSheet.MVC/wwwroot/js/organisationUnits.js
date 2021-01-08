@@ -455,7 +455,6 @@ function FindUserById(id) {
 }
 
 function EditOrganUnit(e) {
-    debugger;
     var grid = $("#GRDOrganisationUnits").data("kendoGrid");
     var dataItem = grid.dataItem($(e).closest("tr"));
 

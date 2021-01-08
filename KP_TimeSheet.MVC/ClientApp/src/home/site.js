@@ -48,7 +48,6 @@ function Page_OnInitYesterday(response) {
     $("#UsenNameSidebar").text(response.currentUser);
     $("#currentUser").text(response.currentUser);
 
-debugger;
     const items = [response.presence, response.work, response.defference];
     const v1 = commonTimesheet.calcPercent(items, response.presence);
     const v2 = commonTimesheet.calcPercent(items, response.work);

@@ -57,30 +57,30 @@ const historyWorkHour = (function () {
 			selectable: true,
 
 			columns: [{
-				field: "PersianDate",
+				field: "persianDate",
 				title: "تاریخ",
-				width: 80
+				width: 100
 			},
 			{
-				field: "Time",
+				field: "time",
 				title: "ساعت",
 				width: 80
 			},
 			{
-				field: "ManagerName",
+				field: "managerName",
 				title: "نام مدیر",
 				width: 200
 			}, {
-				field: "Action",
+				field: "action",
 				title: "عملیات",
 				width: 120
 			}, {
-				field: "StageTitle",
+				field: "stageTitle",
 				title: "مرحله",
 				width: 120
 
 			}, {
-				field: "Description",
+				field: "description",
 				title: "توضیحات",
 				width: 400
 
@@ -92,7 +92,12 @@ const historyWorkHour = (function () {
 
 	function ShowHistory() {
 		$("#PanelMonitorWorkHour").fadeOut(400);
+		
 		$("#PanelHistory").fadeIn(400);
+		var gridElement = $("#WorkHourHistory");
+		var dataArea = gridElement.find(".k-grid-content");
+		gridElement.height("100%");
+		dataArea.height("372px");
 	}
 
 	function HideHistory() {
