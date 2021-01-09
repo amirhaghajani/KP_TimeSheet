@@ -795,6 +795,10 @@ const myMainGrid = (function () {
       if (cellIndex<3 || !dataItem.values) return;
       var sotoon = dataItem.values[cellIndex - 3];
 
+      var timeSheetData = moduleData.data.timeSheetData_get();
+      var dayTime = timeSheetData[0].values[cellIndex - 3];
+      moduleData.data.selDate_set(dayTime);
+
       if (dataItem.type == 'Workout') {
 
         const items = [];
@@ -807,7 +811,7 @@ const myMainGrid = (function () {
 
         if (sotoon.value.indexOf('0:00') == 0) {
 
-          moduleData.createNewWorkHour.kwndSaveWHs_OnInit_ForEdit(cellIndex - 3, projectId, taskId, null);
+          moduleData.createNewWorkHour.kwndSaveWHs_OnInit_ForEdit(dayTime, projectId, taskId, null);
           return;
         } else {
 
@@ -820,7 +824,7 @@ const myMainGrid = (function () {
             success: function (response) {
 
               if (response && response.length == 1 && response[0].workFlowStageType=='Resource') {
-                moduleData.createNewWorkHour.kwndSaveWHs_OnInit_ForEdit(cellIndex - 3, 
+                moduleData.createNewWorkHour.kwndSaveWHs_OnInit_ForEdit(dayTime, 
                   projectId, taskId, moduleData.common_timeSheet.convertMinutsToTime(response[0].minutes), response[0].id);
 
               } else {
@@ -870,7 +874,7 @@ const myMainGrid = (function () {
       }
 
       if (dataItem.type == 'Karkard') {
-        moduleData.history_sentWorkHour.ShowCurrentDaySendWorkHours(cellIndex - 3, 'کارکردها در ' + sotoon.persianDate);
+        moduleData.history_sentWorkHour.ShowCurrentDaySendWorkHours(dayTime, 'کارکردها در ' + sotoon.persianDate);
         return;
       }
 

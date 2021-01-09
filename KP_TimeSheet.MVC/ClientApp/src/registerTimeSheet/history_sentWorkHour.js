@@ -8,13 +8,14 @@ const hisotrSentWorkHour = (function () {
 
 	const moduleData = {};
 
-	function init(common, common_register, hisotory_workHour, data, common_timeSheet) {
+	function init(common, common_register, hisotory_workHour, data, common_timeSheet, createNewWorkHour) {
 
 		moduleData.data = data;
 		moduleData.common = common;
 		moduleData.common_register = common_register;
 		moduleData.hisotory_workHour = hisotory_workHour;
 		moduleData.common_timeSheet = common_timeSheet;
+		moduleData.createNewWorkHour = createNewWorkHour;
 
 		$('#btnMonitorSent').off().on('click', function () {
 			GetWorkHours_MonitorSentWorkHour();
@@ -148,7 +149,8 @@ const hisotrSentWorkHour = (function () {
 		debugger;
 		var grid = $("#GrdMonitorSentWorkHour").data("kendoGrid");
 		var dataItem = grid.dataItem($(e).closest("tr"));
-		var prmData = JSON.stringify(dataItem);
+		moduleData.createNewWorkHour.kwndSaveWHs_OnInit_ForEdit(moduleData.data.selDate_get(), 
+			dataItem.projectID, dataItem.taskID, dataItem.time, dataItem.id);
 	}
 
 	function ShowDataOnGrid(data, headerTitle) {
@@ -183,19 +185,18 @@ const hisotrSentWorkHour = (function () {
 		});
 	}
 
-	function ShowCurrentDaySendWorkHours(dayIndex, headerTitle) {
+	function ShowCurrentDaySendWorkHours(dayTime, headerTitle) {
 
 		if(headerTitle) $('#headerText_MonitorSendWorkHours').text(headerTitle);
 
 		moduleData.common.loaderShow();
 		moduleData.hisotory_workHour.Create_GrdHistory();
 
-		var timeSheetData = moduleData.data.timeSheetData_get();
-		moduleData.data.selDate_set(timeSheetData[0].values[dayIndex]);
+		moduleData.data.selDate_set(dayTime);
 
 		var workHourJson = {
 			ID: null,
-			Date: moduleData.data.selDate_get().date
+			Date: dayTime.date
 		}
 
 		var prmData = JSON.stringify(workHourJson);

@@ -854,7 +854,7 @@ $(document).ready(function () {
     });
 
     editWindow.init(mainGrid, common, common_register, data, common_timeSheet, service);
-    history_sentWorkHour.init(common, common_register, history_workHour, data, common_timeSheet);
+    history_sentWorkHour.init(common, common_register, history_workHour, data, common_timeSheet, createNewWorkHour);
 
     mainGrid.init(common, common_register, common_timeSheet, createNewWorkHour, history_sentWorkHour, sendWorkHour, data, 
         service, editWindow,history_sentWorkHour, bottomPage_priodlyGrid, bottomPage_monthlyGrid);
@@ -1165,19 +1165,20 @@ const module_createNewRorkHour = (function () {
 
     }
 
-    function kwndSaveWHs_OnInit_ForEdit(dayIndex, projectId, taskId_nullable, time_nullable, workoutId) {
+    function kwndSaveWHs_OnInit_ForEdit(dayTime, projectId, taskId_nullable, time_nullable, workoutId) {
 
+        debugger;
         $('#btnDeleteCurrentWorkhour').hide();
         if (workoutId) $('#btnDeleteCurrentWorkhour').show();
 
         moduleData.currentWorkoutId = workoutId;
         moduleData.afterGetTasksEnd = null;
         var timeSheetData = moduleData.data.timeSheetData_get();
-        var item = timeSheetData[0].values[dayIndex];
+        
 
-        $('#registerWindo_headerDiv').text(item.persianDay + " " + item.persianDate);
+        $('#registerWindo_headerDiv').text(dayTime.persianDay + " " + dayTime.persianDate);
 
-        moduleData.data.selDate_set(item);
+        moduleData.data.selDate_set(dayTime);
 
         moduleData.whenGetProjectsTasksEnd = () => {
 
@@ -1790,13 +1791,14 @@ const hisotrSentWorkHour = (function () {
 
 	const moduleData = {};
 
-	function init(common, common_register, hisotory_workHour, data, common_timeSheet) {
+	function init(common, common_register, hisotory_workHour, data, common_timeSheet, createNewWorkHour) {
 
 		moduleData.data = data;
 		moduleData.common = common;
 		moduleData.common_register = common_register;
 		moduleData.hisotory_workHour = hisotory_workHour;
 		moduleData.common_timeSheet = common_timeSheet;
+		moduleData.createNewWorkHour = createNewWorkHour;
 
 		$('#btnMonitorSent').off().on('click', function () {
 			GetWorkHours_MonitorSentWorkHour();
@@ -1930,7 +1932,8 @@ const hisotrSentWorkHour = (function () {
 		debugger;
 		var grid = $("#GrdMonitorSentWorkHour").data("kendoGrid");
 		var dataItem = grid.dataItem($(e).closest("tr"));
-		var prmData = JSON.stringify(dataItem);
+		moduleData.createNewWorkHour.kwndSaveWHs_OnInit_ForEdit(moduleData.data.selDate_get(), 
+			dataItem.projectID, dataItem.taskID, dataItem.time, dataItem.id);
 	}
 
 	function ShowDataOnGrid(data, headerTitle) {
@@ -1965,19 +1968,18 @@ const hisotrSentWorkHour = (function () {
 		});
 	}
 
-	function ShowCurrentDaySendWorkHours(dayIndex, headerTitle) {
+	function ShowCurrentDaySendWorkHours(dayTime, headerTitle) {
 
 		if(headerTitle) $('#headerText_MonitorSendWorkHours').text(headerTitle);
 
 		moduleData.common.loaderShow();
 		moduleData.hisotory_workHour.Create_GrdHistory();
 
-		var timeSheetData = moduleData.data.timeSheetData_get();
-		moduleData.data.selDate_set(timeSheetData[0].values[dayIndex]);
+		moduleData.data.selDate_set(dayTime);
 
 		var workHourJson = {
 			ID: null,
-			Date: moduleData.data.selDate_get().date
+			Date: dayTime.date
 		}
 
 		var prmData = JSON.stringify(workHourJson);
@@ -2176,6 +2178,10 @@ const myMainGrid = (function () {
       if (cellIndex<3 || !dataItem.values) return;
       var sotoon = dataItem.values[cellIndex - 3];
 
+      var timeSheetData = moduleData.data.timeSheetData_get();
+      var dayTime = timeSheetData[0].values[cellIndex - 3];
+      moduleData.data.selDate_set(dayTime);
+
       if (dataItem.type == 'Workout') {
 
         const items = [];
@@ -2188,7 +2194,7 @@ const myMainGrid = (function () {
 
         if (sotoon.value.indexOf('0:00') == 0) {
 
-          moduleData.createNewWorkHour.kwndSaveWHs_OnInit_ForEdit(cellIndex - 3, projectId, taskId, null);
+          moduleData.createNewWorkHour.kwndSaveWHs_OnInit_ForEdit(dayTime, projectId, taskId, null);
           return;
         } else {
 
@@ -2201,7 +2207,7 @@ const myMainGrid = (function () {
             success: function (response) {
 
               if (response && response.length == 1 && response[0].workFlowStageType=='Resource') {
-                moduleData.createNewWorkHour.kwndSaveWHs_OnInit_ForEdit(cellIndex - 3, 
+                moduleData.createNewWorkHour.kwndSaveWHs_OnInit_ForEdit(dayTime, 
                   projectId, taskId, moduleData.common_timeSheet.convertMinutsToTime(response[0].minutes), response[0].id);
 
               } else {
@@ -2251,7 +2257,7 @@ const myMainGrid = (function () {
       }
 
       if (dataItem.type == 'Karkard') {
-        moduleData.history_sentWorkHour.ShowCurrentDaySendWorkHours(cellIndex - 3, 'کارکردها در ' + sotoon.persianDate);
+        moduleData.history_sentWorkHour.ShowCurrentDaySendWorkHours(dayTime, 'کارکردها در ' + sotoon.persianDate);
         return;
       }
 

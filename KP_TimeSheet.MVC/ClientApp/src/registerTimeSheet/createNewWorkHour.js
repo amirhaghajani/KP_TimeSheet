@@ -46,19 +46,20 @@ const module_createNewRorkHour = (function () {
 
     }
 
-    function kwndSaveWHs_OnInit_ForEdit(dayIndex, projectId, taskId_nullable, time_nullable, workoutId) {
+    function kwndSaveWHs_OnInit_ForEdit(dayTime, projectId, taskId_nullable, time_nullable, workoutId) {
 
+        debugger;
         $('#btnDeleteCurrentWorkhour').hide();
         if (workoutId) $('#btnDeleteCurrentWorkhour').show();
 
         moduleData.currentWorkoutId = workoutId;
         moduleData.afterGetTasksEnd = null;
         var timeSheetData = moduleData.data.timeSheetData_get();
-        var item = timeSheetData[0].values[dayIndex];
+        
 
-        $('#registerWindo_headerDiv').text(item.persianDay + " " + item.persianDate);
+        $('#registerWindo_headerDiv').text(dayTime.persianDay + " " + dayTime.persianDate);
 
-        moduleData.data.selDate_set(item);
+        moduleData.data.selDate_set(dayTime);
 
         moduleData.whenGetProjectsTasksEnd = () => {
 
