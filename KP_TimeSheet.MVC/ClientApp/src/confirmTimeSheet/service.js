@@ -2,9 +2,10 @@ const service = (function () {
 
 	const moduleData = {};
 
-	function init(data, common_timeSheet) {
+	function init(data, common_timeSheet, common) {
 		moduleData.data = data;
 		moduleData.common_timeSheet = common_timeSheet;
+		moduleData.common= common;
 	}
 
 	function getTimeSheetsByUserId(prmData, success_callBack, error_callBack) {

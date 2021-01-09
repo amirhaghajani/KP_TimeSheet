@@ -17,7 +17,7 @@ function KTRColumnConfirm() {
 $(document).ready(function () {
 
 	dataService.init();
-	service.init(dataService, common_timeSheet);
+	service.init(dataService, common_timeSheet, common);
 
 
 	GetUsers();
