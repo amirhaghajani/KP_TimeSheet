@@ -592,7 +592,7 @@ const service = (function () {
 
 		$.ajax({
 			type: "Get",
-			url: "/api/Confirm/" + moduleData.data.userId_get(),
+			url: "/api/Confirm/" +moduleData.common.version()+"/" + moduleData.data.userId_get(),
 			contentType: "application/json; charset=utf-8",
 			dataType: "json",
 
@@ -744,7 +744,7 @@ const service = (function () {
 		}
 		$.ajax({
 			type: "Get",
-			url: `/api/Confirm/${type}/${userId}/${date}`,
+			url: `/api/Confirm/${moduleData.common.version()}/${type}/${userId}/${date}`,
 			contentType: "application/json; charset=utf-8",
 			dataType: "json",
 			success: (response) => {
@@ -2110,7 +2110,7 @@ const myMainGrid = (function () {
   //----------
 
   function GetTimeSheets(callBackFn, fromDate, toDate) {
-
+debugger;
     moduleData.service.getTimeSheets(fromDate, toDate, (response) => {
       if (callBackFn) callBackFn(response);
       Init_TimeSheetTreeList();
@@ -2959,10 +2959,10 @@ var service = (function () {
     //اون اول اطلاعات کل تایم شیت ها را می دهد
     function getTimeSheets(fromDate, toDate, success_callBack, error_callBack) {
 
-        let url = "/api/Confirm/employee";
+        let url = "/api/Confirm/"+moduleData.common.version()+"/employee";
 
         if (fromDate) {
-            url = `/api/Confirm/employeeTimeSheet/${fromDate}/${toDate}`;
+            url = `/api/Confirm/${moduleData.common.version()}/employeeTimeSheet/${fromDate}/${toDate}`;
         }
 
         $.ajax({
@@ -2988,7 +2988,7 @@ var service = (function () {
 
         $.ajax({
             type: "Get",
-            url: `/api/Confirm/employee/${type}/${date}`,
+            url: `/api/Confirm/${moduleData.common.version()}/employee/${type}/${date}`,
             contentType: "application/json; charset=utf-8",
             dataType: "json",
 

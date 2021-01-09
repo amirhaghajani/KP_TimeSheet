@@ -44,7 +44,7 @@ const service = (function () {
 
 		$.ajax({
 			type: "Get",
-			url: "/api/Confirm/" + moduleData.data.userId_get(),
+			url: "/api/Confirm/" +moduleData.common.version()+"/" + moduleData.data.userId_get(),
 			contentType: "application/json; charset=utf-8",
 			dataType: "json",
 
@@ -196,7 +196,7 @@ const service = (function () {
 		}
 		$.ajax({
 			type: "Get",
-			url: `/api/Confirm/${type}/${userId}/${date}`,
+			url: `/api/Confirm/${moduleData.common.version()}/${type}/${userId}/${date}`,
 			contentType: "application/json; charset=utf-8",
 			dataType: "json",
 			success: (response) => {
