@@ -568,7 +568,11 @@ const service = (function () {
 				moduleData.data.timeSheetDataConfirm_set(response);
 				if (success_callBack) success_callBack(response);
 			},
-			error: error_callBack ? () => error_callBack() : () => { }
+			error: (error) => {
+				moduleData.common.loaderHide();
+                moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+                if (error_callBack) error_callBack();
+            }
 		});
 
 	}
@@ -584,7 +588,11 @@ const service = (function () {
 				moduleData.data.users_set(response);
 				if (success_callBack) success_callBack(response);
 			},
-			error: error_callBack ? () => error_callBack() : () => { }
+			error: (error) => {
+				moduleData.common.loaderHide();
+                moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+                if (error_callBack) error_callBack();
+            }
 		});
 
 	}
@@ -605,27 +613,12 @@ const service = (function () {
 
 				if (success_callBack) success_callBack(data);
 			},
-			error: error_callBack ? () => error_callBack() : () => { }
+			error: (error) => {
+				moduleData.common.loaderHide();
+                moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+                if (error_callBack) error_callBack();
+            }
 		});
-
-
-		// $.ajax({
-		// 	type: "Get",
-		// 	url: "/api/TimeSheetsAPI/GetTimeSheetsByUserIdForFirstTime?UserId=" + moduleData.data.userId_get(),
-		// 	contentType: "application/json; charset=utf-8",
-		// 	dataType: "json",
-
-		// 	success: function (response) {
-		// 		if (response) {
-		// 			response.forEach(element => {
-		// 				element.uuiidd = element.uid;
-		// 			});
-		// 		}
-		// 		//moduleData.data.timeSheetDataConfirm_set(response);
-		// 		//if (success_callBack) success_callBack(response);
-		// 	},
-		// 	error: error_callBack ? () => error_callBack() : () => { }
-		// });
 	}
 
 
@@ -641,7 +634,11 @@ const service = (function () {
 			dataType: "json",
 			data: prmData,
 			success: success_callBack ? (response) => success_callBack(response) : () => { },
-			error: error_callBack ? () => error_callBack() : () => { }
+			error: (error) => {
+				moduleData.common.loaderHide();
+                moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+                if (error_callBack) error_callBack();
+            }
 		});
 	}
 
@@ -653,7 +650,11 @@ const service = (function () {
 			dataType: "json",
 			data: prmData,
 			success: success_callBack ? (response) => success_callBack(response) : () => { },
-			error: error_callBack ? () => error_callBack() : () => { }
+			error: (error) => {
+				moduleData.common.loaderHide();
+                moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+                if (error_callBack) error_callBack();
+            }
 		});
 	}
 
@@ -668,7 +669,11 @@ const service = (function () {
 				moduleData.data.thisMonthdataConfirm_set(response);
 				if (success_callBack) success_callBack(response);
 			},
-			error: error_callBack ? () => error_callBack() : () => { }
+			error: (error) => {
+				moduleData.common.loaderHide();
+                moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+                if (error_callBack) error_callBack();
+            }
 		});
 	}
 
@@ -680,7 +685,11 @@ const service = (function () {
 			dataType: "json",
 			data: prmData,
 			success: success_callBack ? (response) => success_callBack(response) : () => { },
-			error: error_callBack ? () => error_callBack() : () => { }
+			error: (error) => {
+				moduleData.common.loaderHide();
+                moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+                if (error_callBack) error_callBack();
+            }
 		});
 	}
 
@@ -692,7 +701,11 @@ const service = (function () {
 			dataType: "json",
 			data: prmData,
 			success: success_callBack ? (response) => success_callBack(response) : () => { },
-			error: error_callBack ? () => error_callBack() : () => { }
+			error: (error) => {
+				moduleData.common.loaderHide();
+                moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+                if (error_callBack) error_callBack();
+            }
 		});
 	}
 
@@ -704,7 +717,11 @@ const service = (function () {
 			dataType: "json",
 			data: prmData,
 			success: success_callBack ? (response) => success_callBack(response) : () => { },
-			error: error_callBack ? () => error_callBack() : () => { }
+			error: (error) => {
+				moduleData.common.loaderHide();
+                moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+                if (error_callBack) error_callBack();
+            }
 		});
 	}
 
@@ -717,7 +734,11 @@ const service = (function () {
 			success: () => {
 				if (success_callBack) success_callBack();
 			},
-			error: error_callBack ? () => error_callBack() : () => { }
+			error: (error) => {
+				moduleData.common.loaderHide();
+                moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+                if (error_callBack) error_callBack();
+            }
 		});
 	}
 
@@ -731,7 +752,11 @@ const service = (function () {
 			success: () => {
 				if (success_callBack) success_callBack();
 			},
-			error: error_callBack ? () => error_callBack() : () => { }
+			error: (error) => {
+				moduleData.common.loaderHide();
+                moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+                if (error_callBack) error_callBack();
+            }
 		});
 	}
 
@@ -755,7 +780,11 @@ const service = (function () {
 				moduleData.data.timeSheetDataConfirm_set(data);
 				if (success_callBack) success_callBack(data);
 			},
-			error: error_callBack ? () => error_callBack() : () => { }
+			error: (error) => {
+				moduleData.common.loaderHide();
+                moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+                if (error_callBack) error_callBack();
+            }
 		});
 	}
 
@@ -770,7 +799,11 @@ const service = (function () {
 				moduleData.data.timeSheetDataConfirm_set(response);
 				if (success_callBack) success_callBack(response);
 			},
-			error: error_callBack ? () => error_callBack() : () => { }
+			error: (error) => {
+				moduleData.common.loaderHide();
+                moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+                if (error_callBack) error_callBack();
+            }
 		});
 	}
 
@@ -2981,7 +3014,11 @@ var service = (function () {
                 moduleData.data.timeSheetData_set(data);
                 if (success_callBack) success_callBack(data);
             },
-            error: error_callBack ? () => error_callBack() : () => { }
+            error: (error) => {
+                moduleData.common.loaderHide();
+                moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+                if (error_callBack) error_callBack();
+            }
         });
     }
 
@@ -3000,7 +3037,11 @@ var service = (function () {
                 moduleData.data.timeSheetData_set(data);
                 if (success_callBack) success_callBack(data);
             },
-            error: error_callBack ? () => error_callBack() : () => { }
+            error: (error) => {
+                moduleData.common.loaderHide();
+                moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+                if (error_callBack) error_callBack();
+            }
         });
     }
 
@@ -3014,9 +3055,9 @@ var service = (function () {
             data: prmData,
             success: success_callBack ? (response) => success_callBack(response) : () => { },
             error: (error) => {
-                moduleData.common.notify(error.responseText, 'danger');
+                moduleData.common.loaderHide();
+                moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
                 if (error_callBack) error_callBack();
-
             }
         });
     }
@@ -3030,7 +3071,8 @@ var service = (function () {
 			data: JSON.stringify({id: workHourId}),
 			success: success_callBack ? (response) => success_callBack(response) : () => { },
             error: (error) => {
-                moduleData.common.notify(error.responseText, 'danger');
+                moduleData.common.loaderHide();
+                moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
                 if (error_callBack) error_callBack();
             }
 		});

@@ -98,7 +98,7 @@ function Page_OnInitWaitApprove(response) {
     const items = [response.minutes];
     const v1 = commonTimesheet.calcPercent(items, response.minutes);
 
-    $("#hoursWaitingToApprove").text(commonTimesheet.convertMinutsToTime(response.presence));
+    $("#hoursWaitingToApprove").text(commonTimesheet.convertMinutsToTime(response.minutes));
     $("#hoursWaitingToApprovePercent").css('width', v1 + '%').attr('aria-valuenow', v1);
 
 }

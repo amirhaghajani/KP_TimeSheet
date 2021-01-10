@@ -109,7 +109,7 @@ namespace KP.TimeSheets.MVC
             }
         }
 
-        [HttpGet("/{ver}/{type}/{userId}/{date}"),HttpGet("{ver}/employee/{type}/{date}")]
+        [HttpGet("{ver}/{type}/{userId}/{date}"),HttpGet("{ver}/employee/{type}/{date}")]
         public async Task<IActionResult> GetPreviousPeriodConfirm(string ver, string type, Guid? userId, DateTime date)
         {
             UserManager userManager = new UserManager(this._uow);
