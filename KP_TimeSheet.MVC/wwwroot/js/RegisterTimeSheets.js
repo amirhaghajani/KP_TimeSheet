@@ -2293,8 +2293,6 @@ const dl = (function () {
 	}
 
 	function save() {
-		debugger;
-
 		resetErrors();
 
 		var dailyLeave = {
@@ -2326,7 +2324,6 @@ const dl = (function () {
 		moduleData.service.saveDailyLeave(dailyLeave, () => {
 
 		});
-
 	}
 
 
@@ -2343,120 +2340,181 @@ module.exports = {
 },{}],14:[function(require,module,exports){
 const hl = (function () {
 
-    const moduleData = {};
-  
-    function init(common, data, service) {
-  
-      moduleData.common = common;
-      moduleData.data = data;
-      moduleData.service = service;
-  
-      $('#btnNewHourlyLeave').off().on('click', function () {
-        private_openLeaveWindow();
-      });
-  
-      $('#leave_btnCancel').off().on('click', function () {
-        var w = $("#kwndHourlyLeave").data("kendoWindow");
-        if (w) w.close();
-      });
-  
-  
-    }
-  
-    function private_openLeaveWindow() {
-  
-      $("#leave_headerDiv").text("ثبت مرخصی ساعتی");
-  
-      moduleData.service.getUserProjects((response) => {
-        private_projectComboInit(response);
-      });
-  
-      var kwndSendWHs = $("#kwndHourlyLeave");
-      kwndSendWHs.kendoWindow({
-        width: moduleData.common.window_width(),
-        height: moduleData.common.window_height(),
-  
-        activate: function () {
-          moduleData.common.addNoScrollToBody();
-          private_setDatepicker();
-        },
-        deactivate: moduleData.common.removeNoScrollToBody,
-        scrollable: true,
-        visible: false,
-        modal: true,
-        actions: [
-          "Pin",
-          "Minimize",
-          "Maximize",
-          "Close"
-        ],
-        //open: moduleData.common.adjustSize,
-      }).data("kendoWindow").center().open();
-  
-  
-    }
-  
-    function private_projectComboInit(response) {
-  
-      $("#leave_selectProject").kendoDropDownList({
-        dataSource: {
-          data: response,
-          schema: {
-            model: {
-              id: "id"
-            }
+  const moduleData = {};
+
+  function init(common, data, service) {
+
+    moduleData.common = common;
+    moduleData.data = data;
+    moduleData.service = service;
+
+    $('#btnNewHourlyLeave').off().on('click', function () {
+      private_openLeaveWindow();
+    });
+
+    $('#leave_btnCancel').off().on('click', function () {
+      var w = $("#kwndHourlyLeave").data("kendoWindow");
+      if (w) w.close();
+      reset();
+    });
+
+    $('#leave_btnSave').off().on('click', function () {
+      save();
+    });
+
+
+  }
+
+  function private_openLeaveWindow() {
+
+    $("#leave_headerDiv").text("ثبت مرخصی ساعتی");
+
+    moduleData.service.getUserProjects((response) => {
+      private_projectComboInit(response);
+    });
+
+    var kwndSendWHs = $("#kwndHourlyLeave");
+    kwndSendWHs.kendoWindow({
+      width: moduleData.common.window_width(),
+      height: moduleData.common.window_height(),
+
+      activate: function () {
+        moduleData.common.addNoScrollToBody();
+        private_setDatepicker();
+      },
+      deactivate: moduleData.common.removeNoScrollToBody,
+      scrollable: true,
+      visible: false,
+      modal: true,
+      actions: [
+        "Pin",
+        "Minimize",
+        "Maximize",
+        "Close"
+      ],
+      //open: moduleData.common.adjustSize,
+      close: reset
+    }).data("kendoWindow").center().open();
+
+
+  }
+
+  function private_projectComboInit(response) {
+
+    $("#leave_selectProject").kendoDropDownList({
+      dataSource: {
+        data: response,
+        schema: {
+          model: {
+            id: "id"
           }
-        },
-        dataTextField: "title",
-        dataValueField: "id",
-        filter: "contains",
-        optionLabel: "انتخاب پروژه...",
-        //change: GetTasks
-      });
-  
-    }
-  
-    function private_setDatepicker() {
-  
-      debugger;
-  
-      var timeSheetData = moduleData.data.timeSheetData_get();
-      var startTime = timeSheetData[0].values[0];
-      var endTime = timeSheetData[0].values[timeSheetData[0].values.length - 1];
-  
-      $('#leave_date').daterangepicker({
-        clearLabel: 'Clear',
-        autoApply: true,
-        opens: 'left',
-        minDate: moment(startTime.date),
-        maxDate: moment(endTime.date),
-        singleDatePicker: true,
-        showDropdowns: true,
-        jalaali: true,
-        language: 'fa'
-      }).on('apply.daterangepicker', function () {
-        $('.tooltip').hide();
-        $('.date-select').text($(this).val());
-      });
-  
-      $("#leave_hourStart").kendoTimePicker({
-        format: "HH:mm"
-      });
-      $("#leave_hourFinish").kendoTimePicker({
-        format: "HH:mm"
-      });
-  
-    }
-  
-    return {
-      init: init
+        }
+      },
+      dataTextField: "title",
+      dataValueField: "id",
+      filter: "contains",
+      optionLabel: "انتخاب پروژه...",
+      //change: GetTasks
+    });
+
+  }
+
+  function private_setDatepicker() {
+
+    debugger;
+
+    var timeSheetData = moduleData.data.timeSheetData_get();
+    var startTime = timeSheetData[0].values[0];
+    var endTime = timeSheetData[0].values[timeSheetData[0].values.length - 1];
+
+    $('#leave_date').daterangepicker({
+      clearLabel: 'Clear',
+      autoApply: true,
+      opens: 'left',
+      minDate: moment(startTime.date),
+      maxDate: moment(endTime.date),
+      singleDatePicker: true,
+      showDropdowns: true,
+      jalaali: true,
+      language: 'fa'
+    }).on('apply.daterangepicker', function () {
+      $('.tooltip').hide();
+      $('.date-select').text($(this).val());
+    });
+
+    $("#leave_hourStart").kendoTimePicker({
+      format: "HH:mm"
+    });
+    $("#leave_hourFinish").kendoTimePicker({
+      format: "HH:mm"
+    });
+
+  }
+
+
+  //Save-----------------------------------------------------------------
+  function reset() {
+
+    $('#leave_date').val('');
+    $('#leave_hourStart').val('');
+    $('#leave_hourFinish').val('');
+
+
+    var item = $("#leave_selectProject").data("kendoDropDownList");
+    if (item && item.select) item.select(0);
+
+    resetErrors();
+  }
+  function resetErrors() {
+    //جایی که خطاها را نشان می دهد را پاک می کند
+    $("span[for='leave_date']").text("");
+    $("span[for='leave_hourStart']").text("");
+    $("span[for='leave_hourFinish']").text("");
+  }
+
+  function save() {
+    resetErrors();
+
+    debugger;
+
+    var mission = {
+      id: "00000000-0000-0000-0000-000000000000",
+      persianLeaveDate: $('#leave_date').val(),
+      persianTimeFrom: $('#leave_hourStart').val(),
+      persianTimeTo: $('#leave_hourFinish').val(),
+      projectID: $("#leave_selectProject").data("kendoDropDownList").value(),
     };
-  
-  })();
-  
-  module.exports = {
-    init: hl.init
+
+    if (!mission.persianLeaveDate.length) {
+      $("span[for='leave_date']").text("تاریخ ضروری است");
+      return;
+    }
+    if (!mission.persianTimeFrom.length) {
+      $("span[for='leave_hourStart']").text("ساعت شروع ضروری است");
+      return;
+    }
+    if (!mission.persianTimeTo.length) {
+      $("span[for='leave_hourFinish']").text("ساعت پایان ضروری است");
+      return;
+    }
+
+
+    if (!mission.projectID.length) mission.projectID = "00000000-0000-0000-0000-000000000000";
+
+    moduleData.service.saveHourlyLeave(mission, () => {
+
+    });
+  }
+
+  return {
+    init: init
   };
+
+})();
+
+module.exports = {
+  init: hl.init
+};
 },{}],15:[function(require,module,exports){
 const myMainGrid = (function () {
 
@@ -2833,6 +2891,10 @@ const hm = (function () {
     $('#mission_btnCancel').off().on('click', function () {
       var w = $("#kwndHourlyMission").data("kendoWindow");
       if (w) w.close();
+      reset();
+    });
+    $('#mission_btnSave').off().on('click', function () {
+      save();
     });
 
 
@@ -2866,6 +2928,7 @@ const hm = (function () {
         "Close"
       ],
       //open: moduleData.common.adjustSize,
+      close: reset
     }).data("kendoWindow").center().open();
 
 
@@ -2892,8 +2955,6 @@ const hm = (function () {
   }
 
   function private_setDatepicker() {
-
-    debugger;
 
     var timeSheetData = moduleData.data.timeSheetData_get();
     var startTime = timeSheetData[0].values[0];
@@ -2922,6 +2983,61 @@ const hm = (function () {
     });
 
   }
+
+
+  //Save-----------------------------------------------------------------
+	function reset() {
+
+		$('#mission_date').val('');
+    $('#mission_hourStart').val('');
+    $('#mission_hourFinish').val('');
+
+
+		var item = $("#mission_selectProject").data("kendoDropDownList");
+		if (item && item.select) item.select(0);
+
+		resetErrors();
+	}
+	function resetErrors() {
+		//جایی که خطاها را نشان می دهد را پاک می کند
+		$("span[for='mission_date']").text("");
+		$("span[for='mission_hourStart']").text("");
+		$("span[for='mission_hourFinish']").text("");
+  }
+  
+  function save() {
+    resetErrors();
+    
+    debugger;
+
+		var mission = {
+			id: "00000000-0000-0000-0000-000000000000",
+			persianMissionDate: $('#mission_date').val(),
+			persianTimeFrom: $('#mission_hourStart').val(),
+			persianTimeTo: $('#mission_hourFinish').val(),
+			projectID: $("#mission_selectProject").data("kendoDropDownList").value(),
+		};
+
+		if (!mission.persianMissionDate.length) {
+			$("span[for='mission_date']").text("تاریخ ضروری است");
+			return;
+		}
+		if (!mission.persianTimeFrom.length) {
+			$("span[for='mission_hourStart']").text("ساعت شروع ضروری است");
+			return;
+    }
+    if (!mission.persianTimeTo.length) {
+			$("span[for='mission_hourFinish']").text("ساعت پایان ضروری است");
+			return;
+		}
+
+
+		if (!mission.projectID.length) mission.projectID = "00000000-0000-0000-0000-000000000000";
+
+		moduleData.service.saveHourlyMission(mission, () => {
+
+		});
+	}
 
   return {
     init: init
@@ -3635,6 +3751,38 @@ var service = (function () {
       }
     });
   }
+
+  function saveHourlyLeave(hourlyLeave, success_callBack, error_callBack) {
+    $.ajax({
+      type: "Post",
+      url: "/api/Confirm/SaveHourlyLeave",
+      contentType: "application/json; charset=utf-8",
+      dataType: "json",
+      data: JSON.stringify(hourlyLeave),
+      success: success_callBack ? (response) => success_callBack(response) : () => { },
+      error: (error) => {
+        moduleData.common.loaderHide();
+        moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+        if (error_callBack) error_callBack();
+      }
+    });
+  }
+
+  function saveHourlyMission(hourlyMission, success_callBack, error_callBack) {
+    $.ajax({
+      type: "Post",
+      url: "/api/Confirm/SaveHourlyMission",
+      contentType: "application/json; charset=utf-8",
+      dataType: "json",
+      data: JSON.stringify(hourlyMission),
+      success: success_callBack ? (response) => success_callBack(response) : () => { },
+      error: (error) => {
+        moduleData.common.loaderHide();
+        moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+        if (error_callBack) error_callBack();
+      }
+    });
+  }
   
 
   return {
@@ -3649,7 +3797,9 @@ var service = (function () {
     getUserProjects: getUserProjects,
     getUsers: getUsers,
 
-    saveDailyLeave: saveDailyLeave
+    saveDailyLeave: saveDailyLeave,
+    saveHourlyLeave: saveHourlyLeave,
+    saveHourlyMission: saveHourlyMission
   };
 
 })();
@@ -3668,6 +3818,8 @@ module.exports = {
   getUserProjects:service.getUserProjects,
   getUsers:service.getUsers,
 
-  saveDailyLeave: service.saveDailyLeave
+  saveDailyLeave: service.saveDailyLeave,
+  saveHourlyLeave: service.saveHourlyLeave,
+  saveHourlyMission: service.saveHourlyMission
 }
 },{}]},{},[4]);

@@ -271,6 +271,8 @@ namespace KP.TimeSheets.MVC
                 hourlyLeave.UserId = currentUser.ID;
                 hourlyLeave.OrganisationId = currentUser.OrganizationUnitID;
 
+                if (hourlyLeave.ProjectID == Guid.Empty) hourlyLeave.ProjectID = null;
+
                 if (hourlyLeave.ID == Guid.Empty)
                 {
                     hm.Add(hourlyLeave);
@@ -302,6 +304,8 @@ namespace KP.TimeSheets.MVC
                 UserManager um = new UserManager(this._uow);
                 hourlyMission.UserID = currentUser.ID;
                 hourlyMission.OrganisationId = currentUser.OrganizationUnitID;
+
+                if (hourlyMission.ProjectID == Guid.Empty) hourlyMission.ProjectID = null;
 
                 if (hourlyMission.ID == Guid.Empty)
                 {

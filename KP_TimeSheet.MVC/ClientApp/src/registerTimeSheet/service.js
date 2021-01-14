@@ -151,6 +151,38 @@ var service = (function () {
       }
     });
   }
+
+  function saveHourlyLeave(hourlyLeave, success_callBack, error_callBack) {
+    $.ajax({
+      type: "Post",
+      url: "/api/Confirm/SaveHourlyLeave",
+      contentType: "application/json; charset=utf-8",
+      dataType: "json",
+      data: JSON.stringify(hourlyLeave),
+      success: success_callBack ? (response) => success_callBack(response) : () => { },
+      error: (error) => {
+        moduleData.common.loaderHide();
+        moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+        if (error_callBack) error_callBack();
+      }
+    });
+  }
+
+  function saveHourlyMission(hourlyMission, success_callBack, error_callBack) {
+    $.ajax({
+      type: "Post",
+      url: "/api/Confirm/SaveHourlyMission",
+      contentType: "application/json; charset=utf-8",
+      dataType: "json",
+      data: JSON.stringify(hourlyMission),
+      success: success_callBack ? (response) => success_callBack(response) : () => { },
+      error: (error) => {
+        moduleData.common.loaderHide();
+        moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+        if (error_callBack) error_callBack();
+      }
+    });
+  }
   
 
   return {
@@ -165,7 +197,9 @@ var service = (function () {
     getUserProjects: getUserProjects,
     getUsers: getUsers,
 
-    saveDailyLeave: saveDailyLeave
+    saveDailyLeave: saveDailyLeave,
+    saveHourlyLeave: saveHourlyLeave,
+    saveHourlyMission: saveHourlyMission
   };
 
 })();
@@ -184,5 +218,7 @@ module.exports = {
   getUserProjects:service.getUserProjects,
   getUsers:service.getUsers,
 
-  saveDailyLeave: service.saveDailyLeave
+  saveDailyLeave: service.saveDailyLeave,
+  saveHourlyLeave: service.saveHourlyLeave,
+  saveHourlyMission: service.saveHourlyMission
 }

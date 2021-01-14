@@ -210,8 +210,6 @@ const dl = (function () {
 	}
 
 	function save() {
-		debugger;
-
 		resetErrors();
 
 		var dailyLeave = {
@@ -243,7 +241,6 @@ const dl = (function () {
 		moduleData.service.saveDailyLeave(dailyLeave, () => {
 
 		});
-
 	}
 
 
