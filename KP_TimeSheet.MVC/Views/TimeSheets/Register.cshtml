@@ -456,7 +456,7 @@
 </div>
 
 <div id="kwndDailyLeave" class="k-rtl" style="display:none; background-color:transparent;">
-        <div class="row dailyLeave_headerDiv" id="dailyLeave_headerDiv" >
+        <div class="row leave_headerDiv" id="dailyLeave_headerDiv" >
 
         </div>
         
@@ -465,8 +465,18 @@
             <div class="col-md-8">
                 
                 <div class="form-group">
-                    <label for="dailyLeave_date" class="form-inline ">  تاریخ مرخصی :</label>
-                    <input id="dailyLeave_date" type="text" class="form-control" style="width:calc(100% - 20px); padding:0 10px" />
+                    <label for="dailyLeave_dateStart" class="form-inline ">  تاریخ شروع :</label>
+                    <input id="dailyLeave_dateStart" type="text" class="form-control" style="width:calc(100% - 20px); padding:0 10px" />
+                </div>
+
+                <div class="form-group">
+                    <label for="dailyLeave_dateFinish" class="form-inline ">  تاریخ پایان :</label>
+                    <input id="dailyLeave_dateFinish" type="text" class="form-control" style="width:calc(100% - 20px); padding:0 10px" />
+                </div>
+
+                <div class="form-group">
+                    <label for="dailyLeave_selectAlternate" class="form-inline ">  جانشین :</label>
+                    <input id="dailyLeave_selectAlternate" type="text" class="form-control" style="width:100%;" />
                 </div>
 
                 <div class="form-group">
@@ -475,15 +485,8 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="dailyLeave_hour">   ساعت شروع: </label>
-                    <input id="dailyLeave_hourStart" name="dailyLeave_hourStart" class="form-control" style="width:100%" required="required" />
-                    <span for="dailyLeave_hourStart" class="text-danger"></span>
-                </div>
-
-                <div class="form-group">
-                    <label for="dailyLeave_hour">   ساعت پایان: </label>
-                    <input id="dailyLeave_hourFinish" name="dailyLeave_hourFinish" class="form-control" style="width:100%" required="required" />
-                    <span for="dailyLeave_hourFinish" class="text-danger"></span>
+                    <label for="dailyLeave_type" class="form-inline ">  نوع مرخصی :</label>
+                    <input id="dailyLeave_type" type="text" class="form-control" style="width:100%;" />
                 </div>
 
                 <div class="form-group">
