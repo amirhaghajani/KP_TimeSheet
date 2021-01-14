@@ -6,14 +6,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace KP.TimeSheets.Persistance
 {
-   internal class DailyLeaveRepository : IDailyLeaveRepository
+    internal class DailyLeaveRepository : IDailyLeaveRepository
     {
-      
+
         RASContext _RASContext;
 
-       public  DailyLeaveRepository( RASContext rasContext)
-         {
-           
+        public DailyLeaveRepository(RASContext rasContext)
+        {
+
             _RASContext = rasContext;
         }
 
@@ -49,11 +49,11 @@ namespace KP.TimeSheets.Persistance
 
         public IEnumerable<DailyLeave> GetAllByUserID(Guid UserID)
         {
-            return DefaultQuery().Where(x=>x.UserID == UserID);
+            return DefaultQuery().Where(x => x.UserID == UserID);
         }
         public IEnumerable<DailyLeave> GetByOrganisationID(Guid? organId)
         {
-            return DefaultQuery().Where(x => x.OrganisationId == organId );
+            return DefaultQuery().Where(x => x.OrganisationId == organId);
         }
         public IEnumerable<DailyLeave> GetAll()
         {
@@ -70,8 +70,14 @@ namespace KP.TimeSheets.Persistance
             return _RASContext.DailyLeaves.Any(x => x.ID == dailyLeave.ID);
         }
 
+        public bool CheckDontHasLeaveOnDuration(Guid userId, DateTime start, DateTime end)
+        {
+            return _RASContext.DailyLeaves
+            .Where(d => d.UserID == userId && ((d.To >= start && d.To <= end) || (d.From >= start && d.To <= end))).Count() == 0;
+        }
 
-        public void FillEntity(DailyLeave dailyLeave , DailyLeave entity)
+
+        public void FillEntity(DailyLeave dailyLeave, DailyLeave entity)
         {
             dailyLeave.ID = entity.ID;
             dailyLeave.ProjectID = entity.ProjectID;
@@ -90,7 +96,7 @@ namespace KP.TimeSheets.Persistance
         {
             return _RASContext.DailyLeaves.Include(x => x.User)
                 .Include(w => w.WorkflowStage).
-                Include(r=>r.Successor).
+                Include(r => r.Successor).
                 Include(y => y.Organisation)
                 .Include(e => e.Project);
         }

@@ -73,6 +73,12 @@ namespace KP.TimeSheets.Persistance
           return  _RASContext.HourlyMissions.Any(x => x.ID == hourlyMission.ID);
         }
 
+        public bool CheckDontHasLeaveOnDuration(Guid userId, DateTime from, DateTime to)
+        {
+            return _RASContext.DailyLeaves
+                    .Where(d => d.UserID == userId && ((d.To >= from && d.To <= to) || (d.From >= from && d.To <= to))).Count() == 0;
+        }
+
 
         public void FillEntity(HourlyMission hourlyMission , HourlyMission entity)
         {

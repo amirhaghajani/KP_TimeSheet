@@ -20,6 +20,7 @@ const dataM = (function () {
         moduleData._TodayHistorys = [];
 
         moduleData._UserProjects=[];
+        moduleData._Users=[];
     };
 
     return {
@@ -58,7 +59,8 @@ module.exports = {
     'userProjects_get': function () { return dataM.moduleData._UserProjects; },
     'userProjects_set': function (data) { dataM.moduleData._UserProjects = data; },
 
-
+    'users_get': function () { return dataM.moduleData._Users; },
+    'users_set': function (data) { dataM.moduleData._Users = data; },
 
     
 }

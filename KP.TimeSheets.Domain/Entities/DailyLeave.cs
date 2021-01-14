@@ -12,17 +12,17 @@ namespace KP.TimeSheets.Domain
     public enum DailyLeaveType
     {
         [Display(Name = "استحقاقی")]
-        Deserved,
+        Deserved=1,
         [Display(Name = "استعلاجی")]
-        Cure,
+        Cure=2,
         
         
         [Display(Name = "بدون حقوق")]
-        WithOutSalary,
+        WithOutSalary=3,
         
 
         [Display(Name = "سایر موارد")]
-        OtherCases
+        OtherCases=4
     }
     public  class DailyLeave : IHaveStage
     {

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace KP.TimeSheets.Domain
 {
-  public  class DailyLeaveManager 
+    public class DailyLeaveManager
     {
         private IUnitOfWork _UOW;
 
@@ -24,6 +24,10 @@ namespace KP.TimeSheets.Domain
             dailyLeave.From = DateUtility.GetMiladiDate(dailyLeave.PersianDateFrom);
             dailyLeave.To = DateUtility.GetMiladiDate(dailyLeave.PersianDateTo);
             dailyLeave.RegisterDate = DateTime.Now;
+
+            if (dailyLeave.From >= dailyLeave.To) throw new Exception("پایان باید بزرگتر از شروع باشد");
+            if (!_UOW.DailyLeaveRepository.CheckDontHasLeaveOnDuration(dailyLeave.UserID, dailyLeave.From, dailyLeave.To)) throw new Exception("در این بازه، مرخصی روزانه ثبت شده است");
+
             _UOW.DailyLeaveRepository.Add(dailyLeave);
             _UOW.SaveChanges();
         }
@@ -42,15 +46,15 @@ namespace KP.TimeSheets.Domain
 
         public void Edit(DailyLeave dailyLeave)
         {
-             _UOW.DailyLeaveRepository.Edit(dailyLeave);
+            _UOW.DailyLeaveRepository.Edit(dailyLeave);
             _UOW.SaveChanges();
         }
 
-        public IEnumerable<DailyLeave> GetAllByUserID(Guid UserID )
+        public IEnumerable<DailyLeave> GetAllByUserID(Guid UserID)
         {
             WorkflowManager wfm = new WorkflowManager(_UOW);
             var managerStageId = wfm.GetByOrder(3).ID;
-            return _UOW.DailyLeaveRepository.GetAllByUserID(UserID).Where(x=>x.WorkflowStageID == managerStageId);
+            return _UOW.DailyLeaveRepository.GetAllByUserID(UserID).Where(x => x.WorkflowStageID == managerStageId);
         }
 
         public IEnumerable<DailyLeave> GetByOrganisationID(Guid? organId)
@@ -64,12 +68,12 @@ namespace KP.TimeSheets.Domain
 
         public DailyLeave GetByID(Guid id)
         {
-          return _UOW.DailyLeaveRepository.GetByID(id);
+            return _UOW.DailyLeaveRepository.GetByID(id);
         }
 
         public bool IsExist(DailyLeave dailyLeave)
         {
-          return  _UOW.DailyLeaveRepository.IsExist(dailyLeave);
+            return _UOW.DailyLeaveRepository.IsExist(dailyLeave);
         }
 
 
@@ -104,7 +108,7 @@ namespace KP.TimeSheets.Domain
             dailyLeave.PersianDateTo = DateUtility.GetPersianDate(DateTime.Now);
             stageController.SetToOrder(dailyLeave, 1);
             _UOW.DailyLeaveRepository.Edit(dailyLeave);
-           
+
         }
 
 

@@ -31,6 +31,11 @@ namespace KP.TimeSheets.Domain
             hourlyMission.To = DateUtility.ConvertStringTimeToDateTime(hourlyMission.PersianTimeTo);
             hourlyMission.Minutes = DateUtility.SubtarctToANdFromDateTimeToInt(hourlyMission.From, hourlyMission.To);
             hourlyMission.RegisterDate = DateTime.Now;
+
+            if (hourlyMission.From >= hourlyMission.To) throw new Exception("پایان باید بزرگتر از شروع باشد");
+            if (!_UOW.HourlyMissionRepository.CheckDontHasLeaveOnDuration(hourlyMission.UserID, hourlyMission.From, hourlyMission.To)) throw new Exception("در این بازه، مرخصی ساعتی ثبت شده است");
+
+
             _UOW.HourlyMissionRepository.Add(hourlyMission);
             _UOW.SaveChanges();
         }

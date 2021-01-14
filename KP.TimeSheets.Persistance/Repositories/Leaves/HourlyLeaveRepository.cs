@@ -6,11 +6,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace KP.TimeSheets.Persistance
 {
-   internal class HourlyLeaveRepository : IHourlyLeaveRepository
+    internal class HourlyLeaveRepository : IHourlyLeaveRepository
     {
         RASContext _RASContext;
 
-     public   HourlyLeaveRepository(RASContext rasContext)
+        public HourlyLeaveRepository(RASContext rasContext)
         {
 
             _RASContext = rasContext;
@@ -62,6 +62,11 @@ namespace KP.TimeSheets.Persistance
         }
 
 
+        public bool CheckDontHasLeaveOnDuration(Guid userId, DateTime from, DateTime to)
+        {
+            return _RASContext.DailyLeaves
+                    .Where(d => d.UserID == userId && ((d.To >= from && d.To <= to) || (d.From >= from && d.To <= to))).Count() == 0;
+        }
 
         public void FillEntity(HourlyLeave hourlyLeave, HourlyLeave entity)
         {
@@ -74,16 +79,16 @@ namespace KP.TimeSheets.Persistance
             hourlyLeave.LeaveDate = entity.LeaveDate;
             hourlyLeave.From = entity.From;
             hourlyLeave.To = entity.To;
-            
+
         }
 
         public IQueryable<HourlyLeave> DefaultQuery()
         {
             return _RASContext.HourlyLeaves.Include(x => x.Project)
                 .Include(q => q.User).
-                Include(s=>s.Organisation)
+                Include(s => s.Organisation)
                 .Include(w => w.WorkflowStage);
-                
+
         }
 
         public IEnumerable<HourlyLeave> GetAllByUserID(Guid UserId)

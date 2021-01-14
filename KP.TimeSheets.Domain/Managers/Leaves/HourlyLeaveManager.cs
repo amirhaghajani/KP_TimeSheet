@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace KP.TimeSheets.Domain
 {
-    public class HourlyLeaveManager 
+    public class HourlyLeaveManager
     {
         private IUnitOfWork _UOW;
 
@@ -19,13 +19,18 @@ namespace KP.TimeSheets.Domain
         {
 
             WorkflowManager wm = new WorkflowManager(_UOW);
-            hourlyLeave.WorkflowStageID = wm.GetByOrder(3).ID;  
+            hourlyLeave.WorkflowStageID = wm.GetByOrder(3).ID;
             hourlyLeave.PreviousStage = wm.FirstStage().ID;
             hourlyLeave.ID = Guid.NewGuid();
             hourlyLeave.LeaveDate = DateUtility.GetMiladiDate(hourlyLeave.PersianLeaveDate);
             hourlyLeave.From = DateUtility.ConvertStringTimeToDateTime(hourlyLeave.PersianTimeFrom);
             hourlyLeave.To = DateUtility.ConvertStringTimeToDateTime(hourlyLeave.PersianTimeTo);
             hourlyLeave.RegisterDate = DateTime.Now;
+
+
+            if (hourlyLeave.From >= hourlyLeave.To) throw new Exception("پایان باید بزرگتر از شروع باشد");
+            if (!_UOW.HourlyLeavesRepository.CheckDontHasLeaveOnDuration(hourlyLeave.UserId, hourlyLeave.From, hourlyLeave.To)) throw new Exception("در این بازه، مرخصی ساعتی ثبت شده است");
+
             _UOW.HourlyLeavesRepository.Add(hourlyLeave);
             _UOW.SaveChanges();
         }
@@ -53,16 +58,16 @@ namespace KP.TimeSheets.Domain
             WorkflowManager wfm = new WorkflowManager(_UOW);
             var managerStageId = wfm.GetByOrder(3).ID;
             return _UOW.HourlyLeavesRepository.GetAllByUserID(UserID).Where(x => x.WorkflowStageID == managerStageId);
-         
+
         }
         public IEnumerable<HourlyLeave> GetAll()
         {
-           return _UOW.HourlyLeavesRepository.GetAll();
+            return _UOW.HourlyLeavesRepository.GetAll();
         }
 
         public HourlyLeave GetByID(Guid id)
         {
-           return  _UOW.HourlyLeavesRepository.GetByID(id);
+            return _UOW.HourlyLeavesRepository.GetByID(id);
         }
 
         public IEnumerable<HourlyLeave> GetByOrganisationID(Guid? organId)
@@ -84,7 +89,7 @@ namespace KP.TimeSheets.Domain
             StageController stageController = new StageController(_UOW);
             stageController.SetToOrder(hourlyLeave, 4);
             _UOW.HourlyLeavesRepository.Edit(hourlyLeave);
-          
+
         }
         public void Resend(HourlyLeave hourlyLeave)
         {
@@ -105,7 +110,7 @@ namespace KP.TimeSheets.Domain
             StageController stageController = new StageController(_UOW);
             stageController.SetToOrder(hourlyLeave, 1);
             _UOW.HourlyLeavesRepository.Edit(hourlyLeave);
-           
+
         }
     }
 }

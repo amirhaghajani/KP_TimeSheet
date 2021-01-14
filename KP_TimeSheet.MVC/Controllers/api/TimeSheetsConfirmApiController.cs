@@ -19,16 +19,16 @@ namespace KP.TimeSheets.MVC
     {
         IUnitOfWork _uow;
         public TimeSheetsConfirmApiController(RASContext db, IUnitOfWork uow) : base(db) { this._uow = uow; }
-        
 
-        [HttpGet("{ver}/{userId}"),HttpGet("{ver}/employee"),HttpGet("{ver}/employeeTimeSheet/{fromDate}/{toDate}")]
+
+        [HttpGet("{ver}/{userId}"), HttpGet("{ver}/employee"), HttpGet("{ver}/employeeTimeSheet/{fromDate}/{toDate}")]
         [ProducesResponseType(typeof(List<vmGetTimeSheetResualt>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetTimeSheet(string ver, Guid? userId, DateTime? fromDate, DateTime? toDate)
         {
             try
             {
-                if(!this.MainChecks(ver,out string error)) throw new Exception(error);
+                if (!this.MainChecks(ver, out string error)) throw new Exception(error);
 
                 DisplayPeriodManager displayPeriodMnager = new DisplayPeriodManager(this._uow);
                 User currentUser = new UserHelper().GetCurrent(this._uow, this.UserName);
@@ -83,7 +83,7 @@ namespace KP.TimeSheets.MVC
                 {
                     date = gg.Key.Value,
                     isOpen = gg.FirstOrDefault().IsOpen ?? false,
-                    dayTimeString=gg.FirstOrDefault().DayTimeString,
+                    dayTimeString = gg.FirstOrDefault().DayTimeString,
                     date_persian = gg.First().PersianDate,
                     day_persian = days[gg.First().DayOfWeek.Value],
                     hozoor = gg.First().Hozoor,
@@ -91,7 +91,7 @@ namespace KP.TimeSheets.MVC
                     {
                         id = pp.Key,
                         title = pp.First().ProjectTitle,
-                        workouts = pp.Where(w => w.TaskId.HasValue).GroupBy(w => new {w.TaskId,w.State}).Select(ww => new vmGetTimeSheetResualt_Workout
+                        workouts = pp.Where(w => w.TaskId.HasValue).GroupBy(w => new { w.TaskId, w.State }).Select(ww => new vmGetTimeSheetResualt_Workout
                         {
                             id = ww.Key.TaskId,
                             state = ww.Key.State,
@@ -109,7 +109,7 @@ namespace KP.TimeSheets.MVC
             }
         }
 
-        [HttpGet("{ver}/{type}/{userId}/{date}"),HttpGet("{ver}/employee/{type}/{date}")]
+        [HttpGet("{ver}/{type}/{userId}/{date}"), HttpGet("{ver}/employee/{type}/{date}")]
         public async Task<IActionResult> GetPreviousPeriodConfirm(string ver, string type, Guid? userId, DateTime date)
         {
             UserManager userManager = new UserManager(this._uow);
@@ -157,32 +157,168 @@ namespace KP.TimeSheets.MVC
                 }
             }
 
-            return await GetTimeSheet(ver , userId, fromDate, toDate);
+            return await GetTimeSheet(ver, userId, fromDate, toDate);
         }
 
         [HttpGet("[action]")]
         public IActionResult ChangeDisplayPeriodToWeeklyConfirm()
         {
-            var currentUser = new UserHelper().GetCurrent(this._uow, this.UserName);
-            DisplayPeriodManager dpm = new DisplayPeriodManager(this._uow);
-            DisplayPeriod dp = new DisplayPeriod();
-            dp = dpm.GetDisplayPeriod(currentUser);
-            dp.IsWeekly = true;
-            dpm.Edit(dp);
+            try
+            {
+                var currentUser = new UserHelper().GetCurrent(this._uow, this.UserName);
+                DisplayPeriodManager dpm = new DisplayPeriodManager(this._uow);
+                DisplayPeriod dp = new DisplayPeriod();
+                dp = dpm.GetDisplayPeriod(currentUser);
+                dp.IsWeekly = true;
+                dpm.Edit(dp);
 
-            return Ok(true);
+                return Ok(true);
+            }
+            catch (Exception ex)
+            {
+                return this.ReturnError(ex, "خطا در تغییر به هفتگی");
+            }
         }
 
         [HttpPost("[action]")]
         public IActionResult ChangeDisplayPeriodToDaily(PeriodNumberDateJson period)
         {
-            var currentUser = new UserHelper().GetCurrent(this._uow, this.UserName);
-            DisplayPeriodManager displayPeriodMnager = new DisplayPeriodManager(this._uow);
-            var displayPeriod = DisplayPeriodUtilities.ConvertPeriodNumberDateJsonToDisplayPeriod(period, this._uow, currentUser);
-            //SyncWithPWA(uow);
+            try
+            {
+                var currentUser = new UserHelper().GetCurrent(this._uow, this.UserName);
+                DisplayPeriodManager displayPeriodMnager = new DisplayPeriodManager(this._uow);
+                var displayPeriod = DisplayPeriodUtilities.ConvertPeriodNumberDateJsonToDisplayPeriod(period, this._uow, currentUser);
+                //SyncWithPWA(uow);
 
-            displayPeriodMnager.Save(displayPeriod);
-            return Ok(true);
+                displayPeriodMnager.Save(displayPeriod);
+                return Ok(true);
+            }
+            catch (Exception ex)
+            {
+                return this.ReturnError(ex, "خطا در تغییر به روزانه");
+            }
+        }
+
+
+        [HttpGet("[action]")]
+        public IActionResult GetUsersList()
+        {
+            try
+            {
+                UserManager um = new UserManager(this._uow);
+                var users = um.GetAll().Where(u => !string.IsNullOrEmpty(u.Code))
+                .Select(u => new { id = u.ID, title = u.UserTitle })
+                .OrderBy(u => u.title);
+                return Ok(users);
+            }
+            catch (Exception ex)
+            {
+                return this.ReturnError(ex, "خطا در دریافت لیست کاربران");
+            }
+        }
+
+        [HttpPost("[action]")]
+        public IActionResult SaveDailyLeave(DailyLeave dailyLeave)
+        {
+            try
+            {
+                if (dailyLeave == null) throw new Exception("اطلاعات مرخصی ارسال نشده است");
+                if (string.IsNullOrEmpty(dailyLeave.PersianDateFrom)) throw new Exception("تاریخ شروع ارسال نشده است");
+                if (string.IsNullOrEmpty(dailyLeave.PersianDateTo)) throw new Exception("تاریخ پایان ارسال نشده است");
+
+                var currentUser = new UserHelper().GetCurrent(this._uow, this.UserName);
+
+                DailyLeaveManager dlm = new DailyLeaveManager(this._uow);
+                ProjectManager pm = new ProjectManager(this._uow);
+                UserManager um = new UserManager(this._uow);
+                dailyLeave.UserID = currentUser.ID;
+                dailyLeave.OrganisationId = currentUser.OrganizationUnitID;
+
+                if (dailyLeave.ProjectID == Guid.Empty) dailyLeave.ProjectID = null;
+                if (dailyLeave.SuccessorID == Guid.Empty) dailyLeave.SuccessorID = null;
+
+                if (dailyLeave.ID == Guid.Empty)
+                {
+
+                    dlm.Add(dailyLeave);
+                }
+                else
+                {
+                    dlm.Edit(dailyLeave);
+                }
+
+                return Ok(true);
+
+            }
+            catch (Exception ex)
+            {
+                return this.ReturnError(ex, "خطا در ذخیره مرخصی روزانه");
+            }
+        }
+
+
+        [HttpPost("[action]")]
+        public IActionResult SaveHourlyLeave(HourlyLeave hourlyLeave)
+        {
+            try
+            {
+                if (hourlyLeave == null) throw new Exception("اطلاعات مرخصی ارسال نشده است");
+                var currentUser = new UserHelper().GetCurrent(this._uow, this.UserName);
+
+                HourlyLeaveManager hm = new HourlyLeaveManager(this._uow);
+                ProjectManager pm = new ProjectManager(this._uow);
+                UserManager um = new UserManager(this._uow);
+                hourlyLeave.UserId = currentUser.ID;
+                hourlyLeave.OrganisationId = currentUser.OrganizationUnitID;
+
+                if (hourlyLeave.ID == Guid.Empty)
+                {
+                    hm.Add(hourlyLeave);
+                }
+                else
+                {
+                    hm.Edit(hourlyLeave);
+                }
+
+                return Ok(true);
+
+            }
+            catch (Exception ex)
+            {
+                return this.ReturnError(ex, "خطا در ذخیره مرخصی ساعتی");
+            }
+        }
+
+        [HttpPost("[action]")]
+        public IActionResult SaveHourlyMission(HourlyMission hourlyMission)
+        {
+            try
+            {
+                if (hourlyMission == null) throw new Exception("اطلاعات ماموریت ارسال نشده است");
+                var currentUser = new UserHelper().GetCurrent(this._uow, this.UserName);
+
+                HourlyMissionManager hm = new HourlyMissionManager(this._uow);
+                ProjectManager pm = new ProjectManager(this._uow);
+                UserManager um = new UserManager(this._uow);
+                hourlyMission.UserID = currentUser.ID;
+                hourlyMission.OrganisationId = currentUser.OrganizationUnitID;
+
+                if (hourlyMission.ID == Guid.Empty)
+                {
+                    hm.Add(hourlyMission);
+                }
+                else
+                {
+                    hm.Edit(hourlyMission);
+                }
+
+                return Ok(true);
+
+            }
+            catch (Exception ex)
+            {
+                return this.ReturnError(ex, "خطا در ذخیره ماموریت ساعتی");
+            }
         }
     }
 }

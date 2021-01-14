@@ -28,6 +28,6 @@ namespace KP.TimeSheets.Domain
         void DeleteByID(Guid id);
 
         bool IsExist(HourlyMission hourlyMission);
-
+        bool CheckDontHasLeaveOnDuration(Guid userId, DateTime from, DateTime to);
     }
 }

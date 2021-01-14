@@ -40,7 +40,7 @@ namespace KP.TimeSheets.Domain
 
             if (org == null)
                 result.Add("واحدسازمانی خالی میباشد");
-            if (org.ID == null)
+            if (org.ID == Guid.Empty)
                 result.Add(" شناسه واحدسازمانی خالی میباشد");
             if (org.ManagerID == null)
                 result.Add(" شناسه مدیر واحدسازمانی خالی میباشد");

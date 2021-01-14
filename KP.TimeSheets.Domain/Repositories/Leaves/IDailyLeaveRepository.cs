@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace KP.TimeSheets.Domain
 {
-   public interface IDailyLeaveRepository
+    public interface IDailyLeaveRepository
     {
         DailyLeave GetByID(Guid id);
 
-        
+
         IEnumerable<DailyLeave> GetAll();
         IEnumerable<DailyLeave> GetAllByUserID(Guid UserID);
 
@@ -26,6 +26,7 @@ namespace KP.TimeSheets.Domain
 
         bool IsExist(DailyLeave dailyLeave);
 
+        bool CheckDontHasLeaveOnDuration(Guid userId, DateTime start, DateTime end);
 
 
     }

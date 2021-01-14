@@ -117,6 +117,42 @@ var service = (function () {
     });
   }
 
+
+  function getUsers(success_callBack, error_callBack) {
+    $.ajax({
+      type: "Get",
+      url: "/api/Confirm/GetUsersList",
+      contentType: "application/json; charset=utf-8",
+      dataType: "json",
+      success: function (response) {
+        moduleData.data.users_set(response);
+        if (success_callBack) success_callBack(response);
+      },
+      error: (error) => {
+        moduleData.common.loaderHide();
+        moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+        if (error_callBack) error_callBack();
+      }
+    });
+  }
+
+  function saveDailyLeave(dailyLeave, success_callBack, error_callBack) {
+    $.ajax({
+      type: "Post",
+      url: "/api/Confirm/SaveDailyLeave",
+      contentType: "application/json; charset=utf-8",
+      dataType: "json",
+      data: JSON.stringify(dailyLeave),
+      success: success_callBack ? (response) => success_callBack(response) : () => { },
+      error: (error) => {
+        moduleData.common.loaderHide();
+        moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+        if (error_callBack) error_callBack();
+      }
+    });
+  }
+  
+
   return {
     init: init,
 
@@ -126,7 +162,10 @@ var service = (function () {
 
     getNextTimeSheets: getNextTimeSheets,
 
-    getUserProjects: getUserProjects
+    getUserProjects: getUserProjects,
+    getUsers: getUsers,
+
+    saveDailyLeave: saveDailyLeave
   };
 
 })();
@@ -142,5 +181,8 @@ module.exports = {
 
   getNextTimeSheets: service.getNextTimeSheets,
 
-  getUserProjects:service.getUserProjects
+  getUserProjects:service.getUserProjects,
+  getUsers:service.getUsers,
+
+  saveDailyLeave: service.saveDailyLeave
 }

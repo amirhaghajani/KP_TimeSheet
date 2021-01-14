@@ -101,6 +101,7 @@ const module_createNewRorkHour = (function () {
 
     function kwndSaveWHs_OnClose() {
         var w = $("#kwndSaveWorkHours").data("kendoWindow");
+        ResetSaveWindow();
         if (w) w.close();
     }
 
