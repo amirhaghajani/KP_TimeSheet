@@ -146,7 +146,6 @@ const hisotrSentWorkHour = (function () {
 	}
 
 	function editWorkout(e){
-		debugger;
 		var grid = $("#GrdMonitorSentWorkHour").data("kendoGrid");
 		var dataItem = grid.dataItem($(e).closest("tr"));
 		moduleData.createNewWorkHour.kwndSaveWHs_OnInit_ForEdit(moduleData.data.selDate_get(), 

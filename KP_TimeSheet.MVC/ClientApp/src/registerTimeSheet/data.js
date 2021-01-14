@@ -18,6 +18,8 @@ const dataM = (function () {
         moduleData._AllReadyForSent = 0;
         moduleData._presenceHour = 0;
         moduleData._TodayHistorys = [];
+
+        moduleData._UserProjects=[];
     };
 
     return {
@@ -51,4 +53,12 @@ module.exports = {
 
     'dayIndex_get': function () { return dataM.moduleData._DayIndex; },
     'dayIndex_set': function (data) { dataM.moduleData._DayIndex = data; },
+
+
+    'userProjects_get': function () { return dataM.moduleData._UserProjects; },
+    'userProjects_set': function (data) { dataM.moduleData._UserProjects = data; },
+
+
+
+    
 }

@@ -73,7 +73,6 @@ const myMainGrid = (function () {
   //----------
 
   function GetTimeSheets(callBackFn, fromDate, toDate) {
-debugger;
     moduleData.service.getTimeSheets(fromDate, toDate, (response) => {
       if (callBackFn) callBackFn(response);
       Init_TimeSheetTreeList();
@@ -206,8 +205,7 @@ debugger;
               const item = response[k];
               item.time = moduleData.common_timeSheet.convertMinutsToTime(item.minutes);
             }
-
-            debugger;
+            
             moduleData.history_sentWorkHour.ShowDataOnGrid(response, 'کارکردهای ' + dataItem.title + ' در ' + sotoon.persianDate);
 
           },

@@ -49,6 +49,7 @@
         clearLabel: 'Clear',
         autoApply: true,
         opens: 'left',
+        //minDate: moment('2021-01-01'),
         singleDatePicker: true,
         showDropdowns: true,
         jalaali: true,

@@ -866,6 +866,8 @@ const common_timeSheet = require('../common/timesheet');
 const service = require('./service');
 const serviceConfirm = require('../confirmTimeSheet/service');
 
+const hourlyMission = require('./mission_hourly');
+
 
 
 
@@ -905,6 +907,8 @@ $(document).ready(function () {
         sendWorkHour.init(mainGrid, common, common_register, data, common_timeSheet);
 
         history_workHour.init(common, data);
+
+        hourlyMission.init(common,data,service);
         
     });
 });
@@ -948,7 +952,7 @@ function exportTableToExcel(tableID, filename) {
 
 
 
-},{"../common/common":1,"../common/timesheet":2,"../confirmTimeSheet/service":3,"./bottomPage_monthlyGrid":5,"./bottomPage_priodlyGrid":6,"./common":7,"./createNewWorkHour":8,"./data":9,"./editWorkHour":10,"./hisotory_workHour":11,"./history_sentWorkHour":12,"./mainGrid":13,"./period_next_pervious":14,"./sendWorkHour":15,"./service":16}],5:[function(require,module,exports){
+},{"../common/common":1,"../common/timesheet":2,"../confirmTimeSheet/service":3,"./bottomPage_monthlyGrid":5,"./bottomPage_priodlyGrid":6,"./common":7,"./createNewWorkHour":8,"./data":9,"./editWorkHour":10,"./hisotory_workHour":11,"./history_sentWorkHour":12,"./mainGrid":13,"./mission_hourly":14,"./period_next_pervious":15,"./sendWorkHour":16,"./service":17}],5:[function(require,module,exports){
 //const data = require('./data');
 
 //___________جدول پایین صفحه ماهانه
@@ -1201,7 +1205,6 @@ const module_createNewRorkHour = (function () {
 
     function kwndSaveWHs_OnInit_ForEdit(dayTime, projectId, taskId_nullable, time_nullable, workoutId) {
 
-        debugger;
         $('#btnDeleteCurrentWorkhour').hide();
         if (workoutId) $('#btnDeleteCurrentWorkhour').show();
 
@@ -1259,19 +1262,12 @@ const module_createNewRorkHour = (function () {
     }
 
     function GetProjects(afterGetProjectsEnd) {
-        $.ajax({
-            type: "Get",
-            url: "/api/ProjectsAPI/GetProjects",
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            success: (response) => {
-                ddlProjects_OnInit(response);
-                if (afterGetProjectsEnd) afterGetProjectsEnd();
-            },
-            error: function (e) {
 
-            }
+        moduleData.service.getUserProjects((response)=>{
+            ddlProjects_OnInit(response);
+            if (afterGetProjectsEnd) afterGetProjectsEnd();
         });
+        
     }
 
     function ddlProjects_OnInit(response) {
@@ -1473,6 +1469,8 @@ const dataM = (function () {
         moduleData._AllReadyForSent = 0;
         moduleData._presenceHour = 0;
         moduleData._TodayHistorys = [];
+
+        moduleData._UserProjects=[];
     };
 
     return {
@@ -1506,6 +1504,14 @@ module.exports = {
 
     'dayIndex_get': function () { return dataM.moduleData._DayIndex; },
     'dayIndex_set': function (data) { dataM.moduleData._DayIndex = data; },
+
+
+    'userProjects_get': function () { return dataM.moduleData._UserProjects; },
+    'userProjects_set': function (data) { dataM.moduleData._UserProjects = data; },
+
+
+
+    
 }
 },{}],10:[function(require,module,exports){
 // const data = require('./data');
@@ -1963,7 +1969,6 @@ const hisotrSentWorkHour = (function () {
 	}
 
 	function editWorkout(e){
-		debugger;
 		var grid = $("#GrdMonitorSentWorkHour").data("kendoGrid");
 		var dataItem = grid.dataItem($(e).closest("tr"));
 		moduleData.createNewWorkHour.kwndSaveWHs_OnInit_ForEdit(moduleData.data.selDate_get(), 
@@ -2144,7 +2149,6 @@ const myMainGrid = (function () {
   //----------
 
   function GetTimeSheets(callBackFn, fromDate, toDate) {
-debugger;
     moduleData.service.getTimeSheets(fromDate, toDate, (response) => {
       if (callBackFn) callBackFn(response);
       Init_TimeSheetTreeList();
@@ -2277,8 +2281,7 @@ debugger;
               const item = response[k];
               item.time = moduleData.common_timeSheet.convertMinutsToTime(item.minutes);
             }
-
-            debugger;
+            
             moduleData.history_sentWorkHour.ShowDataOnGrid(response, 'کارکردهای ' + dataItem.title + ' در ' + sotoon.persianDate);
 
           },
@@ -2429,6 +2432,123 @@ module.exports = {
 
 };
 },{}],14:[function(require,module,exports){
+const hm = (function () {
+
+  const moduleData = {};
+
+  function init(common, data, service) {
+
+    moduleData.common = common;
+    moduleData.data = data;
+    moduleData.service = service;
+
+    $('#btnNewHourlyMission').off().on('click', function () {
+      private_openMissionWindow();
+    });
+
+    $('#mission_btnCancel').off().on('click', function () {
+      var w = $("#kwndHourlyMission").data("kendoWindow");
+      if (w) w.close();
+    });
+
+
+  }
+
+  function private_openMissionWindow() {
+
+    $("#mission_headerDiv").text("ثبت ماموریت ساعتی");
+
+    moduleData.service.getUserProjects((response) => {
+      private_projectComboInit(response);
+    });
+
+    var kwndSendWHs = $("#kwndHourlyMission");
+    kwndSendWHs.kendoWindow({
+      width: moduleData.common.window_width(),
+      height: moduleData.common.window_height(),
+
+      activate: function () {
+        moduleData.common.addNoScrollToBody();
+        private_setDatepicker();
+      },
+      deactivate: moduleData.common.removeNoScrollToBody,
+      scrollable: true,
+      visible: false,
+      modal: true,
+      actions: [
+        "Pin",
+        "Minimize",
+        "Maximize",
+        "Close"
+      ],
+      //open: moduleData.common.adjustSize,
+    }).data("kendoWindow").center().open();
+
+
+  }
+
+  function private_projectComboInit(response) {
+
+    $("#mission_selectProject").kendoDropDownList({
+      dataSource: {
+        data: response,
+        schema: {
+          model: {
+            id: "id"
+          }
+        }
+      },
+      dataTextField: "title",
+      dataValueField: "id",
+      filter: "contains",
+      optionLabel: "انتخاب پروژه...",
+      //change: GetTasks
+    });
+
+  }
+
+  function private_setDatepicker() {
+
+    debugger;
+
+    var timeSheetData = moduleData.data.timeSheetData_get();
+    var startTime = timeSheetData[0].values[0];
+    var endTime = timeSheetData[0].values[timeSheetData[0].values.length - 1];
+
+    $('#mission_date').daterangepicker({
+      clearLabel: 'Clear',
+      autoApply: true,
+      opens: 'left',
+      minDate: moment(startTime.date),
+      maxDate: moment(endTime.date),
+      singleDatePicker: true,
+      showDropdowns: true,
+      jalaali: true,
+      language: 'fa'
+    }).on('apply.daterangepicker', function () {
+      $('.tooltip').hide();
+      $('.date-select').text($(this).val());
+    });
+
+    $("#mission_hourStart").kendoTimePicker({
+      format: "HH:mm"
+    });
+    $("#mission_hourFinish").kendoTimePicker({
+      format: "HH:mm"
+    });
+
+  }
+
+  return {
+    init: init
+  };
+
+})();
+
+module.exports = {
+  init: hm.init
+};
+},{}],15:[function(require,module,exports){
 //_________صفحه بعد و قبل 
 const period_next_pervious = (function () {
 
@@ -2620,7 +2740,7 @@ module.exports = {
     "init": period_next_pervious.init,
     "GetCurrentPeriod": period_next_pervious.GetCurrentPeriod
 }
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 // const common_register = require('./common');
 // const data = require('./data');
 
@@ -2977,128 +3097,151 @@ module.exports = {
 	init: sendWorkHour.init
 };
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 
 var service = (function () {
 
-    const moduleData = {};
+  const moduleData = {};
 
-    function init(data, common_timeSheet, common) {
-        moduleData.data = data;
-        moduleData.common_timeSheet = common_timeSheet;
-        moduleData.common = common;
+  function init(data, common_timeSheet, common) {
+    moduleData.data = data;
+    moduleData.common_timeSheet = common_timeSheet;
+    moduleData.common = common;
+  }
+
+
+  //اون اول اطلاعات کل تایم شیت ها را می دهد
+  function getTimeSheets(fromDate, toDate, success_callBack, error_callBack) {
+
+    let url = "/api/Confirm/" + moduleData.common.version() + "/employee";
+
+    if (fromDate) {
+      url = `/api/Confirm/${moduleData.common.version()}/employeeTimeSheet/${fromDate}/${toDate}`;
     }
 
+    $.ajax({
+      type: "Get",
+      url: url,
+      contentType: "application/json; charset=utf-8",
+      dataType: "json",
 
-    //اون اول اطلاعات کل تایم شیت ها را می دهد
-    function getTimeSheets(fromDate, toDate, success_callBack, error_callBack) {
+      success: function (response) {
 
-        let url = "/api/Confirm/"+moduleData.common.version()+"/employee";
+        moduleData.data.timeSheetData_beforProcess_set(response);
 
-        if (fromDate) {
-            url = `/api/Confirm/${moduleData.common.version()}/employeeTimeSheet/${fromDate}/${toDate}`;
-        }
+        var data = moduleData.common_timeSheet.convertServerDataToTimeSheet_ForEmployee(response);
 
-        $.ajax({
-            type: "Get",
-            url: url,
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
+        moduleData.data.timeSheetData_set(data);
+        if (success_callBack) success_callBack(data);
+      },
+      error: (error) => {
+        moduleData.common.loaderHide();
+        moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+        if (error_callBack) error_callBack();
+      }
+    });
+  }
 
-            success: function (response) {
+  function getNextTimeSheets(type, date, success_callBack, error_callBack) {
 
-                moduleData.data.timeSheetData_beforProcess_set(response);
+    $.ajax({
+      type: "Get",
+      url: `/api/Confirm/${moduleData.common.version()}/employee/${type}/${date}`,
+      contentType: "application/json; charset=utf-8",
+      dataType: "json",
 
-                var data = moduleData.common_timeSheet.convertServerDataToTimeSheet_ForEmployee(response);
+      success: function (response) {
 
-                moduleData.data.timeSheetData_set(data);
-                if (success_callBack) success_callBack(data);
-            },
-            error: (error) => {
-                moduleData.common.loaderHide();
-                moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
-                if (error_callBack) error_callBack();
-            }
-        });
-    }
+        var data = moduleData.common_timeSheet.convertServerDataToTimeSheet_ForEmployee(response);
 
-    function getNextTimeSheets(type, date, success_callBack, error_callBack) {
-
-        $.ajax({
-            type: "Get",
-            url: `/api/Confirm/${moduleData.common.version()}/employee/${type}/${date}`,
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-
-            success: function (response) {
-
-                var data = moduleData.common_timeSheet.convertServerDataToTimeSheet_ForEmployee(response);
-
-                moduleData.data.timeSheetData_set(data);
-                if (success_callBack) success_callBack(data);
-            },
-            error: (error) => {
-                moduleData.common.loaderHide();
-                moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
-                if (error_callBack) error_callBack();
-            }
-        });
-    }
+        moduleData.data.timeSheetData_set(data);
+        if (success_callBack) success_callBack(data);
+      },
+      error: (error) => {
+        moduleData.common.loaderHide();
+        moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+        if (error_callBack) error_callBack();
+      }
+    });
+  }
 
 
-    function saveWorkHours(prmData, success_callBack, error_callBack) {
-        $.ajax({
-            type: "Post",
-            url: "/api/TimeSheetsAPI/SaveWorkHours",
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            data: prmData,
-            success: success_callBack ? (response) => success_callBack(response) : () => { },
-            error: (error) => {
-                moduleData.common.loaderHide();
-                moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
-                if (error_callBack) error_callBack();
-            }
-        });
-    }
+  function saveWorkHours(prmData, success_callBack, error_callBack) {
+    $.ajax({
+      type: "Post",
+      url: "/api/TimeSheetsAPI/SaveWorkHours",
+      contentType: "application/json; charset=utf-8",
+      dataType: "json",
+      data: prmData,
+      success: success_callBack ? (response) => success_callBack(response) : () => { },
+      error: (error) => {
+        moduleData.common.loaderHide();
+        moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+        if (error_callBack) error_callBack();
+      }
+    });
+  }
 
-    function deleteWorkHour(workHourId, success_callBack, error_callBack){
-        $.ajax({
-			type: "Post",
-			url: "/api/TimeSheetsAPI/DeleteWorkHours",
-			contentType: "application/json; charset=utf-8",
-			dataType: "json",
-			data: JSON.stringify({id: workHourId}),
-			success: success_callBack ? (response) => success_callBack(response) : () => { },
-            error: (error) => {
-                moduleData.common.loaderHide();
-                moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
-                if (error_callBack) error_callBack();
-            }
-		});
-    }
+  function deleteWorkHour(workHourId, success_callBack, error_callBack) {
+    $.ajax({
+      type: "Post",
+      url: "/api/TimeSheetsAPI/DeleteWorkHours",
+      contentType: "application/json; charset=utf-8",
+      dataType: "json",
+      data: JSON.stringify({ id: workHourId }),
+      success: success_callBack ? (response) => success_callBack(response) : () => { },
+      error: (error) => {
+        moduleData.common.loaderHide();
+        moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+        if (error_callBack) error_callBack();
+      }
+    });
+  }
 
-    return {
-        init: init,
 
-        getTimeSheets: getTimeSheets,
-        saveWorkHours: saveWorkHours,
-        deleteWorkHour: deleteWorkHour,
+  function getUserProjects(success_callBack, error_callBack) {
+    $.ajax({
+      type: "Get",
+      url: "/api/ProjectsAPI/GetProjects",
+      contentType: "application/json; charset=utf-8",
+      dataType: "json",
+      success: function (response) {
+        moduleData.data.userProjects_set(response);
+        if (success_callBack) success_callBack(response);
+      },
+      error: (error) => {
+        moduleData.common.loaderHide();
+        moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+        if (error_callBack) error_callBack();
+      }
+    });
+  }
 
-        getNextTimeSheets: getNextTimeSheets
-    };
+  return {
+    init: init,
+
+    getTimeSheets: getTimeSheets,
+    saveWorkHours: saveWorkHours,
+    deleteWorkHour: deleteWorkHour,
+
+    getNextTimeSheets: getNextTimeSheets,
+
+    getUserProjects: getUserProjects
+  };
 
 })();
 
 
 
 module.exports = {
-    init: service.init,
+  init: service.init,
 
-    getTimeSheets: service.getTimeSheets,
-    saveWorkHours: service.saveWorkHours,
-    deleteWorkHour: service.deleteWorkHour,
+  getTimeSheets: service.getTimeSheets,
+  saveWorkHours: service.saveWorkHours,
+  deleteWorkHour: service.deleteWorkHour,
 
-    getNextTimeSheets: service.getNextTimeSheets
+  getNextTimeSheets: service.getNextTimeSheets,
+
+  getUserProjects:service.getUserProjects
 }
 },{}]},{},[4]);

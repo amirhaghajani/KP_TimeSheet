@@ -48,7 +48,6 @@ const module_createNewRorkHour = (function () {
 
     function kwndSaveWHs_OnInit_ForEdit(dayTime, projectId, taskId_nullable, time_nullable, workoutId) {
 
-        debugger;
         $('#btnDeleteCurrentWorkhour').hide();
         if (workoutId) $('#btnDeleteCurrentWorkhour').show();
 
@@ -106,19 +105,12 @@ const module_createNewRorkHour = (function () {
     }
 
     function GetProjects(afterGetProjectsEnd) {
-        $.ajax({
-            type: "Get",
-            url: "/api/ProjectsAPI/GetProjects",
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            success: (response) => {
-                ddlProjects_OnInit(response);
-                if (afterGetProjectsEnd) afterGetProjectsEnd();
-            },
-            error: function (e) {
 
-            }
+        moduleData.service.getUserProjects((response)=>{
+            ddlProjects_OnInit(response);
+            if (afterGetProjectsEnd) afterGetProjectsEnd();
         });
+        
     }
 
     function ddlProjects_OnInit(response) {

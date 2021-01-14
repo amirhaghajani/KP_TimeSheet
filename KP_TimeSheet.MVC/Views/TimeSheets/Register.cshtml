@@ -36,9 +36,28 @@
     </div>
     <div class="pull-left" style="margin-top:5px;">
         <nav class="form-inline">
+
+            <div class="dropdown">
+                <button class="btn btn-info inline dropbtn"><i class="glyphicon glyphicon-menu-hamburger"></i></button>
+                <div class="dropdown-content">
+                    <a href="#" id="btnNewHourlyMission"><i style="margin-left: 6px;font-size: 16px;" class="glyphicon glyphicon-plane"></i>ماموریت ساعتی</a>
+                    <a href="#" id="btnNewHourlyLeave"><i style="margin-left: 6px;font-size: 16px;" class="glyphicon glyphicon-time"></i>مرخصی ساعتی</a>
+                    <a href="#" id="btnNewDailyLeave"><i style="margin-left: 6px;font-size: 16px;" class="glyphicon glyphicon-inbox"></i>مرخصی روزانه</a>
+                </div>
+            </div>
+            
+
+            @* <button id="btnpreviousPeriod" class="btn btn-info inline" style="margin-left:5px" title="ماموریت"><i class="glyphicon glyphicon-plane"></i></button>
+            <button id="btnpreviousPeriod" class="btn btn-info inline" style="margin-left:5px" title="مرخصی ساعتی"><i class="glyphicon glyphicon-time"></i></button>
+            <button id="btnpreviousPeriod" class="btn btn-info inline" style="margin-left:5px" title="مرخصی روزانه"><i class="glyphicon glyphicon-inbox"></i></button> *@
+
+                                    
             <button id="btnpreviousPeriod" class="btn btn-info inline" style="margin-left:5px" title="دوره قبلی"><i class="glyphicon glyphicon-forward"></i></button>
             <button id="btnSelectPeriod" class="btn btn-primary inline" title="اتخاب دوره" style="margin-left:5px" > انتخاب دوره</button>
             <button id="btnNextPeriod" class="btn btn-info inline" style="margin-right:5px" title="دوره بعدی"> <i class="glyphicon glyphicon-backward"></i></button>
+
+            
+                                    
         </nav>
     </div>
 </nav>
@@ -353,6 +372,88 @@
     </tbody>
 </table>
 
+
+<div id="kwndHourlyMission" class="k-rtl" style="display:none; background-color:transparent;">
+        <div class="row mission_headerDiv" id="mission_headerDiv" >
+
+        </div>
+        
+        <div class="row jumbotron jumbotron-fluid shadow" style="margin-right:10px; margin-top:10px;margin-left:10px;">
+            <div class="col-md-1"></div>
+            <div class="col-md-8">
+                
+                <div class="form-group">
+                    <label for="mission_date" class="form-inline ">  تاریخ مرخصی :</label>
+                    <input id="mission_date" type="text" class="form-control" style="width:calc(100% - 20px); padding:0 10px" />
+                </div>
+
+                <div class="form-group">
+                    <label for="mission_selectProject" class="form-inline ">  پـروژه :</label>
+                    <input id="mission_selectProject" type="text" class="form-control" style="width:100%;" />
+                </div>
+
+                <div class="form-group">
+                    <label for="mission_hour">   ساعت شروع: </label>
+                    <input id="mission_hourStart" name="mission_hourStart" class="form-control" style="width:100%" required="required" />
+                    <span for="mission_hourStart" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="mission_hour">   ساعت پایان: </label>
+                    <input id="mission_hourFinish" name="mission_hourFinish" class="form-control" style="width:100%" required="required" />
+                    <span for="mission_hourFinish" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <button id="mission_btnSave" type="button" class="btn btn-success btn-sm">ثبت</button>
+                    <button id="mission_btnCancel" type="button" class="btn btn-warning btn-sm">انصراف</button>
+                </div>
+
+        </div>
+
+        <div class="col-md-1"></div>
+</div>
+
+<div id="kwndHourlyLeave" class="k-rtl" style="display:none; background-color:transparent;">
+        <div class="row leave_headerDiv" id="leave_headerDiv" >
+
+        </div>
+        
+        <div class="row jumbotron jumbotron-fluid shadow" style="margin-right:10px; margin-top:10px;margin-left:10px;">
+            <div class="col-md-1"></div>
+            <div class="col-md-8">
+                
+                <div class="form-group">
+                    <label for="leave_date" class="form-inline ">  تاریخ مرخصی :</label>
+                    <input id="leave_date" type="text" class="form-control" style="width:calc(100% - 20px); padding:0 10px" />
+                </div>
+
+                <div class="form-group">
+                    <label for="leave_selectProject" class="form-inline ">  پـروژه :</label>
+                    <input id="leave_selectProject" type="text" class="form-control" style="width:100%;" />
+                </div>
+
+                <div class="form-group">
+                    <label for="leave_hour">   ساعت شروع: </label>
+                    <input id="leave_hourStart" name="leave_hourStart" class="form-control" style="width:100%" required="required" />
+                    <span for="leave_hourStart" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="leave_hour">   ساعت پایان: </label>
+                    <input id="leave_hourFinish" name="leave_hourFinish" class="form-control" style="width:100%" required="required" />
+                    <span for="leave_hourFinish" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <button id="leave_btnSave" type="button" class="btn btn-success btn-sm">ثبت</button>
+                    <button id="leave_btnCancel" type="button" class="btn btn-warning btn-sm">انصراف</button>
+                </div>
+
+        </div>
+
+        <div class="col-md-1"></div>
+</div>
 
 @section Scripts{
 

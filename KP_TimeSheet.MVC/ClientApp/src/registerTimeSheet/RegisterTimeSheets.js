@@ -18,6 +18,8 @@ const common_timeSheet = require('../common/timesheet');
 const service = require('./service');
 const serviceConfirm = require('../confirmTimeSheet/service');
 
+const hourlyMission = require('./mission_hourly');
+
 
 
 
@@ -57,6 +59,8 @@ $(document).ready(function () {
         sendWorkHour.init(mainGrid, common, common_register, data, common_timeSheet);
 
         history_workHour.init(common, data);
+
+        hourlyMission.init(common,data,service);
         
     });
 });
