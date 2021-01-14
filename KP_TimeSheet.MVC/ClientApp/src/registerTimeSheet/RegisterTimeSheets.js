@@ -19,6 +19,7 @@ const service = require('./service');
 const serviceConfirm = require('../confirmTimeSheet/service');
 
 const hourlyMission = require('./mission_hourly');
+const hourlyLeave = require('./leave_hourly');
 
 
 
@@ -61,6 +62,7 @@ $(document).ready(function () {
         history_workHour.init(common, data);
 
         hourlyMission.init(common,data,service);
+        hourlyLeave.init(common,data,service);
         
     });
 });

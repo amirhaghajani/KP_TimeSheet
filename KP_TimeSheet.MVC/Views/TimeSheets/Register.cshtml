@@ -455,6 +455,47 @@
         <div class="col-md-1"></div>
 </div>
 
+<div id="kwndDailyLeave" class="k-rtl" style="display:none; background-color:transparent;">
+        <div class="row dailyLeave_headerDiv" id="dailyLeave_headerDiv" >
+
+        </div>
+        
+        <div class="row jumbotron jumbotron-fluid shadow" style="margin-right:10px; margin-top:10px;margin-left:10px;">
+            <div class="col-md-1"></div>
+            <div class="col-md-8">
+                
+                <div class="form-group">
+                    <label for="dailyLeave_date" class="form-inline ">  تاریخ مرخصی :</label>
+                    <input id="dailyLeave_date" type="text" class="form-control" style="width:calc(100% - 20px); padding:0 10px" />
+                </div>
+
+                <div class="form-group">
+                    <label for="dailyLeave_selectProject" class="form-inline ">  پـروژه :</label>
+                    <input id="dailyLeave_selectProject" type="text" class="form-control" style="width:100%;" />
+                </div>
+
+                <div class="form-group">
+                    <label for="dailyLeave_hour">   ساعت شروع: </label>
+                    <input id="dailyLeave_hourStart" name="dailyLeave_hourStart" class="form-control" style="width:100%" required="required" />
+                    <span for="dailyLeave_hourStart" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="dailyLeave_hour">   ساعت پایان: </label>
+                    <input id="dailyLeave_hourFinish" name="dailyLeave_hourFinish" class="form-control" style="width:100%" required="required" />
+                    <span for="dailyLeave_hourFinish" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <button id="dailyLeave_btnSave" type="button" class="btn btn-success btn-sm">ثبت</button>
+                    <button id="dailyLeave_btnCancel" type="button" class="btn btn-warning btn-sm">انصراف</button>
+                </div>
+
+        </div>
+
+        <div class="col-md-1"></div>
+</div>
+
 @section Scripts{
 
 <script src="~/lib/Kendo2018.3.1_js/kendo.all.min.js"></script>

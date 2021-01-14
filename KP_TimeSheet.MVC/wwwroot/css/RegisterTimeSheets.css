@@ -18,6 +18,17 @@
   font-weight: bold;
   font-size: 16px;
 }
+.leave_headerDiv{
+  margin: 0;
+  background-image: url('/Images/Headers/insert Time sheet.jpg');
+  height: 30px;
+  background-size: cover;
+  color: white;
+  padding: 20px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 16px;
+}
 
 
 
