@@ -401,10 +401,16 @@ function InitMonthlyByProjectsGridConfirm() {
 	var prmData = JSON.stringify(json);
 	service.getThisMonthDataByUser(prmData, (response) => {
 
-		$("#MonthlyPresenceconfirmProgress").text(response.presence);
-		$("#MonthlyWorkHourconfirmProgress").text(response.work);
-		$("#MonthlyPresenceconfirm").width(response.presencepercent);
-		$("#MonthlyWorkHourconfirm").width(response.workpercent);
+		const items = [response.presencepercent, response.workpercent];
+		const v1= common_timeSheet.calcPercent(items, response.presencepercent);
+		const v2 = common_timeSheet.calcPercent(items, response.workpercent);
+
+		$("#MonthlyPresenceconfirmProgress").text(common_timeSheet.convertMinutsToTime(response.presence));
+		$("#MonthlyWorkHourconfirmProgress").text(common_timeSheet.convertMinutsToTime(response.work));
+
+		$("#MonthlyPresenceconfirm").css('width', v1+'%').attr('aria-valuenow', v1);
+		$("#MonthlyWorkHourconfirm").css('width', v2+'%').attr('aria-valuenow', v2);
+				
 
 		common.loaderHide();
 	});
@@ -444,10 +450,16 @@ function InitPeriodlyByProjectsGridConfirm() {
 	var prmData = JSON.stringify(json);
 
 	service.getThisPeriodDataByUserId(prmData, (response) => {
-		$("#PeriodicallyPresenceconfirmProgress").text(response.presence);
-		$("#PeriodicallyWorkHourconfirmProgress").text(response.work);
-		$("#PeriodicallyPresenceconfirm").width(response.presencepercent);
-		$("#PeriodicallyWorkHourconfirm").width(response.workpercent);
+
+		const items = [response.presencepercent, response.workpercent];
+		const v1= common_timeSheet.calcPercent(items, response.presencepercent);
+		const v2 = common_timeSheet.calcPercent(items, response.workpercent);
+
+		$("#PeriodicallyPresenceconfirmProgress").text(common_timeSheet.convertMinutsToTime(response.presence));
+		$("#PeriodicallyWorkHourconfirmProgress").text(common_timeSheet.convertMinutsToTime(response.work));
+
+		$("#PeriodicallyPresenceconfirm").css('width', v1+'%').attr('aria-valuenow', v1);
+		$("#PeriodicallyWorkHourconfirm").css('width', v2+'%').attr('aria-valuenow', v2);
 	});
 
 	service.getThisPeriodProjectsByUserId(prmData, (response) => {

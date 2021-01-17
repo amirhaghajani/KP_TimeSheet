@@ -259,10 +259,14 @@ const timeSheet = (function () {
         const projects_notSendByEmployee = [];
         const times_notSend = private_findTimesAndProjects('work', response, null, null, karkard_notSend, null, projects_notSendByEmployee, "Resource");
 
-        if(projects_notSendByEmployee.length){
+        if (projects_notSendByEmployee.length) {
             private_addProjectsAndTasksTimes(data, times_notSend, projects_notSendByEmployee, notSendId, true);
-        }else data.pop();
- 
+        } else data.pop();
+
+
+        private_addTimesForAmaliat(hozoor, karkard_notSend, karkard, amaliat);
+
+
         // // // //--------------------------------------------------------------------------------
         // // // const onApprovingId = data.length + 1
         // // // const karkard_onApproving = new timeSheet_Row(onApprovingId, null, "در حال تایید", "OnApproving", "77777777-d37d-1001-0000-e1f4a753bee5", []);
@@ -296,9 +300,9 @@ const timeSheet = (function () {
         const projects_deny = [];
         const times_deny = private_findTimesAndProjects('work', response, null, null, karkard_deny, null, projects_deny, "Denied");
 
-        if(projects_deny.length){
+        if (projects_deny.length) {
             private_addProjectsAndTasksTimes(data, times_deny, projects_deny, deniedId, true);
-        }else data.pop();
+        } else data.pop();
 
         //---------------------------------------------------------------------------------
 
@@ -310,19 +314,19 @@ const timeSheet = (function () {
         const projects_other = [];
         const times_other = private_findTimesAndProjects('other', response, null, null, karkard_other, null, projects_other, null);
 
-        if(projects_other.length){
+        if (projects_other.length) {
             private_addProjectsAndTasksTimes(data, times_other, projects_other, otherId, true);
-        }else data.pop();
+        } else data.pop();
 
         //---------------------------------------------------------------------------------
 
-        private_addTimesForAmaliat(hozoor, karkard_notSend, karkard, amaliat);
+        
 
         return data;
     }
 
     function private_addTimesForAmaliat(hozoor, noSend, mainKarkard, amalit) {
-
+        //سه تا دکمه بالا را مشخص می کنه که باشه یا نه
         const times = [];
 
         for (let i = 0; i < hozoor.values.length; i++) {
@@ -371,14 +375,35 @@ const timeSheet = (function () {
         private_addProjectsAndTasksTimes(data, times_notApprove, projects_notApprove, taeedNashodeId, true);
 
         //----------------------------------------------------------------------------
-        const otherId = null; // data.length + 1
+        const otherId = data.length + 1
         const karkard_other = new timeSheet_Row(otherId, null, "سایر", "-", "eb96abcb-d37d-1005-0000-e1f4a753bee5", []);
-        //data.push(karkard_other);
+        data.push(karkard_other);
 
         const projects_ohter = [];
         const times_other = private_findTimesAndProjects('ohter', response, null, null, karkard_other, null, projects_ohter, null);
+        if (projects_ohter.length) {
+            debugger;
 
-        private_addProjectsAndTasksTimes(data, times_other, projects_ohter, otherId, true);
+            private_addProjectsAndTasksTimes(data, times_other, projects_ohter, otherId, true);
+
+            //انتقال موارد تایید نشده که مستقیم زیرمجموعه سایر باشد
+            const projectNotApprovedIndex = data.findIndex(p=>p.parentId==otherId && p.title=='TaskNotApprove');
+            const projectNotApprovedId=data[projectNotApprovedIndex].id;
+
+            const subApproveProjects = data.filter(p=> p.parentId==projectNotApprovedId);
+            for(let i=0;i<subApproveProjects.length;i++){
+                subApproveProjects[i].parentId = otherId;
+            }
+            data.splice(projectNotApprovedIndex,1);
+            
+
+            //عوض کردن عنوان موارد تایید شده
+            const projectApprovedIndex = data.findIndex(p=>p.parentId==otherId && p.title=='Approved');
+            if(projectApprovedIndex>-1) data[projectApprovedIndex].title = 'تایید شده';
+
+        } else data.pop();
+
+
 
         return data;
     }
@@ -422,10 +447,10 @@ const timeSheet = (function () {
                     w.values.push(newItemForW);
 
                     if (i > -1) {
-                        const f=t.projects[i].workouts.filter(ww => ww.id == w.uid);
-                        let sum =0;
-                        for(var ii=0;ii<f.length;ii++){
-                            sum+=f[ii].minutes;
+                        const f = t.projects[i].workouts.filter(ww => ww.id == w.uid);
+                        let sum = 0;
+                        for (var ii = 0; ii < f.length; ii++) {
+                            sum += f[ii].minutes;
                         }
                         newItemForW.value = convertMinutsToTime(sum);
                     }
@@ -447,13 +472,13 @@ const timeSheet = (function () {
     function private_findTimesAndProjects(type, response, hozoor, hozoorDetail, karkard, diffHozoorKarkard, projects, wantedState) {
 
         const times = [];
-debugger;
+
         for (let i = 0; i < response.length; i++) {
             const dbTime = response[i];
             const cTime = new timeSheet_Time(dbTime.date, dbTime.date_persian, dbTime.day_persian, []);
             times.push(cTime);
 
-            const dbProjects = type=="work" ? dbTime.projects : dbTime.others;
+            const dbProjects = type == "work" ? dbTime.projects : dbTime.others;
 
             for (let j = 0; j < dbProjects.length; j++) {
                 const dbProject = dbProjects[j];
@@ -1018,10 +1043,16 @@ function InitMonthlyByProjectsGridConfirm() {
 	var prmData = JSON.stringify(json);
 	service.getThisMonthDataByUser(prmData, (response) => {
 
-		$("#MonthlyPresenceconfirmProgress").text(response.presence);
-		$("#MonthlyWorkHourconfirmProgress").text(response.work);
-		$("#MonthlyPresenceconfirm").width(response.presencepercent);
-		$("#MonthlyWorkHourconfirm").width(response.workpercent);
+		const items = [response.presencepercent, response.workpercent];
+		const v1= common_timeSheet.calcPercent(items, response.presencepercent);
+		const v2 = common_timeSheet.calcPercent(items, response.workpercent);
+
+		$("#MonthlyPresenceconfirmProgress").text(common_timeSheet.convertMinutsToTime(response.presence));
+		$("#MonthlyWorkHourconfirmProgress").text(common_timeSheet.convertMinutsToTime(response.work));
+
+		$("#MonthlyPresenceconfirm").css('width', v1+'%').attr('aria-valuenow', v1);
+		$("#MonthlyWorkHourconfirm").css('width', v2+'%').attr('aria-valuenow', v2);
+				
 
 		common.loaderHide();
 	});
@@ -1061,10 +1092,16 @@ function InitPeriodlyByProjectsGridConfirm() {
 	var prmData = JSON.stringify(json);
 
 	service.getThisPeriodDataByUserId(prmData, (response) => {
-		$("#PeriodicallyPresenceconfirmProgress").text(response.presence);
-		$("#PeriodicallyWorkHourconfirmProgress").text(response.work);
-		$("#PeriodicallyPresenceconfirm").width(response.presencepercent);
-		$("#PeriodicallyWorkHourconfirm").width(response.workpercent);
+
+		const items = [response.presencepercent, response.workpercent];
+		const v1= common_timeSheet.calcPercent(items, response.presencepercent);
+		const v2 = common_timeSheet.calcPercent(items, response.workpercent);
+
+		$("#PeriodicallyPresenceconfirmProgress").text(common_timeSheet.convertMinutsToTime(response.presence));
+		$("#PeriodicallyWorkHourconfirmProgress").text(common_timeSheet.convertMinutsToTime(response.work));
+
+		$("#PeriodicallyPresenceconfirm").css('width', v1+'%').attr('aria-valuenow', v1);
+		$("#PeriodicallyWorkHourconfirm").css('width', v2+'%').attr('aria-valuenow', v2);
 	});
 
 	service.getThisPeriodProjectsByUserId(prmData, (response) => {

@@ -103,24 +103,7 @@ namespace KP.TimeSheets.MVC
                         }).ToList()
                     }).ToList(),
 
-                    others = isWantingApprove ? 
-                    
-                    gg.Where(p =>p.Type=="Other" && p.State=="TaskNotApprove")
-                    .GroupBy(p => p.State).Select(pp => new vmGetTimeSheetResualt_Project
-                    {
-                        id = new Guid("00000000-0000-1010-1010-000000000000"),
-                        title = "سایر",
-                        workouts = pp.Where(w => w.TaskId.HasValue)
-                        .GroupBy(w => w.TaskId).Select(ww => new vmGetTimeSheetResualt_Workout
-                        {
-                            id = ww.First().TaskId,
-                            state = ww.First().State,
-                            title = ww.First().Title,
-                            minutes = ww.Sum(www => www.Minutes)
-                        }).ToList()
-                    }).ToList()
-                     : 
-                    gg.Where(p =>p.Type=="Other" && p.ProjectId.HasValue)
+                    others = gg.Where(p =>p.Type=="Other" && p.ProjectId.HasValue)
                     .GroupBy(p => p.State).Select(pp => new vmGetTimeSheetResualt_Project
                     {
                         id = pp.First().ProjectId,
