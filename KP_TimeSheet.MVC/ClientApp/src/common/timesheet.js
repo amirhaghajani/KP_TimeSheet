@@ -212,6 +212,7 @@ const timeSheet = (function () {
 
         private_addProjectsAndTasksTimes(data, times, projects, 3);
 
+        //----------------------------------------------------------------------------
         const taeedNashodeId = data.length + 1
         const karkard_notApprove = new timeSheet_Row(taeedNashodeId, null, "تایید نشده", "-", "eb96abcb-d37d-1001-0000-e1f4a753bee5", []);
         data.push(karkard_notApprove);
@@ -220,6 +221,16 @@ const timeSheet = (function () {
         const times_notApprove = private_findTimesAndProjects('work', response, null, null, karkard_notApprove, null, projects_notApprove, "TaskNotApprove");
 
         private_addProjectsAndTasksTimes(data, times_notApprove, projects_notApprove, taeedNashodeId, true);
+
+        //----------------------------------------------------------------------------
+        const otherId = null; // data.length + 1
+        const karkard_other = new timeSheet_Row(otherId, null, "سایر", "-", "eb96abcb-d37d-1005-0000-e1f4a753bee5", []);
+        //data.push(karkard_other);
+
+        const projects_ohter = [];
+        const times_other = private_findTimesAndProjects('ohter', response, null, null, karkard_other, null, projects_ohter, null);
+
+        private_addProjectsAndTasksTimes(data, times_other, projects_ohter, otherId, true);
 
         return data;
     }
