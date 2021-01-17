@@ -2,20 +2,19 @@ const hl = (function () {
 
   const moduleData = {};
 
-  function init(common, data, service) {
+  function init(common, data, service, period_next_pervious) {
 
     moduleData.common = common;
     moduleData.data = data;
     moduleData.service = service;
+    moduleData.period_next_pervious = period_next_pervious;
 
     $('#btnNewHourlyLeave').off().on('click', function () {
       private_openLeaveWindow();
     });
 
     $('#leave_btnCancel').off().on('click', function () {
-      var w = $("#kwndHourlyLeave").data("kendoWindow");
-      if (w) w.close();
-      reset();
+      private_closeWindow();
     });
 
     $('#leave_btnSave').off().on('click', function () {
@@ -23,6 +22,12 @@ const hl = (function () {
     });
 
 
+  }
+
+  function private_closeWindow(){
+    var w = $("#kwndHourlyLeave").data("kendoWindow");
+    if (w) w.close();
+    reset();
   }
 
   function private_openLeaveWindow() {
@@ -162,6 +167,10 @@ const hl = (function () {
     if (!mission.projectID.length) mission.projectID = "00000000-0000-0000-0000-000000000000";
 
     moduleData.service.saveHourlyLeave(mission, () => {
+
+      moduleData.period_next_pervious.GetCurrentPeriod();
+			private_closeWindow();
+			moduleData.common.notify("ثبت مرخصی ساعتی با موفقیت انجام شد", "success");
 
     });
   }

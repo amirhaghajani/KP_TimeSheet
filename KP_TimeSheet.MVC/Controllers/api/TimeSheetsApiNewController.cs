@@ -13,12 +13,12 @@ using System.Linq;
 
 namespace KP.TimeSheets.MVC
 {
-    [Microsoft.AspNetCore.Mvc.Route("api/Confirm")]
+    [Microsoft.AspNetCore.Mvc.Route("api/timesheetsNew")]
     [ApiController]
-    public class TimeSheetsConfirmApiController : MyBaseAPIController
+    public class TimeSheetsApiNewController : MyBaseAPIController
     {
         IUnitOfWork _uow;
-        public TimeSheetsConfirmApiController(RASContext db, IUnitOfWork uow) : base(db) { this._uow = uow; }
+        public TimeSheetsApiNewController(RASContext db, IUnitOfWork uow) : base(db) { this._uow = uow; }
 
 
         [HttpGet("{ver}/{userId}"), HttpGet("{ver}/employee"), HttpGet("{ver}/employeeTimeSheet/{fromDate}/{toDate}")]
@@ -66,7 +66,6 @@ namespace KP.TimeSheets.MVC
                 }
                 else
                 {
-
                     query = this.DBContext.spFoundConfirmTimeSheet.FromSqlInterpolated(this.DBContext.spFoundEmployeeTimeSheet_str(
                                                             currentUser.ID,
                                                             fromDate.Value,
@@ -87,18 +86,36 @@ namespace KP.TimeSheets.MVC
                     date_persian = gg.First().PersianDate,
                     day_persian = days[gg.First().DayOfWeek.Value],
                     hozoor = gg.First().Hozoor,
-                    projects = gg.Where(p => p.ProjectId.HasValue).GroupBy(p => p.ProjectId).Select(pp => new vmGetTimeSheetResualt_Project
+                    projects = gg.Where(p =>p.Type=="Work" && p.ProjectId.HasValue)
+                    .GroupBy(p => p.ProjectId).Select(pp => new vmGetTimeSheetResualt_Project
                     {
                         id = pp.Key,
                         title = pp.First().ProjectTitle,
-                        workouts = pp.Where(w => w.TaskId.HasValue).GroupBy(w => new { w.TaskId, w.State }).Select(ww => new vmGetTimeSheetResualt_Workout
+                        workouts = pp.Where(w => w.TaskId.HasValue)
+                        .GroupBy(w => new { w.TaskId, w.State }).Select(ww => new vmGetTimeSheetResualt_Workout
                         {
                             id = ww.Key.TaskId,
                             state = ww.Key.State,
                             title = ww.First().Title,
                             minutes = ww.First().Minutes
                         }).ToList()
+                    }).ToList(),
+
+                    others = gg.Where(p =>p.Type=="Other" && p.ProjectId.HasValue)
+                    .GroupBy(p => p.State).Select(pp => new vmGetTimeSheetResualt_Project
+                    {
+                        id = Guid.NewGuid(),
+                        title = pp.Key,
+                        workouts = pp.Where(w => w.TaskId.HasValue)
+                        .GroupBy(w => w.ProjectId).Select(ww => new vmGetTimeSheetResualt_Workout
+                        {
+                            id = Guid.NewGuid(),
+                            state = ww.First().State,
+                            title = ww.First().Title,
+                            minutes = ww.Sum(www => www.Minutes)
+                        }).ToList()
                     }).ToList()
+
                 }).ToList();
 
                 return Ok(answer);

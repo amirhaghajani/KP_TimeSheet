@@ -53,7 +53,7 @@ const service = (function () {
 
 		$.ajax({
 			type: "Get",
-			url: "/api/Confirm/" +moduleData.common.version()+"/" + moduleData.data.userId_get(),
+			url: "/api/timesheetsNew/" +moduleData.common.version()+"/" + moduleData.data.userId_get(),
 			contentType: "application/json; charset=utf-8",
 			dataType: "json",
 
@@ -180,7 +180,7 @@ const service = (function () {
 	function changeDisplayPeriodToWeeklyConfirm(success_callBack, error_callBack) {
 		$.ajax({
 			type: "Get",
-			url: "/api/Confirm/ChangeDisplayPeriodToWeeklyConfirm",
+			url: "/api/timesheetsNew/ChangeDisplayPeriodToWeeklyConfirm",
 			contentType: "application/json; charset=utf-8",
 			dataType: "json",
 			success: () => {
@@ -197,7 +197,7 @@ const service = (function () {
 	function changeDisplayPeriodToDaily(prmData, success_callBack, error_callBack) {
 		$.ajax({
 			type: "Post",
-			url: "/api/confirm/ChangeDisplayPeriodToDaily",
+			url: "/api/timesheetsNew/ChangeDisplayPeriodToDaily",
 			contentType: "application/json; charset=utf-8",
 			dataType: "json",
 			data: prmData,
@@ -222,7 +222,7 @@ const service = (function () {
 		}
 		$.ajax({
 			type: "Get",
-			url: `/api/Confirm/${moduleData.common.version()}/${type}/${userId}/${date}`,
+			url: `/api/timesheetsNew/${moduleData.common.version()}/${type}/${userId}/${date}`,
 			contentType: "application/json; charset=utf-8",
 			dataType: "json",
 			success: (response) => {

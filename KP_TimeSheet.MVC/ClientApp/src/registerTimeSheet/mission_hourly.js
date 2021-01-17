@@ -2,26 +2,31 @@ const hm = (function () {
 
   const moduleData = {};
 
-  function init(common, data, service) {
+  function init(common, data, service, period_next_pervious) {
 
     moduleData.common = common;
     moduleData.data = data;
     moduleData.service = service;
+    moduleData.period_next_pervious = period_next_pervious;
 
     $('#btnNewHourlyMission').off().on('click', function () {
       private_openMissionWindow();
     });
 
     $('#mission_btnCancel').off().on('click', function () {
-      var w = $("#kwndHourlyMission").data("kendoWindow");
-      if (w) w.close();
-      reset();
+      private_closeWindow();
     });
     $('#mission_btnSave').off().on('click', function () {
       save();
     });
 
 
+  }
+
+  function private_closeWindow(){
+    var w = $("#kwndHourlyMission").data("kendoWindow");
+      if (w) w.close();
+      reset();
   }
 
   function private_openMissionWindow() {
@@ -160,6 +165,10 @@ const hm = (function () {
 
 		moduleData.service.saveHourlyMission(mission, () => {
 
+      moduleData.period_next_pervious.GetCurrentPeriod();
+			private_closeWindow();
+      moduleData.common.notify("ثبت ماموریت ساعتی با موفقیت انجام شد", "success");
+      
 		});
 	}
 

@@ -13,10 +13,10 @@ var service = (function () {
   //اون اول اطلاعات کل تایم شیت ها را می دهد
   function getTimeSheets(fromDate, toDate, success_callBack, error_callBack) {
 
-    let url = "/api/Confirm/" + moduleData.common.version() + "/employee";
+    let url = "/api/timesheetsNew/" + moduleData.common.version() + "/employee";
 
     if (fromDate) {
-      url = `/api/Confirm/${moduleData.common.version()}/employeeTimeSheet/${fromDate}/${toDate}`;
+      url = `/api/timesheetsNew/${moduleData.common.version()}/employeeTimeSheet/${fromDate}/${toDate}`;
     }
 
     $.ajax({
@@ -46,7 +46,7 @@ var service = (function () {
 
     $.ajax({
       type: "Get",
-      url: `/api/Confirm/${moduleData.common.version()}/employee/${type}/${date}`,
+      url: `/api/timesheetsNew/${moduleData.common.version()}/employee/${type}/${date}`,
       contentType: "application/json; charset=utf-8",
       dataType: "json",
 
@@ -121,7 +121,7 @@ var service = (function () {
   function getUsers(success_callBack, error_callBack) {
     $.ajax({
       type: "Get",
-      url: "/api/Confirm/GetUsersList",
+      url: "/api/timesheetsNew/GetUsersList",
       contentType: "application/json; charset=utf-8",
       dataType: "json",
       success: function (response) {
@@ -139,7 +139,7 @@ var service = (function () {
   function saveDailyLeave(dailyLeave, success_callBack, error_callBack) {
     $.ajax({
       type: "Post",
-      url: "/api/Confirm/SaveDailyLeave",
+      url: "/api/timesheetsNew/SaveDailyLeave",
       contentType: "application/json; charset=utf-8",
       dataType: "json",
       data: JSON.stringify(dailyLeave),
@@ -155,7 +155,7 @@ var service = (function () {
   function saveHourlyLeave(hourlyLeave, success_callBack, error_callBack) {
     $.ajax({
       type: "Post",
-      url: "/api/Confirm/SaveHourlyLeave",
+      url: "/api/timesheetsNew/SaveHourlyLeave",
       contentType: "application/json; charset=utf-8",
       dataType: "json",
       data: JSON.stringify(hourlyLeave),
@@ -171,7 +171,7 @@ var service = (function () {
   function saveHourlyMission(hourlyMission, success_callBack, error_callBack) {
     $.ajax({
       type: "Post",
-      url: "/api/Confirm/SaveHourlyMission",
+      url: "/api/timesheetsNew/SaveHourlyMission",
       contentType: "application/json; charset=utf-8",
       dataType: "json",
       data: JSON.stringify(hourlyMission),

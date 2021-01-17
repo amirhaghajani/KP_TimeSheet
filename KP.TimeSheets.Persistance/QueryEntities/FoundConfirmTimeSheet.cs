@@ -4,6 +4,7 @@ namespace KP.TimeSheets.Persistance.QueryEntities
 {
     public class EmployeeTimeSheetFromDB
     {
+        public string Type{get;set;}
         public Guid? TaskId { get; set; }
         public DateTime? Date { get; set; }
         public System.Byte? DayOfWeek { get; set; }

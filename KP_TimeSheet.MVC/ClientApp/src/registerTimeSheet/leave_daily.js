@@ -2,11 +2,12 @@ const dl = (function () {
 
 	const moduleData = {};
 
-	function init(common, data, service) {
+	function init(common, data, service, period_next_pervious) {
 
 		moduleData.common = common;
 		moduleData.data = data;
 		moduleData.service = service;
+		moduleData.period_next_pervious = period_next_pervious;
 
 		moduleData.leaveTypes = [
 			{ id: 1, value: 'Deserved', title: 'استحقاقی' },
@@ -22,8 +23,7 @@ const dl = (function () {
 		});
 
 		$('#dailyLeave_btnCancel').off().on('click', function () {
-			var w = $("#kwndDailyLeave").data("kendoWindow");
-			if (w) w.close();
+			private_closeWindow();
 		});
 
 		$('#dailyLeave_btnSave').off().on('click', function () {
@@ -34,6 +34,12 @@ const dl = (function () {
 		moduleData.service.getUserProjects();
 		moduleData.service.getUsers();
 
+	}
+
+	function private_closeWindow() {
+		var w = $("#kwndDailyLeave").data("kendoWindow");
+		if (w) w.close();
+		reset();
 	}
 
 	function private_openLeaveWindow() {
@@ -239,6 +245,10 @@ const dl = (function () {
 		dailyLeave.type = parseInt(dailyLeave.type);
 
 		moduleData.service.saveDailyLeave(dailyLeave, () => {
+
+			moduleData.period_next_pervious.GetCurrentPeriod();
+			private_closeWindow();
+			moduleData.common.notify("ثبت مرخصی روزانه با موفقیت انجام شد", "success");
 
 		});
 	}

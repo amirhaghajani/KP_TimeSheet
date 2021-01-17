@@ -46,8 +46,8 @@ $(document).ready(function () {
     editWindow.init(mainGrid, common, common_register, data, common_timeSheet, service);
     history_sentWorkHour.init(common, common_register, history_workHour, data, common_timeSheet, createNewWorkHour);
 
-    mainGrid.init(common, common_register, common_timeSheet, createNewWorkHour, history_sentWorkHour, sendWorkHour, data, 
-        service, editWindow,history_sentWorkHour, bottomPage_priodlyGrid, bottomPage_monthlyGrid);
+    mainGrid.init(common, common_register, common_timeSheet, createNewWorkHour, history_sentWorkHour, sendWorkHour, data,
+        service, editWindow, history_sentWorkHour, bottomPage_priodlyGrid, bottomPage_monthlyGrid);
 
     mainGrid.GetTimeSheets(function () {
         bottomPage_priodlyGrid.InitPeriodlyByProjectsGrid();
@@ -55,17 +55,17 @@ $(document).ready(function () {
         common.loaderHide();
 
         period_next_pervious.init(common, common_register, mainGrid,
-            bottomPage_monthlyGrid, history_sentWorkHour, bottomPage_priodlyGrid, editWindow, data, service,serviceConfirm);
+            bottomPage_monthlyGrid, history_sentWorkHour, bottomPage_priodlyGrid, editWindow, data, service, serviceConfirm);
 
-        createNewWorkHour.init(common, common_register, period_next_pervious, data, service,common_timeSheet);
+        createNewWorkHour.init(common, common_register, period_next_pervious, data, service, common_timeSheet);
         sendWorkHour.init(mainGrid, common, common_register, data, common_timeSheet);
 
         history_workHour.init(common, data);
 
-        hourlyMission.init(common,data,service);
-        hourlyLeave.init(common,data,service);
-        dailyLeave.init(common,data,service);
-        
+        hourlyMission.init(common, data, service, period_next_pervious);
+        hourlyLeave.init(common, data, service, period_next_pervious);
+        dailyLeave.init(common, data, service, period_next_pervious);
+
     });
 });
 

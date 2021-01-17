@@ -236,6 +236,8 @@ const timeSheet = (function () {
         const hozoorDetail = new timeSheet_Row(2, 1, "جزئیات", "HozoorDetail", "33333333-d37d-4aa1-1002-e1f4a753bee5", []);
         data.push(hozoorDetail);
 
+
+        //---------------------------------------------------
         const karkard = new timeSheet_Row(3, null, "کارکرد", "Karkard", "44444444-d37d-4aa1-1003-e1f4a753bee5", []);
         data.push(karkard);
 
@@ -243,26 +245,76 @@ const timeSheet = (function () {
         data.push(diffHozoorKarkard);
 
         const projects = [];
-        const times = private_findTimesAndProjects(response, hozoor, hozoorDetail, karkard, diffHozoorKarkard, projects, null);
+        const times = private_findTimesAndProjects('work', response, hozoor, hozoorDetail, karkard, diffHozoorKarkard, projects, null);
 
         private_addProjectsAndTasksTimes(data, times, projects, 3);
 
+
+        //-----------------------------------------------------------------------
         const notSendId = data.length + 1
         const karkard_notSend = new timeSheet_Row(notSendId, null, "ارسال نشده", "DontSend", "66666666-d37d-1001-0000-e1f4a753bee5", []);
         data.push(karkard_notSend);
 
 
         const projects_notSendByEmployee = [];
-        const times_notSend = private_findTimesAndProjects(response, null, null, karkard_notSend, null, projects_notSendByEmployee, "Resource");
+        const times_notSend = private_findTimesAndProjects('work', response, null, null, karkard_notSend, null, projects_notSendByEmployee, "Resource");
 
-        private_addProjectsAndTasksTimes(data, times_notSend, projects_notSendByEmployee, notSendId, true);
+        if(projects_notSendByEmployee.length){
+            private_addProjectsAndTasksTimes(data, times_notSend, projects_notSendByEmployee, notSendId, true);
+        }else data.pop();
+ 
+        // // // //--------------------------------------------------------------------------------
+        // // // const onApprovingId = data.length + 1
+        // // // const karkard_onApproving = new timeSheet_Row(onApprovingId, null, "در حال تایید", "OnApproving", "77777777-d37d-1001-0000-e1f4a753bee5", []);
+        // // // data.push(karkard_onApproving);
+
+        // // // const projects_approving = [];
+        // // // const times_approve = private_findTimesAndProjects('work', response, null, null, karkard_onApproving, null, projects_approving, "Approving");
+
+        // // // if(projects_approving.length){
+        // // //     private_addProjectsAndTasksTimes(data, times_approve, projects_approving, onApprovingId, true);
+        // // // }else data.pop();
+        // // // //--------------------------------------------------------------------------------
+
+        // // // const finalId = data.length + 1
+        // // // const karkard_final = new timeSheet_Row(finalId, null, "تایید نهایی", "Final", "88888888-d37d-1001-0000-e1f4a753bee5", []);
+        // // // data.push(karkard_final);
+
+        // // // const projects_final = [];
+        // // // const times_final = private_findTimesAndProjects('work', response, null, null, karkard_final, null, projects_final, "Final");
+
+        // // // if(projects_final.length){
+        // // //     private_addProjectsAndTasksTimes(data, times_final, projects_final, finalId, true);
+        // // // }else data.pop();
+
+        //---------------------------------------------------------------------------------
+
+        const deniedId = data.length + 1
+        const karkard_deny = new timeSheet_Row(deniedId, null, "رد شده", "Denied", "99999999-d37d-1001-0000-e1f4a753bee5", []);
+        data.push(karkard_deny);
+
+        const projects_deny = [];
+        const times_deny = private_findTimesAndProjects('work', response, null, null, karkard_deny, null, projects_deny, "Denied");
+
+        if(projects_deny.length){
+            private_addProjectsAndTasksTimes(data, times_deny, projects_deny, deniedId, true);
+        }else data.pop();
+
+        //---------------------------------------------------------------------------------
 
 
-        const projects_approving = [];
-        const times_approve = private_findTimesAndProjects(response, null, null, null, null, projects_approving, "Approving");
+        const otherId = data.length + 1
+        const karkard_other = new timeSheet_Row(otherId, null, "سایر", "Other", "10101010-d37d-1001-0000-e1f4a753bee5", []);
+        data.push(karkard_other);
 
-        const projects_final = [];
-        const times_final = private_findTimesAndProjects(response, null, null, null, null, projects_final, "Final");
+        const projects_other = [];
+        const times_other = private_findTimesAndProjects('other', response, null, null, karkard_other, null, projects_other, null);
+
+        if(projects_other.length){
+            private_addProjectsAndTasksTimes(data, times_other, projects_other, otherId, true);
+        }else data.pop();
+
+        //---------------------------------------------------------------------------------
 
         private_addTimesForAmaliat(hozoor, karkard_notSend, karkard, amaliat);
 
@@ -304,7 +356,7 @@ const timeSheet = (function () {
         data.push(karkard);
 
         const projects = [];
-        const times = private_findTimesAndProjects(response, hozoor, hozoorDetail, karkard, null, projects, null);
+        const times = private_findTimesAndProjects('work', response, hozoor, hozoorDetail, karkard, null, projects, null);
 
         private_addProjectsAndTasksTimes(data, times, projects, 3);
 
@@ -313,7 +365,7 @@ const timeSheet = (function () {
         data.push(karkard_notApprove);
 
         const projects_notApprove = [];
-        const times_notApprove = private_findTimesAndProjects(response, null, null, karkard_notApprove, null, projects_notApprove, "TaskNotApprove");
+        const times_notApprove = private_findTimesAndProjects('work', response, null, null, karkard_notApprove, null, projects_notApprove, "TaskNotApprove");
 
         private_addProjectsAndTasksTimes(data, times_notApprove, projects_notApprove, taeedNashodeId, true);
 
@@ -359,8 +411,12 @@ const timeSheet = (function () {
                     w.values.push(newItemForW);
 
                     if (i > -1) {
-                        var wwIndex = t.projects[i].workouts.findIndex(ww => ww.id == w.uid);
-                        if (wwIndex > -1) newItemForW.value = convertMinutsToTime(t.projects[i].workouts[wwIndex].minutes);
+                        const f=t.projects[i].workouts.filter(ww => ww.id == w.uid);
+                        let sum =0;
+                        for(var ii=0;ii<f.length;ii++){
+                            sum+=f[ii].minutes;
+                        }
+                        newItemForW.value = convertMinutsToTime(sum);
                     }
 
                 })
@@ -377,17 +433,19 @@ const timeSheet = (function () {
 
 
 
-    function private_findTimesAndProjects(response, hozoor, hozoorDetail, karkard, diffHozoorKarkard, projects, wantedState) {
+    function private_findTimesAndProjects(type, response, hozoor, hozoorDetail, karkard, diffHozoorKarkard, projects, wantedState) {
 
         const times = [];
-
+debugger;
         for (let i = 0; i < response.length; i++) {
             const dbTime = response[i];
             const cTime = new timeSheet_Time(dbTime.date, dbTime.date_persian, dbTime.day_persian, []);
             times.push(cTime);
 
-            for (let j = 0; j < dbTime.projects.length; j++) {
-                const dbProject = dbTime.projects[j];
+            const dbProjects = type=="work" ? dbTime.projects : dbTime.others;
+
+            for (let j = 0; j < dbProjects.length; j++) {
+                const dbProject = dbProjects[j];
                 const cProject = new timeSheet_Prject(dbProject.id, dbProject.title, []);
 
 
@@ -601,7 +659,7 @@ const service = (function () {
 
 		$.ajax({
 			type: "Get",
-			url: "/api/Confirm/" +moduleData.common.version()+"/" + moduleData.data.userId_get(),
+			url: "/api/timesheetsNew/" +moduleData.common.version()+"/" + moduleData.data.userId_get(),
 			contentType: "application/json; charset=utf-8",
 			dataType: "json",
 
@@ -728,7 +786,7 @@ const service = (function () {
 	function changeDisplayPeriodToWeeklyConfirm(success_callBack, error_callBack) {
 		$.ajax({
 			type: "Get",
-			url: "/api/Confirm/ChangeDisplayPeriodToWeeklyConfirm",
+			url: "/api/timesheetsNew/ChangeDisplayPeriodToWeeklyConfirm",
 			contentType: "application/json; charset=utf-8",
 			dataType: "json",
 			success: () => {
@@ -745,7 +803,7 @@ const service = (function () {
 	function changeDisplayPeriodToDaily(prmData, success_callBack, error_callBack) {
 		$.ajax({
 			type: "Post",
-			url: "/api/confirm/ChangeDisplayPeriodToDaily",
+			url: "/api/timesheetsNew/ChangeDisplayPeriodToDaily",
 			contentType: "application/json; charset=utf-8",
 			dataType: "json",
 			data: prmData,
@@ -770,7 +828,7 @@ const service = (function () {
 		}
 		$.ajax({
 			type: "Get",
-			url: `/api/Confirm/${moduleData.common.version()}/${type}/${userId}/${date}`,
+			url: `/api/timesheetsNew/${moduleData.common.version()}/${type}/${userId}/${date}`,
 			contentType: "application/json; charset=utf-8",
 			dataType: "json",
 			success: (response) => {
@@ -894,8 +952,8 @@ $(document).ready(function () {
     editWindow.init(mainGrid, common, common_register, data, common_timeSheet, service);
     history_sentWorkHour.init(common, common_register, history_workHour, data, common_timeSheet, createNewWorkHour);
 
-    mainGrid.init(common, common_register, common_timeSheet, createNewWorkHour, history_sentWorkHour, sendWorkHour, data, 
-        service, editWindow,history_sentWorkHour, bottomPage_priodlyGrid, bottomPage_monthlyGrid);
+    mainGrid.init(common, common_register, common_timeSheet, createNewWorkHour, history_sentWorkHour, sendWorkHour, data,
+        service, editWindow, history_sentWorkHour, bottomPage_priodlyGrid, bottomPage_monthlyGrid);
 
     mainGrid.GetTimeSheets(function () {
         bottomPage_priodlyGrid.InitPeriodlyByProjectsGrid();
@@ -903,17 +961,17 @@ $(document).ready(function () {
         common.loaderHide();
 
         period_next_pervious.init(common, common_register, mainGrid,
-            bottomPage_monthlyGrid, history_sentWorkHour, bottomPage_priodlyGrid, editWindow, data, service,serviceConfirm);
+            bottomPage_monthlyGrid, history_sentWorkHour, bottomPage_priodlyGrid, editWindow, data, service, serviceConfirm);
 
-        createNewWorkHour.init(common, common_register, period_next_pervious, data, service,common_timeSheet);
+        createNewWorkHour.init(common, common_register, period_next_pervious, data, service, common_timeSheet);
         sendWorkHour.init(mainGrid, common, common_register, data, common_timeSheet);
 
         history_workHour.init(common, data);
 
-        hourlyMission.init(common,data,service);
-        hourlyLeave.init(common,data,service);
-        dailyLeave.init(common,data,service);
-        
+        hourlyMission.init(common, data, service, period_next_pervious);
+        hourlyLeave.init(common, data, service, period_next_pervious);
+        dailyLeave.init(common, data, service, period_next_pervious);
+
     });
 });
 
@@ -2085,11 +2143,12 @@ const dl = (function () {
 
 	const moduleData = {};
 
-	function init(common, data, service) {
+	function init(common, data, service, period_next_pervious) {
 
 		moduleData.common = common;
 		moduleData.data = data;
 		moduleData.service = service;
+		moduleData.period_next_pervious = period_next_pervious;
 
 		moduleData.leaveTypes = [
 			{ id: 1, value: 'Deserved', title: 'استحقاقی' },
@@ -2105,8 +2164,7 @@ const dl = (function () {
 		});
 
 		$('#dailyLeave_btnCancel').off().on('click', function () {
-			var w = $("#kwndDailyLeave").data("kendoWindow");
-			if (w) w.close();
+			private_closeWindow();
 		});
 
 		$('#dailyLeave_btnSave').off().on('click', function () {
@@ -2117,6 +2175,12 @@ const dl = (function () {
 		moduleData.service.getUserProjects();
 		moduleData.service.getUsers();
 
+	}
+
+	function private_closeWindow() {
+		var w = $("#kwndDailyLeave").data("kendoWindow");
+		if (w) w.close();
+		reset();
 	}
 
 	function private_openLeaveWindow() {
@@ -2323,6 +2387,10 @@ const dl = (function () {
 
 		moduleData.service.saveDailyLeave(dailyLeave, () => {
 
+			moduleData.period_next_pervious.GetCurrentPeriod();
+			private_closeWindow();
+			moduleData.common.notify("ثبت مرخصی روزانه با موفقیت انجام شد", "success");
+
 		});
 	}
 
@@ -2342,20 +2410,19 @@ const hl = (function () {
 
   const moduleData = {};
 
-  function init(common, data, service) {
+  function init(common, data, service, period_next_pervious) {
 
     moduleData.common = common;
     moduleData.data = data;
     moduleData.service = service;
+    moduleData.period_next_pervious = period_next_pervious;
 
     $('#btnNewHourlyLeave').off().on('click', function () {
       private_openLeaveWindow();
     });
 
     $('#leave_btnCancel').off().on('click', function () {
-      var w = $("#kwndHourlyLeave").data("kendoWindow");
-      if (w) w.close();
-      reset();
+      private_closeWindow();
     });
 
     $('#leave_btnSave').off().on('click', function () {
@@ -2363,6 +2430,12 @@ const hl = (function () {
     });
 
 
+  }
+
+  function private_closeWindow(){
+    var w = $("#kwndHourlyLeave").data("kendoWindow");
+    if (w) w.close();
+    reset();
   }
 
   function private_openLeaveWindow() {
@@ -2502,6 +2575,10 @@ const hl = (function () {
     if (!mission.projectID.length) mission.projectID = "00000000-0000-0000-0000-000000000000";
 
     moduleData.service.saveHourlyLeave(mission, () => {
+
+      moduleData.period_next_pervious.GetCurrentPeriod();
+			private_closeWindow();
+			moduleData.common.notify("ثبت مرخصی ساعتی با موفقیت انجام شد", "success");
 
     });
   }
@@ -2835,7 +2912,9 @@ const myMainGrid = (function () {
 
     $('.forFound_ShowCurrentDaySendWorkHours').off().on('click', function () {
       var sendId = $(this).data("dayIndex");
-      moduleData.history_sentWorkHour.ShowCurrentDaySendWorkHours(sendId, 'نمایش کارکردها');
+      var timeSheetData = moduleData.data.timeSheetData_get();
+      var dayTime = timeSheetData[0].values[sendId];
+      moduleData.history_sentWorkHour.ShowCurrentDaySendWorkHours(dayTime, 'نمایش کارکردها');
     });
 
     $('.forFound_wndSendWorkHour_OnInit').off().on('click', function () {
@@ -2878,26 +2957,31 @@ const hm = (function () {
 
   const moduleData = {};
 
-  function init(common, data, service) {
+  function init(common, data, service, period_next_pervious) {
 
     moduleData.common = common;
     moduleData.data = data;
     moduleData.service = service;
+    moduleData.period_next_pervious = period_next_pervious;
 
     $('#btnNewHourlyMission').off().on('click', function () {
       private_openMissionWindow();
     });
 
     $('#mission_btnCancel').off().on('click', function () {
-      var w = $("#kwndHourlyMission").data("kendoWindow");
-      if (w) w.close();
-      reset();
+      private_closeWindow();
     });
     $('#mission_btnSave').off().on('click', function () {
       save();
     });
 
 
+  }
+
+  function private_closeWindow(){
+    var w = $("#kwndHourlyMission").data("kendoWindow");
+      if (w) w.close();
+      reset();
   }
 
   function private_openMissionWindow() {
@@ -3036,6 +3120,10 @@ const hm = (function () {
 
 		moduleData.service.saveHourlyMission(mission, () => {
 
+      moduleData.period_next_pervious.GetCurrentPeriod();
+			private_closeWindow();
+      moduleData.common.notify("ثبت ماموریت ساعتی با موفقیت انجام شد", "success");
+      
 		});
 	}
 
@@ -3613,10 +3701,10 @@ var service = (function () {
   //اون اول اطلاعات کل تایم شیت ها را می دهد
   function getTimeSheets(fromDate, toDate, success_callBack, error_callBack) {
 
-    let url = "/api/Confirm/" + moduleData.common.version() + "/employee";
+    let url = "/api/timesheetsNew/" + moduleData.common.version() + "/employee";
 
     if (fromDate) {
-      url = `/api/Confirm/${moduleData.common.version()}/employeeTimeSheet/${fromDate}/${toDate}`;
+      url = `/api/timesheetsNew/${moduleData.common.version()}/employeeTimeSheet/${fromDate}/${toDate}`;
     }
 
     $.ajax({
@@ -3646,7 +3734,7 @@ var service = (function () {
 
     $.ajax({
       type: "Get",
-      url: `/api/Confirm/${moduleData.common.version()}/employee/${type}/${date}`,
+      url: `/api/timesheetsNew/${moduleData.common.version()}/employee/${type}/${date}`,
       contentType: "application/json; charset=utf-8",
       dataType: "json",
 
@@ -3721,7 +3809,7 @@ var service = (function () {
   function getUsers(success_callBack, error_callBack) {
     $.ajax({
       type: "Get",
-      url: "/api/Confirm/GetUsersList",
+      url: "/api/timesheetsNew/GetUsersList",
       contentType: "application/json; charset=utf-8",
       dataType: "json",
       success: function (response) {
@@ -3739,7 +3827,7 @@ var service = (function () {
   function saveDailyLeave(dailyLeave, success_callBack, error_callBack) {
     $.ajax({
       type: "Post",
-      url: "/api/Confirm/SaveDailyLeave",
+      url: "/api/timesheetsNew/SaveDailyLeave",
       contentType: "application/json; charset=utf-8",
       dataType: "json",
       data: JSON.stringify(dailyLeave),
@@ -3755,7 +3843,7 @@ var service = (function () {
   function saveHourlyLeave(hourlyLeave, success_callBack, error_callBack) {
     $.ajax({
       type: "Post",
-      url: "/api/Confirm/SaveHourlyLeave",
+      url: "/api/timesheetsNew/SaveHourlyLeave",
       contentType: "application/json; charset=utf-8",
       dataType: "json",
       data: JSON.stringify(hourlyLeave),
@@ -3771,7 +3859,7 @@ var service = (function () {
   function saveHourlyMission(hourlyMission, success_callBack, error_callBack) {
     $.ajax({
       type: "Post",
-      url: "/api/Confirm/SaveHourlyMission",
+      url: "/api/timesheetsNew/SaveHourlyMission",
       contentType: "application/json; charset=utf-8",
       dataType: "json",
       data: JSON.stringify(hourlyMission),

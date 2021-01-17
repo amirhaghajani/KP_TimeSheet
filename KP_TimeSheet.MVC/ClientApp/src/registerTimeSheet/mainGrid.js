@@ -317,7 +317,9 @@ const myMainGrid = (function () {
 
     $('.forFound_ShowCurrentDaySendWorkHours').off().on('click', function () {
       var sendId = $(this).data("dayIndex");
-      moduleData.history_sentWorkHour.ShowCurrentDaySendWorkHours(sendId, 'نمایش کارکردها');
+      var timeSheetData = moduleData.data.timeSheetData_get();
+      var dayTime = timeSheetData[0].values[sendId];
+      moduleData.history_sentWorkHour.ShowCurrentDaySendWorkHours(dayTime, 'نمایش کارکردها');
     });
 
     $('.forFound_wndSendWorkHour_OnInit').off().on('click', function () {

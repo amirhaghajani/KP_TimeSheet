@@ -15,7 +15,7 @@ namespace KP.TimeSheets.MVC.ViewModels
         public double? hozoor { get; set; }
 
         public List<vmGetTimeSheetResualt_Project> projects { get; set; }
-
+        public List<vmGetTimeSheetResualt_Project> others { get; set; }
 
     }
 
