@@ -23,7 +23,7 @@ namespace KP.TimeSheets.Domain
         {
 
             WorkflowManager wm = new WorkflowManager(_UOW);
-            hourlyMission.WorkflowStageID = wm.GetByOrder(3).ID;
+            hourlyMission.WorkflowStageID = wm.GetByType("Manager").ID;
             hourlyMission.PreviousStage = wm.FirstStage().ID;
             hourlyMission.ID = Guid.NewGuid();
             hourlyMission.Date = DateUtility.GetMiladiDate(hourlyMission.PersianMissionDate);
@@ -67,7 +67,7 @@ namespace KP.TimeSheets.Domain
         public IEnumerable<HourlyMission> GetAllByUserID(Guid UserID)
         {
             WorkflowManager wfm = new WorkflowManager(_UOW);
-            var managerStageId = wfm.GetByOrder(3).ID;
+            var managerStageId = wfm.GetByType("Manager").ID;
             return _UOW.HourlyMissionRepository.GetAllByUserID(UserID).Where(x => x.WorkflowStageID == managerStageId);
 
         }

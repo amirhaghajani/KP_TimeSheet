@@ -22,6 +22,8 @@ namespace KP.TimeSheets.Domain
         /// <returns>مرحله گردش کاری که در بررسی پایگاه داده بدست می آید.</returns>
         WorkflowStage GetByID(Guid workflowStageID);
 
+        WorkflowStage GetByType(string type);
+
         /// <summary>
         /// اضافه کردن مرحله گردش کار جدید به پایگاه داده
         /// </summary>

@@ -45,6 +45,12 @@ namespace KP.TimeSheets.Persistance
             return _RASContext.WorkflowStages.FirstOrDefault(item => item.ID.Equals(workflowStageID));
         }
 
+        public WorkflowStage GetByType(string type){
+            string[] types = {"Resource","ProjectManager","Final","Manager"};
+            if(types.FirstOrDefault(t=>t==type)==null) throw new Exception($"WorkflowStatel - GetByType: invalide type {type}. Types are: {string.Join(',',types)}");
+            return _RASContext.WorkflowStages.FirstOrDefault(item => item.Type.Equals(type));
+        }
+
         /// <summary>
         /// اضافه کردن مرحله گردش کار جدید به پایگاه داده
         /// </summary>

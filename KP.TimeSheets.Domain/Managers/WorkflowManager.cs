@@ -73,6 +73,16 @@ namespace KP.TimeSheets.Domain
             return result;
         }
 
+        public WorkflowStage GetByType(string type)
+        {
+
+            WorkflowStage result = null;
+           
+                result = _UOW.WorkflowStageRepository.GetByType(type);
+           
+            return result;
+        }
+
 
        
 

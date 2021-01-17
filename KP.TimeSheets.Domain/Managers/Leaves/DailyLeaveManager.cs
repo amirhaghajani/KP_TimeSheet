@@ -19,13 +19,13 @@ namespace KP.TimeSheets.Domain
         public void Add(DailyLeave dailyLeave)
         {
             dailyLeave.ID = Guid.NewGuid();
-            dailyLeave.WorkflowStageID = new WorkflowManager(_UOW).GetByOrder(3).ID;
+            dailyLeave.WorkflowStageID = new WorkflowManager(_UOW).GetByType("Manager").ID;
             dailyLeave.PreviousStage = new WorkflowManager(_UOW).FirstStage().ID;
             dailyLeave.From = DateUtility.GetMiladiDate(dailyLeave.PersianDateFrom);
             dailyLeave.To = DateUtility.GetMiladiDate(dailyLeave.PersianDateTo);
             dailyLeave.RegisterDate = DateTime.Now;
 
-            if (dailyLeave.From >= dailyLeave.To) throw new Exception("پایان باید بزرگتر از شروع باشد");
+            if (dailyLeave.From > dailyLeave.To) throw new Exception("تاریخ شروع نمی تواند بزرگتر از پایان باشد");
             if (!_UOW.DailyLeaveRepository.CheckDontHasLeaveOnDuration(dailyLeave.UserID, dailyLeave.From, dailyLeave.To)) throw new Exception("در این بازه، مرخصی روزانه ثبت شده است");
 
             _UOW.DailyLeaveRepository.Add(dailyLeave);
@@ -53,7 +53,7 @@ namespace KP.TimeSheets.Domain
         public IEnumerable<DailyLeave> GetAllByUserID(Guid UserID)
         {
             WorkflowManager wfm = new WorkflowManager(_UOW);
-            var managerStageId = wfm.GetByOrder(3).ID;
+            var managerStageId = wfm.GetByType("Manager").ID;
             return _UOW.DailyLeaveRepository.GetAllByUserID(UserID).Where(x => x.WorkflowStageID == managerStageId);
         }
 

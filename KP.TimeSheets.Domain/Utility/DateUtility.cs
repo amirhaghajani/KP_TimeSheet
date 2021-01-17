@@ -15,7 +15,9 @@ namespace KP.TimeSheets.Domain
         //     var datetime = new DateTime(span.Ticks).ToString("H:mm");
         //     string datetimestring = datetime.ToString().Replace(":", ".");
         //    return double.Parse(datetimestring, CultureInfo.InvariantCulture);
-            return (To-From).Minutes;
+            var a = To - From;
+
+            return (int)(To-From).TotalMinutes;
         }
 
 

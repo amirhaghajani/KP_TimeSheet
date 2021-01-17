@@ -19,7 +19,7 @@ namespace KP.TimeSheets.Domain
         {
 
             WorkflowManager wm = new WorkflowManager(_UOW);
-            hourlyLeave.WorkflowStageID = wm.GetByOrder(3).ID;
+            hourlyLeave.WorkflowStageID = wm.GetByType("Manager").ID;
             hourlyLeave.PreviousStage = wm.FirstStage().ID;
             hourlyLeave.ID = Guid.NewGuid();
             hourlyLeave.LeaveDate = DateUtility.GetMiladiDate(hourlyLeave.PersianLeaveDate);
@@ -56,7 +56,7 @@ namespace KP.TimeSheets.Domain
         public IEnumerable<HourlyLeave> GetAllByUserID(Guid UserID)
         {
             WorkflowManager wfm = new WorkflowManager(_UOW);
-            var managerStageId = wfm.GetByOrder(3).ID;
+            var managerStageId = wfm.GetByType("Manager").ID;
             return _UOW.HourlyLeavesRepository.GetAllByUserID(UserID).Where(x => x.WorkflowStageID == managerStageId);
 
         }
