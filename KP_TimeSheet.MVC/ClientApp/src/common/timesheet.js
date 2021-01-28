@@ -103,7 +103,7 @@ const timeSheet = (function () {
 
 
         //-----------------------------------------------------------------------
-        const notSendId = data.length + 1
+        const notSendId = data.length;
         const karkard_notSend = new timeSheet_Row(notSendId, null, "ارسال نشده", "DontSend", "66666666-d37d-1001-0000-e1f4a753bee5", []);
         data.push(karkard_notSend);
 
@@ -120,7 +120,7 @@ const timeSheet = (function () {
 
 
         // // // //--------------------------------------------------------------------------------
-        // // // const onApprovingId = data.length + 1
+        // // // const onApprovingId = data.length;
         // // // const karkard_onApproving = new timeSheet_Row(onApprovingId, null, "در حال تایید", "OnApproving", "77777777-d37d-1001-0000-e1f4a753bee5", []);
         // // // data.push(karkard_onApproving);
 
@@ -132,7 +132,7 @@ const timeSheet = (function () {
         // // // }else data.pop();
         // // // //--------------------------------------------------------------------------------
 
-        // // // const finalId = data.length + 1
+        // // // const finalId = data.length;
         // // // const karkard_final = new timeSheet_Row(finalId, null, "تایید نهایی", "Final", "88888888-d37d-1001-0000-e1f4a753bee5", []);
         // // // data.push(karkard_final);
 
@@ -145,7 +145,7 @@ const timeSheet = (function () {
 
         //---------------------------------------------------------------------------------
 
-        const deniedId = data.length + 1
+        const deniedId = data.length;
         const karkard_deny = new timeSheet_Row(deniedId, null, "رد شده", "Denied", "99999999-d37d-1001-0000-e1f4a753bee5", []);
         data.push(karkard_deny);
 
@@ -159,7 +159,7 @@ const timeSheet = (function () {
         //---------------------------------------------------------------------------------
 
 
-        const otherId = data.length + 1
+        const otherId = data.length;
         const karkard_other = new timeSheet_Row(otherId, null, "سایر", "Other", "10101010-d37d-1001-0000-e1f4a753bee5", []);
         data.push(karkard_other);
 
@@ -172,14 +172,11 @@ const timeSheet = (function () {
 
         //---------------------------------------------------------------------------------
 
-        
-
         return data;
     }
 
     function private_addTimesForAmaliat(hozoor, noSend, mainKarkard, amalit) {
         //سه تا دکمه بالا را مشخص می کنه که باشه یا نه
-        const times = [];
 
         for (let i = 0; i < hozoor.values.length; i++) {
             const hozoorTodayTime = hozoor.values[i];
@@ -193,14 +190,14 @@ const timeSheet = (function () {
                 title: hozoorTodayTime.persianDate,
                 value: { isOpen: hozoorTodayTime.isOpen, has_NotSendData: !!nosendTodayTime.minute, hasKarkard: !!mainKarkardTodayTime.minute }
             });
-
         }
-
-
     }
 
     function convertServerDataToTimeSheet_ForApprove(response) {
         const data = [];
+
+        const amaliat = new timeSheet_Row(0, null, "عملیات", "Amaliat", "eb96abcb-d37d-0000-1000-e1f4a753bee5", []);
+        data.push(amaliat);
 
         const hozoor = new timeSheet_Row(1, null, "حضور", "-", "eb96abcb-d37d-4aa1-1000-e1f4a753bee5", []);
         data.push(hozoor);
@@ -217,7 +214,7 @@ const timeSheet = (function () {
         private_addProjectsAndTasksTimes(data, times, projects, 3);
 
         //----------------------------------------------------------------------------
-        const taeedNashodeId = data.length + 1
+        const taeedNashodeId = data.length;
         const karkard_notApprove = new timeSheet_Row(taeedNashodeId, null, "تایید نشده", "-", "eb96abcb-d37d-1001-0000-e1f4a753bee5", []);
         data.push(karkard_notApprove);
 
@@ -225,16 +222,22 @@ const timeSheet = (function () {
         const times_notApprove = private_findTimesAndProjects('work', response, null, null, karkard_notApprove, null, projects_notApprove, "TaskNotApprove");
 
         private_addProjectsAndTasksTimes(data, times_notApprove, projects_notApprove, taeedNashodeId, true);
+        if(projects_notApprove.length){
+            for(let i=taeedNashodeId;i<data.length;i++){
+                data[i].has_NotApproveData = true;
+            }
+        }
+
+        private_addTimesForAmaliat_approver(hozoorDetail, karkard_notApprove, amaliat);
 
         //----------------------------------------------------------------------------
-        const otherId = data.length + 1
+        const otherId = data.length;
         const karkard_other = new timeSheet_Row(otherId, null, "سایر", "-", "eb96abcb-d37d-1005-0000-e1f4a753bee5", []);
         data.push(karkard_other);
 
         const projects_ohter = [];
         const times_other = private_findTimesAndProjects('ohter', response, null, null, karkard_other, null, projects_ohter, null);
         if (projects_ohter.length) {
-            debugger;
 
             private_addProjectsAndTasksTimes(data, times_other, projects_ohter, otherId, true);
 
@@ -256,8 +259,25 @@ const timeSheet = (function () {
         } else data.pop();
 
 
-
         return data;
+    }
+
+    function private_addTimesForAmaliat_approver(hozoor, notApprove, amalit) {
+        //یک دکمه بالا صفحه را مشخص می کنه که باشه یا نه
+
+        for (let i = 0; i < hozoor.values.length; i++) {
+            const hozoorTodayTime = hozoor.values[i];
+            const notApproveTodayTime = notApprove.values[i];
+
+            amalit.values.push({
+                date: hozoorTodayTime.date,
+                persianDate: hozoorTodayTime.persianDate,
+                persianDay: hozoorTodayTime.persianDay,
+                title: hozoorTodayTime.persianDate,
+                has_NotApproveData: !!notApproveTodayTime.minute
+            });
+
+        }
     }
 
     function private_addProjectsAndTasksTimes(data, times, projects, parentId, isApprove) {
@@ -267,7 +287,7 @@ const timeSheet = (function () {
         const rowProjects = [];
         for (var i = 0; i < projects.length; i++) {
             const proj = projects[i];
-            const pId = data.length + 1;
+            const pId = data.length;
             var p = new timeSheet_Row(pId, parentId, proj.title, "Project", proj.id, []);
             data.push(p);
             rowProjects.push(p);
@@ -276,7 +296,7 @@ const timeSheet = (function () {
 
             for (var j = 0; j < proj.workouts.length; j++) {
                 const workout = proj.workouts[j];
-                var w = new timeSheet_Row(data.length + 1, pId, workout.title, isApprove ? workout.state : "Workout", workout.id, []);
+                var w = new timeSheet_Row(data.length, pId, workout.title, isApprove ? workout.state : "Workout", workout.id, []);
                 data.push(w);
                 p.workouts.push(w)
             }

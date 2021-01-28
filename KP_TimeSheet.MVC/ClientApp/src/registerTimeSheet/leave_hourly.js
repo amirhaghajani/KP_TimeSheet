@@ -86,8 +86,6 @@ const hl = (function () {
 
   function private_setDatepicker() {
 
-    debugger;
-
     var timeSheetData = moduleData.data.timeSheetData_get();
     var startTime = timeSheetData[0].values[0];
     var endTime = timeSheetData[0].values[timeSheetData[0].values.length - 1];
@@ -139,8 +137,6 @@ const hl = (function () {
 
   function save() {
     resetErrors();
-
-    debugger;
 
     var mission = {
       id: "00000000-0000-0000-0000-000000000000",

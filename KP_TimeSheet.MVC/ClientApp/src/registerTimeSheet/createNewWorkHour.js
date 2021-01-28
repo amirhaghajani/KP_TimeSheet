@@ -273,6 +273,8 @@ const module_createNewRorkHour = (function () {
 
         $("#txtDescription").val("");
         $("#TaskPanel").hide();
+
+        moduleData.afterGetProjectsEnd=null;
     }
 
     return {

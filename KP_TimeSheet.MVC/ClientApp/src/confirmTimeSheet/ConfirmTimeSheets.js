@@ -201,14 +201,13 @@ function kddlUsers_OnChange(e) {
 function Init_TimeSheetTreeListConfirm(data) {
 
 	var ktrlTSColumnsConfirm = ktrlTimeSheetsConfirm_OnInitColumns(data);
-	var counter = 0;
-	var lenth = data[0].values.length;
+	var timeSheetData = data.slice(1);
 
 	$("#ktrlTimeSheetsConfirm").kendoTreeList({
 		dataSource: {
 			transport: {
 				read: function (e) {
-					e.success(data);
+					e.success(timeSheetData);
 				},
 			}
 		},
@@ -247,10 +246,27 @@ function ktrlTimeSheetsConfirm_OnInitColumns(response) {
 
 	var colTitle = new KTRColumnConfirm();
 
-	colTitle.field = "title";
+	//colTitle.field = "title";
 	colTitle.title = "عنوان";
 	colTitle.hidden = false;
 	colTitle.width = 150;
+	colTitle.template = (data)=>{
+		if(!data.has_NotApproveData){
+			return data.title;
+		}
+
+		const color= data.type == '-' ? 'style="color:gray"' : (data.type == 'Project' ? 'style="color:#00848C"' : 'style="color:#117243"');
+		const bc= data.type == '-' ? ';background-color:white' : (data.type == 'Project' ? ';background-color:#E5F0FF' :';background-color:#CEFF9D');
+		const title= data.type == '-' ? `همه کارکردهای تایید نشده` : (data.type == 'Project' ? `همه کارکردهای تایید نشده پروژه ${data.title}` : `همه کارکردهای تایید نشده فعالیت ${data.title}`);
+
+
+		return data.title +`<button title='${title}' data-type='${data.type}' data-uid='${data.uuiidd}'
+		class='pull-left btn btn-success btn-xs forFound_ApproveTaskAllDates' 
+		style='margin-right:5px;padding: 4px 4px 0 ${bc};'>
+			<i class='glyphicon glyphicon-ok' ${color}></i>
+		</button>`
+		
+	};
 	columns.push(colTitle);
 
 	///-----------------------------------------------------------------
@@ -261,9 +277,9 @@ function ktrlTimeSheetsConfirm_OnInitColumns(response) {
 
 		var tsDate = response[0].values[i];
 		var colDate = new KTRColumnConfirm();
-		colDate.field = "values[" + i + "].value";
+		//colDate.field = "values[" + i + "].value";
 		colDate.title = tsDate.title;
-		colDate.headerTemplate = "<h6><b>" + tsDate.persianDate + "</b></h6><h6>" + tsDate.persianDay + "</h6>";
+		colDate.headerTemplate = "<h6><b>" + tsDate.persianDate + "</b></h6><h6><span>" + tsDate.persianDay + "</span></h6>";
 		colDate.hidden = false;
 		//تخصیص متد به تپلیت فقط باید ایندکس ها تنظیم گرددند
 		colDate.template = (dataItem) => TreeListTemplateColumn(dataItem, index);
@@ -286,42 +302,54 @@ function KTRColumn() {
 
 function TreeListTemplateColumn(dataItem, index) {
 
-	if (index < dataItem.values.length) {
-		if (dataItem.values[index].value != "0:00" && dataItem.type == "TaskNotApprove" && dataItem.values[index].value != "") {
-			return dataItem.values[index].value +
-				`<button title='تایید کارکرد' data-uid='${dataItem.uuiidd}' data-index='${index}' 
-				 class='pull-left btn btn-success btn-xs forFound_ApproveTask' style='margin-right:5px;padding: 4px 4px 0;'><i class='glyphicon glyphicon-ok'></i></button>` +
-				`<button title='رد کارکرد' data-uid='${dataItem.uuiidd}' data-index='${index}' 
-				 class='pull-left btn btn-warning btn-xs forFound_DenyTask' style='margin-left:5px;padding: 4px 4px 0;'><i class='glyphicon glyphicon-remove'></i></button>`;
+	if (index >= dataItem.values.length) return "";
+
+	if (dataItem.has_NotApproveData && dataItem.values[index].value!='' &&  dataItem.values[index].value!='0:00') {
+
+		const color= dataItem.type == '-' ? 'style="color:gray"' : (dataItem.type == 'Project' ? 'style="color:#00848C"' : 'style="color:#117243"');
+		const bc= dataItem.type == '-' ? ';background-color:white' : (dataItem.type == 'Project' ? ';background-color:#E5F0FF' :';background-color:#CEFF9D');
+		const title= dataItem.type == '-' ? `کارکردهای تایید نشده در ${dataItem.values[index].persianDate}` : 
+					(dataItem.type == 'Project' ? `کارکردهای تایید نشده پروژه ${dataItem.title} در ${dataItem.values[index].persianDate}` : 
+						`کارکردهای تایید نشده فعالیت ${dataItem.title} در ${dataItem.values[index].persianDate}`);
+
+		return dataItem.values[index].value +
+			`<button title='${title}' data-uid='${dataItem.uuiidd}' data-index='${index}' data-type='${dataItem.type}' 
+				 class='pull-left btn btn-success btn-xs forFound_ApproveTask' style='margin-right:5px;padding: 4px 4px 0 ${bc};'>
+				 <i class='glyphicon glyphicon-ok' ${color}></i></button>`;
+			
+	}
+	else {
+		if (dataItem.values[index].value == "0:00") {
+			return "<b class='text-warning'>" + dataItem.values[index].value + " </b>"
+		}
+		else if (dataItem.values[index].value == "") {
+			return "<b class='text-warning'> </b>"
 		}
 		else {
-			if (dataItem.values[index].value == "0:00") {
-				return "<b class='text-warning'>" + dataItem.values[index].value + " </b>"
-			}
-			else if (dataItem.values[index].value == "") {
-				return "<b class='text-warning'> </b>"
-			}
-			else {
-				return "<b>" + dataItem.values[index].value + " </b>"
-			}
+			return "<b>" + dataItem.values[index].value + " </b>"
 		}
-	} else {
-		return "";
 	}
 
 }
 
 function ktrlTimeSheetsConfirm_dataBound(e) {
 	$('.forFound_ApproveTask').off().on('click', function () {
-		const uid = $(this).data("uid");
+		const id = $(this).data("uid");
 		const index = $(this).data("index");
-		ApproveTask(uid, index);
+		const type = $(this).data("type");
+
+		alert('id:'+ id+ ' type:' + type + ' index:'+ index);
+		//ApproveTask(uid, index);
 	});
-	$('.forFound_DenyTask').off().on('click', function () {
-		const uid = $(this).data("uid");
-		const index = $(this).data("index");
-		DenyTask(uid, index);
+
+	$('.forFound_ApproveTaskAllDates').off().on('click', function () {
+		const id = $(this).data("uid");
+		const type = $(this).data("type");
+		var timesheetData = dataService.timeSheetDataConfirm_get()[0];
+		alert('id:'+ id+ ' type:' + type);
 	});
+
+
 }
 
 function ApproveTask(id, index) {
@@ -402,15 +430,15 @@ function InitMonthlyByProjectsGridConfirm() {
 	service.getThisMonthDataByUser(prmData, (response) => {
 
 		const items = [response.presencepercent, response.workpercent];
-		const v1= common_timeSheet.calcPercent(items, response.presencepercent);
+		const v1 = common_timeSheet.calcPercent(items, response.presencepercent);
 		const v2 = common_timeSheet.calcPercent(items, response.workpercent);
 
 		$("#MonthlyPresenceconfirmProgress").text(common_timeSheet.convertMinutsToTime(response.presence));
 		$("#MonthlyWorkHourconfirmProgress").text(common_timeSheet.convertMinutsToTime(response.work));
 
-		$("#MonthlyPresenceconfirm").css('width', v1+'%').attr('aria-valuenow', v1);
-		$("#MonthlyWorkHourconfirm").css('width', v2+'%').attr('aria-valuenow', v2);
-				
+		$("#MonthlyPresenceconfirm").css('width', v1 + '%').attr('aria-valuenow', v1);
+		$("#MonthlyWorkHourconfirm").css('width', v2 + '%').attr('aria-valuenow', v2);
+
 
 		common.loaderHide();
 	});
@@ -452,14 +480,14 @@ function InitPeriodlyByProjectsGridConfirm() {
 	service.getThisPeriodDataByUserId(prmData, (response) => {
 
 		const items = [response.presencepercent, response.workpercent];
-		const v1= common_timeSheet.calcPercent(items, response.presencepercent);
+		const v1 = common_timeSheet.calcPercent(items, response.presencepercent);
 		const v2 = common_timeSheet.calcPercent(items, response.workpercent);
 
 		$("#PeriodicallyPresenceconfirmProgress").text(common_timeSheet.convertMinutsToTime(response.presence));
 		$("#PeriodicallyWorkHourconfirmProgress").text(common_timeSheet.convertMinutsToTime(response.work));
 
-		$("#PeriodicallyPresenceconfirm").css('width', v1+'%').attr('aria-valuenow', v1);
-		$("#PeriodicallyWorkHourconfirm").css('width', v2+'%').attr('aria-valuenow', v2);
+		$("#PeriodicallyPresenceconfirm").css('width', v1 + '%').attr('aria-valuenow', v1);
+		$("#PeriodicallyWorkHourconfirm").css('width', v2 + '%').attr('aria-valuenow', v2);
 	});
 
 	service.getThisPeriodProjectsByUserId(prmData, (response) => {

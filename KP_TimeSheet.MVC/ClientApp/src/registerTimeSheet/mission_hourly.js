@@ -136,8 +136,7 @@ const hm = (function () {
   
   function save() {
     resetErrors();
-    
-    debugger;
+
 
 		var mission = {
 			id: "00000000-0000-0000-0000-000000000000",
