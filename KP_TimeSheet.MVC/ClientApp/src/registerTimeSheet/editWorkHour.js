@@ -28,25 +28,7 @@ const editWorkHour = (function () {
 	function WndEditWorkHours_OnInit() {
 		GetWorkHours_GrdEditWorkHour();
 
-		var kwndSaveWHs = $("#WndEditWorkHours");
-		kwndSaveWHs.kendoWindow({
-			width: moduleData.common.window_width(),
-			height: moduleData.common.window_height(),
-
-			activate: moduleData.common.addNoScrollToBody,
-			deactivate: moduleData.common.removeNoScrollToBody,
-
-			scrollable: true,
-			visible: false,
-			modal: true,
-			actions: [
-				"Pin",
-				"Minimize",
-				"Maximize",
-				"Close"
-			],
-			//open: moduleData.common.adjustSize,
-		}).data("kendoWindow").center().open();
+		moduleData.common.openWindow('WndEditWorkHours');
 	}
 
 	function Close_WndEditWorkHours() {

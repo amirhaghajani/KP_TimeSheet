@@ -62,25 +62,8 @@ const hisotrSentWorkHour = (function () {
 
 		moduleData.hisotory_workHour.Create_GrdHistory();
 		moduleData.hisotory_workHour.HideHistory();
-		$("#WndMonitorSentWorkHours").kendoWindow({
 
-			width: moduleData.common.window_width(),
-			height: moduleData.common.window_height(),
-
-			activate: moduleData.common.addNoScrollToBody,
-			deactivate: moduleData.common.removeNoScrollToBody,
-
-			scrollable: true,
-			visible: false,
-			modal: true,
-			actions: [
-				"Pin",
-				"Minimize",
-				"Maximize",
-				"Close"
-			],
-			//open: moduleData.common.adjustSize,
-		}).data("kendoWindow").center().open();
+		moduleData.common.openWindow('WndMonitorSentWorkHours');
 
 		$("#GrdMonitorSentWorkHour").kendoGrid({
 			dataSource: {

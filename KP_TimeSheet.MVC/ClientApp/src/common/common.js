@@ -108,6 +108,29 @@ const common = (function () {
 		$("body").removeClass("ob-no-scroll");
 	}
 
+	function openWindow(id,fnActivated,fnClose){
+		$(`#${id}`).kendoWindow({
+			activate: ()=>{
+				 addNoScrollToBody();
+				 if(fnActivated) fnActivated();
+			},
+			deactivate: removeNoScrollToBody,
+	  
+			scrollable: true,
+			visible: false,
+			modal: true,
+			actions: [
+			  "Pin",
+			  "Minimize",
+			  "Maximize",
+			  "Close"
+			],
+			close: ()=>{ if(fnClose) fnClose()}
+		  }).data("kendoWindow")
+		  .setOptions({width: window_width(), height: window_height()});
+		  $(`#${id}`).data("kendoWindow").center().open();
+	}
+
 	return {
 		loaderShow: loaderShow,
 		loaderHide: loaderHide,
@@ -117,6 +140,7 @@ const common = (function () {
 
 		window_height: window_height,
 		window_width: window_width,
+		openWindow: openWindow,
 
 		addNoScrollToBody: addNoScrollToBody,
 		removeNoScrollToBody: removeNoScrollToBody,
@@ -137,6 +161,7 @@ module.exports = {
 
 	window_height: common.window_height,
 	window_width: common.window_width,
+	openWindow: common.openWindow,
 
 	addNoScrollToBody: common.addNoScrollToBody,
 	removeNoScrollToBody: common.removeNoScrollToBody,

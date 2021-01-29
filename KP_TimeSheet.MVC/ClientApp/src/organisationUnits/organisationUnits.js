@@ -39,7 +39,6 @@ function BuildNewOrganUnit() {
             OrganUnit = response;
 
             GetOrganUnits();
-            WNDEditAndAddOrgan_OnInit();
             GetUsersOrganUnits();
             GRDOrganUsers_OnInit();
 
@@ -102,32 +101,8 @@ function OnGetOrganUnits(response) {
     DDLtParentOrgan_OnInit();
 }
 
-function WNDEditAndAddOrgan_OnInit() {
-    var kwndaddorganWHs = $("#WNDEditAndAddOrgan");
-    kwndaddorganWHs.kendoWindow({
-        width: common.window_width(),
-        height: common.window_height(),
-
-        activate: common.addNoScrollToBody,
-        deactivate: common.removeNoScrollToBody,
-
-        scrollable: true,
-
-        visible: false,
-
-        modal: true,
-        actions: [
-            "Pin",
-            "Minimize",
-            "Maximize",
-            "Close"
-        ],
-        //open: common.adjustSize,
-    }).data("kendoWindow").center();
-}
-
 function WNDEditAndAddOrgan_OnOpen() {
-    $("#WNDEditAndAddOrgan").data("kendoWindow").open();
+    moduleData.common.openWindow('WNDEditAndAddOrgan');
 }
 
 function WNDEditAndAddOrgan_OnClose() {

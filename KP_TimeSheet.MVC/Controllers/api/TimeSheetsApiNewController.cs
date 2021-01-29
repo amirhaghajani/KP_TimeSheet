@@ -343,5 +343,49 @@ namespace KP.TimeSheets.MVC
                 return this.ReturnError(ex, "خطا در ذخیره ماموریت ساعتی");
             }
         }
+
+        [HttpGet("waitingApprove/{wantedUserId}/{startDate}/{endDate}/{projectId?}/{taskId?}")]
+        [ProducesResponseType(typeof(List<vmGetWaitingForApproveWorkhourDetail_Resualt>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetWaitingForApproveWorkhourDetail(Guid wantedUserId,DateTime startDate, DateTime endDate, Guid? projectId, Guid? taskId)
+        {
+            try
+            {
+                var currentUser = new UserHelper().GetCurrent(this._uow, this.UserName);
+
+                var query = this.DBContext.spWaitingForApproveWorkHourDetail.FromSqlInterpolated(
+                        this.DBContext.spWaitingForApproveWorkHourDetail_str(
+                                                currentUser.ID,
+                                                wantedUserId,
+                                                startDate,
+                                                endDate,
+                                                projectId,
+                                                taskId
+                                                        ));
+                
+                var days = new string[] { "شنبه", "یکشنبه", "دوشنبه", "سه شنبه", "چهارشنبه", "پنج شنبه", "جمعه" };
+
+                var items = await query.ToListAsync();
+                var answer = items.Select(i => new vmGetWaitingForApproveWorkhourDetail_Resualt{
+                    date = i.Date,
+                    description = i.Description,
+                    isSend = i.IsSend,
+                    minutes = i.Minutes,
+                    projectId = i.ProjectId,
+                    projectTitle = i.ProjectTitle,
+                    title = i.Title,
+                    workHourId = i.WorkHourId,
+                    date_persian = i.PersianDate,
+                    day_persian =days[i.TimeDayOfTheWeek]
+                });
+
+                return Ok(answer);
+
+            }
+            catch (Exception ex)
+            {
+                return this.ReturnError(ex, "خطا در دریافت جزئیات موارد منتظر تایید");
+            }
+        }
     }
 }

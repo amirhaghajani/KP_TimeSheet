@@ -109,6 +109,29 @@ const common = (function () {
 		$("body").removeClass("ob-no-scroll");
 	}
 
+	function openWindow(id,fnActivated,fnClose){
+		$(`#${id}`).kendoWindow({
+			activate: ()=>{
+				 addNoScrollToBody();
+				 if(fnActivated) fnActivated();
+			},
+			deactivate: removeNoScrollToBody,
+	  
+			scrollable: true,
+			visible: false,
+			modal: true,
+			actions: [
+			  "Pin",
+			  "Minimize",
+			  "Maximize",
+			  "Close"
+			],
+			close: ()=>{ if(fnClose) fnClose()}
+		  }).data("kendoWindow")
+		  .setOptions({width: window_width(), height: window_height()});
+		  $(`#${id}`).data("kendoWindow").center().open();
+	}
+
 	return {
 		loaderShow: loaderShow,
 		loaderHide: loaderHide,
@@ -118,6 +141,7 @@ const common = (function () {
 
 		window_height: window_height,
 		window_width: window_width,
+		openWindow: openWindow,
 
 		addNoScrollToBody: addNoScrollToBody,
 		removeNoScrollToBody: removeNoScrollToBody,
@@ -138,6 +162,7 @@ module.exports = {
 
 	window_height: common.window_height,
 	window_width: common.window_width,
+	openWindow: common.openWindow,
 
 	addNoScrollToBody: common.addNoScrollToBody,
 	removeNoScrollToBody: common.removeNoScrollToBody,
@@ -659,11 +684,12 @@ module.exports = {
     foundExpandedTreeListTitle: timeSheet.foundExpandedTreeListTitle,
     expandTreeListItems: timeSheet.expandTreeListItems
 };
-},{"../registerTimeSheet/mainGrid":6}],3:[function(require,module,exports){
+},{"../registerTimeSheet/mainGrid":7}],3:[function(require,module,exports){
 const common = require('../common/common');
 const service = require('./service');
 const dataService = require('./data');
 const common_timeSheet = require('../common/timesheet');
+const approveWindow = require('./approveWindow');
 
 
 function KTRColumnConfirm() {
@@ -680,11 +706,10 @@ $(document).ready(function () {
 
 	dataService.init();
 	service.init(dataService, common_timeSheet, common);
+	approveWindow.init(common, service, dataService);
 
 
 	GetUsers();
-	WndDeny_OnInit();
-	WNDSelectPeriod_OnInit();
 
 	$('#btnpreviousPeriodconfirm').off().on('click', function () {
 		GetPreviousNextPeriodconfirm('previous');
@@ -714,9 +739,7 @@ $(document).ready(function () {
 });
 
 $('input:radio[name="optradioconfirm"]').change(function () {
-
 	EnableAndDisableSendPeriodRadioButtonConfirm(this);
-
 });
 
 $("#numberDaysconfirm").keyup(function () {
@@ -726,64 +749,19 @@ $("#numberDaysconfirm").keyup(function () {
 	}
 });
 
-function WNDSelectPeriod_OnInit() {
-
-	var kwndSendWHs = $("#kwndSelectTimePeriodConfirm");
-	kwndSendWHs.kendoWindow({
-
-		width: common.window_width(),
-		height: common.window_height(),
-
-		activate: common.addNoScrollToBody,
-		deactivate: common.removeNoScrollToBody,
-
-		scrollable: false,
-		visible: false,
-		modal: true,
-		actions: [
-			"Pin",
-			"Minimize",
-			"Maximize",
-			"Close"
-		],
-		//open: common.adjustSize,
-	}).data("kendoWindow").center();
-}
 
 function WNDSelectPeriod_OnOpen() {
-	$("#kwndSelectTimePeriodConfirm").data("kendoWindow").open()
+	moduleData.common.openWindow('kwndSelectTimePeriodConfirm');
 }
 
 function WNDSelectPeriod_OnClose() {
 	$("#kwndSelectTimePeriodConfirm").data("kendoWindow").close();
 }
 
-function WndDeny_OnInit() {
-	var kwndDeny = $("#WndDeny");
-	kwndDeny.kendoWindow({
-		width: common.window_width(),
-		height: common.window_height(),
 
-		activate: common.addNoScrollToBody,
-		deactivate: common.removeNoScrollToBody,
-
-		scrollable: false,
-		visible: false,
-		modal: true,
-		actions: [
-			"Pin",
-			"Minimize",
-			"Maximize",
-			"Close"
-		],
-		//open: common.adjustSize,
-	}).data("kendoWindow").center();
-}
 
 function WndDeny_OnOpen() {
-
-	$("#WndDeny").data("kendoWindow").open()
-
+	moduleData.common.openWindow('WndDeny');
 }
 
 function WndDeny_OnClose() {
@@ -912,22 +890,22 @@ function ktrlTimeSheetsConfirm_OnInitColumns(response) {
 	colTitle.title = "عنوان";
 	colTitle.hidden = false;
 	colTitle.width = 150;
-	colTitle.template = (data)=>{
-		if(!data.has_NotApproveData){
+	colTitle.template = (data) => {
+		if (!data.has_NotApproveData) {
 			return data.title;
 		}
 
-		const color= data.type == '-' ? 'style="color:gray"' : (data.type == 'Project' ? 'style="color:#00848C"' : 'style="color:#117243"');
-		const bc= data.type == '-' ? ';background-color:white' : (data.type == 'Project' ? ';background-color:#E5F0FF' :';background-color:#CEFF9D');
-		const title= data.type == '-' ? `همه کارکردهای تایید نشده` : (data.type == 'Project' ? `همه کارکردهای تایید نشده پروژه ${data.title}` : `همه کارکردهای تایید نشده فعالیت ${data.title}`);
+		const color = data.type == '-' ? 'style="color:gray"' : (data.type == 'Project' ? 'style="color:#00848C"' : 'style="color:#117243"');
+		const bc = data.type == '-' ? ';background-color:white' : (data.type == 'Project' ? ';background-color:#E5F0FF' : ';background-color:#CEFF9D');
+		const title = data.type == '-' ? `همه کارکردهای تایید نشده` : (data.type == 'Project' ? `همه کارکردهای تایید نشده پروژه ${data.title}` : `همه کارکردهای تایید نشده فعالیت ${data.title}`);
 
 
-		return data.title +`<button title='${title}' data-type='${data.type}' data-uid='${data.uuiidd}'
+		return data.title + `<button title='${title}' data-type='${data.type}' data-uid='${data.uuiidd}'
 		class='pull-left btn btn-success btn-xs forFound_ApproveTaskAllDates' 
 		style='margin-right:5px;padding: 4px 4px 0 ${bc};'>
 			<i class='glyphicon glyphicon-ok' ${color}></i>
 		</button>`
-		
+
 	};
 	columns.push(colTitle);
 
@@ -966,19 +944,19 @@ function TreeListTemplateColumn(dataItem, index) {
 
 	if (index >= dataItem.values.length) return "";
 
-	if (dataItem.has_NotApproveData && dataItem.values[index].value!='' &&  dataItem.values[index].value!='0:00') {
+	if (dataItem.has_NotApproveData && dataItem.values[index].value != '' && dataItem.values[index].value != '0:00') {
 
-		const color= dataItem.type == '-' ? 'style="color:gray"' : (dataItem.type == 'Project' ? 'style="color:#00848C"' : 'style="color:#117243"');
-		const bc= dataItem.type == '-' ? ';background-color:white' : (dataItem.type == 'Project' ? ';background-color:#E5F0FF' :';background-color:#CEFF9D');
-		const title= dataItem.type == '-' ? `کارکردهای تایید نشده در ${dataItem.values[index].persianDate}` : 
-					(dataItem.type == 'Project' ? `کارکردهای تایید نشده پروژه ${dataItem.title} در ${dataItem.values[index].persianDate}` : 
-						`کارکردهای تایید نشده فعالیت ${dataItem.title} در ${dataItem.values[index].persianDate}`);
+		const color = dataItem.type == '-' ? 'style="color:gray"' : (dataItem.type == 'Project' ? 'style="color:#00848C"' : 'style="color:#117243"');
+		const bc = dataItem.type == '-' ? ';background-color:white' : (dataItem.type == 'Project' ? ';background-color:#E5F0FF' : ';background-color:#CEFF9D');
+		const title = dataItem.type == '-' ? `کارکردهای تایید نشده در ${dataItem.values[index].persianDate}` :
+			(dataItem.type == 'Project' ? `کارکردهای تایید نشده پروژه ${dataItem.title} در ${dataItem.values[index].persianDate}` :
+				`کارکردهای تایید نشده فعالیت ${dataItem.title} در ${dataItem.values[index].persianDate}`);
 
 		return dataItem.values[index].value +
 			`<button title='${title}' data-uid='${dataItem.uuiidd}' data-index='${index}' data-type='${dataItem.type}' 
 				 class='pull-left btn btn-success btn-xs forFound_ApproveTask' style='margin-right:5px;padding: 4px 4px 0 ${bc};'>
 				 <i class='glyphicon glyphicon-ok' ${color}></i></button>`;
-			
+
 	}
 	else {
 		if (dataItem.values[index].value == "0:00") {
@@ -1000,15 +978,21 @@ function ktrlTimeSheetsConfirm_dataBound(e) {
 		const index = $(this).data("index");
 		const type = $(this).data("type");
 
-		alert('id:'+ id+ ' type:' + type + ' index:'+ index);
-		//ApproveTask(uid, index);
+		const projectId = type == 'Project' ? id : null;
+		const taskId = type == 'TaskNotApprove' ? id : null;
+		const date = dataService.timeSheetDataConfirm_get()[0].values[index].date;
+
+		approveWindow.showItemsWaitingApproveWindow(projectId,taskId,date);
 	});
 
 	$('.forFound_ApproveTaskAllDates').off().on('click', function () {
 		const id = $(this).data("uid");
 		const type = $(this).data("type");
-		var timesheetData = dataService.timeSheetDataConfirm_get()[0];
-		alert('id:'+ id+ ' type:' + type);
+
+		const projectId = type == 'Project' ? id : null;
+		const taskId = type == 'TaskNotApprove' ? id : null;
+
+		approveWindow.showItemsWaitingApproveWindow(projectId,taskId, null);
 	});
 
 
@@ -1241,7 +1225,149 @@ function EnableAndDisableSendPeriodRadioButtonConfirm() {
 
 }
 
-},{"../common/common":1,"../common/timesheet":2,"./data":4,"./service":5}],4:[function(require,module,exports){
+},{"../common/common":1,"../common/timesheet":2,"./approveWindow":4,"./data":5,"./service":6}],4:[function(require,module,exports){
+const approveWindow = (function () {
+
+  const moduleData = {};
+
+  function init(common, service, data) {
+    moduleData.common = common;
+    moduleData.service = service;
+    moduleData.data = data;
+
+    $('#GrdMonitorWaitingApproveWorkHour_Hide').off().on('click', function () {
+      $("#WndItemsWaitingApprove").data("kendoWindow").close();
+    });
+  }
+
+
+  function showItemsWaitingApproveWindow(projectId, taskId, date) {
+
+    moduleData.common.loaderShow();
+
+    private_open_GrdMonitorSentWorkHour();
+    //$("#WndItemsWaitingApprove").data("kendoWindow").setOptions({width: moduleData.common.window_width(), height: moduleData.common.window_height()});
+
+    var data = {
+      wantedUserId: moduleData.data.userId_get(),
+      startDate: date,
+      endDate: date
+    };
+
+    if (projectId) data.projectId = projectId;
+    if (taskId) data.taskId = taskId;
+
+    moduleData.service.getWaitingApproveWorkHourDetail(data, (response) => {
+      private_createEditGrid(response);
+
+      moduleData.common.loaderHide();
+    });
+
+  }
+
+  function private_createEditGrid() {
+
+  }
+
+  function private_open_GrdMonitorSentWorkHour() {
+
+    HideHistory();
+
+    moduleData.common.openWindow('WndItemsWaitingApprove');
+
+    
+
+
+    // $("#GrdMonitorSentWorkHour").kendoGrid({
+    // 	dataSource: {
+    // 		transport: {
+    // 			read: function (e) {
+    // 				e.success(_MonitorSentWorkHours);
+
+    // 				$('.forFound_Init_GRDHistory').off().on('click', function () {
+    // 					moduleData.hisotory_workHour.Init_GRDHistory(this);
+    // 				});
+    // 				$('.forFound_EditWorkhoure').off().on('click', function () {
+    // 					editWorkout(this);
+    // 				});
+    // 			}
+    // 		},
+    // 		pageSize: 10
+    // 	},
+    // 	height: 450,
+    // 	pageable: true,
+    // 	filterable: true,
+    // 	selectable: true,
+
+    // 	columns: [{
+    // 		field: "persianDate",
+    // 		title: "تاریخ",
+    // 		width: 100
+    // 	},
+    // 	{
+    // 		field: "projectTitle",
+    // 		title: "پروژه"
+    // 	}, {
+    // 		field: "taskTitle",
+    // 		title: "وظیفه"
+    // 	}, {
+    // 		field: "time",
+    // 		title: "ساعت کار",
+    // 		width: 80
+
+    // 	}, {
+    // 		field: "workFlowStageTitle",
+    // 		title: "عنوان مرحله",
+    // 		width: 200
+    // 	}
+    // 		, {
+    // 		title: "نمایش تاریخچه   ",
+    // 		template: function(dataItem,b,c){
+    // 			let answer = "<button type='button' class='btn btn-info btn-sm forFound_Init_GRDHistory' title='نمایش تاریخچه' name='info'>تاریخچه</button>";
+    // 			if(dataItem.workFlowStageType=='Resource'){
+    // 				answer+="<button type='button' style='margin-right:2px;' class='btn btn-success btn-sm forFound_EditWorkhoure'>ویرایش</button>"
+    // 			}
+    // 			return answer;
+    // 		},
+    // 		headerTemplate: "<label class='text-center'> نمایش تاریخچه </label>",
+    // 		filterable: false,
+    // 		sortable: false,
+    // 		width: 140
+    // 	}
+    // 	]
+
+    // });
+
+
+  }
+
+  function ShowHistory() {
+    $("#PanelMonitorWorkHour").fadeOut(400);
+
+    $("#PanelHistory").fadeIn(400);
+    var gridElement = $("#WorkHourHistory");
+    var dataArea = gridElement.find(".k-grid-content");
+    gridElement.height("100%");
+    dataArea.height("372px");
+  }
+
+  function HideHistory() {
+    $("#PanelMonitorWorkHour").fadeIn(400);
+    $("#PanelHistory").fadeOut(400);
+  }
+
+  return {
+    showItemsWaitingApproveWindow: showItemsWaitingApproveWindow,
+    init: init
+  };
+
+})();
+
+module.exports = {
+  showItemsWaitingApproveWindow: approveWindow.showItemsWaitingApproveWindow,
+  init: approveWindow.init
+};
+},{}],5:[function(require,module,exports){
 const dataM = (function () {
 
     const moduleData = {};
@@ -1287,7 +1413,7 @@ module.exports = {
     'userId_set': function (data) { dataM.moduleData._UserId = data; },
 
 };
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 const service = (function () {
 
 	const moduleData = {};
@@ -1362,9 +1488,6 @@ const service = (function () {
             }
 		});
 	}
-
-
-
 
 
 	function approveWorkHour(prmData, success_callBack, error_callBack) {
@@ -1551,6 +1674,30 @@ const service = (function () {
 
 
 
+	function getWaitingApproveWorkHourDetail(data, success_callBack, error_callBack) {
+
+		let url = `/api/timesheetsNew/waitingApprove/${data.wantedUserId}/${data.startDate}/${data.endDate}`;
+		if (data.projectId) url += `/${data.projectId}`;
+		if (data.taskId) url += `/${data.taskId}`;
+
+		$.ajax({
+			type: "Get",
+			url: url,
+			contentType: "application/json; charset=utf-8",
+			dataType: "json",
+			success: () => {
+				if (success_callBack) success_callBack();
+			},
+			error: (error) => {
+				moduleData.common.loaderHide();
+                moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+                if (error_callBack) error_callBack();
+            }
+		});
+	}
+
+
+
 
 	return {
 		init: init,
@@ -1567,6 +1714,7 @@ const service = (function () {
 		changeDisplayPeriodToDaily: changeDisplayPeriodToDaily,
 		getPreviousNextPeriodConfirm: getPreviousNextPeriodConfirm,
 		getCurrentPeriodConfirm: getCurrentPeriodConfirm,
+		getWaitingApproveWorkHourDetail: getWaitingApproveWorkHourDetail
 	}
 
 })();
@@ -1585,9 +1733,10 @@ module.exports = {
 	changeDisplayPeriodToWeeklyConfirm: service.changeDisplayPeriodToWeeklyConfirm,
 	changeDisplayPeriodToDaily: service.changeDisplayPeriodToDaily,
 	getPreviousNextPeriodConfirm: service.getPreviousNextPeriodConfirm,
-	getCurrentPeriodConfirm: service.getCurrentPeriodConfirm
+	getCurrentPeriodConfirm: service.getCurrentPeriodConfirm,
+	getWaitingApproveWorkHourDetail: service.getWaitingApproveWorkHourDetail
 }
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 const myMainGrid = (function () {
 
   const moduleData = {};

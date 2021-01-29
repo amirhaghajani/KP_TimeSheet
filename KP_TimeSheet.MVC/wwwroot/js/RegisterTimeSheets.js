@@ -109,6 +109,29 @@ const common = (function () {
 		$("body").removeClass("ob-no-scroll");
 	}
 
+	function openWindow(id,fnActivated,fnClose){
+		$(`#${id}`).kendoWindow({
+			activate: ()=>{
+				 addNoScrollToBody();
+				 if(fnActivated) fnActivated();
+			},
+			deactivate: removeNoScrollToBody,
+	  
+			scrollable: true,
+			visible: false,
+			modal: true,
+			actions: [
+			  "Pin",
+			  "Minimize",
+			  "Maximize",
+			  "Close"
+			],
+			close: ()=>{ if(fnClose) fnClose()}
+		  }).data("kendoWindow")
+		  .setOptions({width: window_width(), height: window_height()});
+		  $(`#${id}`).data("kendoWindow").center().open();
+	}
+
 	return {
 		loaderShow: loaderShow,
 		loaderHide: loaderHide,
@@ -118,6 +141,7 @@ const common = (function () {
 
 		window_height: window_height,
 		window_width: window_width,
+		openWindow: openWindow,
 
 		addNoScrollToBody: addNoScrollToBody,
 		removeNoScrollToBody: removeNoScrollToBody,
@@ -138,6 +162,7 @@ module.exports = {
 
 	window_height: common.window_height,
 	window_width: common.window_width,
+	openWindow: common.openWindow,
 
 	addNoScrollToBody: common.addNoScrollToBody,
 	removeNoScrollToBody: common.removeNoScrollToBody,
@@ -736,9 +761,6 @@ const service = (function () {
 	}
 
 
-
-
-
 	function approveWorkHour(prmData, success_callBack, error_callBack) {
 
 		$.ajax({
@@ -923,6 +945,30 @@ const service = (function () {
 
 
 
+	function getWaitingApproveWorkHourDetail(data, success_callBack, error_callBack) {
+
+		let url = `/api/timesheetsNew/waitingApprove/${data.wantedUserId}/${data.startDate}/${data.endDate}`;
+		if (data.projectId) url += `/${data.projectId}`;
+		if (data.taskId) url += `/${data.taskId}`;
+
+		$.ajax({
+			type: "Get",
+			url: url,
+			contentType: "application/json; charset=utf-8",
+			dataType: "json",
+			success: () => {
+				if (success_callBack) success_callBack();
+			},
+			error: (error) => {
+				moduleData.common.loaderHide();
+                moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+                if (error_callBack) error_callBack();
+            }
+		});
+	}
+
+
+
 
 	return {
 		init: init,
@@ -939,6 +985,7 @@ const service = (function () {
 		changeDisplayPeriodToDaily: changeDisplayPeriodToDaily,
 		getPreviousNextPeriodConfirm: getPreviousNextPeriodConfirm,
 		getCurrentPeriodConfirm: getCurrentPeriodConfirm,
+		getWaitingApproveWorkHourDetail: getWaitingApproveWorkHourDetail
 	}
 
 })();
@@ -957,7 +1004,8 @@ module.exports = {
 	changeDisplayPeriodToWeeklyConfirm: service.changeDisplayPeriodToWeeklyConfirm,
 	changeDisplayPeriodToDaily: service.changeDisplayPeriodToDaily,
 	getPreviousNextPeriodConfirm: service.getPreviousNextPeriodConfirm,
-	getCurrentPeriodConfirm: service.getCurrentPeriodConfirm
+	getCurrentPeriodConfirm: service.getCurrentPeriodConfirm,
+	getWaitingApproveWorkHourDetail: service.getWaitingApproveWorkHourDetail
 }
 },{}],4:[function(require,module,exports){
 const common = require('../common/common');
@@ -1415,29 +1463,9 @@ const module_createNewRorkHour = (function () {
             $("#ktpWorkHour").kendoTimePicker({
                 format: "HH:mm"
             });
-            var kwndSaveWHs = $("#kwndSaveWorkHours");
 
-
-
-            kwndSaveWHs.kendoWindow({
-                width: moduleData.common.window_width(),
-                height: moduleData.common.window_height(),
-
-                activate: moduleData.common.addNoScrollToBody,
-                deactivate: moduleData.common.removeNoScrollToBody,
-
-                scrollable: true,
-                visible: false,
-                modal: true,
-                actions: [
-                    "Pin",
-                    "Minimize",
-                    "Maximize",
-                    "Close"
-                ],
-                //open: moduleData.common.adjustSize,
-                close: ResetSaveWindow
-            }).data("kendoWindow").center().open();
+            moduleData.common.openWindow('kwndSaveWorkHours');
+            
         }
     }
 
@@ -1667,25 +1695,7 @@ const editWorkHour = (function () {
 	function WndEditWorkHours_OnInit() {
 		GetWorkHours_GrdEditWorkHour();
 
-		var kwndSaveWHs = $("#WndEditWorkHours");
-		kwndSaveWHs.kendoWindow({
-			width: moduleData.common.window_width(),
-			height: moduleData.common.window_height(),
-
-			activate: moduleData.common.addNoScrollToBody,
-			deactivate: moduleData.common.removeNoScrollToBody,
-
-			scrollable: true,
-			visible: false,
-			modal: true,
-			actions: [
-				"Pin",
-				"Minimize",
-				"Maximize",
-				"Close"
-			],
-			//open: moduleData.common.adjustSize,
-		}).data("kendoWindow").center().open();
+		moduleData.common.openWindow('WndEditWorkHours');
 	}
 
 	function Close_WndEditWorkHours() {
@@ -2008,25 +2018,8 @@ const hisotrSentWorkHour = (function () {
 
 		moduleData.hisotory_workHour.Create_GrdHistory();
 		moduleData.hisotory_workHour.HideHistory();
-		$("#WndMonitorSentWorkHours").kendoWindow({
 
-			width: moduleData.common.window_width(),
-			height: moduleData.common.window_height(),
-
-			activate: moduleData.common.addNoScrollToBody,
-			deactivate: moduleData.common.removeNoScrollToBody,
-
-			scrollable: true,
-			visible: false,
-			modal: true,
-			actions: [
-				"Pin",
-				"Minimize",
-				"Maximize",
-				"Close"
-			],
-			//open: moduleData.common.adjustSize,
-		}).data("kendoWindow").center().open();
+		moduleData.common.openWindow('WndMonitorSentWorkHours');
 
 		$("#GrdMonitorSentWorkHour").kendoGrid({
 			dataSource: {
@@ -2245,50 +2238,30 @@ const dl = (function () {
 
 		$("#dailyLeave_headerDiv").text("ثبت مرخصی روزانه");
 
-		var kwndSendWHs = $("#kwndDailyLeave");
-		kwndSendWHs.kendoWindow({
-			width: moduleData.common.window_width(),
-			height: moduleData.common.window_height(),
+		moduleData.common.openWindow('kwndDailyLeave',function () {
 
-			activate: function () {
-				moduleData.common.addNoScrollToBody();
+			private_setDatepicker();
+			private_leaveTypeComboInit();
 
-				private_setDatepicker();
-				private_leaveTypeComboInit();
+			var projects = moduleData.data.userProjects_get();
+			if (!projects || projects.length == 0) {
+				moduleData.service.getUserProjects((response) => {
+					private_projectComboInit(response);
+				});
+			} else {
+				private_projectComboInit(projects);
+			}
 
-				var projects = moduleData.data.userProjects_get();
-				if (!projects || projects.length == 0) {
-					moduleData.service.getUserProjects((response) => {
-						private_projectComboInit(response);
-					});
-				} else {
-					private_projectComboInit(projects);
-				}
+			var users = moduleData.data.users_get();
+			if (!users || users.length == 0) {
+				moduleData.service.getUsers((response) => {
+					private_alternateComboInit(response);
+				});
+			} else {
+				private_alternateComboInit(users);
+			}
 
-				var users = moduleData.data.users_get();
-				if (!users || users.length == 0) {
-					moduleData.service.getUsers((response) => {
-						private_alternateComboInit(response);
-					});
-				} else {
-					private_alternateComboInit(users);
-				}
-
-			},
-			deactivate: moduleData.common.removeNoScrollToBody,
-			scrollable: true,
-			visible: false,
-			modal: true,
-			actions: [
-				"Pin",
-				"Minimize",
-				"Maximize",
-				"Close"
-			],
-			//open: moduleData.common.adjustSize,
-			close: reset
-		}).data("kendoWindow").center().open();
-
+		}, reset);
 
 	}
 
@@ -2392,7 +2365,6 @@ const dl = (function () {
 
 	//Save-----------------------------------------------------------------
 	function reset() {
-
 		$('#dailyLeave_dateStart').val('');
 		$('#dailyLeave_dateFinish').val('');
 
@@ -2504,29 +2476,7 @@ const hl = (function () {
       private_projectComboInit(response);
     });
 
-    var kwndSendWHs = $("#kwndHourlyLeave");
-    kwndSendWHs.kendoWindow({
-      width: moduleData.common.window_width(),
-      height: moduleData.common.window_height(),
-
-      activate: function () {
-        moduleData.common.addNoScrollToBody();
-        private_setDatepicker();
-      },
-      deactivate: moduleData.common.removeNoScrollToBody,
-      scrollable: true,
-      visible: false,
-      modal: true,
-      actions: [
-        "Pin",
-        "Minimize",
-        "Maximize",
-        "Close"
-      ],
-      //open: moduleData.common.adjustSize,
-      close: reset
-    }).data("kendoWindow").center().open();
-
+    moduleData.common.openWindow('kwndHourlyLeave',()=>private_setDatepicker(),reset);
 
   }
 
@@ -3046,29 +2996,7 @@ const hm = (function () {
       private_projectComboInit(response);
     });
 
-    var kwndSendWHs = $("#kwndHourlyMission");
-    kwndSendWHs.kendoWindow({
-      width: moduleData.common.window_width(),
-      height: moduleData.common.window_height(),
-
-      activate: function () {
-        moduleData.common.addNoScrollToBody();
-        private_setDatepicker();
-      },
-      deactivate: moduleData.common.removeNoScrollToBody,
-      scrollable: true,
-      visible: false,
-      modal: true,
-      actions: [
-        "Pin",
-        "Minimize",
-        "Maximize",
-        "Close"
-      ],
-      //open: moduleData.common.adjustSize,
-      close: reset
-    }).data("kendoWindow").center().open();
-
+    moduleData.common.openWindow('kwndHourlyMission',()=>private_setDatepicker(),reset);
 
   }
 
@@ -3214,7 +3142,7 @@ const period_next_pervious = (function () {
         });
 
         $('#btnSelectPeriod').off().on('click', function () {
-            kwndSelectPeriod_OnInit();
+            moduleData.common.openWindow('kwndSelectTimePeriod');
         });
 
         $('#btnNextPeriod').off().on('click', function () {
@@ -3308,30 +3236,6 @@ const period_next_pervious = (function () {
 
         //     }
         // });
-    }
-
-
-
-    function kwndSelectPeriod_OnInit() {
-
-        var kwndSendWHs = $("#kwndSelectTimePeriod");
-        kwndSendWHs.kendoWindow({
-            width: moduleData.common.window_width(),
-			height: moduleData.common.window_height(),
-
-			activate: moduleData.common.addNoScrollToBody,
-			deactivate: moduleData.common.removeNoScrollToBody,
-            scrollable: true,
-            visible: false,
-            modal: true,
-            actions: [
-                "Pin",
-                "Minimize",
-                "Maximize",
-                "Close"
-            ],
-            //open: moduleData.common.adjustSize,
-        }).data("kendoWindow").center().open();
     }
 
     function kwndSelectPeriod_OnClose() {

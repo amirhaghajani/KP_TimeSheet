@@ -46,50 +46,30 @@ const dl = (function () {
 
 		$("#dailyLeave_headerDiv").text("ثبت مرخصی روزانه");
 
-		var kwndSendWHs = $("#kwndDailyLeave");
-		kwndSendWHs.kendoWindow({
-			width: moduleData.common.window_width(),
-			height: moduleData.common.window_height(),
+		moduleData.common.openWindow('kwndDailyLeave',function () {
 
-			activate: function () {
-				moduleData.common.addNoScrollToBody();
+			private_setDatepicker();
+			private_leaveTypeComboInit();
 
-				private_setDatepicker();
-				private_leaveTypeComboInit();
+			var projects = moduleData.data.userProjects_get();
+			if (!projects || projects.length == 0) {
+				moduleData.service.getUserProjects((response) => {
+					private_projectComboInit(response);
+				});
+			} else {
+				private_projectComboInit(projects);
+			}
 
-				var projects = moduleData.data.userProjects_get();
-				if (!projects || projects.length == 0) {
-					moduleData.service.getUserProjects((response) => {
-						private_projectComboInit(response);
-					});
-				} else {
-					private_projectComboInit(projects);
-				}
+			var users = moduleData.data.users_get();
+			if (!users || users.length == 0) {
+				moduleData.service.getUsers((response) => {
+					private_alternateComboInit(response);
+				});
+			} else {
+				private_alternateComboInit(users);
+			}
 
-				var users = moduleData.data.users_get();
-				if (!users || users.length == 0) {
-					moduleData.service.getUsers((response) => {
-						private_alternateComboInit(response);
-					});
-				} else {
-					private_alternateComboInit(users);
-				}
-
-			},
-			deactivate: moduleData.common.removeNoScrollToBody,
-			scrollable: true,
-			visible: false,
-			modal: true,
-			actions: [
-				"Pin",
-				"Minimize",
-				"Maximize",
-				"Close"
-			],
-			//open: moduleData.common.adjustSize,
-			close: reset
-		}).data("kendoWindow").center().open();
-
+		}, reset);
 
 	}
 
@@ -193,7 +173,6 @@ const dl = (function () {
 
 	//Save-----------------------------------------------------------------
 	function reset() {
-
 		$('#dailyLeave_dateStart').val('');
 		$('#dailyLeave_dateFinish').val('');
 

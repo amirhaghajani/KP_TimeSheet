@@ -61,11 +61,26 @@ namespace KP.TimeSheets.Persistance
         }
 
 
+        public DbSet<WaitingForApproveWorkHourDetail> spWaitingForApproveWorkHourDetail { get; set; }
+        public System.FormattableString spWaitingForApproveWorkHourDetail_str(Guid approver_userId,Guid? userId, 
+                DateTime? startDate,DateTime? endDate, Guid? projectId, Guid? taskId)
+        {
+            var prjId = projectId.HasValue ? $"'{projectId}'" : "NULL";
+            var tskId= taskId.HasValue ? $"'{taskId}'" : "NULL";
+                        
+            return $@"exec spWaitingForApproveWorkHourDetail @approver_userId={approver_userId}
+                        ,@userId={userId},@startDate={startDate},@endDate={endDate}
+                        ,@projectId={projectId}
+                        ,@taskId={taskId}";
+        }
+
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<EmployeeTimeSheetFromDB>().HasNoKey();
+            modelBuilder.Entity<WaitingForApproveWorkHourDetail>().HasNoKey();
 
             #region Configuration of Users' Table
 

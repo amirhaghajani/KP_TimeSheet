@@ -38,29 +38,7 @@ const hl = (function () {
       private_projectComboInit(response);
     });
 
-    var kwndSendWHs = $("#kwndHourlyLeave");
-    kwndSendWHs.kendoWindow({
-      width: moduleData.common.window_width(),
-      height: moduleData.common.window_height(),
-
-      activate: function () {
-        moduleData.common.addNoScrollToBody();
-        private_setDatepicker();
-      },
-      deactivate: moduleData.common.removeNoScrollToBody,
-      scrollable: true,
-      visible: false,
-      modal: true,
-      actions: [
-        "Pin",
-        "Minimize",
-        "Maximize",
-        "Close"
-      ],
-      //open: moduleData.common.adjustSize,
-      close: reset
-    }).data("kendoWindow").center().open();
-
+    moduleData.common.openWindow('kwndHourlyLeave',()=>private_setDatepicker(),reset);
 
   }
 

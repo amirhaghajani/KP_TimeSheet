@@ -22,7 +22,7 @@ const period_next_pervious = (function () {
         });
 
         $('#btnSelectPeriod').off().on('click', function () {
-            kwndSelectPeriod_OnInit();
+            moduleData.common.openWindow('kwndSelectTimePeriod');
         });
 
         $('#btnNextPeriod').off().on('click', function () {
@@ -116,30 +116,6 @@ const period_next_pervious = (function () {
 
         //     }
         // });
-    }
-
-
-
-    function kwndSelectPeriod_OnInit() {
-
-        var kwndSendWHs = $("#kwndSelectTimePeriod");
-        kwndSendWHs.kendoWindow({
-            width: moduleData.common.window_width(),
-			height: moduleData.common.window_height(),
-
-			activate: moduleData.common.addNoScrollToBody,
-			deactivate: moduleData.common.removeNoScrollToBody,
-            scrollable: true,
-            visible: false,
-            modal: true,
-            actions: [
-                "Pin",
-                "Minimize",
-                "Maximize",
-                "Close"
-            ],
-            //open: moduleData.common.adjustSize,
-        }).data("kendoWindow").center().open();
     }
 
     function kwndSelectPeriod_OnClose() {

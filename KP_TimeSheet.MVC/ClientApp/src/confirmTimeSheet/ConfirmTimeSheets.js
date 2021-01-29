@@ -2,6 +2,7 @@
 const service = require('./service');
 const dataService = require('./data');
 const common_timeSheet = require('../common/timesheet');
+const approveWindow = require('./approveWindow');
 
 
 function KTRColumnConfirm() {
@@ -18,11 +19,10 @@ $(document).ready(function () {
 
 	dataService.init();
 	service.init(dataService, common_timeSheet, common);
+	approveWindow.init(common, service, dataService);
 
 
 	GetUsers();
-	WndDeny_OnInit();
-	WNDSelectPeriod_OnInit();
 
 	$('#btnpreviousPeriodconfirm').off().on('click', function () {
 		GetPreviousNextPeriodconfirm('previous');
@@ -52,9 +52,7 @@ $(document).ready(function () {
 });
 
 $('input:radio[name="optradioconfirm"]').change(function () {
-
 	EnableAndDisableSendPeriodRadioButtonConfirm(this);
-
 });
 
 $("#numberDaysconfirm").keyup(function () {
@@ -64,64 +62,19 @@ $("#numberDaysconfirm").keyup(function () {
 	}
 });
 
-function WNDSelectPeriod_OnInit() {
-
-	var kwndSendWHs = $("#kwndSelectTimePeriodConfirm");
-	kwndSendWHs.kendoWindow({
-
-		width: common.window_width(),
-		height: common.window_height(),
-
-		activate: common.addNoScrollToBody,
-		deactivate: common.removeNoScrollToBody,
-
-		scrollable: false,
-		visible: false,
-		modal: true,
-		actions: [
-			"Pin",
-			"Minimize",
-			"Maximize",
-			"Close"
-		],
-		//open: common.adjustSize,
-	}).data("kendoWindow").center();
-}
 
 function WNDSelectPeriod_OnOpen() {
-	$("#kwndSelectTimePeriodConfirm").data("kendoWindow").open()
+	moduleData.common.openWindow('kwndSelectTimePeriodConfirm');
 }
 
 function WNDSelectPeriod_OnClose() {
 	$("#kwndSelectTimePeriodConfirm").data("kendoWindow").close();
 }
 
-function WndDeny_OnInit() {
-	var kwndDeny = $("#WndDeny");
-	kwndDeny.kendoWindow({
-		width: common.window_width(),
-		height: common.window_height(),
 
-		activate: common.addNoScrollToBody,
-		deactivate: common.removeNoScrollToBody,
-
-		scrollable: false,
-		visible: false,
-		modal: true,
-		actions: [
-			"Pin",
-			"Minimize",
-			"Maximize",
-			"Close"
-		],
-		//open: common.adjustSize,
-	}).data("kendoWindow").center();
-}
 
 function WndDeny_OnOpen() {
-
-	$("#WndDeny").data("kendoWindow").open()
-
+	moduleData.common.openWindow('WndDeny');
 }
 
 function WndDeny_OnClose() {
@@ -250,22 +203,22 @@ function ktrlTimeSheetsConfirm_OnInitColumns(response) {
 	colTitle.title = "عنوان";
 	colTitle.hidden = false;
 	colTitle.width = 150;
-	colTitle.template = (data)=>{
-		if(!data.has_NotApproveData){
+	colTitle.template = (data) => {
+		if (!data.has_NotApproveData) {
 			return data.title;
 		}
 
-		const color= data.type == '-' ? 'style="color:gray"' : (data.type == 'Project' ? 'style="color:#00848C"' : 'style="color:#117243"');
-		const bc= data.type == '-' ? ';background-color:white' : (data.type == 'Project' ? ';background-color:#E5F0FF' :';background-color:#CEFF9D');
-		const title= data.type == '-' ? `همه کارکردهای تایید نشده` : (data.type == 'Project' ? `همه کارکردهای تایید نشده پروژه ${data.title}` : `همه کارکردهای تایید نشده فعالیت ${data.title}`);
+		const color = data.type == '-' ? 'style="color:gray"' : (data.type == 'Project' ? 'style="color:#00848C"' : 'style="color:#117243"');
+		const bc = data.type == '-' ? ';background-color:white' : (data.type == 'Project' ? ';background-color:#E5F0FF' : ';background-color:#CEFF9D');
+		const title = data.type == '-' ? `همه کارکردهای تایید نشده` : (data.type == 'Project' ? `همه کارکردهای تایید نشده پروژه ${data.title}` : `همه کارکردهای تایید نشده فعالیت ${data.title}`);
 
 
-		return data.title +`<button title='${title}' data-type='${data.type}' data-uid='${data.uuiidd}'
+		return data.title + `<button title='${title}' data-type='${data.type}' data-uid='${data.uuiidd}'
 		class='pull-left btn btn-success btn-xs forFound_ApproveTaskAllDates' 
 		style='margin-right:5px;padding: 4px 4px 0 ${bc};'>
 			<i class='glyphicon glyphicon-ok' ${color}></i>
 		</button>`
-		
+
 	};
 	columns.push(colTitle);
 
@@ -304,19 +257,19 @@ function TreeListTemplateColumn(dataItem, index) {
 
 	if (index >= dataItem.values.length) return "";
 
-	if (dataItem.has_NotApproveData && dataItem.values[index].value!='' &&  dataItem.values[index].value!='0:00') {
+	if (dataItem.has_NotApproveData && dataItem.values[index].value != '' && dataItem.values[index].value != '0:00') {
 
-		const color= dataItem.type == '-' ? 'style="color:gray"' : (dataItem.type == 'Project' ? 'style="color:#00848C"' : 'style="color:#117243"');
-		const bc= dataItem.type == '-' ? ';background-color:white' : (dataItem.type == 'Project' ? ';background-color:#E5F0FF' :';background-color:#CEFF9D');
-		const title= dataItem.type == '-' ? `کارکردهای تایید نشده در ${dataItem.values[index].persianDate}` : 
-					(dataItem.type == 'Project' ? `کارکردهای تایید نشده پروژه ${dataItem.title} در ${dataItem.values[index].persianDate}` : 
-						`کارکردهای تایید نشده فعالیت ${dataItem.title} در ${dataItem.values[index].persianDate}`);
+		const color = dataItem.type == '-' ? 'style="color:gray"' : (dataItem.type == 'Project' ? 'style="color:#00848C"' : 'style="color:#117243"');
+		const bc = dataItem.type == '-' ? ';background-color:white' : (dataItem.type == 'Project' ? ';background-color:#E5F0FF' : ';background-color:#CEFF9D');
+		const title = dataItem.type == '-' ? `کارکردهای تایید نشده در ${dataItem.values[index].persianDate}` :
+			(dataItem.type == 'Project' ? `کارکردهای تایید نشده پروژه ${dataItem.title} در ${dataItem.values[index].persianDate}` :
+				`کارکردهای تایید نشده فعالیت ${dataItem.title} در ${dataItem.values[index].persianDate}`);
 
 		return dataItem.values[index].value +
 			`<button title='${title}' data-uid='${dataItem.uuiidd}' data-index='${index}' data-type='${dataItem.type}' 
 				 class='pull-left btn btn-success btn-xs forFound_ApproveTask' style='margin-right:5px;padding: 4px 4px 0 ${bc};'>
 				 <i class='glyphicon glyphicon-ok' ${color}></i></button>`;
-			
+
 	}
 	else {
 		if (dataItem.values[index].value == "0:00") {
@@ -338,15 +291,21 @@ function ktrlTimeSheetsConfirm_dataBound(e) {
 		const index = $(this).data("index");
 		const type = $(this).data("type");
 
-		alert('id:'+ id+ ' type:' + type + ' index:'+ index);
-		//ApproveTask(uid, index);
+		const projectId = type == 'Project' ? id : null;
+		const taskId = type == 'TaskNotApprove' ? id : null;
+		const date = dataService.timeSheetDataConfirm_get()[0].values[index].date;
+
+		approveWindow.showItemsWaitingApproveWindow(projectId,taskId,date);
 	});
 
 	$('.forFound_ApproveTaskAllDates').off().on('click', function () {
 		const id = $(this).data("uid");
 		const type = $(this).data("type");
-		var timesheetData = dataService.timeSheetDataConfirm_get()[0];
-		alert('id:'+ id+ ' type:' + type);
+
+		const projectId = type == 'Project' ? id : null;
+		const taskId = type == 'TaskNotApprove' ? id : null;
+
+		approveWindow.showItemsWaitingApproveWindow(projectId,taskId, null);
 	});
 
 
