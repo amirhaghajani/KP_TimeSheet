@@ -1245,19 +1245,30 @@ const approveWindow = (function () {
 
     moduleData.common.loaderShow();
 
-    private_open_GrdMonitorSentWorkHour();
-    //$("#WndItemsWaitingApprove").data("kendoWindow").setOptions({width: moduleData.common.window_width(), height: moduleData.common.window_height()});
+    let startDate = date;
+    let endDate = date;
+
+    debugger;
+
+    if(!date){
+      var timeSheetData = moduleData.data.timeSheetDataConfirm_get()[0];
+      startDate = timeSheetData.values[0].date;
+      endDate = timeSheetData.values[timeSheetData.values.length - 1].date;
+
+    }
 
     var data = {
       wantedUserId: moduleData.data.userId_get(),
-      startDate: date,
-      endDate: date
+      startDate: startDate,
+      endDate: endDate
     };
 
     if (projectId) data.projectId = projectId;
     if (taskId) data.taskId = taskId;
 
     moduleData.service.getWaitingApproveWorkHourDetail(data, (response) => {
+
+      private_open_GrdMonitorSentWorkHour();
       private_createEditGrid(response);
 
       moduleData.common.loaderHide();
@@ -1265,80 +1276,122 @@ const approveWindow = (function () {
 
   }
 
-  function private_createEditGrid() {
+  function private_createEditGrid(response) {
+
+    $("#GrdMonitorWaitingApproveWorkHour").kendoGrid({
+      dataSource: {
+        transport: {
+          read: function (e) {
+            e.success(response);
+
+            // $('.forFound_Init_GRDHistory').off().on('click', function () {
+            // 	moduleData.hisotory_workHour.Init_GRDHistory(this);
+            // });
+            // $('.forFound_EditWorkhoure').off().on('click', function () {
+            // 	editWorkout(this);
+            // });
+          }
+        },
+        pageSize: 10
+      },
+      height: 450,
+      pageable: true,
+      filterable: true,
+      selectable: true,
+
+      columns: [
+        {
+          title: "",
+          template: function (dataItem, b, c) {
+            let answer = dataItem.isSend ?
+              '<i class="glyphicon glyphicon-upload" title="ارسال شده" style="color:gray; font-size:22px;"></i>'
+              : '<i class="glyphicon glyphicon-download" title="برگشت شده" style="color:gray; font-size:22px;"></i>';
+            return answer;
+          },
+          width: 40,
+          editable: () => false
+        },
+        {
+          field: "date_persian",
+          title: "تاریخ",
+          width: 100,
+          editable: () => false
+        },
+        {
+          field: "projectTitle",
+          title: "پروژه",
+          editable: () => false
+        }, {
+          field: "title",
+          title: "وظیفه",
+          editable: () => false
+        }, {
+          field: "minutes",
+          title: "ساعت کار",
+          width: 80,
+          editable: () => false,
+        }
+        , {
+          field: "description",
+          title: "آخرین توضیحات",
+          editable: () => false
+        }
+        , {
+          field: "newDescription",
+          title: "توضیحات تایید یا رد",
+          filterable: false,
+          sortable: false,
+        }
+        , {
+          field: "isApprove",
+          title: "تایید",
+          type: "boolean",
+          width: 50,
+          filterable: false,
+          sortable: false,
+        }, {
+          field: "isDeny",
+          title: "رد",
+          type: "boolean",
+          width: 50,
+          filterable: false,
+          sortable: false,
+        },
+        {
+          title: "",
+          template: function (dataItem, b, c) {
+            let answer = "<button type='button' class='btn btn-info btn-sm forFound_Init_GRDHistory' title='نمایش تاریخچه' name='info'>تاریخچه</button>";
+            return answer;
+          },
+          filterable: false,
+          sortable: false,
+          width: 80
+        }
+      ],
+      editable: true,
+      cellClose: function (e) {
+        const cellIndex = e.container[0].cellIndex; //7 -> approve  8-> deny
+
+        var select = this.select();
+        var data = this.dataItem(select);
+
+        if (cellIndex == 7) {
+          if (data.isApprove == null) return;
+          data.set("isDeny", null);
+        }
+        if (cellIndex == 8) {
+          if (data.isDeny == null) return;
+          data.set("isApprove", null);
+        }
+      }
+
+    });
 
   }
 
   function private_open_GrdMonitorSentWorkHour() {
-
     HideHistory();
-
     moduleData.common.openWindow('WndItemsWaitingApprove');
-
-    
-
-
-    // $("#GrdMonitorSentWorkHour").kendoGrid({
-    // 	dataSource: {
-    // 		transport: {
-    // 			read: function (e) {
-    // 				e.success(_MonitorSentWorkHours);
-
-    // 				$('.forFound_Init_GRDHistory').off().on('click', function () {
-    // 					moduleData.hisotory_workHour.Init_GRDHistory(this);
-    // 				});
-    // 				$('.forFound_EditWorkhoure').off().on('click', function () {
-    // 					editWorkout(this);
-    // 				});
-    // 			}
-    // 		},
-    // 		pageSize: 10
-    // 	},
-    // 	height: 450,
-    // 	pageable: true,
-    // 	filterable: true,
-    // 	selectable: true,
-
-    // 	columns: [{
-    // 		field: "persianDate",
-    // 		title: "تاریخ",
-    // 		width: 100
-    // 	},
-    // 	{
-    // 		field: "projectTitle",
-    // 		title: "پروژه"
-    // 	}, {
-    // 		field: "taskTitle",
-    // 		title: "وظیفه"
-    // 	}, {
-    // 		field: "time",
-    // 		title: "ساعت کار",
-    // 		width: 80
-
-    // 	}, {
-    // 		field: "workFlowStageTitle",
-    // 		title: "عنوان مرحله",
-    // 		width: 200
-    // 	}
-    // 		, {
-    // 		title: "نمایش تاریخچه   ",
-    // 		template: function(dataItem,b,c){
-    // 			let answer = "<button type='button' class='btn btn-info btn-sm forFound_Init_GRDHistory' title='نمایش تاریخچه' name='info'>تاریخچه</button>";
-    // 			if(dataItem.workFlowStageType=='Resource'){
-    // 				answer+="<button type='button' style='margin-right:2px;' class='btn btn-success btn-sm forFound_EditWorkhoure'>ویرایش</button>"
-    // 			}
-    // 			return answer;
-    // 		},
-    // 		headerTemplate: "<label class='text-center'> نمایش تاریخچه </label>",
-    // 		filterable: false,
-    // 		sortable: false,
-    // 		width: 140
-    // 	}
-    // 	]
-
-    // });
-
-
   }
 
   function ShowHistory() {
@@ -1685,8 +1738,9 @@ const service = (function () {
 			url: url,
 			contentType: "application/json; charset=utf-8",
 			dataType: "json",
-			success: () => {
-				if (success_callBack) success_callBack();
+			success: (response) => {
+				response.forEach(a => a.minutes = moduleData.common_timeSheet.convertMinutsToTime(a.minutes));
+				if (success_callBack) success_callBack(response);
 			},
 			error: (error) => {
 				moduleData.common.loaderHide();

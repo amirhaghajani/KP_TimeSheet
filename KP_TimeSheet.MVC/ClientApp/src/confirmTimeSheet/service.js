@@ -269,8 +269,9 @@ const service = (function () {
 			url: url,
 			contentType: "application/json; charset=utf-8",
 			dataType: "json",
-			success: () => {
-				if (success_callBack) success_callBack();
+			success: (response) => {
+				response.forEach(a => a.minutes = moduleData.common_timeSheet.convertMinutsToTime(a.minutes));
+				if (success_callBack) success_callBack(response);
 			},
 			error: (error) => {
 				moduleData.common.loaderHide();
