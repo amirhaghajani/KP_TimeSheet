@@ -967,6 +967,8 @@ function TreeListTemplateColumn(dataItem, index) {
 
   if (index >= dataItem.values.length) return "";
 
+  const dd = "<b>" + dataItem.values[index].value + " </b>";
+
   if (dataItem.has_NotApproveData && dataItem.values[index].value != '' && dataItem.values[index].value != '0:00') {
 
     const color = dataItem.type == '-' ? 'style="color:gray"' : (dataItem.type == 'Project' ? 'style="color:#00848C"' : 'style="color:#117243"');
@@ -987,6 +989,8 @@ function TreeListTemplateColumn(dataItem, index) {
     const type = dataItem.uuiidd == '00000000-0000-0000-0000-000000000001' ? 'HourlyMissionty'
       : (dataItem.uuiidd == '00000000-0000-0000-0000-000000000002' ? 'HourlyLeave'
         : (dataItem.uuiidd == '00000000-0000-0000-0000-000000000003' ? 'DailyLeave' : null));
+      
+    if(type == 'DailyLeave') return dd;
 
     const color = type == 'HourlyMissionty' ? 'style="color:gray"' : (type == 'HourlyLeave' ? 'style="color:#00848C"' : 'style="color:#117243"');
     const bc = type == 'HourlyMissionty' ? ';background-color:white' : (type == 'HourlyLeave' ? ';background-color:#E5F0FF' : ';background-color:#CEFF9D');
@@ -1008,7 +1012,7 @@ function TreeListTemplateColumn(dataItem, index) {
       return "<b class='text-warning'> </b>"
     }
     else {
-      return "<b>" + dataItem.values[index].value + " </b>"
+      return dd;
     }
   }
 
