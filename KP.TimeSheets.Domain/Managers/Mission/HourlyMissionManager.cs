@@ -27,8 +27,8 @@ namespace KP.TimeSheets.Domain
             hourlyMission.PreviousStage = wm.FirstStage().ID;
             hourlyMission.ID = Guid.NewGuid();
             hourlyMission.Date = DateUtility.GetMiladiDate(hourlyMission.PersianMissionDate);
-            hourlyMission.From = DateUtility.ConvertStringTimeToDateTime(hourlyMission.PersianTimeFrom);
-            hourlyMission.To = DateUtility.ConvertStringTimeToDateTime(hourlyMission.PersianTimeTo);
+            hourlyMission.From = DateUtility.ConvertStringTimeToDateTime(hourlyMission.Date, hourlyMission.PersianTimeFrom);
+            hourlyMission.To = DateUtility.ConvertStringTimeToDateTime(hourlyMission.Date, hourlyMission.PersianTimeTo);
             hourlyMission.Minutes = DateUtility.SubtarctToANdFromDateTimeToInt(hourlyMission.From, hourlyMission.To);
             hourlyMission.RegisterDate = DateTime.Now;
 

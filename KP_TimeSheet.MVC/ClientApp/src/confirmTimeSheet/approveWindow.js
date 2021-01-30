@@ -10,8 +10,33 @@ const approveWindow = (function () {
     $('#GrdMonitorWaitingApproveWorkHour_Hide').off().on('click', function () {
       $("#WndItemsWaitingApprove").data("kendoWindow").close();
     });
+    $('#GrdMonitorWaitingApproveWorkHour_ApproveAll').off().on('click', function () {
+      private_doApproveDenyAll('approve');
+    });
+
+    $('#GrdMonitorWaitingApproveWorkHour_DenyAll').off().on('click', function () {
+      private_doApproveDenyAll('deny');
+    });
   }
 
+  function private_doApproveDenyAll(type){
+
+    const grid = $("#GrdMonitorWaitingApproveWorkHour").data("kendoGrid");
+
+    var items = [];
+
+    grid.tbody.find('tr').each(function () {
+      const item = grid.dataItem($(this));
+      items.push(item);
+    });
+
+    items.forEach(i => {
+
+      i.set( type=='approve' ? "isApprove" : "isDeny", true);
+      i.set( type=='approve' ?  "isDeny"  : "isApprove" , null);
+      
+    });
+  }
 
   function showItemsWaitingApproveWindow(projectId, taskId, date) {
 
@@ -20,9 +45,7 @@ const approveWindow = (function () {
     let startDate = date;
     let endDate = date;
 
-    debugger;
-
-    if(!date){
+    if (!date) {
       var timeSheetData = moduleData.data.timeSheetDataConfirm_get()[0];
       startDate = timeSheetData.values[0].date;
       endDate = timeSheetData.values[timeSheetData.values.length - 1].date;

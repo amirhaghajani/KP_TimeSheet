@@ -206,6 +206,8 @@ const dl = (function () {
 			type: $("#dailyLeave_type").data("kendoDropDownList").value()
 		};
 
+		debugger;
+
 		if (!dailyLeave.persianDateFrom.length) {
 			$("span[for='dailyLeave_dateStart']").text("تاریخ شروع ضروری است");
 			return;

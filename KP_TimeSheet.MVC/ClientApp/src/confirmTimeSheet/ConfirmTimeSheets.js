@@ -6,519 +6,559 @@ const approveWindow = require('./approveWindow');
 
 
 function KTRColumnConfirm() {
-	this.field = "";
-	this.title = "";
-	this.template = "";
-	this.hidden = false;
-	this.width = 40;
-	this.headerTemplate = "";
-	this.filterable = false;
+  this.field = "";
+  this.title = "";
+  this.template = "";
+  this.hidden = false;
+  this.width = 40;
+  this.headerTemplate = "";
+  this.filterable = false;
 }
 
 $(document).ready(function () {
 
-	dataService.init();
-	service.init(dataService, common_timeSheet, common);
-	approveWindow.init(common, service, dataService);
+  dataService.init();
+  service.init(dataService, common_timeSheet, common);
+  approveWindow.init(common, service, dataService);
 
 
-	GetUsers();
+  GetUsers();
 
-	$('#btnpreviousPeriodconfirm').off().on('click', function () {
-		GetPreviousNextPeriodconfirm('previous');
-	});
-	$('#btnSelectPeriodconfirm').off().on('click', function () {
-		WNDSelectPeriod_OnOpen();
-	});
-	$('#btnNextPeriodconfirm').off().on('click', function () {
-		GetPreviousNextPeriodconfirm('next');
-	});
+  $('#btnpreviousPeriodconfirm').off().on('click', function () {
+    GetPreviousNextPeriodconfirm('previous');
+  });
+  $('#btnSelectPeriodconfirm').off().on('click', function () {
+    WNDSelectPeriod_OnOpen();
+  });
+  $('#btnNextPeriodconfirm').off().on('click', function () {
+    GetPreviousNextPeriodconfirm('next');
+  });
 
 
-	$('#btnSendPeriodconfirm').off().on('click', function () {
-		btnSendPeriodsconfirm_Onclick();
-	});
-	$('#btnCancelconfirm').off().on('click', function () {
-		WNDSelectPeriod_OnClose();
-	});
+  $('#btnSendPeriodconfirm').off().on('click', function () {
+    btnSendPeriodsconfirm_Onclick();
+  });
+  $('#btnCancelconfirm').off().on('click', function () {
+    WNDSelectPeriod_OnClose();
+  });
 
-	$('#btnDeny').off().on('click', function () {
-		FinalDeny();
-	});
-	$('#btnDiscardDeny').off().on('click', function () {
-		WndDeny_OnClose();
-	});
+  $('#btnDeny').off().on('click', function () {
+    FinalDeny();
+  });
+  $('#btnDiscardDeny').off().on('click', function () {
+    WndDeny_OnClose();
+  });
 
 });
 
 $('input:radio[name="optradioconfirm"]').change(function () {
-	EnableAndDisableSendPeriodRadioButtonConfirm(this);
+  EnableAndDisableSendPeriodRadioButtonConfirm(this);
 });
 
 $("#numberDaysconfirm").keyup(function () {
 
-	if ($("#numberDaysconfirm").val() > 25) {
-		$("#numberDaysconfirm").val("25");
-	}
+  if ($("#numberDaysconfirm").val() > 25) {
+    $("#numberDaysconfirm").val("25");
+  }
 });
 
 
 function WNDSelectPeriod_OnOpen() {
-	moduleData.common.openWindow('kwndSelectTimePeriodConfirm');
+  moduleData.common.openWindow('kwndSelectTimePeriodConfirm');
 }
 
 function WNDSelectPeriod_OnClose() {
-	$("#kwndSelectTimePeriodConfirm").data("kendoWindow").close();
+  $("#kwndSelectTimePeriodConfirm").data("kendoWindow").close();
 }
 
 
 
 function WndDeny_OnOpen() {
-	moduleData.common.openWindow('WndDeny');
+  moduleData.common.openWindow('WndDeny');
 }
 
 function WndDeny_OnClose() {
-	$("#WndDeny").data("kendoWindow").close();
+  $("#WndDeny").data("kendoWindow").close();
 }
 
 function RefreshTimeSheetConfirm() {
-	common.loaderShow();
+  common.loaderShow();
 
-	service.getTimeSheetsByUserIdForFirstTime((response) => {
+  service.getTimeSheetsByUserIdForFirstTime((response) => {
 
-		private_Refresh(response);
+    private_Refresh(response);
 
-	});
+  });
 
 }
 
 function private_Refresh(response) {
-	removeAndRecreateTreelisConfirmDiv();
+  removeAndRecreateTreelisConfirmDiv();
 
-	Init_TimeSheetTreeListConfirm(response);
-	InitMonthlyByProjectsGridConfirm();
-	InitPeriodlyByProjectsGridConfirm();
-	$("#DownSideTabsConfirm").show();
-	$("#PeriodPanle").show();
-	$("#ExportNavConfirm").show();
-	common.loaderHide();
+  Init_TimeSheetTreeListConfirm(response);
+  InitMonthlyByProjectsGridConfirm();
+  InitPeriodlyByProjectsGridConfirm();
+  $("#DownSideTabsConfirm").show();
+  $("#PeriodPanle").show();
+  $("#ExportNavConfirm").show();
+  common.loaderHide();
 }
 
 function removeAndRecreateTreelisConfirmDiv() {
 
-	if (!$("#ktrlTimeSheetsConfirm").data("kendoTreeList")) return;
-	$("#ktrlTimeSheetsConfirm").data("kendoTreeList").destroy();
-	$("#ktrlTimeSheetsConfirm").remove();
-	$("#KTLContainerRegisterConfirm").append("<div id='ktrlTimeSheetsConfirm'></div>");
+  if (!$("#ktrlTimeSheetsConfirm").data("kendoTreeList")) return;
+  $("#ktrlTimeSheetsConfirm").data("kendoTreeList").destroy();
+  $("#ktrlTimeSheetsConfirm").remove();
+  $("#KTLContainerRegisterConfirm").append("<div id='ktrlTimeSheetsConfirm'></div>");
 }
 function GetUsers() {
 
-	service.getUsersInCurrentUserOrganisation((response) => {
-		$("#kddlUsers").kendoDropDownList({
-			dataTextField: "fullName",
-			dataValueField: "id",
-			filter: "contains",
-			optionLabel: {
-				fullName: "انتخاب کاربر . . . ",
-				id: ""
-			},
-			dataSource: {
-				transport: {
-					read: function (e) {
-						e.success(dataService.users_get());
-					}
-				}
-			},
-			index: 0,
-			change: kddlUsers_OnChange
-		});
-	});
+  service.getUsersInCurrentUserOrganisation((response) => {
+    $("#kddlUsers").kendoDropDownList({
+      dataTextField: "fullName",
+      dataValueField: "id",
+      filter: "contains",
+      optionLabel: {
+        fullName: "انتخاب کاربر . . . ",
+        id: ""
+      },
+      dataSource: {
+        transport: {
+          read: function (e) {
+            e.success(dataService.users_get());
+          }
+        }
+      },
+      index: 0,
+      change: kddlUsers_OnChange
+    });
+  });
 }
 
 function kddlUsers_OnChange(e) {
 
-	common.loaderShow();
-	dataService.userId_set($("#kddlUsers").data("kendoDropDownList").dataItem($("#kddlUsers").data("kendoDropDownList").select()).id);
+  common.loaderShow();
+  dataService.userId_set($("#kddlUsers").data("kendoDropDownList").dataItem($("#kddlUsers").data("kendoDropDownList").select()).id);
 
-	if (dataService.userId_get() != "") {
+  if (dataService.userId_get() != "") {
 
-		RefreshTimeSheetConfirm();
+    RefreshTimeSheetConfirm();
 
-	} else {
-		common.loaderHide();
-		common.notify("کاربری انتخاب نشده ", "warning");
-	}
+  } else {
+    common.loaderHide();
+    common.notify("کاربری انتخاب نشده ", "warning");
+  }
 
 }
 
 function Init_TimeSheetTreeListConfirm(data) {
 
-	var ktrlTSColumnsConfirm = ktrlTimeSheetsConfirm_OnInitColumns(data);
-	var timeSheetData = data.slice(1);
+  var ktrlTSColumnsConfirm = ktrlTimeSheetsConfirm_OnInitColumns(data);
+  var timeSheetData = data.slice(1);
 
-	$("#ktrlTimeSheetsConfirm").kendoTreeList({
-		dataSource: {
-			transport: {
-				read: function (e) {
-					e.success(timeSheetData);
-				},
-			}
-		},
-		schema: {
-			model: {
-				id: "id",
-				parentId: "parentId"
-			}
-		},
-		expanded: true,
-		selectable: true,
-		height: 400,
-		columns: ktrlTSColumnsConfirm,
-		dataBound: ktrlTimeSheetsConfirm_dataBound
-	});
+  $("#ktrlTimeSheetsConfirm").kendoTreeList({
+    dataSource: {
+      transport: {
+        read: function (e) {
+          e.success(timeSheetData);
+        },
+      }
+    },
+    schema: {
+      model: {
+        id: "id",
+        parentId: "parentId"
+      }
+    },
+    expanded: true,
+    selectable: true,
+    height: 400,
+    columns: ktrlTSColumnsConfirm,
+    dataBound: ktrlTimeSheetsConfirm_dataBound
+  });
 
 }
 
 function ktrlTimeSheetsConfirm_OnInitColumns(response) {
 
-	var columns = [];
+  var columns = [];
 
-	var colId = new KTRColumn();
-	colId.field = "id";
-	colId.title = "شناسه";
-	colId.hidden = true;
-	colId.width = 10;
-	columns.push(colId);
+  var colId = new KTRColumn();
+  colId.field = "id";
+  colId.title = "شناسه";
+  colId.hidden = true;
+  colId.width = 10;
+  columns.push(colId);
 
-	var colParentId = new KTRColumnConfirm();
-	colParentId.field = "parentId";
-	colParentId.title = "شناسه پدر";
-	colParentId.hidden = true;
-	colParentId.width = 10;
-	columns.push(colParentId);
+  var colParentId = new KTRColumnConfirm();
+  colParentId.field = "parentId";
+  colParentId.title = "شناسه پدر";
+  colParentId.hidden = true;
+  colParentId.width = 10;
+  columns.push(colParentId);
 
-	var colTitle = new KTRColumnConfirm();
+  var colTitle = new KTRColumnConfirm();
 
-	//colTitle.field = "title";
-	colTitle.title = "عنوان";
-	colTitle.hidden = false;
-	colTitle.width = 150;
-	colTitle.template = (data) => {
-		if (!data.has_NotApproveData) {
-			return data.title;
-		}
+  //colTitle.field = "title";
+  colTitle.title = "عنوان";
+  colTitle.hidden = false;
+  colTitle.width = 150;
+  colTitle.template = (data) => {
 
-		const color = data.type == '-' ? 'style="color:gray"' : (data.type == 'Project' ? 'style="color:#00848C"' : 'style="color:#117243"');
-		const bc = data.type == '-' ? ';background-color:white' : (data.type == 'Project' ? ';background-color:#E5F0FF' : ';background-color:#CEFF9D');
-		const title = data.type == '-' ? `همه کارکردهای تایید نشده` : (data.type == 'Project' ? `همه کارکردهای تایید نشده پروژه ${data.title}` : `همه کارکردهای تایید نشده فعالیت ${data.title}`);
+    if (data.has_NotApproveData) {
+      const color = data.type == '-' ? 'style="color:gray"' : (data.type == 'Project' ? 'style="color:#00848C"' : 'style="color:#117243"');
+      const bc = data.type == '-' ? ';background-color:white' : (data.type == 'Project' ? ';background-color:#E5F0FF' : ';background-color:#CEFF9D');
+      const title = data.type == '-' ? `همه کارکردهای تایید نشده` : (data.type == 'Project' ? `همه کارکردهای تایید نشده پروژه ${data.title}` : `همه کارکردهای تایید نشده فعالیت ${data.title}`);
 
 
-		return data.title + `<button title='${title}' data-type='${data.type}' data-uid='${data.uuiidd}'
-		class='pull-left btn btn-success btn-xs forFound_ApproveTaskAllDates' 
-		style='margin-right:5px;padding: 4px 4px 0 ${bc};'>
-			<i class='glyphicon glyphicon-ok' ${color}></i>
-		</button>`
+      return data.title + `<button title='${title}' data-type='${data.type}' data-uid='${data.uuiidd}' data-parentid='${data.parentId ? data.parent()[data.parentId - 1].uuiidd : null}'
+			class='pull-left btn btn-success btn-xs forFound_ApproveTaskAllDates' 
+			style='margin-right:5px;padding: 4px 4px 0 ${bc};'>
+				<i class='glyphicon glyphicon-ok' ${color}></i>
+			</button>`;
+    }
 
-	};
-	columns.push(colTitle);
+    if (data.has_NotApproveData_Other) {
 
-	///-----------------------------------------------------------------
+      const type = data.uuiidd == '00000000-0000-0000-0000-000000000001' ? 'HourlyMissionty'
+        : (data.uuiidd == '00000000-0000-0000-0000-000000000002' ? 'HourlyLeave'
+          : (data.uuiidd == '00000000-0000-0000-0000-000000000003' ? 'DailyLeave' : null));
 
-	for (var i = 0; i < response[0].values.length; i++) {
+      const color = type == 'HourlyMissionty' ? 'style="color:gray"' : (type == 'HourlyLeave' ? 'style="color:#00848C"' : 'style="color:#117243"');
+      const bc = type == 'HourlyMissionty' ? ';background-color:white' : (type == 'HourlyLeave' ? ';background-color:#E5F0FF' : ';background-color:#CEFF9D');
+      const title = type == 'HourlyMissionty' ? `همه ماموریت های ساعتی تایید نشده` : (type == 'HourlyLeave' ? `همه مرخصی های ساعتی تایید نشده` : `همه مرخصی های روزانه تایید نشده`);
 
-		const index = i;
 
-		var tsDate = response[0].values[i];
-		var colDate = new KTRColumnConfirm();
-		//colDate.field = "values[" + i + "].value";
-		colDate.title = tsDate.title;
-		colDate.headerTemplate = "<h6><b>" + tsDate.persianDate + "</b></h6><h6><span>" + tsDate.persianDay + "</span></h6>";
-		colDate.hidden = false;
-		//تخصیص متد به تپلیت فقط باید ایندکس ها تنظیم گرددند
-		colDate.template = (dataItem) => TreeListTemplateColumn(dataItem, index);
-		colDate.width = 50;
-		columns.push(colDate);
+      return data.title + `<button title='${title}' data-type='${data.type}' data-uid='${data.uuiidd}' data-parentid='${data.parentId ? data.parent()[data.parentId - 1].uuiidd : null}'
+			class='pull-left btn btn-success btn-xs forFound_ApproveTaskAllDates' 
+			style='margin-right:5px;padding: 4px 4px 0 ${bc};'>
+				<i class='glyphicon glyphicon-ok' ${color}></i>
+			</button>`;
+    }
 
-	}
-	return columns;
+
+    return data.title;
+  };
+  columns.push(colTitle);
+
+  ///-----------------------------------------------------------------
+
+  for (var i = 0; i < response[0].values.length; i++) {
+
+    const index = i;
+
+    var tsDate = response[0].values[i];
+    var colDate = new KTRColumnConfirm();
+    //colDate.field = "values[" + i + "].value";
+    colDate.title = tsDate.title;
+    colDate.headerTemplate = "<h6><b>" + tsDate.persianDate + "</b></h6><h6><span>" + tsDate.persianDay + "</span></h6>";
+    colDate.hidden = false;
+    //تخصیص متد به تپلیت فقط باید ایندکس ها تنظیم گرددند
+    colDate.template = (dataItem) => TreeListTemplateColumn(dataItem, index);
+    colDate.width = 50;
+    columns.push(colDate);
+
+  }
+  return columns;
 }
 
 function KTRColumn() {
-	this.field = "";
-	this.title = "";
-	this.template = "";
-	this.hidden = false;
-	this.width = 40;
-	this.headerTemplate = "";
-	this.filterable = false;
+  this.field = "";
+  this.title = "";
+  this.template = "";
+  this.hidden = false;
+  this.width = 40;
+  this.headerTemplate = "";
+  this.filterable = false;
 }
 
 function TreeListTemplateColumn(dataItem, index) {
 
-	if (index >= dataItem.values.length) return "";
+  if (index >= dataItem.values.length) return "";
 
-	if (dataItem.has_NotApproveData && dataItem.values[index].value != '' && dataItem.values[index].value != '0:00') {
+  if (dataItem.has_NotApproveData && dataItem.values[index].value != '' && dataItem.values[index].value != '0:00') {
 
-		const color = dataItem.type == '-' ? 'style="color:gray"' : (dataItem.type == 'Project' ? 'style="color:#00848C"' : 'style="color:#117243"');
-		const bc = dataItem.type == '-' ? ';background-color:white' : (dataItem.type == 'Project' ? ';background-color:#E5F0FF' : ';background-color:#CEFF9D');
-		const title = dataItem.type == '-' ? `کارکردهای تایید نشده در ${dataItem.values[index].persianDate}` :
-			(dataItem.type == 'Project' ? `کارکردهای تایید نشده پروژه ${dataItem.title} در ${dataItem.values[index].persianDate}` :
-				`کارکردهای تایید نشده فعالیت ${dataItem.title} در ${dataItem.values[index].persianDate}`);
+    const color = dataItem.type == '-' ? 'style="color:gray"' : (dataItem.type == 'Project' ? 'style="color:#00848C"' : 'style="color:#117243"');
+    const bc = dataItem.type == '-' ? ';background-color:white' : (dataItem.type == 'Project' ? ';background-color:#E5F0FF' : ';background-color:#CEFF9D');
+    const title = dataItem.type == '-' ? `کارکردهای تایید نشده در ${dataItem.values[index].persianDate}` :
+      (dataItem.type == 'Project' ? `کارکردهای تایید نشده پروژه ${dataItem.title} در ${dataItem.values[index].persianDate}` :
+        `کارکردهای تایید نشده فعالیت ${dataItem.title} در ${dataItem.values[index].persianDate}`);
 
-		return dataItem.values[index].value +
-			`<button title='${title}' data-uid='${dataItem.uuiidd}' data-index='${index}' data-type='${dataItem.type}' 
+
+    return dataItem.values[index].value +
+      `<button title='${title}' data-uid='${dataItem.uuiidd}' data-index='${index}' data-type='${dataItem.type}' 
+			data-parentid='${dataItem.parentId ? dataItem.parent()[dataItem.parentId - 1].uuiidd : null}'
 				 class='pull-left btn btn-success btn-xs forFound_ApproveTask' style='margin-right:5px;padding: 4px 4px 0 ${bc};'>
 				 <i class='glyphicon glyphicon-ok' ${color}></i></button>`;
 
-	}
-	else {
-		if (dataItem.values[index].value == "0:00") {
-			return "<b class='text-warning'>" + dataItem.values[index].value + " </b>"
-		}
-		else if (dataItem.values[index].value == "") {
-			return "<b class='text-warning'> </b>"
-		}
-		else {
-			return "<b>" + dataItem.values[index].value + " </b>"
-		}
-	}
+  } else if (dataItem.has_NotApproveData_Other && dataItem.values[index].value != '' && dataItem.values[index].value != '0:00') {
+
+    const type = dataItem.uuiidd == '00000000-0000-0000-0000-000000000001' ? 'HourlyMissionty'
+      : (dataItem.uuiidd == '00000000-0000-0000-0000-000000000002' ? 'HourlyLeave'
+        : (dataItem.uuiidd == '00000000-0000-0000-0000-000000000003' ? 'DailyLeave' : null));
+
+    const color = type == 'HourlyMissionty' ? 'style="color:gray"' : (type == 'HourlyLeave' ? 'style="color:#00848C"' : 'style="color:#117243"');
+    const bc = type == 'HourlyMissionty' ? ';background-color:white' : (type == 'HourlyLeave' ? ';background-color:#E5F0FF' : ';background-color:#CEFF9D');
+    const title = type == 'HourlyMissionty' ? `ماموریت های ساعتی تایید نشده در ${dataItem.values[index].persianDate}` : (type == 'HourlyLeave' ? `مرخصی های ساعتی تایید نشده در ${dataItem.values[index].persianDate}` : `مرخصی های روزانه تایید نشده در ${dataItem.values[index].persianDate}`);
+
+    return dataItem.values[index].value +
+      `<button title='${title}' data-uid='${dataItem.uuiidd}' data-index='${index}' data-type='${dataItem.type}' 
+			data-parentid='${dataItem.parentId ? dataItem.parent()[dataItem.parentId - 1].uuiidd : null}'
+				 class='pull-left btn btn-success btn-xs forFound_ApproveTask' style='margin-right:5px;padding: 4px 4px 0 ${bc};'>
+				 <i class='glyphicon glyphicon-ok' ${color}></i></button>`;
+
+
+  }
+  else {
+    if (dataItem.values[index].value == "0:00") {
+      return "<b class='text-warning'>" + dataItem.values[index].value + " </b>"
+    }
+    else if (dataItem.values[index].value == "") {
+      return "<b class='text-warning'> </b>"
+    }
+    else {
+      return "<b>" + dataItem.values[index].value + " </b>"
+    }
+  }
 
 }
 
 function ktrlTimeSheetsConfirm_dataBound(e) {
-	$('.forFound_ApproveTask').off().on('click', function () {
-		const id = $(this).data("uid");
-		const index = $(this).data("index");
-		const type = $(this).data("type");
+  $('.forFound_ApproveTask').off().on('click', function () {
+    const id = $(this).data("uid");
+    const index = $(this).data("index");
+    const parentId = $(this).data("parentid");
+    const type = $(this).data("type");
 
-		const projectId = type == 'Project' ? id : null;
-		const taskId = type == 'TaskNotApprove' ? id : null;
-		const date = dataService.timeSheetDataConfirm_get()[0].values[index].date;
+    const projectId = type == 'Project' ? id : (type == 'TaskNotApprove' ? parentId : null);
+    const taskId = type == 'TaskNotApprove' ? id : null;
+    const date = dataService.timeSheetDataConfirm_get()[0].values[index].date;
 
-		approveWindow.showItemsWaitingApproveWindow(projectId,taskId,date);
-	});
+    approveWindow.showItemsWaitingApproveWindow(projectId, taskId, date);
+  });
 
-	$('.forFound_ApproveTaskAllDates').off().on('click', function () {
-		const id = $(this).data("uid");
-		const type = $(this).data("type");
+  $('.forFound_ApproveTaskAllDates').off().on('click', function () {
+    const id = $(this).data("uid");
+    const parentId = $(this).data("parentid");
+    const type = $(this).data("type");
 
-		const projectId = type == 'Project' ? id : null;
-		const taskId = type == 'TaskNotApprove' ? id : null;
+    const projectId = type == 'Project' ? id : (type == 'TaskNotApprove' ? parentId : null);
+    const taskId = type == 'TaskNotApprove' ? id : null;
 
-		approveWindow.showItemsWaitingApproveWindow(projectId,taskId, null);
-	});
+    approveWindow.showItemsWaitingApproveWindow(projectId, taskId, null);
+  });
 
 
 }
 
 function ApproveTask(id, index) {
-	common.loaderShow();
+  common.loaderShow();
 
-	for (var i = 0; i < dataService.timeSheetDataConfirm_get().length; i++) {
-		if (dataService.timeSheetDataConfirm_get()[i].uid == id) {
-			var da = dataService.timeSheetDataConfirm_get()[i].values[index];
-		}
-	}
+  for (var i = 0; i < dataService.timeSheetDataConfirm_get().length; i++) {
+    if (dataService.timeSheetDataConfirm_get()[i].uid == id) {
+      var da = dataService.timeSheetDataConfirm_get()[i].values[index];
+    }
+  }
 
-	var data = {
-		date: da.date,
-		id: id,
-	};
+  var data = {
+    date: da.date,
+    id: id,
+  };
 
-	var prmData = JSON.stringify(data);
+  var prmData = JSON.stringify(data);
 
-	service.approveWorkHour(prmData, (response) => {
-		GetCurrentPeriodconfirm();
-		if (response && response.message) common.notify(response.message, "success");
-	});
+  service.approveWorkHour(prmData, (response) => {
+    GetCurrentPeriodconfirm();
+    if (response && response.message) common.notify(response.message, "success");
+  });
 
 }
 
 function FinalDeny() {
 
-	common.loaderShow();
+  common.loaderShow();
 
-	for (var i = 0; i < dataService.timeSheetDataConfirm_get().length; i++) {
-		if (dataService.timeSheetDataConfirm_get()[i].uid == dataService.selectedTaskIdForDeny_get()) {
-			var da = dataService.timeSheetDataConfirm_get()[i].values[dataService.selectedIndexDorDeny_get()];
-		}
-	}
+  for (var i = 0; i < dataService.timeSheetDataConfirm_get().length; i++) {
+    if (dataService.timeSheetDataConfirm_get()[i].uid == dataService.selectedTaskIdForDeny_get()) {
+      var da = dataService.timeSheetDataConfirm_get()[i].values[dataService.selectedIndexDorDeny_get()];
+    }
+  }
 
-	var data = {
-		date: da.date,
-		id: dataService.selectedTaskIdForDeny_get(),
-		description: $("#comment").val()
-	};
+  var data = {
+    date: da.date,
+    id: dataService.selectedTaskIdForDeny_get(),
+    description: $("#comment").val()
+  };
 
-	var prmData = JSON.stringify(data);
+  var prmData = JSON.stringify(data);
 
-	service.denyWorkHour(prmData, (response) => {
-		WndDeny_OnClose();
-		GetCurrentPeriodconfirm();
-		if (response && response.message) common.notify(response.message, "success");
-	});
+  service.denyWorkHour(prmData, (response) => {
+    WndDeny_OnClose();
+    GetCurrentPeriodconfirm();
+    if (response && response.message) common.notify(response.message, "success");
+  });
 
 }
 
 function DenyTask(id, index) {
 
-	dataService.selectedTaskIdForDeny_set(id);
-	dataService.selectedIndexDorDeny_set(index);
-	WndDeny_OnOpen()
+  dataService.selectedTaskIdForDeny_set(id);
+  dataService.selectedIndexDorDeny_set(index);
+  WndDeny_OnOpen()
 }
 
 
 function GetCurrentPeriodconfirm() {
 
-	common.loaderShow();
-	RefreshTimeSheetConfirm();
+  common.loaderShow();
+  RefreshTimeSheetConfirm();
 }
 
 
 function InitMonthlyByProjectsGridConfirm() {
 
-	dataService.userId_set($("#kddlUsers").data("kendoDropDownList").dataItem($("#kddlUsers").data("kendoDropDownList").select()).id);
+  dataService.userId_set($("#kddlUsers").data("kendoDropDownList").dataItem($("#kddlUsers").data("kendoDropDownList").select()).id);
 
-	var json = {
-		value: dataService.timeSheetDataConfirm_get()[0].values[0],
-		userid: dataService.userId_get()
-	}
-
-
-	var prmData = JSON.stringify(json);
-	service.getThisMonthDataByUser(prmData, (response) => {
-
-		const items = [response.presencepercent, response.workpercent];
-		const v1 = common_timeSheet.calcPercent(items, response.presencepercent);
-		const v2 = common_timeSheet.calcPercent(items, response.workpercent);
-
-		$("#MonthlyPresenceconfirmProgress").text(common_timeSheet.convertMinutsToTime(response.presence));
-		$("#MonthlyWorkHourconfirmProgress").text(common_timeSheet.convertMinutsToTime(response.work));
-
-		$("#MonthlyPresenceconfirm").css('width', v1 + '%').attr('aria-valuenow', v1);
-		$("#MonthlyWorkHourconfirm").css('width', v2 + '%').attr('aria-valuenow', v2);
+  var json = {
+    value: dataService.timeSheetDataConfirm_get()[0].values[0],
+    userid: dataService.userId_get()
+  }
 
 
-		common.loaderHide();
-	});
+  var prmData = JSON.stringify(json);
+  service.getThisMonthDataByUser(prmData, (response) => {
 
-	service.getThisMonthProjectsByUserID(prmData, (response) => {
-		$("#tblcurrmonthconfirm").kendoGrid({
-			dataSource: {
-				transport: {
-					read: function (e) {
-						e.success(response)
-					}
-				},
-				pageSize: 20
-			},
-			height: 200,
-			columns: [{
-				field: "title",
-				title: "عنوان پروژه"
-			}, {
-				field: "hour",
-				title: "ساعت کار ثبت شده    "
-			}]
-		});
+    const items = [response.presencepercent, response.workpercent];
+    const v1 = common_timeSheet.calcPercent(items, response.presencepercent);
+    const v2 = common_timeSheet.calcPercent(items, response.workpercent);
 
-		$("#DownSideTabsConfirm").show();
-	});
+    $("#MonthlyPresenceconfirmProgress").text(common_timeSheet.convertMinutsToTime(response.presence));
+    $("#MonthlyWorkHourconfirmProgress").text(common_timeSheet.convertMinutsToTime(response.work));
+
+    $("#MonthlyPresenceconfirm").css('width', v1 + '%').attr('aria-valuenow', v1);
+    $("#MonthlyWorkHourconfirm").css('width', v2 + '%').attr('aria-valuenow', v2);
+
+
+    common.loaderHide();
+  });
+
+  service.getThisMonthProjectsByUserID(prmData, (response) => {
+    $("#tblcurrmonthconfirm").kendoGrid({
+      dataSource: {
+        transport: {
+          read: function (e) {
+            e.success(response)
+          }
+        },
+        pageSize: 20
+      },
+      height: 200,
+      columns: [{
+        field: "title",
+        title: "عنوان پروژه"
+      }, {
+        field: "hour",
+        title: "ساعت کار ثبت شده    "
+      }]
+    });
+
+    $("#DownSideTabsConfirm").show();
+  });
 
 }
 
 function InitPeriodlyByProjectsGridConfirm() {
-	dataService.userId_set($("#kddlUsers").data("kendoDropDownList").dataItem($("#kddlUsers").data("kendoDropDownList").select()).id);
-	var json = {
-		values: dataService.timeSheetDataConfirm_get()[0].values,
-		userid: dataService.userId_get()
-	}
+  dataService.userId_set($("#kddlUsers").data("kendoDropDownList").dataItem($("#kddlUsers").data("kendoDropDownList").select()).id);
+  var json = {
+    values: dataService.timeSheetDataConfirm_get()[0].values,
+    userid: dataService.userId_get()
+  }
 
-	var prmData = JSON.stringify(json);
+  var prmData = JSON.stringify(json);
 
-	service.getThisPeriodDataByUserId(prmData, (response) => {
+  service.getThisPeriodDataByUserId(prmData, (response) => {
 
-		const items = [response.presencepercent, response.workpercent];
-		const v1 = common_timeSheet.calcPercent(items, response.presencepercent);
-		const v2 = common_timeSheet.calcPercent(items, response.workpercent);
+    const items = [response.presencepercent, response.workpercent];
+    const v1 = common_timeSheet.calcPercent(items, response.presencepercent);
+    const v2 = common_timeSheet.calcPercent(items, response.workpercent);
 
-		$("#PeriodicallyPresenceconfirmProgress").text(common_timeSheet.convertMinutsToTime(response.presence));
-		$("#PeriodicallyWorkHourconfirmProgress").text(common_timeSheet.convertMinutsToTime(response.work));
+    $("#PeriodicallyPresenceconfirmProgress").text(common_timeSheet.convertMinutsToTime(response.presence));
+    $("#PeriodicallyWorkHourconfirmProgress").text(common_timeSheet.convertMinutsToTime(response.work));
 
-		$("#PeriodicallyPresenceconfirm").css('width', v1 + '%').attr('aria-valuenow', v1);
-		$("#PeriodicallyWorkHourconfirm").css('width', v2 + '%').attr('aria-valuenow', v2);
-	});
+    $("#PeriodicallyPresenceconfirm").css('width', v1 + '%').attr('aria-valuenow', v1);
+    $("#PeriodicallyWorkHourconfirm").css('width', v2 + '%').attr('aria-valuenow', v2);
+  });
 
-	service.getThisPeriodProjectsByUserId(prmData, (response) => {
-		$("#tblcurrperiodconfirm").kendoGrid({
-			dataSource: {
-				transport: {
-					read: function (e) {
-						e.success(response)
-					}
-				},
-				pageSize: 20
-			},
-			height: 200,
+  service.getThisPeriodProjectsByUserId(prmData, (response) => {
+    $("#tblcurrperiodconfirm").kendoGrid({
+      dataSource: {
+        transport: {
+          read: function (e) {
+            e.success(response)
+          }
+        },
+        pageSize: 20
+      },
+      height: 200,
 
 
-			columns: [{
-				field: "title",
-				title: "عنوان پروژه"
-			}, {
-				field: "hour",
-				title: "ساعت کار ثبت شده"
-			}]
-		});
-	});
+      columns: [{
+        field: "title",
+        title: "عنوان پروژه"
+      }, {
+        field: "hour",
+        title: "ساعت کار ثبت شده"
+      }]
+    });
+  });
 
 }
 
 function btnSendPeriodsconfirm_Onclick() {
-	common.loaderShow();
-	dataService.userId_set($("#kddlUsers").data("kendoDropDownList").dataItem($("#kddlUsers").data("kendoDropDownList").select()).id);
-	WNDSelectPeriod_OnClose()
-	if ($('#chkweeklyconfirm').is(':checked')) {
+  common.loaderShow();
+  dataService.userId_set($("#kddlUsers").data("kendoDropDownList").dataItem($("#kddlUsers").data("kendoDropDownList").select()).id);
+  WNDSelectPeriod_OnClose()
+  if ($('#chkweeklyconfirm').is(':checked')) {
 
-		service.changeDisplayPeriodToWeeklyConfirm(() => {
-			RefreshTimeSheetConfirm();
-		});
+    service.changeDisplayPeriodToWeeklyConfirm(() => {
+      RefreshTimeSheetConfirm();
+    });
 
-	}
-	else {
-		var PeriodJson = {
-			Date: $("#startDateconfirm").val(),
-			Days: $("#numberDaysconfirm").val(),
-			IsWeekly: false,
-			UserId: dataService.userId_get()
-		};
+  }
+  else {
+    var PeriodJson = {
+      Date: $("#startDateconfirm").val(),
+      Days: $("#numberDaysconfirm").val(),
+      IsWeekly: false,
+      UserId: dataService.userId_get()
+    };
 
-		var prmData = JSON.stringify(PeriodJson);
-		service.changeDisplayPeriodToDaily(prmData, () => {
-			RefreshTimeSheetConfirm();
-		});
-	}
+    var prmData = JSON.stringify(PeriodJson);
+    service.changeDisplayPeriodToDaily(prmData, () => {
+      RefreshTimeSheetConfirm();
+    });
+  }
 
 }
 
 function GetPreviousNextPeriodconfirm(type) {
-	common.loaderShow();
+  common.loaderShow();
 
-	dataService.userId_set($("#kddlUsers").data("kendoDropDownList").dataItem($("#kddlUsers").data("kendoDropDownList").select()).id);
+  dataService.userId_set($("#kddlUsers").data("kendoDropDownList").dataItem($("#kddlUsers").data("kendoDropDownList").select()).id);
 
-	let startDate = null;
-	let endDate = null;
+  let startDate = null;
+  let endDate = null;
 
-	if (type == 'previous') {
-		startDate = dataService.timeSheetDataConfirm_get()[0].values[0].date;
-	} else {
-		var firstData = dataService.timeSheetDataConfirm_get()[0];
-		endDate = firstData.values[firstData.values.length - 1].date;
-	}
+  if (type == 'previous') {
+    startDate = dataService.timeSheetDataConfirm_get()[0].values[0].date;
+  } else {
+    var firstData = dataService.timeSheetDataConfirm_get()[0];
+    endDate = firstData.values[firstData.values.length - 1].date;
+  }
 
-	service.getPreviousNextPeriodConfirm(dataService.userId_get(), startDate, endDate, (response) => {
-		private_Refresh(response);
-	});
+  service.getPreviousNextPeriodConfirm(dataService.userId_get(), startDate, endDate, (response) => {
+    private_Refresh(response);
+  });
 }
 
 
@@ -526,14 +566,14 @@ function GetPreviousNextPeriodconfirm(type) {
 
 function EnableAndDisableSendPeriodRadioButtonConfirm() {
 
-	if ($("#numberDaysconfirm").is(':disabled')) {
+  if ($("#numberDaysconfirm").is(':disabled')) {
 
-		$("#numberDaysconfirm").prop("disabled", false);
-		$("#startDateconfirm").prop("disabled", false);
+    $("#numberDaysconfirm").prop("disabled", false);
+    $("#startDateconfirm").prop("disabled", false);
 
-	} else {
-		$("#numberDaysconfirm").prop("disabled", true);
-		$("#startDateconfirm").prop("disabled", true);
-	}
+  } else {
+    $("#numberDaysconfirm").prop("disabled", true);
+    $("#startDateconfirm").prop("disabled", true);
+  }
 
 }

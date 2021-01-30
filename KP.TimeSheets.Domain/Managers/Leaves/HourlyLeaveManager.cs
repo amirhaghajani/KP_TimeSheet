@@ -23,8 +23,8 @@ namespace KP.TimeSheets.Domain
             hourlyLeave.PreviousStage = wm.FirstStage().ID;
             hourlyLeave.ID = Guid.NewGuid();
             hourlyLeave.LeaveDate = DateUtility.GetMiladiDate(hourlyLeave.PersianLeaveDate);
-            hourlyLeave.From = DateUtility.ConvertStringTimeToDateTime(hourlyLeave.PersianTimeFrom);
-            hourlyLeave.To = DateUtility.ConvertStringTimeToDateTime(hourlyLeave.PersianTimeTo);
+            hourlyLeave.From = DateUtility.ConvertStringTimeToDateTime(hourlyLeave.LeaveDate, hourlyLeave.PersianTimeFrom);
+            hourlyLeave.To = DateUtility.ConvertStringTimeToDateTime(hourlyLeave.LeaveDate, hourlyLeave.PersianTimeTo);
             hourlyLeave.RegisterDate = DateTime.Now;
 
 

@@ -21,10 +21,11 @@ namespace KP.TimeSheets.Domain
         }
 
 
-        public static DateTime ConvertStringTimeToDateTime(string time)
+        public static DateTime ConvertStringTimeToDateTime(DateTime? baseDate, string time)
         {
+            if(!baseDate.HasValue) baseDate= DateTime.Now;
             string[] splitedTime = time.ToString().Split(':');
-            return new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, int.Parse(splitedTime[0]), int.Parse(splitedTime[1]), 0, 0);
+            return new DateTime(baseDate.Value.Year, baseDate.Value.Month, baseDate.Value.Day, int.Parse(splitedTime[0]), int.Parse(splitedTime[1]), 0, 0);
         }
 
         public static string ConvertDateTimeToTime(DateTime date)

@@ -414,6 +414,10 @@ const timeSheet = (function () {
 
             private_addProjectsAndTasksTimes(data, times_other, projects_ohter, otherId, true);
 
+            for(let i=otherId+1;i<data.length;i++){
+                data[i].has_NotApproveData_Other = true;
+            }
+
             //انتقال موارد تایید نشده که مستقیم زیرمجموعه سایر باشد
             const projectNotApprovedIndex = data.findIndex(p=>p.parentId==otherId && p.title=='TaskNotApprove');
             const projectNotApprovedId=data[projectNotApprovedIndex].id;
@@ -2399,6 +2403,8 @@ const dl = (function () {
 			type: $("#dailyLeave_type").data("kendoDropDownList").value()
 		};
 
+		debugger;
+
 		if (!dailyLeave.persianDateFrom.length) {
 			$("span[for='dailyLeave_dateStart']").text("تاریخ شروع ضروری است");
 			return;
@@ -2563,6 +2569,7 @@ const hl = (function () {
       projectID: $("#leave_selectProject").data("kendoDropDownList").value(),
     };
 
+    debugger;
     if (!mission.persianLeaveDate.length) {
       $("span[for='leave_date']").text("تاریخ ضروری است");
       return;

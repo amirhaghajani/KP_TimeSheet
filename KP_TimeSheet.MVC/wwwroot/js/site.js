@@ -414,6 +414,10 @@ const timeSheet = (function () {
 
             private_addProjectsAndTasksTimes(data, times_other, projects_ohter, otherId, true);
 
+            for(let i=otherId+1;i<data.length;i++){
+                data[i].has_NotApproveData_Other = true;
+            }
+
             //انتقال موارد تایید نشده که مستقیم زیرمجموعه سایر باشد
             const projectNotApprovedIndex = data.findIndex(p=>p.parentId==otherId && p.title=='TaskNotApprove');
             const projectNotApprovedId=data[projectNotApprovedIndex].id;
