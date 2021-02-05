@@ -18,7 +18,7 @@ namespace KP.TimeSheets.MVC
             history.Date = DateTime.Now;
             history.Description = approveAndDenyJson.description;
             history.ManagerID = currentUser.ID;
-            history.WorkHourID = worhHour.ID;
+            history.EntityId = worhHour.ID;
             history.StageID = worhHour.WorkflowStageID;
             historyManager.Add(history);
         }
@@ -33,7 +33,7 @@ namespace KP.TimeSheets.MVC
             history.Date = DateTime.Now;
             history.Description = approveAndDenyJson.description;
             history.ManagerID = currentUser.ID;
-            history.WorkHourID = worhHour.ID;
+            history.EntityId = worhHour.ID;
             history.StageID = worhHour.WorkflowStageID;
             historyManager.Add(history);
         }
@@ -48,7 +48,7 @@ namespace KP.TimeSheets.MVC
             history.Date = DateTime.Now;
             history.Description = "ارسال کارکرد به مدیر";
             history.ManagerID = currentUser.ID;
-            history.WorkHourID = workHour.ID;
+            history.EntityId = workHour.ID;
             history.StageID = workHour.WorkflowStageID;
             historyManager.Add(history);
         }
@@ -62,8 +62,9 @@ namespace KP.TimeSheets.MVC
             history.Action = "Register";
             history.Date = DateTime.Now;
             history.Description = "ثبت کارکرد جدید";
+            history.UserDescription = workHour.Description;
             history.ManagerID = currentUser.ID;
-            history.WorkHourID = workHour.ID;
+            history.EntityId = workHour.ID;
             history.StageID = workHour.WorkflowStageID;
             historyManager.Add(history);
         }

@@ -220,17 +220,17 @@ function ktrlTimeSheetsConfirm_OnInitColumns(response) {
 
     if (data.has_NotApproveData_Other) {
 
-      const type = data.uuiidd == '00000000-0000-0000-0000-000000000001' ? 'HourlyMissionty'
+      const type = data.uuiidd == '00000000-0000-0000-0000-000000000001' ? 'HourlyMission'
         : (data.uuiidd == '00000000-0000-0000-0000-000000000002' ? 'HourlyLeave'
           : (data.uuiidd == '00000000-0000-0000-0000-000000000003' ? 'DailyLeave' : null));
 
-      const color = type == 'HourlyMissionty' ? 'style="color:gray"' : (type == 'HourlyLeave' ? 'style="color:#00848C"' : 'style="color:#117243"');
-      const bc = type == 'HourlyMissionty' ? ';background-color:white' : (type == 'HourlyLeave' ? ';background-color:#E5F0FF' : ';background-color:#CEFF9D');
-      const title = type == 'HourlyMissionty' ? `همه ماموریت های ساعتی تایید نشده` : (type == 'HourlyLeave' ? `همه مرخصی های ساعتی تایید نشده` : `همه مرخصی های روزانه تایید نشده`);
+      const color = type == 'HourlyMission' ? 'style="color:gray"' : (type == 'HourlyLeave' ? 'style="color:#00848C"' : 'style="color:#117243"');
+      const bc = type == 'HourlyMission' ? ';background-color:white' : (type == 'HourlyLeave' ? ';background-color:#E5F0FF' : ';background-color:#CEFF9D');
+      const title = type == 'HourlyMission' ? `همه ماموریت های ساعتی تایید نشده` : (type == 'HourlyLeave' ? `همه مرخصی های ساعتی تایید نشده` : `همه مرخصی های روزانه تایید نشده`);
 
 
-      return data.title + `<button title='${title}' data-type='${data.type}' data-uid='${data.uuiidd}' data-parentid='${data.parentId ? data.parent()[data.parentId - 1].uuiidd : null}'
-			class='pull-left btn btn-success btn-xs forFound_ApproveTaskAllDates' 
+      return data.title + `<button title='${title}' data-type='${type}'
+			class='pull-left btn btn-success btn-xs forFound_ApproveOtherAllDates' 
 			style='margin-right:5px;padding: 4px 4px 0 ${bc};'>
 				<i class='glyphicon glyphicon-ok' ${color}></i>
 			</button>`;
@@ -295,20 +295,19 @@ function TreeListTemplateColumn(dataItem, index) {
 
   } else if (dataItem.has_NotApproveData_Other && dataItem.values[index].value != '' && dataItem.values[index].value != '0:00') {
 
-    const type = dataItem.uuiidd == '00000000-0000-0000-0000-000000000001' ? 'HourlyMissionty'
+    const type = dataItem.uuiidd == '00000000-0000-0000-0000-000000000001' ? 'HourlyMission'
       : (dataItem.uuiidd == '00000000-0000-0000-0000-000000000002' ? 'HourlyLeave'
         : (dataItem.uuiidd == '00000000-0000-0000-0000-000000000003' ? 'DailyLeave' : null));
       
     if(type == 'DailyLeave') return dd;
 
-    const color = type == 'HourlyMissionty' ? 'style="color:gray"' : (type == 'HourlyLeave' ? 'style="color:#00848C"' : 'style="color:#117243"');
-    const bc = type == 'HourlyMissionty' ? ';background-color:white' : (type == 'HourlyLeave' ? ';background-color:#E5F0FF' : ';background-color:#CEFF9D');
-    const title = type == 'HourlyMissionty' ? `ماموریت های ساعتی تایید نشده در ${dataItem.values[index].persianDate}` : (type == 'HourlyLeave' ? `مرخصی های ساعتی تایید نشده در ${dataItem.values[index].persianDate}` : `مرخصی های روزانه تایید نشده در ${dataItem.values[index].persianDate}`);
+    const color = type == 'HourlyMission' ? 'style="color:gray"' : (type == 'HourlyLeave' ? 'style="color:#00848C"' : 'style="color:#117243"');
+    const bc = type == 'HourlyMission' ? ';background-color:white' : (type == 'HourlyLeave' ? ';background-color:#E5F0FF' : ';background-color:#CEFF9D');
+    const title = type == 'HourlyMission' ? `ماموریت های ساعتی تایید نشده در ${dataItem.values[index].persianDate}` : (type == 'HourlyLeave' ? `مرخصی های ساعتی تایید نشده در ${dataItem.values[index].persianDate}` : `مرخصی های روزانه تایید نشده در ${dataItem.values[index].persianDate}`);
 
     return dataItem.values[index].value +
-      `<button title='${title}' data-uid='${dataItem.uuiidd}' data-index='${index}' data-type='${dataItem.type}' 
-			data-parentid='${dataItem.parentId ? dataItem.parent()[dataItem.parentId - 1].uuiidd : null}'
-				 class='pull-left btn btn-success btn-xs forFound_ApproveTask' style='margin-right:5px;padding: 4px 4px 0 ${bc};'>
+      `<button title='${title}' data-index='${index}' data-type='${type}'
+				 class='pull-left btn btn-success btn-xs forFound_ApproveOther' style='margin-right:5px;padding: 4px 4px 0 ${bc};'>
 				 <i class='glyphicon glyphicon-ok' ${color}></i></button>`;
 
 
@@ -328,6 +327,7 @@ function TreeListTemplateColumn(dataItem, index) {
 }
 
 function ktrlTimeSheetsConfirm_dataBound(e) {
+  
   $('.forFound_ApproveTask').off().on('click', function () {
     const id = $(this).data("uid");
     const index = $(this).data("index");
@@ -352,6 +352,30 @@ function ktrlTimeSheetsConfirm_dataBound(e) {
     approveWindow.showItemsWaitingApproveWindow(projectId, taskId, null);
   });
 
+
+
+  $('.forFound_ApproveOther').off().on('click', function () {
+    const index = $(this).data("index");
+
+    const type = $(this).data("type");
+    const isDailyLeave = type == 'DailyLeave';
+    const isHourlyLeave = type == 'HourlyLeave';
+    const isHourlyMission = type == 'HourlyMission';
+
+    const date = dataService.timeSheetDataConfirm_get()[0].values[index].date;
+
+    approveWindow.showItemsWaitingApproveWindow_ForMissionLeave(isHourlyMission, isHourlyLeave, isDailyLeave, date);
+  });
+
+  $('.forFound_ApproveOtherAllDates').off().on('click', function () {
+    const type = $(this).data("type");
+
+    const isDailyLeave = type == 'DailyLeave';
+    const isHourlyLeave = type == 'HourlyLeave';
+    const isHourlyMission = type == 'HourlyMission';
+
+    approveWindow.showItemsWaitingApproveWindow_ForMissionLeave(isHourlyMission, isHourlyLeave, isDailyLeave, null);
+  });
 
 }
 

@@ -65,13 +65,19 @@ namespace KP.TimeSheets.Persistance
         public System.FormattableString spWaitingForApproveWorkHourDetail_str(Guid approver_userId,Guid? userId, 
                 DateTime? startDate,DateTime? endDate, Guid? projectId, Guid? taskId)
         {
-            var prjId = projectId.HasValue ? $"'{projectId}'" : "NULL";
-            var tskId= taskId.HasValue ? $"'{taskId}'" : "NULL";
-                        
             return $@"exec spWaitingForApproveWorkHourDetail @approver_userId={approver_userId}
                         ,@userId={userId},@startDate={startDate},@endDate={endDate}
                         ,@projectId={projectId}
                         ,@taskId={taskId}";
+        }
+
+
+        public DbSet<WaitingForApproveLeaveMissionDetail> spWaitingForApproveLeaveMissionDetail { get; set; }
+        public System.FormattableString spWaitingForApproveLeaveMissionDetail_str(int type, Guid approver_userId,Guid userId, 
+                DateTime startDate,DateTime endDate)
+        {         
+            return $@"exec spWaitingForApproveLeaveMissionDetail @type={type}, @approver_userId={approver_userId}
+                        ,@userId={userId},@startDate={startDate},@endDate={endDate}";
         }
 
 
@@ -81,6 +87,9 @@ namespace KP.TimeSheets.Persistance
 
             modelBuilder.Entity<EmployeeTimeSheetFromDB>().HasNoKey();
             modelBuilder.Entity<WaitingForApproveWorkHourDetail>().HasNoKey();
+            modelBuilder.Entity<WaitingForApproveLeaveMissionDetail>().HasNoKey();
+
+            
 
             #region Configuration of Users' Table
 
@@ -207,10 +216,10 @@ namespace KP.TimeSheets.Persistance
               WithOne(y => y.Stage)
               .HasForeignKey(m => m.StageID);
 
-            modelBuilder.Entity<WorkHour>()
-              .HasMany(x => x.WorkHourHistories).
-              WithOne(y => y.WorkHuor)
-              .HasForeignKey(m => m.WorkHourID);
+            // modelBuilder.Entity<WorkHour>()
+            //   .HasMany(x => x.WorkHourHistories).
+            //   WithOne(y => y.WorkHuor)
+            //   .HasForeignKey(m => m.WorkHourID);
 
 
             modelBuilder.Entity<OrganizationUnit>()

@@ -972,6 +972,25 @@ const service = (function () {
 		});
 	}
 
+	function getWaitingApproveMissionLeaveDetail(data, success_callBack, error_callBack) {
+
+		let url = `/api/timesheetsNew/waitingApproveMissionLeave/${data.type}/${data.wantedUserId}/${data.startDate}/${data.endDate}`;
+
+		$.ajax({
+			type: "Get",
+			url: url,
+			contentType: "application/json; charset=utf-8",
+			dataType: "json",
+			success: (response) => {
+				if (success_callBack) success_callBack(response);
+			},
+			error: (error) => {
+				moduleData.common.loaderHide();
+                moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+                if (error_callBack) error_callBack();
+            }
+		});
+	}
 
 
 
@@ -990,7 +1009,8 @@ const service = (function () {
 		changeDisplayPeriodToDaily: changeDisplayPeriodToDaily,
 		getPreviousNextPeriodConfirm: getPreviousNextPeriodConfirm,
 		getCurrentPeriodConfirm: getCurrentPeriodConfirm,
-		getWaitingApproveWorkHourDetail: getWaitingApproveWorkHourDetail
+		getWaitingApproveWorkHourDetail: getWaitingApproveWorkHourDetail,
+		getWaitingApproveMissionLeaveDetail: getWaitingApproveMissionLeaveDetail
 	}
 
 })();
@@ -1010,7 +1030,8 @@ module.exports = {
 	changeDisplayPeriodToDaily: service.changeDisplayPeriodToDaily,
 	getPreviousNextPeriodConfirm: service.getPreviousNextPeriodConfirm,
 	getCurrentPeriodConfirm: service.getCurrentPeriodConfirm,
-	getWaitingApproveWorkHourDetail: service.getWaitingApproveWorkHourDetail
+	getWaitingApproveWorkHourDetail: service.getWaitingApproveWorkHourDetail,
+	getWaitingApproveMissionLeaveDetail: service.getWaitingApproveMissionLeaveDetail
 }
 },{}],4:[function(require,module,exports){
 const common = require('../common/common');

@@ -85,10 +85,6 @@ namespace KP.TimeSheets.Domain
         /// </summary>
         public Guid? PreviousStage { get; set; }
 
-
-
-        public ICollection<WorkHourHistory> WorkHourHistories { get; set; }
-
         #endregion
 
     }

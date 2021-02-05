@@ -3,19 +3,7 @@ using System.Collections.Generic;
 
 namespace KP.TimeSheets.MVC.ViewModels
 {
-
-    public class vmGetWaitingForApproveWorkhourDetail_Request
-    {
-        public Guid wantedUserId{get;set;}
-
-        public DateTime startDate{get;set;}
-        public DateTime endDate{get;set;}
-
-        public Guid? projectId{get;set;}
-        public Guid? taskId{get;set;}
-    }
-
-    public class vmGetWaitingForApproveWorkhourDetail_Resualt
+    public class vmGetWaitingForApproveWorkhourDetail
     {
         public Guid workHourId{get;set;}
         public DateTime date{get;set;}

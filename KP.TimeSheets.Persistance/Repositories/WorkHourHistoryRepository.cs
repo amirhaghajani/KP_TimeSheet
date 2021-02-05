@@ -37,7 +37,7 @@ namespace KP.TimeSheets.Persistance
 
         public IEnumerable< WorkHourHistory> GetByWorkHourId(Guid workHourId)
         {
-            return _RASContext.WorkHourHistories.Where(x => x.WorkHourID == workHourId);
+            return _RASContext.WorkHourHistories.Where(x => x.EntityId == workHourId);
         }
         public void Edit(WorkHourHistory history)
         {
@@ -67,7 +67,7 @@ namespace KP.TimeSheets.Persistance
         {
             obj.ID = entity.ID;
             obj.ManagerID = entity.ManagerID;
-            obj.WorkHourID = entity.WorkHourID;
+            obj.EntityId = entity.EntityId;
             obj.StageID = entity.StageID;
             obj.Description = entity.Description;
             obj.Date = entity.Date;
@@ -77,14 +77,13 @@ namespace KP.TimeSheets.Persistance
 
         public IEnumerable<WorkHourHistory> GetByWorkHourID(Guid workHourId)
         {
-            return DefaultQuery().Where(x => x.WorkHourID == workHourId);
+            return DefaultQuery().Where(x => x.EntityId == workHourId);
         }
         private IQueryable<WorkHourHistory> DefaultQuery()
         {
             return _RASContext.WorkHourHistories
                 .Include(x => x.Manager)
-                .Include(y => y.Stage)
-                .Include(z => z.WorkHuor);
+                .Include(y => y.Stage);
         }
     }
 }

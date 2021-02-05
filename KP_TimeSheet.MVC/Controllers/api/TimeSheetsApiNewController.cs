@@ -345,7 +345,7 @@ namespace KP.TimeSheets.MVC
         }
 
         [HttpGet("waitingApprove/{wantedUserId}/{startDate}/{endDate}/{projectId?}/{taskId?}")]
-        [ProducesResponseType(typeof(List<vmGetWaitingForApproveWorkhourDetail_Resualt>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<vmGetWaitingForApproveWorkhourDetail>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetWaitingForApproveWorkhourDetail(Guid wantedUserId,DateTime startDate, DateTime endDate, Guid? projectId, Guid? taskId)
         {
@@ -366,7 +366,7 @@ namespace KP.TimeSheets.MVC
                 var days = new string[] { "شنبه", "یکشنبه", "دوشنبه", "سه شنبه", "چهارشنبه", "پنج شنبه", "جمعه" };
 
                 var items = await query.ToListAsync();
-                var answer = items.Select(i => new vmGetWaitingForApproveWorkhourDetail_Resualt{
+                var answer = items.Select(i => new vmGetWaitingForApproveWorkhourDetail {
                     date = i.Date,
                     description = i.Description,
                     isSend = i.IsSend,
@@ -387,5 +387,96 @@ namespace KP.TimeSheets.MVC
                 return this.ReturnError(ex, "خطا در دریافت جزئیات موارد منتظر تایید");
             }
         }
+
+        [HttpGet("waitingApproveMissionLeave/{type}/{wantedUserId}/{startDate}/{endDate}")]
+        [ProducesResponseType(typeof(List<vmGetWaitingForApproveMissionLeaveDetail>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetWaitingForApproveMissionLeaveDetail(int type, Guid wantedUserId,DateTime startDate, DateTime endDate)
+        {
+            try
+            {
+                var currentUser = new UserHelper().GetCurrent(this._uow, this.UserName);
+
+                var query = this.DBContext.spWaitingForApproveLeaveMissionDetail.FromSqlInterpolated(
+                        this.DBContext.spWaitingForApproveLeaveMissionDetail_str(
+                                                type,
+                                                currentUser.ID,
+                                                wantedUserId,
+                                                startDate,
+                                                endDate));
+                
+                var days = new string[] { "شنبه", "یکشنبه", "دوشنبه", "سه شنبه", "چهارشنبه", "پنج شنبه", "جمعه" };
+
+                var items = await query.ToListAsync();
+                var answer = items.Select(i => new vmGetWaitingForApproveMissionLeaveDetail{
+                    id = i.Id,
+                    description = i.Description,
+                    isSend = i.IsSend,
+                    
+                    from = days[i.FromTimeDayOfTheWeek] + " " + i.FromPersianDate + (type==3 ? "" : " " + i.From.Hour + ":" + i.From.Minute.ToString("00")),
+                    to = days[i.ToTimeDayOfTheWeek] + " " +i.ToPersianDate +(type==3?"": " " + i.To.Hour + ":" + i.To.Minute.ToString("00")),
+                    
+                    from_day =days[i.FromTimeDayOfTheWeek],
+                    to_day =days[i.ToTimeDayOfTheWeek]
+                });
+
+                return Ok(answer);
+
+            }
+            catch (Exception ex)
+            {
+                return this.ReturnError(ex, "خطا در دریافت جزئیات موارد منتظر تایید");
+            }
+        }
+
+
+        [HttpPost("{ver}/approve")]
+        [ProducesResponseType(typeof(List<string>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> approveDeny()
+        {
+            try
+            {
+                if (!this.MainChecks(ver, out string error)) throw new Exception(error);
+                
+                var currentUser = new UserHelper().GetCurrent(this._uow, this.UserName);
+
+                var query = this.DBContext.spWaitingForApproveWorkHourDetail.FromSqlInterpolated(
+                        this.DBContext.spWaitingForApproveWorkHourDetail_str(
+                                                currentUser.ID,
+                                                wantedUserId,
+                                                startDate,
+                                                endDate,
+                                                projectId,
+                                                taskId
+                                                        ));
+                
+                var days = new string[] { "شنبه", "یکشنبه", "دوشنبه", "سه شنبه", "چهارشنبه", "پنج شنبه", "جمعه" };
+
+                var items = await query.ToListAsync();
+                var answer = items.Select(i => new vmGetWaitingForApproveWorkhourDetail {
+                    date = i.Date,
+                    description = i.Description,
+                    isSend = i.IsSend,
+                    minutes = i.Minutes,
+                    projectId = i.ProjectId,
+                    projectTitle = i.ProjectTitle,
+                    title = i.Title,
+                    workHourId = i.WorkHourId,
+                    date_persian = i.PersianDate,
+                    day_persian =days[i.TimeDayOfTheWeek]
+                });
+
+                return Ok(answer);
+
+            }
+            catch (Exception ex)
+            {
+                return this.ReturnError(ex, "خطا در دریافت جزئیات موارد منتظر تایید");
+            }
+        }
+
+
+        
     }
 }

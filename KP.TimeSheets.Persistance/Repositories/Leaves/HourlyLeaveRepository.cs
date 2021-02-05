@@ -65,7 +65,7 @@ namespace KP.TimeSheets.Persistance
         public bool CheckDontHasLeaveOnDuration(Guid userId, DateTime from, DateTime to)
         {
             return _RASContext.HourlyLeaves
-                    .Where(d => d.UserId == userId && ((d.To >= from && d.To <= to) || (d.From >= from && d.To <= to))).Count() == 0;
+                    .Where(d => d.UserId == userId && ((d.To > from && d.To <= to) || (d.From > from && d.To <= to))).Count() == 0;
         }
 
         public void FillEntity(HourlyLeave hourlyLeave, HourlyLeave entity)
