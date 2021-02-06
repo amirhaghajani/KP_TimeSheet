@@ -124,7 +124,7 @@ const hl = (function () {
       projectID: $("#leave_selectProject").data("kendoDropDownList").value(),
     };
 
-    debugger;
+
     if (!mission.persianLeaveDate.length) {
       $("span[for='leave_date']").text("تاریخ ضروری است");
       return;

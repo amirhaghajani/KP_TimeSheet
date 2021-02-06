@@ -2453,7 +2453,6 @@ const dl = (function () {
 			type: $("#dailyLeave_type").data("kendoDropDownList").value()
 		};
 
-		debugger;
 
 		if (!dailyLeave.persianDateFrom.length) {
 			$("span[for='dailyLeave_dateStart']").text("تاریخ شروع ضروری است");
@@ -2619,7 +2618,7 @@ const hl = (function () {
       projectID: $("#leave_selectProject").data("kendoDropDownList").value(),
     };
 
-    debugger;
+
     if (!mission.persianLeaveDate.length) {
       $("span[for='leave_date']").text("تاریخ ضروری است");
       return;

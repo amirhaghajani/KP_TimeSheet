@@ -1309,7 +1309,7 @@ const approveWindow = (function () {
       if (moduleData.lastGetApproveDataFromServer) moduleData.lastGetApproveDataFromServer();
 
       $('#GrdMonitorWaitingApproveWorkHour_Send').removeAttr("disabled");
-      debugger;
+
       moduleData.parentRefreshCommand();
 
     }, () => {
@@ -1645,8 +1645,6 @@ const approveWindow = (function () {
 	}
 
   function private_init_GRDHistory(e){
-
-    debugger;
 
     var grid = $("#GrdMonitorWaitingApproveWorkHour").data("kendoGrid");
 		var dataItem = grid.dataItem($(e).closest("tr"));
