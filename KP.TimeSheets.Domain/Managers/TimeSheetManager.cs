@@ -47,7 +47,7 @@ namespace KP.TimeSheets.Domain
             _UOW.SaveChanges();
 
         }
-        public IEnumerable<WorkHour> GetWorkHoursByUser(User user, DateTime? fromDate = null, DateTime? toDate = null,Guid? projectId=null, Guid? taskId=null)
+        public IEnumerable<WorkHour> GetWorkHoursByUser(User user, DateTime? fromDate = null, DateTime? toDate = null, Guid? projectId = null, Guid? taskId = null)
         {
 
             fromDate = fromDate ?? DateTime.MinValue;
@@ -146,6 +146,16 @@ namespace KP.TimeSheets.Domain
             }
 
         }
+
+        public bool IsUserOrganisationMnager(Guid employeeId, User currentUser)
+        {
+            var userManager = new UserManager(_UOW);
+            var orgManager = new OrgUnitManager(_UOW);
+            var orgId = userManager.GetByID(employeeId).OrganizationUnit.ID;
+            var orgmanager = orgManager.GetByID(orgId);
+
+            return orgmanager.ManagerID == currentUser.ID;
+        }
         /// <summary>
         /// WorkHour متد مشخص کردن مدیر ستادی بودن کاربر جاری توسط آبجکت 
         /// </summary>
@@ -184,12 +194,12 @@ namespace KP.TimeSheets.Domain
             var workflowManager = new WorkflowManager(_UOW);
             var stage = workflowManager.GetByID(workHour.WorkflowStageID);
 
-            
+
 
             var isProjectManager = IsUserProjectMnager(workHour, userName);
             var isOrganizationManager = IsUserOrganisationMnager(workHour, userName);
 
-            if(!isProjectManager && !isOrganizationManager) return "Nothing";
+            if (!isProjectManager && !isOrganizationManager) return "Nothing";
 
             if (stage.Order > 3) return "Approve";
             if (stage.Order < 2) return "Nothing";
@@ -197,14 +207,14 @@ namespace KP.TimeSheets.Domain
 
             // الان یا 2 است یا 3
             if (isProjectManager && isOrganizationManager) return "NotApprove";
-            if(isProjectManager && stage.Type=="ProjectManager") return "NotApprove";
-            if(isOrganizationManager && stage.Type=="Manager") return "NotApprove";
+            if (isProjectManager && stage.Type == "ProjectManager") return "NotApprove";
+            if (isOrganizationManager && stage.Type == "Manager") return "NotApprove";
 
             return "Approve";
 
 
-                if (IsUserProjectMnager(workHour, userName) && IsUserOrganisationMnager(workHour, userName) && stage.Order == 2)
-                    return "NotApprove";
+            if (IsUserProjectMnager(workHour, userName) && IsUserOrganisationMnager(workHour, userName) && stage.Order == 2)
+                return "NotApprove";
             if (IsUserProjectMnager(workHour, userName) && IsUserOrganisationMnager(workHour, userName) && stage.Order == 3)
                 return "NotApprove";
             if (IsUserProjectMnager(workHour, userName) && IsUserOrganisationMnager(workHour, userName) && stage.Order > 3)

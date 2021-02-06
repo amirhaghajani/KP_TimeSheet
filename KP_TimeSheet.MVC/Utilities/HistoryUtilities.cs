@@ -23,6 +23,20 @@ namespace KP.TimeSheets.MVC
             historyManager.Add(history);
         }
 
+        public static void RegisterApproveHistory(ApproveAndDenyJson approveAndDenyJson, IUnitOfWork uow,User currentUser)
+        {
+            var history = new WorkHourHistory();
+            var userManager = new UserManager(uow);
+            var historyManager = new WorkHourHistoryManager(uow);
+            history.Action = "Approve";
+            history.Date = DateTime.Now;
+            history.Description = approveAndDenyJson.description;
+            history.ManagerID = currentUser.ID;
+            history.EntityId = new Guid(approveAndDenyJson.id);
+            history.StageID = approveAndDenyJson.workflowStageID;
+            historyManager.Add(history);
+        }
+
 
         public static void RegisterDenyHistory(ApproveAndDenyJson approveAndDenyJson, WorkHour worhHour, IUnitOfWork uow,User currentUser)
         {
@@ -35,6 +49,20 @@ namespace KP.TimeSheets.MVC
             history.ManagerID = currentUser.ID;
             history.EntityId = worhHour.ID;
             history.StageID = worhHour.WorkflowStageID;
+            historyManager.Add(history);
+        }
+
+        public static void RegisterDenyHistory(ApproveAndDenyJson approveAndDenyJson, IUnitOfWork uow,User currentUser)
+        {
+            var history = new WorkHourHistory();
+          
+            var historyManager = new WorkHourHistoryManager(uow);
+            history.Action = "Deny";
+            history.Date = DateTime.Now;
+            history.Description = approveAndDenyJson.description;
+            history.ManagerID = currentUser.ID;
+            history.EntityId = new Guid(approveAndDenyJson.id);
+            history.StageID = approveAndDenyJson.workflowStageID;
             historyManager.Add(history);
         }
 

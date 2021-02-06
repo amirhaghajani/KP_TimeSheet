@@ -26,7 +26,7 @@ namespace KP.TimeSheets.MVC
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetTimeSheet(string ver, Guid? userId, DateTime? fromDate, DateTime? toDate)
         {
-            var isWantingApprove=userId.HasValue;
+            var isWantingApprove = userId.HasValue;
 
             try
             {
@@ -88,7 +88,7 @@ namespace KP.TimeSheets.MVC
                     date_persian = gg.First().PersianDate,
                     day_persian = days[gg.First().DayOfWeek.Value],
                     hozoor = gg.First().Hozoor,
-                    projects = gg.Where(p =>p.Type=="Work" && p.ProjectId.HasValue)
+                    projects = gg.Where(p => p.Type == "Work" && p.ProjectId.HasValue)
                     .GroupBy(p => p.ProjectId).Select(pp => new vmGetTimeSheetResualt_Project
                     {
                         id = pp.Key,
@@ -103,7 +103,7 @@ namespace KP.TimeSheets.MVC
                         }).ToList()
                     }).ToList(),
 
-                    others = gg.Where(p =>p.Type=="Other" && p.ProjectId.HasValue)
+                    others = gg.Where(p => p.Type == "Other" && p.ProjectId.HasValue)
                     .GroupBy(p => p.State).Select(pp => new vmGetTimeSheetResualt_Project
                     {
                         id = pp.First().ProjectId,
@@ -347,7 +347,7 @@ namespace KP.TimeSheets.MVC
         [HttpGet("waitingApprove/{wantedUserId}/{startDate}/{endDate}/{projectId?}/{taskId?}")]
         [ProducesResponseType(typeof(List<vmGetWaitingForApproveWorkhourDetail>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> GetWaitingForApproveWorkhourDetail(Guid wantedUserId,DateTime startDate, DateTime endDate, Guid? projectId, Guid? taskId)
+        public async Task<IActionResult> GetWaitingForApproveWorkhourDetail(Guid wantedUserId, DateTime startDate, DateTime endDate, Guid? projectId, Guid? taskId)
         {
             try
             {
@@ -362,11 +362,12 @@ namespace KP.TimeSheets.MVC
                                                 projectId,
                                                 taskId
                                                         ));
-                
+
                 var days = new string[] { "شنبه", "یکشنبه", "دوشنبه", "سه شنبه", "چهارشنبه", "پنج شنبه", "جمعه" };
 
                 var items = await query.ToListAsync();
-                var answer = items.Select(i => new vmGetWaitingForApproveWorkhourDetail {
+                var answer = items.Select(i => new vmGetWaitingForApproveWorkhourDetail
+                {
                     date = i.Date,
                     description = i.Description,
                     isSend = i.IsSend,
@@ -376,7 +377,7 @@ namespace KP.TimeSheets.MVC
                     title = i.Title,
                     workHourId = i.WorkHourId,
                     date_persian = i.PersianDate,
-                    day_persian =days[i.TimeDayOfTheWeek]
+                    day_persian = days[i.TimeDayOfTheWeek]
                 });
 
                 return Ok(answer);
@@ -391,7 +392,7 @@ namespace KP.TimeSheets.MVC
         [HttpGet("waitingApproveMissionLeave/{type}/{wantedUserId}/{startDate}/{endDate}")]
         [ProducesResponseType(typeof(List<vmGetWaitingForApproveMissionLeaveDetail>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> GetWaitingForApproveMissionLeaveDetail(int type, Guid wantedUserId,DateTime startDate, DateTime endDate)
+        public async Task<IActionResult> GetWaitingForApproveMissionLeaveDetail(int type, Guid wantedUserId, DateTime startDate, DateTime endDate)
         {
             try
             {
@@ -404,20 +405,21 @@ namespace KP.TimeSheets.MVC
                                                 wantedUserId,
                                                 startDate,
                                                 endDate));
-                
+
                 var days = new string[] { "شنبه", "یکشنبه", "دوشنبه", "سه شنبه", "چهارشنبه", "پنج شنبه", "جمعه" };
 
                 var items = await query.ToListAsync();
-                var answer = items.Select(i => new vmGetWaitingForApproveMissionLeaveDetail{
+                var answer = items.Select(i => new vmGetWaitingForApproveMissionLeaveDetail
+                {
                     id = i.Id,
                     description = i.Description,
                     isSend = i.IsSend,
-                    
-                    from = days[i.FromTimeDayOfTheWeek] + " " + i.FromPersianDate + (type==3 ? "" : " " + i.From.Hour + ":" + i.From.Minute.ToString("00")),
-                    to = days[i.ToTimeDayOfTheWeek] + " " +i.ToPersianDate +(type==3?"": " " + i.To.Hour + ":" + i.To.Minute.ToString("00")),
-                    
-                    from_day =days[i.FromTimeDayOfTheWeek],
-                    to_day =days[i.ToTimeDayOfTheWeek]
+
+                    from = days[i.FromTimeDayOfTheWeek] + " " + i.FromPersianDate + (type == 3 ? "" : " " + i.From.Hour + ":" + i.From.Minute.ToString("00")),
+                    to = days[i.ToTimeDayOfTheWeek] + " " + i.ToPersianDate + (type == 3 ? "" : " " + i.To.Hour + ":" + i.To.Minute.ToString("00")),
+
+                    from_day = days[i.FromTimeDayOfTheWeek],
+                    to_day = days[i.ToTimeDayOfTheWeek]
                 });
 
                 return Ok(answer);
@@ -430,53 +432,238 @@ namespace KP.TimeSheets.MVC
         }
 
 
-        [HttpPost("{ver}/approve")]
-        [ProducesResponseType(typeof(List<string>), StatusCodes.Status200OK)]
+        [HttpPost("approve")]
+        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> approveDeny()
+        public IActionResult approveDeny(vmApproveDenyRequest request)
         {
             try
             {
-                if (!this.MainChecks(ver, out string error)) throw new Exception(error);
-                
+                if (!this.MainChecks(request.ver, out string error)) throw new Exception(error);
+                if (request.approveIds.Count == 0 && request.denyIds.Count == 0) throw new Exception("موردی برای تایید یا رد مشخص نشده است");
+
                 var currentUser = new UserHelper().GetCurrent(this._uow, this.UserName);
+                TimeSheetManager timeSheetManager = new TimeSheetManager(this._uow);
 
-                var query = this.DBContext.spWaitingForApproveWorkHourDetail.FromSqlInterpolated(
-                        this.DBContext.spWaitingForApproveWorkHourDetail_str(
-                                                currentUser.ID,
-                                                wantedUserId,
-                                                startDate,
-                                                endDate,
-                                                projectId,
-                                                taskId
-                                                        ));
-                
-                var days = new string[] { "شنبه", "یکشنبه", "دوشنبه", "سه شنبه", "چهارشنبه", "پنج شنبه", "جمعه" };
 
-                var items = await query.ToListAsync();
-                var answer = items.Select(i => new vmGetWaitingForApproveWorkhourDetail {
-                    date = i.Date,
-                    description = i.Description,
-                    isSend = i.IsSend,
-                    minutes = i.Minutes,
-                    projectId = i.ProjectId,
-                    projectTitle = i.ProjectTitle,
-                    title = i.Title,
-                    workHourId = i.WorkHourId,
-                    date_persian = i.PersianDate,
-                    day_persian =days[i.TimeDayOfTheWeek]
-                });
+                if (request.type == 10)
+                {
+                    //workhour
+                    foreach (var itemForApprove in request.approveIds)
+                    {
+                        var item = timeSheetManager.GetByID(itemForApprove.id);
+                        approveDenyWorkhour(true, currentUser, timeSheetManager, item, itemForApprove.description);
+                    }
+                    foreach (var itemForDeny in request.denyIds)
+                    {
+                        var item = timeSheetManager.GetByID(itemForDeny.id);
+                        approveDenyWorkhour(false, currentUser, timeSheetManager, item, itemForDeny.description);
+                    }
+                }
 
-                return Ok(answer);
+                if (request.type == 1)
+                {
+                    //ماموریت ساعتی
+                    HourlyMissionManager dlm = new HourlyMissionManager(this._uow);
 
+                    foreach (var itemForApprove in request.approveIds)
+                    {
+                        var dailyLeave = dlm.GetByID(itemForApprove.id);
+                        approveDenyHourlyMission(true, currentUser, timeSheetManager, dlm, dailyLeave, itemForApprove.description);
+                    }
+
+                    foreach (var itemForDeny in request.denyIds)
+                    {
+                        var dailyLeave = dlm.GetByID(itemForDeny.id);
+                        approveDenyHourlyMission(false, currentUser, timeSheetManager, dlm, dailyLeave, itemForDeny.description);
+                    }
+
+                    this._uow.SaveChanges();
+                }
+                if (request.type == 2)
+                {
+                    //مرخصی ساعتی
+                    HourlyLeaveManager dlm = new HourlyLeaveManager(this._uow);
+
+                    foreach (var itemForApprove in request.approveIds)
+                    {
+                        var dailyLeave = dlm.GetByID(itemForApprove.id);
+                        approveDenyHourlyLeave(true, currentUser, timeSheetManager, dlm, dailyLeave, itemForApprove.description);
+                    }
+
+                    foreach (var itemForDeny in request.denyIds)
+                    {
+                        var dailyLeave = dlm.GetByID(itemForDeny.id);
+                        approveDenyHourlyLeave(false, currentUser, timeSheetManager, dlm, dailyLeave, itemForDeny.description);
+                    }
+
+                    this._uow.SaveChanges();
+                }
+                if (request.type == 3)
+                {
+                    //مرخصی روزانه
+                    DailyLeaveManager dlm = new DailyLeaveManager(this._uow);
+
+                    foreach (var itemForApprove in request.approveIds)
+                    {
+                        var dailyLeave = dlm.GetByID(itemForApprove.id);
+                        approveDenyDailyLeave(true, currentUser, timeSheetManager, dlm, dailyLeave, itemForApprove.description);
+                    }
+
+                    foreach (var itemForDeny in request.denyIds)
+                    {
+                        var dailyLeave = dlm.GetByID(itemForDeny.id);
+                        approveDenyDailyLeave(false, currentUser, timeSheetManager, dlm, dailyLeave, itemForDeny.description);
+                    }
+
+                    this._uow.SaveChanges();
+                }
+
+
+
+                return Ok(new { message = "عملیات تایید با موفقیت انجام گردید" });
             }
             catch (Exception ex)
             {
-                return this.ReturnError(ex, "خطا در دریافت جزئیات موارد منتظر تایید");
+                return this.ReturnError(ex, "خطا در ذخیره تایید و رد ها");
             }
         }
 
 
-        
+        private void approveDenyHourlyMission(bool isApprove, Domain.User currentUser, TimeSheetManager timeSheetManager, HourlyMissionManager dlm, HourlyMission dailyLeave, string userDescription)
+        {
+            if (dailyLeave.WorkflowStage.Type == "Final") throw new Exception("هم اکنون تایید نهایی می باشد");
+            var isManager = timeSheetManager.IsUserOrganisationMnager(dailyLeave.UserID, currentUser);
+
+            if (dailyLeave.WorkflowStage.Type == "Manager" && !isManager) throw new Exception("آیتم منتظر تایید مدیر ستادی است");
+
+            var data = new ApproveAndDenyJson()
+            {
+                id = dailyLeave.ID.ToString(),
+                date = DateTime.Now,
+                description = userDescription,
+                workflowStageID = dailyLeave.WorkflowStageID
+            };
+
+            if (isApprove)
+            {
+                dlm.Approve(dailyLeave);
+                HistoryUtilities.RegisterApproveHistory(data, this._uow, currentUser);
+            }
+            else
+            {
+                dlm.Deny(dailyLeave);
+                HistoryUtilities.RegisterApproveHistory(data, this._uow, currentUser);
+            }
+        }
+        private void approveDenyHourlyLeave(bool isApprove, Domain.User currentUser, TimeSheetManager timeSheetManager, HourlyLeaveManager dlm, HourlyLeave dailyLeave, string userDescription)
+        {
+            if (dailyLeave.WorkflowStage.Type == "Final") throw new Exception("هم اکنون تایید نهایی می باشد");
+            var isManager = timeSheetManager.IsUserOrganisationMnager(dailyLeave.UserId, currentUser);
+
+            if (dailyLeave.WorkflowStage.Type == "Manager" && !isManager) throw new Exception("آیتم منتظر تایید مدیر ستادی است");
+
+            var data = new ApproveAndDenyJson()
+            {
+                id = dailyLeave.ID.ToString(),
+                date = DateTime.Now,
+                description = userDescription,
+                workflowStageID = dailyLeave.WorkflowStageID
+            };
+
+            if (isApprove)
+            {
+                dlm.Approve(dailyLeave);
+                HistoryUtilities.RegisterApproveHistory(data, this._uow, currentUser);
+            }
+            else
+            {
+                dlm.Deny(dailyLeave);
+                HistoryUtilities.RegisterApproveHistory(data, this._uow, currentUser);
+            }
+        }
+        private void approveDenyDailyLeave(bool isApprove, Domain.User currentUser, TimeSheetManager timeSheetManager, DailyLeaveManager dlm, DailyLeave dailyLeave, string userDescription)
+        {
+            if (dailyLeave.WorkflowStage.Type == "Final") throw new Exception("هم اکنون تایید نهایی می باشد");
+            var isManager = timeSheetManager.IsUserOrganisationMnager(dailyLeave.UserID, currentUser);
+
+            if (dailyLeave.WorkflowStage.Type == "Manager" && !isManager) throw new Exception("آیتم منتظر تایید مدیر ستادی است");
+
+            var data = new ApproveAndDenyJson()
+            {
+                id = dailyLeave.ID.ToString(),
+                date = DateTime.Now,
+                description = userDescription,
+                workflowStageID = dailyLeave.WorkflowStageID
+            };
+
+            if (isApprove)
+            {
+                dlm.Approve(dailyLeave);
+                HistoryUtilities.RegisterApproveHistory(data, this._uow, currentUser);
+            }
+            else
+            {
+                dlm.Deny(dailyLeave);
+                HistoryUtilities.RegisterApproveHistory(data, this._uow, currentUser);
+            }
+        }
+
+        private void approveDenyWorkhour(bool isApprove, Domain.User currentUser, TimeSheetManager timeSheetManager, WorkHour item, string userDescription)
+        {
+
+            if (item.WorkflowStage.Type == "Final") throw new Exception("هم اکنون تایید نهایی می باشد");
+
+            var data = new ApproveAndDenyJson()
+            {
+                id = item.ID.ToString(),
+                date = DateTime.Now,
+                description = userDescription
+            };
+
+            var isManager = timeSheetManager.IsUserOrganisationMnager(item.EmployeeID, currentUser);
+            var isProjectManager = timeSheetManager.IsUserProjectMnager(item, currentUser.UserName);
+
+
+            if (isManager && isProjectManager)
+            {
+                if (isApprove)
+                {
+                    for (int i = item.WorkflowStage.Order; i < 4; i++)
+                    {
+                        timeSheetManager.ApproveWorkHour(item);
+                        HistoryUtilities.RegisterApproveHistory(data, item, this._uow, currentUser);
+                    }
+                }
+                else
+                {
+                    for (int i = item.WorkflowStage.Order; i > 1; i++)
+                    {
+                        timeSheetManager.DenyWorkHour(item);
+                        HistoryUtilities.RegisterDenyHistory(data, item, this._uow, currentUser);
+                    }
+                }
+
+            }
+            else
+            {
+
+                if (item.WorkflowStage.Type == "Manager" && !isManager) throw new Exception("آیتم منتظر تایید مدیر ستادی است");
+                if (item.WorkflowStage.Type == "ProjectManager" && !isProjectManager) throw new Exception("آیتم منتظر تایید مدیر پروژه است");
+                if (isApprove)
+                {
+                    timeSheetManager.ApproveWorkHour(item);
+                    HistoryUtilities.RegisterApproveHistory(data, item, this._uow, currentUser);
+                }
+                else
+                {
+                    timeSheetManager.DenyWorkHour(item);
+                    HistoryUtilities.RegisterDenyHistory(data, item, this._uow, currentUser);
+                }
+            }
+        }
+
+
+
     }
 }

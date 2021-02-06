@@ -7,10 +7,10 @@ namespace KP.TimeSheets.MVC
 {
     public class ApproveAndDenyJson
     {
-        public DateTime  date { get; set; }
-        public string   id { get; set; }
+        public DateTime date { get; set; }
+        public string id { get; set; }
         public string description { get; set; }
 
-
+        public Guid? workflowStageID { get; set; }
     }
 }

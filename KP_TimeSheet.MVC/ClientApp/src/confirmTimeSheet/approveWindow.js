@@ -6,7 +6,7 @@ const approveWindow = (function () {
     moduleData.common = common;
     moduleData.service = service;
     moduleData.data = data;
-    moduleData.thisGridType=null;
+    moduleData.thisGridType = null;
 
     $('#GrdMonitorWaitingApproveWorkHour_Hide').off().on('click', function () {
       $("#WndItemsWaitingApprove").data("kendoWindow").close();
@@ -25,24 +25,25 @@ const approveWindow = (function () {
     });
   }
 
-  function private_sendApproveDenyDataToServer(){
-    debugger;
-    var items = $("#GrdMonitorWaitingApproveWorkHour").data("kendoGrid").dataSource.data();
+  function private_sendApproveDenyDataToServer() {
     
-    var wanted='id';
-    if(moduleData.thisGridType=='workhour') wanted='workHourId';
+    var items = $("#GrdMonitorWaitingApproveWorkHour").data("kendoGrid").dataSource.data();
 
-    var approved=[];
-    var denyed=[];
-    items.forEach(i=>{
-      if(i.isApprove) approved.push(i[wanted]);
-      if(i.isDeny) denyed.push(i[wanted]);
+    var wanted = 'id';
+    if (moduleData.thisGridType == 'workhour') wanted = 'workHourId';
+
+    var approved = [];
+    var denyed = [];
+    items.forEach(i => {
+      debugger;
+      if (i.isApprove) approved.push({id: i[wanted], description: i.newDescription});
+      if (i.isDeny) denyed.push({id: i[wanted], description: i.newDescription});
     });
 
+    moduleData.service.approveDenyItems(moduleData.thisGridType,approved,denyed,(data)=>{
 
-    if(moduleData.thisGridType=='workhour'){
+    });
 
-    }else alert(moduleData.thisGridType);
   }
 
   function private_doApproveDenyAll(type) {
@@ -63,7 +64,7 @@ const approveWindow = (function () {
   }
 
   function showItemsWaitingApproveWindow(projectId, taskId, date) {
-    moduleData.thisGridType=null;
+    moduleData.thisGridType = null;
     moduleData.common.loaderShow();
 
     let startDate = date;
@@ -87,7 +88,7 @@ const approveWindow = (function () {
 
     moduleData.service.getWaitingApproveWorkHourDetail(data, (response) => {
 
-      moduleData.thisGridType='workhour';
+      moduleData.thisGridType = 'workhour';
 
       private_open_GrdMonitorSentWorkHour();
       var columns = [
@@ -167,8 +168,8 @@ const approveWindow = (function () {
   }
 
   function showItemsWaitingApproveWindow_ForMissionLeave(isHourlyMission, isHourlyLeave, isDailyLeave, date) {
-    
-    moduleData.thisGridType=null;
+
+    moduleData.thisGridType = null;
     moduleData.common.loaderShow();
 
     let startDate = date;
@@ -191,8 +192,8 @@ const approveWindow = (function () {
     if (isDailyLeave) data.type = 3;
 
     moduleData.service.getWaitingApproveMissionLeaveDetail(data, (response) => {
-      
-      moduleData.thisGridType=data.type;
+
+      moduleData.thisGridType = data.type;
       private_open_GrdMonitorSentWorkHour();
 
       var columns = [
@@ -271,7 +272,7 @@ const approveWindow = (function () {
     if (data) data.destroy();
 
     var grid = $("#GrdMonitorWaitingApproveWorkHour").kendoGrid();
-    var options= {
+    var options = {
       dataSource: {
         transport: {
           read: function (e) {

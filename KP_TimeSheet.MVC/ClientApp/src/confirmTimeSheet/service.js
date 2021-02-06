@@ -5,7 +5,7 @@ const service = (function () {
 	function init(data, common_timeSheet, common) {
 		moduleData.data = data;
 		moduleData.common_timeSheet = common_timeSheet;
-		moduleData.common= common;
+		moduleData.common = common;
 	}
 
 	function getTimeSheetsByUserId(prmData, success_callBack, error_callBack) {
@@ -22,9 +22,9 @@ const service = (function () {
 			},
 			error: (error) => {
 				moduleData.common.loaderHide();
-                moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
-                if (error_callBack) error_callBack();
-            }
+				moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+				if (error_callBack) error_callBack();
+			}
 		});
 
 	}
@@ -42,9 +42,9 @@ const service = (function () {
 			},
 			error: (error) => {
 				moduleData.common.loaderHide();
-                moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
-                if (error_callBack) error_callBack();
-            }
+				moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+				if (error_callBack) error_callBack();
+			}
 		});
 
 	}
@@ -53,7 +53,7 @@ const service = (function () {
 
 		$.ajax({
 			type: "Get",
-			url: "/api/timesheetsNew/" +moduleData.common.version()+"/" + moduleData.data.userId_get(),
+			url: "/api/timesheetsNew/" + moduleData.common.version() + "/" + moduleData.data.userId_get(),
 			contentType: "application/json; charset=utf-8",
 			dataType: "json",
 
@@ -67,9 +67,9 @@ const service = (function () {
 			},
 			error: (error) => {
 				moduleData.common.loaderHide();
-                moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
-                if (error_callBack) error_callBack();
-            }
+				moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+				if (error_callBack) error_callBack();
+			}
 		});
 	}
 
@@ -85,9 +85,9 @@ const service = (function () {
 			success: success_callBack ? (response) => success_callBack(response) : () => { },
 			error: (error) => {
 				moduleData.common.loaderHide();
-                moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
-                if (error_callBack) error_callBack();
-            }
+				moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+				if (error_callBack) error_callBack();
+			}
 		});
 	}
 
@@ -101,9 +101,9 @@ const service = (function () {
 			success: success_callBack ? (response) => success_callBack(response) : () => { },
 			error: (error) => {
 				moduleData.common.loaderHide();
-                moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
-                if (error_callBack) error_callBack();
-            }
+				moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+				if (error_callBack) error_callBack();
+			}
 		});
 	}
 
@@ -120,9 +120,9 @@ const service = (function () {
 			},
 			error: (error) => {
 				moduleData.common.loaderHide();
-                moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
-                if (error_callBack) error_callBack();
-            }
+				moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+				if (error_callBack) error_callBack();
+			}
 		});
 	}
 
@@ -136,9 +136,9 @@ const service = (function () {
 			success: success_callBack ? (response) => success_callBack(response) : () => { },
 			error: (error) => {
 				moduleData.common.loaderHide();
-                moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
-                if (error_callBack) error_callBack();
-            }
+				moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+				if (error_callBack) error_callBack();
+			}
 		});
 	}
 
@@ -152,9 +152,9 @@ const service = (function () {
 			success: success_callBack ? (response) => success_callBack(response) : () => { },
 			error: (error) => {
 				moduleData.common.loaderHide();
-                moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
-                if (error_callBack) error_callBack();
-            }
+				moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+				if (error_callBack) error_callBack();
+			}
 		});
 	}
 
@@ -168,9 +168,9 @@ const service = (function () {
 			success: success_callBack ? (response) => success_callBack(response) : () => { },
 			error: (error) => {
 				moduleData.common.loaderHide();
-                moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
-                if (error_callBack) error_callBack();
-            }
+				moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+				if (error_callBack) error_callBack();
+			}
 		});
 	}
 
@@ -185,9 +185,9 @@ const service = (function () {
 			},
 			error: (error) => {
 				moduleData.common.loaderHide();
-                moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
-                if (error_callBack) error_callBack();
-            }
+				moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+				if (error_callBack) error_callBack();
+			}
 		});
 	}
 
@@ -203,9 +203,9 @@ const service = (function () {
 			},
 			error: (error) => {
 				moduleData.common.loaderHide();
-                moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
-                if (error_callBack) error_callBack();
-            }
+				moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+				if (error_callBack) error_callBack();
+			}
 		});
 	}
 
@@ -231,9 +231,9 @@ const service = (function () {
 			},
 			error: (error) => {
 				moduleData.common.loaderHide();
-                moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
-                if (error_callBack) error_callBack();
-            }
+				moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+				if (error_callBack) error_callBack();
+			}
 		});
 	}
 
@@ -250,9 +250,9 @@ const service = (function () {
 			},
 			error: (error) => {
 				moduleData.common.loaderHide();
-                moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
-                if (error_callBack) error_callBack();
-            }
+				moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+				if (error_callBack) error_callBack();
+			}
 		});
 	}
 
@@ -275,9 +275,9 @@ const service = (function () {
 			},
 			error: (error) => {
 				moduleData.common.loaderHide();
-                moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
-                if (error_callBack) error_callBack();
-            }
+				moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+				if (error_callBack) error_callBack();
+			}
 		});
 	}
 
@@ -295,30 +295,30 @@ const service = (function () {
 			},
 			error: (error) => {
 				moduleData.common.loaderHide();
-                moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
-                if (error_callBack) error_callBack();
-            }
+				moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+				if (error_callBack) error_callBack();
+			}
 		});
 	}
 
 
-	function approveDenyItems(type,approveItemsIdsArray,denyItemsIdsArray, success_callBack, error_callBack) {
+	function approveDenyItems(type, approveItemsIdsArray, denyItemsIdsArray, success_callBack, error_callBack) {
 
-		if(type=='workhour') type = 10;
-		var data = {type:type, approveIds:approveItemsIdsArray, denyIds: denyItemsIdsArray};
+		if (type == 'workhour') type = 10;
+		var data = { ver:moduleData.common.version(), type: type, approveIds: approveItemsIdsArray, denyIds: denyItemsIdsArray };
 
 		$.ajax({
 			type: "Post",
-			url: "/api/TimeSheetsAPI/GetThisMonthProjectsByUserID",
+			url: "/api/timesheetsNew/approve",
 			contentType: "application/json; charset=utf-8",
 			dataType: "json",
 			data: JSON.stringify(data),
 			success: success_callBack ? (response) => success_callBack(response) : () => { },
 			error: (error) => {
 				moduleData.common.loaderHide();
-                moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
-                if (error_callBack) error_callBack();
-            }
+				moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+				if (error_callBack) error_callBack();
+			}
 		});
 	}
 
@@ -341,7 +341,8 @@ const service = (function () {
 		getPreviousNextPeriodConfirm: getPreviousNextPeriodConfirm,
 		getCurrentPeriodConfirm: getCurrentPeriodConfirm,
 		getWaitingApproveWorkHourDetail: getWaitingApproveWorkHourDetail,
-		getWaitingApproveMissionLeaveDetail: getWaitingApproveMissionLeaveDetail
+		getWaitingApproveMissionLeaveDetail: getWaitingApproveMissionLeaveDetail,
+		approveDenyItems: approveDenyItems
 	}
 
 })();
@@ -362,5 +363,6 @@ module.exports = {
 	getPreviousNextPeriodConfirm: service.getPreviousNextPeriodConfirm,
 	getCurrentPeriodConfirm: service.getCurrentPeriodConfirm,
 	getWaitingApproveWorkHourDetail: service.getWaitingApproveWorkHourDetail,
-	getWaitingApproveMissionLeaveDetail: service.getWaitingApproveMissionLeaveDetail
+	getWaitingApproveMissionLeaveDetail: service.getWaitingApproveMissionLeaveDetail,
+	approveDenyItems: service.approveDenyItems
 }

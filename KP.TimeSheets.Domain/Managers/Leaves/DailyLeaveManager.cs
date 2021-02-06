@@ -85,8 +85,6 @@ namespace KP.TimeSheets.Domain
             StageController stageController = new StageController(_UOW);
             stageController.SetToOrder(dailyLeave, 4);
             _UOW.DailyLeaveRepository.Edit(dailyLeave);
-
-
         }
 
 
