@@ -530,6 +530,18 @@ namespace KP.TimeSheets.MVC
         }
 
 
+        [HttpGet("GetHistoryWorkHour/{workHourId}")]
+        public IEnumerable<WorkHourHistoryJson> GetHistoryWorkHour(Guid workHourId)
+        {
+            var result = new List<WorkHourHistoryJson>();
+            WorkHourHistoryManager historyManagerh = new WorkHourHistoryManager(this._uow);
+
+            result = new WorkHourHistoryAssembler().ToJsons(historyManagerh.GetByWorkHourID(workHourId)).ToList();
+            return result;
+        }
+
+
+//--------------------------------------------------------------------------------------
         private void approveDenyHourlyMission(bool isApprove, Domain.User currentUser, TimeSheetManager timeSheetManager, HourlyMissionManager dlm, HourlyMission dailyLeave, string userDescription)
         {
             if (dailyLeave.WorkflowStage.Type == "Final") throw new Exception("هم اکنون تایید نهایی می باشد");

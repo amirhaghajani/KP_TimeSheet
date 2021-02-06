@@ -1890,10 +1890,10 @@ module.exports = {
 //_________________________________________ناریخچه___________________________________
 const historyWorkHour = (function () {
 
-	const moduleData={};
+	const moduleData = {};
 
 	function init(common, data) {
-		
+
 		moduleData.data = data;
 		moduleData.common = common;
 
@@ -1979,7 +1979,7 @@ const historyWorkHour = (function () {
 
 	function ShowHistory() {
 		$("#PanelMonitorWorkHour").fadeOut(400);
-		
+
 		$("#PanelHistory").fadeIn(400);
 		var gridElement = $("#WorkHourHistory");
 		var dataArea = gridElement.find(".k-grid-content");
@@ -1993,8 +1993,8 @@ const historyWorkHour = (function () {
 	}
 
 	return {
-		Create_GrdHistory:Create_GrdHistory,
-		HideHistory:HideHistory,
+		Create_GrdHistory: Create_GrdHistory,
+		HideHistory: HideHistory,
 		init: init,
 		Init_GRDHistory: Init_GRDHistory
 	};
@@ -2005,7 +2005,7 @@ const historyWorkHour = (function () {
 module.exports = {
 	'Create_GrdHistory': historyWorkHour.Create_GrdHistory,
 	'HideHistory': historyWorkHour.HideHistory,
-	'init':historyWorkHour.init,
+	'init': historyWorkHour.init,
 	'Init_GRDHistory': historyWorkHour.Init_GRDHistory
 }
 },{}],12:[function(require,module,exports){

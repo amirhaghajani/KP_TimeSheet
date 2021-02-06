@@ -1281,6 +1281,10 @@ const approveWindow = (function () {
     $('#GrdMonitorWaitingApproveWorkHour_DenyAll').off().on('click', function () {
       private_doApproveDenyAll('deny');
     });
+
+    $('#btnWorkHoureHistory_hide').off().on('click', function () {
+			HideHistory();
+		});
   }
 
   function private_sendApproveDenyDataToServer() {
@@ -1552,12 +1556,10 @@ const approveWindow = (function () {
           read: function (e) {
             e.success(response);
 
-            // $('.forFound_Init_GRDHistory').off().on('click', function () {
-            // 	moduleData.hisotory_workHour.Init_GRDHistory(this);
-            // });
-            // $('.forFound_EditWorkhoure').off().on('click', function () {
-            // 	editWorkout(this);
-            // });
+            $('.forFound_Init_GRDHistory').off().on('click', function () {
+              private_init_GRDHistory(this);
+            });
+
           }
         },
         pageSize: 10
@@ -1589,6 +1591,81 @@ const approveWindow = (function () {
 
     $("#GrdMonitorWaitingApproveWorkHour").data("kendoGrid").setOptions(options);
 
+  }
+
+
+  function Create_GrdHistory(data) {
+
+		$("#WorkHourHistory").kendoGrid({
+			dataSource: {
+				transport: {
+					read: function (e) {
+						e.success(data);
+					}
+				},
+				pageSize: 10
+			},
+			height: 450,
+			pageable: true,
+			filterable: true,
+			selectable: true,
+
+			columns: [{
+				field: "persianDate",
+				title: "تاریخ",
+				width: 100
+			},
+			{
+				field: "time",
+				title: "ساعت",
+				width: 80
+			},
+			{
+				field: "managerName",
+				title: "نام اقدام کننده",
+				width: 200
+			}, {
+				field: "action",
+				title: "عملیات",
+				width: 120
+			}, {
+				field: "stageTitle",
+				title: "مرحله",
+				width: 120
+
+			}, {
+				field: "description",
+				title: "توضیحات",
+				width: 400
+
+			}
+			]
+
+		});
+	}
+
+  function private_init_GRDHistory(e){
+
+    debugger;
+
+    var grid = $("#GrdMonitorWaitingApproveWorkHour").data("kendoGrid");
+		var dataItem = grid.dataItem($(e).closest("tr"));
+		
+		$.ajax({
+			type: "Get",
+			url: `/api/timesheetsNew/GetHistoryWorkHour/${dataItem.workHourId ? dataItem.workHourId : workHourId.id}`,
+			contentType: "application/json; charset=utf-8",
+			dataType: "json",
+			success: function (response) {
+				Create_GrdHistory(response);
+				$("#WorkHourHistory").data("kendoGrid").dataSource.read();
+				ShowHistory();
+				moduleData.common.loaderHide();
+			},
+			error: function (e) {
+
+			}
+		});
   }
 
   function private_open_GrdMonitorSentWorkHour() {
