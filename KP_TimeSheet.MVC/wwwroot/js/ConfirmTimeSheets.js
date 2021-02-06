@@ -272,7 +272,7 @@ const timeSheet = (function () {
     const projects = [];
     const times = private_findTimesAndProjects('work', response, hozoor, hozoorDetail, karkard, diffHozoorKarkard, projects, null);
 
-    private_addProjectsAndTasksTimes(data, times, projects, 3);
+    private_addProjectsAndTasksTimes(data, times, projects, 3,'Project', 'Workout');
 
 
     //-----------------------------------------------------------------------
@@ -285,7 +285,7 @@ const timeSheet = (function () {
     const times_notSend = private_findTimesAndProjects('work', response, null, null, karkard_notSend, null, projects_notSendByEmployee, "Resource");
 
     if (projects_notSendByEmployee.length) {
-      private_addProjectsAndTasksTimes(data, times_notSend, projects_notSendByEmployee, notSendId, true);
+      private_addProjectsAndTasksTimes(data, times_notSend, projects_notSendByEmployee, notSendId,'Project_NotSend', 'Workout_NotSend');
     } else data.pop();
 
 
@@ -326,7 +326,7 @@ const timeSheet = (function () {
     const times_deny = private_findTimesAndProjects('work', response, null, null, karkard_deny, null, projects_deny, "Denied");
 
     if (projects_deny.length) {
-      private_addProjectsAndTasksTimes(data, times_deny, projects_deny, deniedId, true);
+      private_addProjectsAndTasksTimes(data, times_deny, projects_deny, deniedId,'Project_Denied', 'Workout_Denied');
     } else data.pop();
 
     //---------------------------------------------------------------------------------
@@ -340,7 +340,7 @@ const timeSheet = (function () {
     const times_other = private_findTimesAndProjects('other', response, null, null, karkard_other, null, projects_other, null);
 
     if (projects_other.length) {
-      private_addProjectsAndTasksTimes(data, times_other, projects_other, otherId, true);
+      private_addProjectsAndTasksTimes(data, times_other, projects_other, otherId,'Project_Other', 'Workout_Other');
     } else data.pop();
 
     //---------------------------------------------------------------------------------
@@ -384,7 +384,7 @@ const timeSheet = (function () {
     const projects = [];
     const times = private_findTimesAndProjects('work', response, hozoor, hozoorDetail, karkard, null, projects, null);
 
-    private_addProjectsAndTasksTimes(data, times, projects, 3);
+    private_addProjectsAndTasksTimes(data, times, projects, 3,'Project', 'Workout');
 
     //----------------------------------------------------------------------------
     const taeedNashodeId = data.length;
@@ -394,7 +394,7 @@ const timeSheet = (function () {
     const projects_notApprove = [];
     const times_notApprove = private_findTimesAndProjects('work', response, null, null, karkard_notApprove, null, projects_notApprove, "TaskNotApprove");
 
-    private_addProjectsAndTasksTimes(data, times_notApprove, projects_notApprove, taeedNashodeId, true);
+    private_addProjectsAndTasksTimes(data, times_notApprove, projects_notApprove, taeedNashodeId,'Project_NotApprove', 'Workout_NotApprove');
     if (projects_notApprove.length) {
       for (let i = taeedNashodeId; i < data.length; i++) {
         data[i].has_NotApproveData = true;
@@ -412,17 +412,13 @@ const timeSheet = (function () {
     const times_other = private_findTimesAndProjects('ohter', response, null, null, karkard_other, null, projects_ohter, null);
     if (projects_ohter.length) {
 
-      private_addProjectsAndTasksTimes(data, times_other, projects_ohter, otherId, true);
+      private_addProjectsAndTasksTimes(data, times_other, projects_ohter, otherId,'Project_Other', 'Workout_Other');
 
 
 
       //انتقال موارد تایید نشده که مستقیم زیرمجموعه سایر باشد
       const projectNotApprovedIndex = data.findIndex(p => p.parentId == otherId && p.title == 'TaskNotApprove');
       if (projectNotApprovedIndex > -1) {
-
-        // for (let i = otherId + 1; i < data.length; i++) {
-        //   data[i].has_NotApproveData_Other = true;
-        // }
 
         const projectNotApprovedId = data[projectNotApprovedIndex].id;
 
@@ -466,7 +462,7 @@ const timeSheet = (function () {
     }
   }
 
-  function private_addProjectsAndTasksTimes(data, times, projects, parentId, isApprove) {
+  function private_addProjectsAndTasksTimes(data, times, projects, parentId, projectTypeTitle,taskTyepTitle) {
 
     if (projects.length == 0) return;
 
@@ -474,7 +470,7 @@ const timeSheet = (function () {
     for (var i = 0; i < projects.length; i++) {
       const proj = projects[i];
       const pId = data.length;
-      var p = new timeSheet_Row(pId, parentId, proj.title, "Project", proj.id, []);
+      var p = new timeSheet_Row(pId, parentId, proj.title, projectTypeTitle? projectTypeTitle: "Project", proj.id, []);
       data.push(p);
       rowProjects.push(p);
 
@@ -482,7 +478,7 @@ const timeSheet = (function () {
 
       for (var j = 0; j < proj.workouts.length; j++) {
         const workout = proj.workouts[j];
-        var w = new timeSheet_Row(data.length, pId, workout.title, isApprove ? workout.state : "Workout", workout.id, []);
+        var w = new timeSheet_Row(data.length, pId, workout.title, taskTyepTitle ? taskTyepTitle : "Workout", workout.id, []);
         data.push(w);
         p.workouts.push(w)
       }
@@ -704,6 +700,9 @@ const dataService = require('./data');
 const common_timeSheet = require('../common/timesheet');
 const approveWindow = require('./approveWindow');
 
+let fnlastRefreshCommand=RefreshTimeSheetConfirm;
+let expandedRows = [];
+
 
 function KTRColumnConfirm() {
   this.field = "";
@@ -719,7 +718,7 @@ $(document).ready(function () {
 
   dataService.init();
   service.init(dataService, common_timeSheet, common);
-  approveWindow.init(common, service, dataService);
+  approveWindow.init(common, service, dataService,()=>{ fnlastRefreshCommand() });
 
 
   GetUsers();
@@ -764,7 +763,7 @@ $("#numberDaysconfirm").keyup(function () {
 
 
 function WNDSelectPeriod_OnOpen() {
-  moduleData.common.openWindow('kwndSelectTimePeriodConfirm');
+  common.openWindow('kwndSelectTimePeriodConfirm');
 }
 
 function WNDSelectPeriod_OnClose() {
@@ -772,14 +771,6 @@ function WNDSelectPeriod_OnClose() {
 }
 
 
-
-function WndDeny_OnOpen() {
-  moduleData.common.openWindow('WndDeny');
-}
-
-function WndDeny_OnClose() {
-  $("#WndDeny").data("kendoWindow").close();
-}
 
 function RefreshTimeSheetConfirm() {
   common.loaderShow();
@@ -793,6 +784,10 @@ function RefreshTimeSheetConfirm() {
 }
 
 function private_Refresh(response) {
+
+  var treeList = $("#ktrlTimeSheetsConfirm").data("kendoTreeList");
+  expandedRows = common_timeSheet.foundExpandedTreeListTitle(treeList);
+
   removeAndRecreateTreelisConfirmDiv();
 
   Init_TimeSheetTreeListConfirm(response);
@@ -872,6 +867,7 @@ function Init_TimeSheetTreeListConfirm(data) {
     },
     expanded: true,
     selectable: true,
+    scrollable: true,
     height: 400,
     columns: ktrlTSColumnsConfirm,
     dataBound: ktrlTimeSheetsConfirm_dataBound
@@ -902,7 +898,7 @@ function ktrlTimeSheetsConfirm_OnInitColumns(response) {
   //colTitle.field = "title";
   colTitle.title = "عنوان";
   colTitle.hidden = false;
-  colTitle.width = 150;
+  colTitle.width = 240;
   colTitle.template = (data) => {
 
     if (data.has_NotApproveData) {
@@ -955,7 +951,7 @@ function ktrlTimeSheetsConfirm_OnInitColumns(response) {
     colDate.hidden = false;
     //تخصیص متد به تپلیت فقط باید ایندکس ها تنظیم گرددند
     colDate.template = (dataItem) => TreeListTemplateColumn(dataItem, index);
-    colDate.width = 50;
+    colDate.width = 100;
     columns.push(colDate);
 
   }
@@ -1027,6 +1023,9 @@ function TreeListTemplateColumn(dataItem, index) {
 }
 
 function ktrlTimeSheetsConfirm_dataBound(e) {
+
+  var treeList = $("#ktrlTimeSheetsConfirm").data("kendoTreeList");
+  common_timeSheet.expandTreeListItems(treeList, expandedRows);
   
   $('.forFound_ApproveTask').off().on('click', function () {
     const id = $(this).data("uid");
@@ -1079,68 +1078,8 @@ function ktrlTimeSheetsConfirm_dataBound(e) {
 
 }
 
-function ApproveTask(id, index) {
-  common.loaderShow();
-
-  for (var i = 0; i < dataService.timeSheetDataConfirm_get().length; i++) {
-    if (dataService.timeSheetDataConfirm_get()[i].uid == id) {
-      var da = dataService.timeSheetDataConfirm_get()[i].values[index];
-    }
-  }
-
-  var data = {
-    date: da.date,
-    id: id,
-  };
-
-  var prmData = JSON.stringify(data);
-
-  service.approveWorkHour(prmData, (response) => {
-    GetCurrentPeriodconfirm();
-    if (response && response.message) common.notify(response.message, "success");
-  });
-
-}
-
-function FinalDeny() {
-
-  common.loaderShow();
-
-  for (var i = 0; i < dataService.timeSheetDataConfirm_get().length; i++) {
-    if (dataService.timeSheetDataConfirm_get()[i].uid == dataService.selectedTaskIdForDeny_get()) {
-      var da = dataService.timeSheetDataConfirm_get()[i].values[dataService.selectedIndexDorDeny_get()];
-    }
-  }
-
-  var data = {
-    date: da.date,
-    id: dataService.selectedTaskIdForDeny_get(),
-    description: $("#comment").val()
-  };
-
-  var prmData = JSON.stringify(data);
-
-  service.denyWorkHour(prmData, (response) => {
-    WndDeny_OnClose();
-    GetCurrentPeriodconfirm();
-    if (response && response.message) common.notify(response.message, "success");
-  });
-
-}
-
-function DenyTask(id, index) {
-
-  dataService.selectedTaskIdForDeny_set(id);
-  dataService.selectedIndexDorDeny_set(index);
-  WndDeny_OnOpen()
-}
 
 
-function GetCurrentPeriodconfirm() {
-
-  common.loaderShow();
-  RefreshTimeSheetConfirm();
-}
 
 
 function InitMonthlyByProjectsGridConfirm() {
@@ -1267,6 +1206,8 @@ function btnSendPeriodsconfirm_Onclick() {
     });
   }
 
+  fnlastRefreshCommand = RefreshTimeSheetConfirm;
+
 }
 
 function GetPreviousNextPeriodconfirm(type) {
@@ -1284,9 +1225,15 @@ function GetPreviousNextPeriodconfirm(type) {
     endDate = firstData.values[firstData.values.length - 1].date;
   }
 
-  service.getPreviousNextPeriodConfirm(dataService.userId_get(), startDate, endDate, (response) => {
-    private_Refresh(response);
-  });
+  fnlastRefreshCommand = () =>{
+    service.getPreviousNextPeriodConfirm(dataService.userId_get(), startDate, endDate, (response) => {
+      private_Refresh(response);
+    });
+  };
+
+  fnlastRefreshCommand();
+
+  
 }
 
 
@@ -1311,11 +1258,13 @@ const approveWindow = (function () {
 
   const moduleData = {};
 
-  function init(common, service, data) {
+  function init(common, service, data, parentRefreshCommand) {
     moduleData.common = common;
     moduleData.service = service;
     moduleData.data = data;
     moduleData.thisGridType = null;
+    moduleData.lastGetApproveDataFromServer = null;
+    moduleData.parentRefreshCommand = parentRefreshCommand;
 
     $('#GrdMonitorWaitingApproveWorkHour_Hide').off().on('click', function () {
       $("#WndItemsWaitingApprove").data("kendoWindow").close();
@@ -1335,7 +1284,9 @@ const approveWindow = (function () {
   }
 
   function private_sendApproveDenyDataToServer() {
-    
+
+    $('#GrdMonitorWaitingApproveWorkHour_Send').attr("disabled", "disabled");
+
     var items = $("#GrdMonitorWaitingApproveWorkHour").data("kendoGrid").dataSource.data();
 
     var wanted = 'id';
@@ -1344,13 +1295,21 @@ const approveWindow = (function () {
     var approved = [];
     var denyed = [];
     items.forEach(i => {
-      debugger;
-      if (i.isApprove) approved.push({id: i[wanted], description: i.newDescription});
-      if (i.isDeny) denyed.push({id: i[wanted], description: i.newDescription});
+      if (i.isApprove) approved.push({ id: i[wanted], description: i.newDescription });
+      if (i.isDeny) denyed.push({ id: i[wanted], description: i.newDescription });
     });
 
-    moduleData.service.approveDenyItems(moduleData.thisGridType,approved,denyed,(data)=>{
+    moduleData.service.approveDenyItems(moduleData.thisGridType, approved, denyed, (data) => {
+      moduleData.common.notify(data.message);
 
+      if (moduleData.lastGetApproveDataFromServer) moduleData.lastGetApproveDataFromServer();
+
+      $('#GrdMonitorWaitingApproveWorkHour_Send').removeAttr("disabled");
+      debugger;
+      moduleData.parentRefreshCommand();
+
+    }, () => {
+      $('#GrdMonitorWaitingApproveWorkHour_Send').removeAttr("disabled");
     });
 
   }
@@ -1372,7 +1331,10 @@ const approveWindow = (function () {
     });
   }
 
-  function showItemsWaitingApproveWindow(projectId, taskId, date) {
+  function showItemsWaitingApproveWindow(projectId, taskId, date, notNeedOpenWindow) {
+
+    moduleData.lastGetApproveDataFromServer = () => showItemsWaitingApproveWindow(projectId, taskId, date, true);
+
     moduleData.thisGridType = null;
     moduleData.common.loaderShow();
 
@@ -1399,7 +1361,8 @@ const approveWindow = (function () {
 
       moduleData.thisGridType = 'workhour';
 
-      private_open_GrdMonitorSentWorkHour();
+      if (!notNeedOpenWindow) private_open_GrdMonitorSentWorkHour();
+
       var columns = [
         {
           title: "",
@@ -1476,7 +1439,9 @@ const approveWindow = (function () {
 
   }
 
-  function showItemsWaitingApproveWindow_ForMissionLeave(isHourlyMission, isHourlyLeave, isDailyLeave, date) {
+  function showItemsWaitingApproveWindow_ForMissionLeave(isHourlyMission, isHourlyLeave, isDailyLeave, date, notNeedOpenWindow) {
+
+    moduleData.lastGetApproveDataFromServer = () => showItemsWaitingApproveWindow_ForMissionLeave(isHourlyMission, isHourlyLeave, isDailyLeave, date, true);
 
     moduleData.thisGridType = null;
     moduleData.common.loaderShow();
@@ -1503,7 +1468,7 @@ const approveWindow = (function () {
     moduleData.service.getWaitingApproveMissionLeaveDetail(data, (response) => {
 
       moduleData.thisGridType = data.type;
-      private_open_GrdMonitorSentWorkHour();
+      if (!notNeedOpenWindow) private_open_GrdMonitorSentWorkHour();
 
       var columns = [
         {
@@ -2211,6 +2176,7 @@ const myMainGrid = (function () {
       var grid = $("#ktrlTimeSheets").data("kendoTreeList");
       var column = grid.columns[cellIndex];
       var dataItem = grid.dataItem(cell.closest("tr"));
+
 
       if (dataItem.type != 'Karkard' && dataItem.type != 'Project' && dataItem.type != 'Workout') return;
 

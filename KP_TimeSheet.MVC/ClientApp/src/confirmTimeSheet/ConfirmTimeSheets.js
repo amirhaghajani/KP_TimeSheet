@@ -4,6 +4,9 @@ const dataService = require('./data');
 const common_timeSheet = require('../common/timesheet');
 const approveWindow = require('./approveWindow');
 
+let fnlastRefreshCommand=RefreshTimeSheetConfirm;
+let expandedRows = [];
+
 
 function KTRColumnConfirm() {
   this.field = "";
@@ -19,7 +22,7 @@ $(document).ready(function () {
 
   dataService.init();
   service.init(dataService, common_timeSheet, common);
-  approveWindow.init(common, service, dataService);
+  approveWindow.init(common, service, dataService,()=>{ fnlastRefreshCommand() });
 
 
   GetUsers();
@@ -64,7 +67,7 @@ $("#numberDaysconfirm").keyup(function () {
 
 
 function WNDSelectPeriod_OnOpen() {
-  moduleData.common.openWindow('kwndSelectTimePeriodConfirm');
+  common.openWindow('kwndSelectTimePeriodConfirm');
 }
 
 function WNDSelectPeriod_OnClose() {
@@ -72,14 +75,6 @@ function WNDSelectPeriod_OnClose() {
 }
 
 
-
-function WndDeny_OnOpen() {
-  moduleData.common.openWindow('WndDeny');
-}
-
-function WndDeny_OnClose() {
-  $("#WndDeny").data("kendoWindow").close();
-}
 
 function RefreshTimeSheetConfirm() {
   common.loaderShow();
@@ -93,6 +88,10 @@ function RefreshTimeSheetConfirm() {
 }
 
 function private_Refresh(response) {
+
+  var treeList = $("#ktrlTimeSheetsConfirm").data("kendoTreeList");
+  expandedRows = common_timeSheet.foundExpandedTreeListTitle(treeList);
+
   removeAndRecreateTreelisConfirmDiv();
 
   Init_TimeSheetTreeListConfirm(response);
@@ -172,6 +171,7 @@ function Init_TimeSheetTreeListConfirm(data) {
     },
     expanded: true,
     selectable: true,
+    scrollable: true,
     height: 400,
     columns: ktrlTSColumnsConfirm,
     dataBound: ktrlTimeSheetsConfirm_dataBound
@@ -202,7 +202,7 @@ function ktrlTimeSheetsConfirm_OnInitColumns(response) {
   //colTitle.field = "title";
   colTitle.title = "عنوان";
   colTitle.hidden = false;
-  colTitle.width = 150;
+  colTitle.width = 240;
   colTitle.template = (data) => {
 
     if (data.has_NotApproveData) {
@@ -255,7 +255,7 @@ function ktrlTimeSheetsConfirm_OnInitColumns(response) {
     colDate.hidden = false;
     //تخصیص متد به تپلیت فقط باید ایندکس ها تنظیم گرددند
     colDate.template = (dataItem) => TreeListTemplateColumn(dataItem, index);
-    colDate.width = 50;
+    colDate.width = 100;
     columns.push(colDate);
 
   }
@@ -327,6 +327,9 @@ function TreeListTemplateColumn(dataItem, index) {
 }
 
 function ktrlTimeSheetsConfirm_dataBound(e) {
+
+  var treeList = $("#ktrlTimeSheetsConfirm").data("kendoTreeList");
+  common_timeSheet.expandTreeListItems(treeList, expandedRows);
   
   $('.forFound_ApproveTask').off().on('click', function () {
     const id = $(this).data("uid");
@@ -379,68 +382,8 @@ function ktrlTimeSheetsConfirm_dataBound(e) {
 
 }
 
-function ApproveTask(id, index) {
-  common.loaderShow();
-
-  for (var i = 0; i < dataService.timeSheetDataConfirm_get().length; i++) {
-    if (dataService.timeSheetDataConfirm_get()[i].uid == id) {
-      var da = dataService.timeSheetDataConfirm_get()[i].values[index];
-    }
-  }
-
-  var data = {
-    date: da.date,
-    id: id,
-  };
-
-  var prmData = JSON.stringify(data);
-
-  service.approveWorkHour(prmData, (response) => {
-    GetCurrentPeriodconfirm();
-    if (response && response.message) common.notify(response.message, "success");
-  });
-
-}
-
-function FinalDeny() {
-
-  common.loaderShow();
-
-  for (var i = 0; i < dataService.timeSheetDataConfirm_get().length; i++) {
-    if (dataService.timeSheetDataConfirm_get()[i].uid == dataService.selectedTaskIdForDeny_get()) {
-      var da = dataService.timeSheetDataConfirm_get()[i].values[dataService.selectedIndexDorDeny_get()];
-    }
-  }
-
-  var data = {
-    date: da.date,
-    id: dataService.selectedTaskIdForDeny_get(),
-    description: $("#comment").val()
-  };
-
-  var prmData = JSON.stringify(data);
-
-  service.denyWorkHour(prmData, (response) => {
-    WndDeny_OnClose();
-    GetCurrentPeriodconfirm();
-    if (response && response.message) common.notify(response.message, "success");
-  });
-
-}
-
-function DenyTask(id, index) {
-
-  dataService.selectedTaskIdForDeny_set(id);
-  dataService.selectedIndexDorDeny_set(index);
-  WndDeny_OnOpen()
-}
 
 
-function GetCurrentPeriodconfirm() {
-
-  common.loaderShow();
-  RefreshTimeSheetConfirm();
-}
 
 
 function InitMonthlyByProjectsGridConfirm() {
@@ -567,6 +510,8 @@ function btnSendPeriodsconfirm_Onclick() {
     });
   }
 
+  fnlastRefreshCommand = RefreshTimeSheetConfirm;
+
 }
 
 function GetPreviousNextPeriodconfirm(type) {
@@ -584,9 +529,15 @@ function GetPreviousNextPeriodconfirm(type) {
     endDate = firstData.values[firstData.values.length - 1].date;
   }
 
-  service.getPreviousNextPeriodConfirm(dataService.userId_get(), startDate, endDate, (response) => {
-    private_Refresh(response);
-  });
+  fnlastRefreshCommand = () =>{
+    service.getPreviousNextPeriodConfirm(dataService.userId_get(), startDate, endDate, (response) => {
+      private_Refresh(response);
+    });
+  };
+
+  fnlastRefreshCommand();
+
+  
 }
 
 

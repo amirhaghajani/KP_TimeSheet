@@ -2,11 +2,13 @@ const approveWindow = (function () {
 
   const moduleData = {};
 
-  function init(common, service, data) {
+  function init(common, service, data, parentRefreshCommand) {
     moduleData.common = common;
     moduleData.service = service;
     moduleData.data = data;
     moduleData.thisGridType = null;
+    moduleData.lastGetApproveDataFromServer = null;
+    moduleData.parentRefreshCommand = parentRefreshCommand;
 
     $('#GrdMonitorWaitingApproveWorkHour_Hide').off().on('click', function () {
       $("#WndItemsWaitingApprove").data("kendoWindow").close();
@@ -26,7 +28,9 @@ const approveWindow = (function () {
   }
 
   function private_sendApproveDenyDataToServer() {
-    
+
+    $('#GrdMonitorWaitingApproveWorkHour_Send').attr("disabled", "disabled");
+
     var items = $("#GrdMonitorWaitingApproveWorkHour").data("kendoGrid").dataSource.data();
 
     var wanted = 'id';
@@ -35,13 +39,21 @@ const approveWindow = (function () {
     var approved = [];
     var denyed = [];
     items.forEach(i => {
-      debugger;
-      if (i.isApprove) approved.push({id: i[wanted], description: i.newDescription});
-      if (i.isDeny) denyed.push({id: i[wanted], description: i.newDescription});
+      if (i.isApprove) approved.push({ id: i[wanted], description: i.newDescription });
+      if (i.isDeny) denyed.push({ id: i[wanted], description: i.newDescription });
     });
 
-    moduleData.service.approveDenyItems(moduleData.thisGridType,approved,denyed,(data)=>{
+    moduleData.service.approveDenyItems(moduleData.thisGridType, approved, denyed, (data) => {
+      moduleData.common.notify(data.message);
 
+      if (moduleData.lastGetApproveDataFromServer) moduleData.lastGetApproveDataFromServer();
+
+      $('#GrdMonitorWaitingApproveWorkHour_Send').removeAttr("disabled");
+      debugger;
+      moduleData.parentRefreshCommand();
+
+    }, () => {
+      $('#GrdMonitorWaitingApproveWorkHour_Send').removeAttr("disabled");
     });
 
   }
@@ -63,7 +75,10 @@ const approveWindow = (function () {
     });
   }
 
-  function showItemsWaitingApproveWindow(projectId, taskId, date) {
+  function showItemsWaitingApproveWindow(projectId, taskId, date, notNeedOpenWindow) {
+
+    moduleData.lastGetApproveDataFromServer = () => showItemsWaitingApproveWindow(projectId, taskId, date, true);
+
     moduleData.thisGridType = null;
     moduleData.common.loaderShow();
 
@@ -90,7 +105,8 @@ const approveWindow = (function () {
 
       moduleData.thisGridType = 'workhour';
 
-      private_open_GrdMonitorSentWorkHour();
+      if (!notNeedOpenWindow) private_open_GrdMonitorSentWorkHour();
+
       var columns = [
         {
           title: "",
@@ -167,7 +183,9 @@ const approveWindow = (function () {
 
   }
 
-  function showItemsWaitingApproveWindow_ForMissionLeave(isHourlyMission, isHourlyLeave, isDailyLeave, date) {
+  function showItemsWaitingApproveWindow_ForMissionLeave(isHourlyMission, isHourlyLeave, isDailyLeave, date, notNeedOpenWindow) {
+
+    moduleData.lastGetApproveDataFromServer = () => showItemsWaitingApproveWindow_ForMissionLeave(isHourlyMission, isHourlyLeave, isDailyLeave, date, true);
 
     moduleData.thisGridType = null;
     moduleData.common.loaderShow();
@@ -194,7 +212,7 @@ const approveWindow = (function () {
     moduleData.service.getWaitingApproveMissionLeaveDetail(data, (response) => {
 
       moduleData.thisGridType = data.type;
-      private_open_GrdMonitorSentWorkHour();
+      if (!notNeedOpenWindow) private_open_GrdMonitorSentWorkHour();
 
       var columns = [
         {

@@ -135,6 +135,7 @@ const myMainGrid = (function () {
       var column = grid.columns[cellIndex];
       var dataItem = grid.dataItem(cell.closest("tr"));
 
+
       if (dataItem.type != 'Karkard' && dataItem.type != 'Project' && dataItem.type != 'Workout') return;
 
       if (cellIndex<3 || !dataItem.values) return;

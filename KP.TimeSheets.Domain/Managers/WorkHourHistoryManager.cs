@@ -18,7 +18,7 @@ namespace KP.TimeSheets.Domain
 
         public IEnumerable<WorkHourHistory> GetByWorkHourID(Guid workHourId)
         {
-            return _UOW.WorkHourHistoryRepository.GetByWorkHourID(workHourId);
+            return _UOW.WorkHourHistoryRepository.GetByWorkHourID(workHourId).OrderBy(w=>w.Date);
         }
 
         public void Add(WorkHourHistory history)

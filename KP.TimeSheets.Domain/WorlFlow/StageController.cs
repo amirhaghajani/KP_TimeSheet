@@ -23,8 +23,9 @@ namespace KP.TimeSheets.Domain
             if (entity.WorkflowStage.IsLast)
                 throw new Exception("Can not set next stage for last stage.");
          var stage = wfm.GetByOrder(entity.WorkflowStage.Order+1);
-            entity.WorkflowStage = stage;
+            
             entity.PreviousStage = entity.WorkflowStageID;
+            entity.WorkflowStage = stage;
             entity.WorkflowStageID = stage.ID;
         }
 
@@ -34,18 +35,18 @@ namespace KP.TimeSheets.Domain
             if (entity.WorkflowStage.IsFirst)
                 throw new Exception("Can not set previus stage for first stage");
             var stage = _uow.WorkflowStageRepository.GetByOrder(entity.WorkflowStage.Order - 1);
+
+            entity.PreviousStage = entity.WorkflowStageID;
             entity.WorkflowStage = stage;
             entity.WorkflowStageID = stage.ID;
-            
         }
 
         public void SetToOrder(IHaveStage entity,int order)
         {
-           
             var stage = _uow.WorkflowStageRepository.GetByOrder(order);
+            entity.PreviousStage = entity.WorkflowStageID;
             entity.WorkflowStage = stage;
             entity.WorkflowStageID = stage.ID;
-
         }
 
 
