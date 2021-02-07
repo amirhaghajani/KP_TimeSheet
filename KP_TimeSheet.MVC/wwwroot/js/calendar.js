@@ -610,7 +610,7 @@ function adjustSize() {
 },{"../common/common":2}],2:[function(require,module,exports){
 const common = (function () {
 
-	function version(){return "0.0.0.5";}
+	function version(){return "0.0.0.6";}
 
 	function doExport(selector, params) {
 		var options = {
