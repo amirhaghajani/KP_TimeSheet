@@ -206,9 +206,10 @@ function ktrlTimeSheetsConfirm_OnInitColumns(response) {
   colTitle.template = (data) => {
 
     if (data.has_NotApproveData) {
-      const color = data.type == '-' ? 'style="color:gray"' : (data.type == 'Project' ? 'style="color:#00848C"' : 'style="color:#117243"');
-      const bc = data.type == '-' ? ';background-color:white' : (data.type == 'Project' ? ';background-color:#E5F0FF' : ';background-color:#CEFF9D');
-      const title = data.type == '-' ? `همه کارکردهای تایید نشده` : (data.type == 'Project' ? `همه کارکردهای تایید نشده پروژه ${data.title}` : `همه کارکردهای تایید نشده فعالیت ${data.title}`);
+      debugger;
+      const color = data.type == '-' ? 'style="color:#FAFAF2"' : (data.type.startsWith('Project_') ? 'style="color:#E5F0FF"' : 'style="color:#CEFF9D"');
+      const bc = data.type == '-' ? ';background-color:#FAFAF2' : (data.type.startsWith('Project_') ? ';background-color:#E5F0FF' : ';background-color:#CEFF9D');
+      const title = data.type == '-' ? `همه کارکردهای تایید نشده` : (data.type.startsWith('Project_') ? `همه کارکردهای تایید نشده پروژه ${data.title}` : `همه کارکردهای تایید نشده فعالیت ${data.title}`);
 
 
       return data.title + `<button title='${title}' data-type='${data.type}' data-uid='${data.uuiidd}' data-parentid='${data.parentId ? data.parent()[data.parentId - 1].uuiidd : null}'
@@ -224,8 +225,8 @@ function ktrlTimeSheetsConfirm_OnInitColumns(response) {
         : (data.uuiidd == '00000000-0000-0000-0000-000000000002' ? 'HourlyLeave'
           : (data.uuiidd == '00000000-0000-0000-0000-000000000003' ? 'DailyLeave' : null));
 
-      const color = type == 'HourlyMission' ? 'style="color:gray"' : (type == 'HourlyLeave' ? 'style="color:#00848C"' : 'style="color:#117243"');
-      const bc = type == 'HourlyMission' ? ';background-color:white' : (type == 'HourlyLeave' ? ';background-color:#E5F0FF' : ';background-color:#CEFF9D');
+      const color = type == 'HourlyMission' ? 'style="color:#FAFAF2"' : (type == 'HourlyLeave' ? 'style="color:#E5F0FF"' : 'style="color:#CEFF9D"');
+      const bc = type == 'HourlyMission' ? ';background-color:#FAFAF2' : (type == 'HourlyLeave' ? ';background-color:#E5F0FF' : ';background-color:#CEFF9D');
       const title = type == 'HourlyMission' ? `همه ماموریت های ساعتی تایید نشده` : (type == 'HourlyLeave' ? `همه مرخصی های ساعتی تایید نشده` : `همه مرخصی های روزانه تایید نشده`);
 
 
@@ -280,10 +281,10 @@ function TreeListTemplateColumn(dataItem, index) {
 
   if (dataItem.has_NotApproveData && dataItem.values[index].value != '' && dataItem.values[index].value != '0:00') {
 
-    const color = dataItem.type == '-' ? 'style="color:gray"' : (dataItem.type == 'Project' ? 'style="color:#00848C"' : 'style="color:#117243"');
-    const bc = dataItem.type == '-' ? ';background-color:white' : (dataItem.type == 'Project' ? ';background-color:#E5F0FF' : ';background-color:#CEFF9D');
+    const color = dataItem.type == '-' ? 'style="color:#FAFAF2"' : (dataItem.type.startsWith('Project_') ? 'style="color:#E5F0FF"' : 'style="color:#CEFF9D"');
+    const bc = dataItem.type == '-' ? ';background-color:#FAFAF2' : (dataItem.type.startsWith('Project_') ? ';background-color:#E5F0FF' : ';background-color:#CEFF9D');
     const title = dataItem.type == '-' ? `کارکردهای تایید نشده در ${dataItem.values[index].persianDate}` :
-      (dataItem.type == 'Project' ? `کارکردهای تایید نشده پروژه ${dataItem.title} در ${dataItem.values[index].persianDate}` :
+      (dataItem.type.startsWith('Project_') ? `کارکردهای تایید نشده پروژه ${dataItem.title} در ${dataItem.values[index].persianDate}` :
         `کارکردهای تایید نشده فعالیت ${dataItem.title} در ${dataItem.values[index].persianDate}`);
 
 
@@ -301,8 +302,8 @@ function TreeListTemplateColumn(dataItem, index) {
       
     if(type == 'DailyLeave') return dd;
 
-    const color = type == 'HourlyMission' ? 'style="color:gray"' : (type == 'HourlyLeave' ? 'style="color:#00848C"' : 'style="color:#117243"');
-    const bc = type == 'HourlyMission' ? ';background-color:white' : (type == 'HourlyLeave' ? ';background-color:#E5F0FF' : ';background-color:#CEFF9D');
+    const color = type == 'HourlyMission' ? 'style="color:#FAFAF2"' : (type == 'HourlyLeave' ? 'style="color:#E5F0FF"' : 'style="color:#CEFF9D"');
+    const bc = type == 'HourlyMission' ? ';background-color:#FAFAF2' : (type == 'HourlyLeave' ? ';background-color:#E5F0FF' : ';background-color:#CEFF9D');
     const title = type == 'HourlyMission' ? `ماموریت های ساعتی تایید نشده در ${dataItem.values[index].persianDate}` : (type == 'HourlyLeave' ? `مرخصی های ساعتی تایید نشده در ${dataItem.values[index].persianDate}` : `مرخصی های روزانه تایید نشده در ${dataItem.values[index].persianDate}`);
 
     return dataItem.values[index].value +
