@@ -70,13 +70,14 @@ const approveWindow = (function () {
 
     grid.tbody.find('tr').each(function () {
       const item = grid.dataItem($(this));
-      items.push(item);
+      item.isApprove = type == 'approve';
+      item.isDeny = type != 'approve';
     });
 
-    items.forEach(i => {
-      i.set(type == 'approve' ? "isApprove" : "isDeny", true);
-      i.set(type == 'approve' ? "isDeny" : "isApprove", null);
-    });
+
+    $("#GrdMonitorWaitingApproveWorkHour tbody .forFound_approveCheckbox").prop("checked",type == 'approve');
+    $("#GrdMonitorWaitingApproveWorkHour tbody .forFound_denyCheckbox").prop("checked",type != 'approve');
+
   }
 
   function showItemsWaitingApproveWindow(projectId, taskId, date, notNeedOpenWindow) {
@@ -157,17 +158,25 @@ const approveWindow = (function () {
         , {
           field: "isApprove",
           title: "تایید",
-          type: "boolean",
+          template: function (dataItem, b, c) {
+            let answer = "<input type='checkbox' class='forFound_approveCheckbox' />";
+            return answer;
+          },
           width: 50,
           filterable: false,
           sortable: false,
+          editable: () => false
         }, {
           field: "isDeny",
           title: "رد",
-          type: "boolean",
+          template: function (dataItem, b, c) {
+            let answer = "<input type='checkbox' class='forFound_denyCheckbox' />";
+            return answer;
+          },
           width: 50,
           filterable: false,
           sortable: false,
+          editable: () => false
         },
         {
           title: "",
@@ -177,10 +186,11 @@ const approveWindow = (function () {
           },
           filterable: false,
           sortable: false,
-          width: 80
+          width: 80,
+          editable: () => false
         }
       ];
-      private_createEditGrid(response, columns, 7);
+      private_createEditGrid(response, columns);
 
       moduleData.common.loaderHide();
     });
@@ -257,17 +267,25 @@ const approveWindow = (function () {
         , {
           field: "isApprove",
           title: "تایید",
-          type: "boolean",
+          template: function (dataItem, b, c) {
+            let answer = "<input type='checkbox' class='forFound_approveCheckbox' />";
+            return answer;
+          },
           width: 50,
           filterable: false,
           sortable: false,
+          editable: () => false
         }, {
           field: "isDeny",
           title: "رد",
-          type: "boolean",
+          template: function (dataItem, b, c) {
+            let answer = "<input type='checkbox' class='forFound_denyCheckbox' />";
+            return answer;
+          },
           width: 50,
           filterable: false,
           sortable: false,
+          editable: () => false
         },
         {
           title: "",
@@ -281,14 +299,14 @@ const approveWindow = (function () {
         }
       ];
 
-      private_createEditGrid(response, columns, 5);
+      private_createEditGrid(response, columns);
 
       moduleData.common.loaderHide();
     });
 
   }
 
-  function private_createEditGrid(response, columns, approveColumnIndexNumber) {
+  function private_createEditGrid(response, columns) {
 
     var data = $("#GrdMonitorWaitingApproveWorkHour").data("kendoGrid");
     if (data) data.destroy();
@@ -304,6 +322,14 @@ const approveWindow = (function () {
               private_init_GRDHistory(this);
             });
 
+            $('.forFound_approveCheckbox').off().on('change', function () {
+              private_approveCheckBoxChanged(this,this.checked);
+            });
+
+            $('.forFound_denyCheckbox').off().on('change', function () {
+              private_denyCheckBoxChanged(this,this.checked);
+            });
+
           }
         },
         pageSize: 10
@@ -315,22 +341,7 @@ const approveWindow = (function () {
 
       columns: columns,
       editable: true,
-      cellClose: function (e) {
-        const cellIndex = e.container[0].cellIndex; //7 -> approve  8-> deny
-
-        var select = this.select();
-        var data = this.dataItem(select);
-
-        if (cellIndex == approveColumnIndexNumber) {
-          if (data.isApprove == null) return;
-          data.set("isDeny", null);
-        }
-        if (cellIndex == approveColumnIndexNumber + 1) {
-          if (data.isDeny == null) return;
-          data.set("isApprove", null);
-        }
-      }
-
+      
     };
 
     $("#GrdMonitorWaitingApproveWorkHour").data("kendoGrid").setOptions(options);
@@ -387,6 +398,30 @@ const approveWindow = (function () {
 
 		});
 	}
+
+  function private_approveCheckBoxChanged(e, isCheck){
+
+    var grid = $("#GrdMonitorWaitingApproveWorkHour").data("kendoGrid");
+		var dataItem = grid.dataItem($(e).closest("tr"));
+
+    dataItem.isApprove = isCheck;
+
+    if(isCheck){
+      dataItem.isDeny = false;
+      $(e).parent().parent().find('.forFound_denyCheckbox').prop('checked',false);
+    }
+  }
+  function private_denyCheckBoxChanged(e, isCheck){
+    var grid = $("#GrdMonitorWaitingApproveWorkHour").data("kendoGrid");
+		var dataItem = grid.dataItem($(e).closest("tr"));
+
+    dataItem.isDeny = isCheck;
+    
+    if(isCheck){
+      dataItem.isApprove = false;
+      $(e).parent().parent().find('.forFound_approveCheckbox').prop('checked',false);
+    }
+  }
 
   function private_init_GRDHistory(e){
 
