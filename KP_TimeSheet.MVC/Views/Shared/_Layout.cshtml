@@ -178,7 +178,9 @@
                                 </div>
                             </div> *@
 
-                            <div class="menu-item">
+                            @if (ViewBag.UserIsAdmin)
+                            {
+                                <div class="menu-item">
                                 <a style="color:white" class="ras-sidebar-ul" data-toggle="collapse" data-parent="#accordion" href="#collapse5">
                                     <i title=" تنظیمات" class="ti-settings pull-left ras-sidebar-left-logo" style="font-size:24px ; margin-left:-15px;color:white"></i>
                                     <i class="ti-settings"></i>
@@ -210,6 +212,8 @@
 
                                 </div>
                             </div>
+                            }
+                            
 
                             <div class="menu-item">
                                 <a style="color:white" class="ras-sidebar-ul" data-toggle="collapse" data-parent="#accordion" href="#collapse6">

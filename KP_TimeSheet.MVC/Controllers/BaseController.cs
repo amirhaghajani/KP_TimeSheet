@@ -18,6 +18,7 @@ public class BaseController : Controller
     {
         base.OnActionExecuting(context);
         ViewBag.CurrentUserTitle = CurrentUser==null ? $"{UserName} یافت نشد" : CurrentUser.UserTitle;
+        ViewBag.UserIsAdmin = CurrentUser!=null && CurrentUser.IsAdmin.HasValue && CurrentUser.IsAdmin.Value;
     }
 
     string _userName;

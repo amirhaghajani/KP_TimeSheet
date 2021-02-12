@@ -17,6 +17,8 @@ namespace KP.TimeSheets.Domain
         /// </summary>
         public Guid ID { get; set; }
 
+        public bool? IsAdmin{get;set;}
+
         /// <summary>
         /// کد/شماره پرسنلی کاربر
         /// </summary>
