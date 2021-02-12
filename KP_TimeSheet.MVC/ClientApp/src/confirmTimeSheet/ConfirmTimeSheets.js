@@ -206,7 +206,6 @@ function ktrlTimeSheetsConfirm_OnInitColumns(response) {
   colTitle.template = (data) => {
 
     if (data.has_NotApproveData) {
-      debugger;
       const color = data.type == '-' ? 'style="color:#FAFAF2"' : (data.type.startsWith('Project_') ? 'style="color:#E5F0FF"' : 'style="color:#CEFF9D"');
       const bc = data.type == '-' ? ';background-color:#FAFAF2' : (data.type.startsWith('Project_') ? ';background-color:#E5F0FF' : ';background-color:#CEFF9D');
       const title = data.type == '-' ? `همه کارکردهای تایید نشده` : (data.type.startsWith('Project_') ? `همه کارکردهای تایید نشده پروژه ${data.title}` : `همه کارکردهای تایید نشده فعالیت ${data.title}`);

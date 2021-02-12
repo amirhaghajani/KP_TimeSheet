@@ -1,13 +1,15 @@
 
-var service = (function () {
+var newOtherPolicy = (function () {
 
     const moduleData = {};
 
     moduleData.currentItem = null;
 
-    function init(common) {
+    function init(common, service, refreshParentFn) {
 
         moduleData.common = common;
+        moduleData.service = service;
+        moduleData.refreshParentFn = refreshParentFn;
 
         $('#otherPolicy_btnCancel').off().on('click', function () {
             private_closeWindow();
@@ -42,8 +44,6 @@ var service = (function () {
             private_SetCurrentData(policy);
 
         }, () => reset());
-
-
     }
 
     function private_SetCurrentData(data) {
@@ -59,9 +59,7 @@ var service = (function () {
         //user will set after get data from server
     }
 
-    function deletePolicy(policy) {
-        alert(JSON.stringify(policy));
-    }
+    
 
     function private_closeWindow() {
         var w = $("#WNDEditAndAddOtherPolicy").data("kendoWindow");
@@ -104,8 +102,8 @@ var service = (function () {
     }
 
     function private_afterGetAllUserFromServer() {
-        if(!moduleData.currentItem) return;
-        
+        if (!moduleData.currentItem) return;
+
         var dropdownlist = $("#otherPolicy_selectUser").data("kendoDropDownList");
         dropdownlist.select(function (dataItem) {
             return dataItem.id == moduleData.currentItem.userId;
@@ -154,6 +152,34 @@ var service = (function () {
 
 
     //----------------------
+    function deletePolicy(policy) {
+        
+        moduleData.common.loaderShow();
+        moduleData.service.deletePolicy(policy.id, () => {
+            moduleData.common.loaderHide();
+            moduleData.common.notify("حذف با موفقیت انجام شد", "success");
+            private_closeWindow();
+
+            moduleData.refreshParentFn();
+        });
+
+    }
+
+
+    function savePolicyDeactivation(data, isDeactivated) {
+        data.isDeactivated = isDeactivated ? "true" : "false";
+        private_savePolicy(data, false);
+    }
+    function savePolicyIsOpen(data, isOpen) {
+        data.isOpen = isOpen ? "true" : "false";
+        private_savePolicy(data, false);
+    }
+    function savePolicyUserMustHasHozoor(data, userMustHasHozoor) {
+        data.userMustHasHozoor = userMustHasHozoor ? "true" : "false";
+        private_savePolicy(data, false);
+    }
+
+
     function reset() {
         moduleData.currentItem = null;
 
@@ -181,18 +207,78 @@ var service = (function () {
 
         resetErrors();
 
+        if (!moduleData.currentItem) {
+            moduleData.currentItem = { id: "00000000-0000-0000-0000-000000000000" };
+        }
+
         var policy = {
-            id: "00000000-0000-0000-0000-000000000000",
+            id: !moduleData.currentItem ? "00000000-0000-0000-0000-000000000000" : moduleData.currentItem.id,
             validity: $('#otherPolicy_dateValidicy').val(),
             start: $('#otherPolicy_dateStart').val(),
             finish: $("#otherPolicy_dateFinish").val(),
             userId: $("#otherPolicy_selectUser").data("kendoDropDownList").value(),
             isOpen: $('#otherPolicy_checkIsOpen').is(':checked'),
-            mustHaveHozoor: $('#otherPolicy_checkMustHaveHozoor').is(':checked'),
+            userMustHasHozoor: $('#otherPolicy_checkMustHaveHozoor').is(':checked'),
         };
 
-        alert(JSON.stringify(policy));
+        if (private_checkUserInputData(policy)) return;
 
+
+        private_sendSaveDataToServer(policy, moduleData.refreshParentFn);
+
+    }
+
+    function private_savePolicy(policy, wantRefresh) {
+        var data = {
+            id: policy.id,
+            validity: policy.validity,
+            start: policy.start,
+            finish: policy.finish,
+            userId: policy.userId,
+            isOpen: policy.isOpen == "true",
+            userMustHasHozoor: policy.userMustHasHozoor == "true",
+            isDeactivated: policy.isDeactivated == "true"
+        };
+
+        private_sendSaveDataToServer(data, (wantRefresh ? moduleData.refreshParentFn : null));
+    }
+
+    function private_checkUserInputData(policy) {
+
+        var hasError = false;
+
+        if (!policy.userId) {
+            hasError = true;
+            $("span[for='otherPolicy_selectUser']").text("انتخاب کاربر ضروری است");
+        }
+
+        if (!policy.start) {
+            hasError = true;
+            $("span[for='otherPolicy_dateStart']").text("انتخاب تاریخ شروع ضروری است");
+        }
+
+        if (!policy.finish) {
+            hasError = true;
+            $("span[for='otherPolicy_dateFinish']").text("انتخاب تاریخ پایان ضروری است");
+        }
+
+        if (!policy.validity) {
+            hasError = true;
+            $("span[for='otherPolicy_dateValidicy']").text("انتخاب تاریخ اعتبار ضروری است");
+        }
+
+        return hasError;
+    }
+
+    function private_sendSaveDataToServer(data, afterSuccCallbackFn) {
+        moduleData.common.loaderShow();
+        moduleData.service.savePolicy(data, () => {
+            moduleData.common.loaderHide();
+            moduleData.common.notify("ثبت با موفقیت انجام شد", "success");
+            private_closeWindow();
+
+            if (afterSuccCallbackFn) afterSuccCallbackFn();
+        });
     }
 
 
@@ -200,7 +286,10 @@ var service = (function () {
         init: init,
         openNewOtherPolicyWindow: openNewOtherPolicyWindow,
         editPolicy: editPolicy,
-        deletePolicy: deletePolicy
+        deletePolicy: deletePolicy,
+        savePolicyDeactivation: savePolicyDeactivation,
+        savePolicyIsOpen: savePolicyIsOpen,
+        savePolicyUserMustHasHozoor: savePolicyUserMustHasHozoor
     };
 
 })();
@@ -208,8 +297,11 @@ var service = (function () {
 
 
 module.exports = {
-    init: service.init,
-    openNewOtherPolicyWindow: service.openNewOtherPolicyWindow,
-    editPolicy: service.editPolicy,
-    deletePolicy: service.deletePolicy
+    init: newOtherPolicy.init,
+    openNewOtherPolicyWindow: newOtherPolicy.openNewOtherPolicyWindow,
+    editPolicy: newOtherPolicy.editPolicy,
+    deletePolicy: newOtherPolicy.deletePolicy,
+    savePolicyDeactivation: newOtherPolicy.savePolicyDeactivation,
+    savePolicyIsOpen : newOtherPolicy.savePolicyIsOpen,
+    savePolicyUserMustHasHozoor : newOtherPolicy.savePolicyUserMustHasHozoor
 }

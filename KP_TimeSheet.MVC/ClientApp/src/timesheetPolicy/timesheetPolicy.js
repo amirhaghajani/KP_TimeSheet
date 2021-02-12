@@ -1,6 +1,8 @@
 const common = require('../common/common');
 const newOtherPolicy = require('./newOtherPolicy');
+const service = require('./service');
 
+const mainPolicyGridId="timesheetSystemDefualtPolicy_Grid";
 const otherPolicyGridId = "timesheetOtherPolicy_Grid";
 let selectedItemPolicy = null;
 let dialog = null;
@@ -8,7 +10,8 @@ let dialog = null;
 $("document").ready(function () {
 
   init();
-  newOtherPolicy.init(common);
+  service.init(common);
+  newOtherPolicy.init(common, service, refreshGrids);
 
 });
 
@@ -21,6 +24,11 @@ function init() {
   private_initOtherGrid();
 
   private_initConfirmDeleteDialog();
+}
+
+function refreshGrids(){
+  $("#"+mainPolicyGridId).data("kendoGrid").dataSource.read();
+  $("#"+otherPolicyGridId).data("kendoGrid").dataSource.read();
 }
 
 function private_initConfirmDeleteDialog() {
@@ -52,10 +60,11 @@ function private_intiTabs() {
 
 function private_initDefaultGrid() {
 
-  $("#timesheetSystemDefualtPolicy_Grid").kendoGrid({
+  $("#"+mainPolicyGridId).kendoGrid({
     dataSource: {
       transport: {
-        read: "/api/timesheetPlicy/" + common.version() + "/GetDefaultPoliciesList"
+        read: "/api/timesheetPlicy/" + common.version() + "/GetDefaultPoliciesList",
+        cache: false
       },
       schema: {
         model: {
@@ -88,30 +97,63 @@ function private_initDefaultGrid() {
         field: "isDeactivated",
         title: "غیر فعال",
         template: function (dataItem, b, c) {
-          let answer = "<input type='checkbox' class='forFound_approveCheckbox'" + (dataItem.isDeactivated=="true" ? "checked" : "") + "/>";
+          let answer = "<input type='checkbox' class='forFoundOnMainGrid_deactiveCheckbox'" + (dataItem.isDeactivated == "true" ? "checked" : "") + "/>";
           return answer;
         },
         width: 60,
         filterable: false,
         sortable: false,
-        editable: () => false
       },
-      
-      "userTitle",
-      "start",
-      "finish"
-      // {
-      //     field: "OrderDate",
-      //     title: "Order Date",
-      //     format: "{0:MM/dd/yyyy}"
-      // }, {
-      //     field: "ShipName",
-      //     title: "Ship Name"
-      // }, {
-      //     field: "ShipCity",
-      //     title: "Ship City"
-      // }
-    ]
+      {
+        field: "userTitle",
+        title: "نام کاربر",
+        filterable: true,
+        sortable: true
+      },
+      {
+        field: "validity",
+        title: "تاریخ اعتبار",
+        filterable: false,
+        sortable: true
+      },
+      {
+        field: "start",
+        title: "تاریخ شروع",
+        filterable: false,
+        sortable: true
+      },
+      {
+        field: "finish",
+        title: "تاریخ پایان",
+        filterable: false,
+        sortable: true
+      },
+
+      {
+        field: "isOpen",
+        title: "باز است",
+        template: function (dataItem, b, c) {
+          let answer = "<input type='checkbox' class='forFoundOnMainGrid_isOpenCheckbox'" + (dataItem.isOpen == "true" ? "checked" : "") + "/>";
+          return answer;
+        },
+        width: 60,
+        filterable: false,
+        sortable: false,
+      },
+      {
+        field: "userMustHasHozoor",
+        title: "نیاز به حضور",
+        template: function (dataItem, b, c) {
+          let answer = "<input type='checkbox' class='forFoundOnMainGrid_userMustHasHozoorCheckbox'" + (dataItem.userMustHasHozoor == "true" ? "checked" : "") + "/>";
+          return answer;
+        },
+        width: 80,
+        filterable: false,
+        sortable: false,
+      },
+
+    ],
+    dataBound: private_gridMainPolicyDataBound
   });
 }
 
@@ -121,6 +163,7 @@ function private_initOtherGrid() {
     dataSource: {
       transport: {
         read: "/api/timesheetPlicy/" + common.version() + "/GetOtherPoliciesList",
+        cache: false
       },
       schema: {
         model: {
@@ -149,29 +192,75 @@ function private_initOtherGrid() {
     filterable: true,
     sortable: true,
     pageable: false,
-    columns: [{
-      field: "isDeactivated",
-      title: "غیر فعال",
-      template: function (dataItem, b, c) {
-        let answer = "<input type='checkbox' class='forFound_approveCheckbox'" + (dataItem.isDeactivated=="true" ? "checked" : "") + "/>";
-        return answer;
+    columns: [
+      {
+        field: "isDeactivated",
+        title: "غیر فعال",
+        template: function (dataItem, b, c) {
+          let answer = "<input type='checkbox' class='forFound_deactiveCheckbox'" + (dataItem.isDeactivated == "true" ? "checked" : "") + "/>";
+          return answer;
+        },
+        width: 60,
+        filterable: false,
+        sortable: false,
+        editable: () => false
       },
-      width: 60,
-      filterable: false,
-      sortable: false,
-      editable: () => false
-    },
-      "userTitle",
-      "start",
-      "finish",
-    {
-      title: "عملیات",
-      template: function (dataItem, b, c) {
-        let answer = "<button type='button' style='margin-right:2px;' class='btn btn-success btn-sm forFound_EditPolicy'>ویرایش</button>";
-        answer += "<button type='button' style='margin-right:2px;' class='btn btn-danger btn-sm forFound_DeletePolicy'>حذف</button>";
-        return answer;
-      }
-    },
+      {
+        field: "userTitle",
+        title: "نام کاربر",
+        filterable: true,
+        sortable: true
+      },
+      {
+        field: "validity",
+        title: "تاریخ اعتبار",
+        filterable: false,
+        sortable: true
+      },
+      {
+        field: "start",
+        title: "تاریخ شروع",
+        filterable: false,
+        sortable: true
+      },
+      {
+        field: "finish",
+        title: "تاریخ پایان",
+        filterable: false,
+        sortable: true
+      },
+
+      {
+        field: "isOpen",
+        title: "باز است",
+        template: function (dataItem, b, c) {
+          let answer = "<input type='checkbox' class='forFound_isOpenCheckbox'" + (dataItem.isOpen == "true" ? "checked" : "") + "/>";
+          return answer;
+        },
+        width: 60,
+        filterable: false,
+        sortable: false,
+      },
+      {
+        field: "userMustHasHozoor",
+        title: "نیاز به حضور",
+        template: function (dataItem, b, c) {
+          let answer = "<input type='checkbox' class='forFound_userMustHasHozoorCheckbox'" + (dataItem.userMustHasHozoor == "true" ? "checked" : "") + "/>";
+          return answer;
+        },
+        width: 90,
+        filterable: false,
+        sortable: false,
+      },
+      {
+        title: "عملیات",
+        width: 140,
+        template: function (dataItem, b, c) {
+          let answer = "<button type='button' style='margin-right:2px;' class='btn btn-success btn-sm forFound_EditPolicy'>ویرایش</button>";
+          answer += "<button type='button' style='margin-right:2px;' class='btn btn-danger btn-sm forFound_DeletePolicy'>حذف</button>";
+          return answer;
+        }
+      },
       // {
       //     field: "OrderDate",
       //     title: "Order Date",
@@ -189,6 +278,33 @@ function private_initOtherGrid() {
 
 }
 
+function private_gridMainPolicyDataBound() {
+
+  $('.forFoundOnMainGrid_deactiveCheckbox').off().on('change', function () {
+    var grid = $("#" + mainPolicyGridId).data("kendoGrid");
+    var dataItem = grid.dataItem($(this).closest("tr"));
+    selectedItemPolicy = dataItem;
+
+    newOtherPolicy.savePolicyDeactivation(dataItem, this.checked);
+  });
+
+  $('.forFoundOnMainGrid_isOpenCheckbox').off().on('change', function () {
+    var grid = $("#" + mainPolicyGridId).data("kendoGrid");
+    var dataItem = grid.dataItem($(this).closest("tr"));
+    selectedItemPolicy = dataItem;
+
+    newOtherPolicy.savePolicyIsOpen(dataItem, this.checked);
+  });
+
+  $('.forFoundOnMainGrid_userMustHasHozoorCheckbox').off().on('change', function () {
+    var grid = $("#" + mainPolicyGridId).data("kendoGrid");
+    var dataItem = grid.dataItem($(this).closest("tr"));
+    selectedItemPolicy = dataItem;
+
+    newOtherPolicy.savePolicyUserMustHasHozoor(dataItem, this.checked);
+  });
+}
+
 function private_gridOtherPolicyDataBound() {
   $('#btnAddNewPolicy').off().on('click', () => newOtherPolicy.openNewOtherPolicyWindow());
 
@@ -203,6 +319,30 @@ function private_gridOtherPolicyDataBound() {
     var dataItem = grid.dataItem($(this).closest("tr"));
     selectedItemPolicy = dataItem;
     dialog.data("kendoDialog").open();
+  });
+
+  $('.forFound_deactiveCheckbox').off().on('change', function () {
+    var grid = $("#" + otherPolicyGridId).data("kendoGrid");
+    var dataItem = grid.dataItem($(this).closest("tr"));
+    selectedItemPolicy = dataItem;
+
+    newOtherPolicy.savePolicyDeactivation(dataItem, this.checked);
+  });
+
+  $('.forFound_isOpenCheckbox').off().on('change', function () {
+    var grid = $("#" + otherPolicyGridId).data("kendoGrid");
+    var dataItem = grid.dataItem($(this).closest("tr"));
+    selectedItemPolicy = dataItem;
+
+    newOtherPolicy.savePolicyIsOpen(dataItem, this.checked);
+  });
+
+  $('.forFound_userMustHasHozoorCheckbox').off().on('change', function () {
+    var grid = $("#" + otherPolicyGridId).data("kendoGrid");
+    var dataItem = grid.dataItem($(this).closest("tr"));
+    selectedItemPolicy = dataItem;
+
+    newOtherPolicy.savePolicyUserMustHasHozoor(dataItem, this.checked);
   });
 }
 

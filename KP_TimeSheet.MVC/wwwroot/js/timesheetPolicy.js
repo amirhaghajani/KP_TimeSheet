@@ -173,15 +173,17 @@ module.exports = {
 
 },{}],2:[function(require,module,exports){
 
-var service = (function () {
+var newOtherPolicy = (function () {
 
     const moduleData = {};
 
     moduleData.currentItem = null;
 
-    function init(common) {
+    function init(common, service, refreshParentFn) {
 
         moduleData.common = common;
+        moduleData.service = service;
+        moduleData.refreshParentFn = refreshParentFn;
 
         $('#otherPolicy_btnCancel').off().on('click', function () {
             private_closeWindow();
@@ -216,8 +218,6 @@ var service = (function () {
             private_SetCurrentData(policy);
 
         }, () => reset());
-
-
     }
 
     function private_SetCurrentData(data) {
@@ -233,9 +233,7 @@ var service = (function () {
         //user will set after get data from server
     }
 
-    function deletePolicy(policy) {
-        alert(JSON.stringify(policy));
-    }
+    
 
     function private_closeWindow() {
         var w = $("#WNDEditAndAddOtherPolicy").data("kendoWindow");
@@ -278,8 +276,8 @@ var service = (function () {
     }
 
     function private_afterGetAllUserFromServer() {
-        if(!moduleData.currentItem) return;
-        
+        if (!moduleData.currentItem) return;
+
         var dropdownlist = $("#otherPolicy_selectUser").data("kendoDropDownList");
         dropdownlist.select(function (dataItem) {
             return dataItem.id == moduleData.currentItem.userId;
@@ -328,6 +326,34 @@ var service = (function () {
 
 
     //----------------------
+    function deletePolicy(policy) {
+        
+        moduleData.common.loaderShow();
+        moduleData.service.deletePolicy(policy.id, () => {
+            moduleData.common.loaderHide();
+            moduleData.common.notify("حذف با موفقیت انجام شد", "success");
+            private_closeWindow();
+
+            moduleData.refreshParentFn();
+        });
+
+    }
+
+
+    function savePolicyDeactivation(data, isDeactivated) {
+        data.isDeactivated = isDeactivated ? "true" : "false";
+        private_savePolicy(data, false);
+    }
+    function savePolicyIsOpen(data, isOpen) {
+        data.isOpen = isOpen ? "true" : "false";
+        private_savePolicy(data, false);
+    }
+    function savePolicyUserMustHasHozoor(data, userMustHasHozoor) {
+        data.userMustHasHozoor = userMustHasHozoor ? "true" : "false";
+        private_savePolicy(data, false);
+    }
+
+
     function reset() {
         moduleData.currentItem = null;
 
@@ -355,18 +381,78 @@ var service = (function () {
 
         resetErrors();
 
+        if (!moduleData.currentItem) {
+            moduleData.currentItem = { id: "00000000-0000-0000-0000-000000000000" };
+        }
+
         var policy = {
-            id: "00000000-0000-0000-0000-000000000000",
+            id: !moduleData.currentItem ? "00000000-0000-0000-0000-000000000000" : moduleData.currentItem.id,
             validity: $('#otherPolicy_dateValidicy').val(),
             start: $('#otherPolicy_dateStart').val(),
             finish: $("#otherPolicy_dateFinish").val(),
             userId: $("#otherPolicy_selectUser").data("kendoDropDownList").value(),
             isOpen: $('#otherPolicy_checkIsOpen').is(':checked'),
-            mustHaveHozoor: $('#otherPolicy_checkMustHaveHozoor').is(':checked'),
+            userMustHasHozoor: $('#otherPolicy_checkMustHaveHozoor').is(':checked'),
         };
 
-        alert(JSON.stringify(policy));
+        if (private_checkUserInputData(policy)) return;
 
+
+        private_sendSaveDataToServer(policy, moduleData.refreshParentFn);
+
+    }
+
+    function private_savePolicy(policy, wantRefresh) {
+        var data = {
+            id: policy.id,
+            validity: policy.validity,
+            start: policy.start,
+            finish: policy.finish,
+            userId: policy.userId,
+            isOpen: policy.isOpen == "true",
+            userMustHasHozoor: policy.userMustHasHozoor == "true",
+            isDeactivated: policy.isDeactivated == "true"
+        };
+
+        private_sendSaveDataToServer(data, (wantRefresh ? moduleData.refreshParentFn : null));
+    }
+
+    function private_checkUserInputData(policy) {
+
+        var hasError = false;
+
+        if (!policy.userId) {
+            hasError = true;
+            $("span[for='otherPolicy_selectUser']").text("انتخاب کاربر ضروری است");
+        }
+
+        if (!policy.start) {
+            hasError = true;
+            $("span[for='otherPolicy_dateStart']").text("انتخاب تاریخ شروع ضروری است");
+        }
+
+        if (!policy.finish) {
+            hasError = true;
+            $("span[for='otherPolicy_dateFinish']").text("انتخاب تاریخ پایان ضروری است");
+        }
+
+        if (!policy.validity) {
+            hasError = true;
+            $("span[for='otherPolicy_dateValidicy']").text("انتخاب تاریخ اعتبار ضروری است");
+        }
+
+        return hasError;
+    }
+
+    function private_sendSaveDataToServer(data, afterSuccCallbackFn) {
+        moduleData.common.loaderShow();
+        moduleData.service.savePolicy(data, () => {
+            moduleData.common.loaderHide();
+            moduleData.common.notify("ثبت با موفقیت انجام شد", "success");
+            private_closeWindow();
+
+            if (afterSuccCallbackFn) afterSuccCallbackFn();
+        });
     }
 
 
@@ -374,7 +460,73 @@ var service = (function () {
         init: init,
         openNewOtherPolicyWindow: openNewOtherPolicyWindow,
         editPolicy: editPolicy,
-        deletePolicy: deletePolicy
+        deletePolicy: deletePolicy,
+        savePolicyDeactivation: savePolicyDeactivation,
+        savePolicyIsOpen: savePolicyIsOpen,
+        savePolicyUserMustHasHozoor: savePolicyUserMustHasHozoor
+    };
+
+})();
+
+
+
+module.exports = {
+    init: newOtherPolicy.init,
+    openNewOtherPolicyWindow: newOtherPolicy.openNewOtherPolicyWindow,
+    editPolicy: newOtherPolicy.editPolicy,
+    deletePolicy: newOtherPolicy.deletePolicy,
+    savePolicyDeactivation: newOtherPolicy.savePolicyDeactivation,
+    savePolicyIsOpen : newOtherPolicy.savePolicyIsOpen,
+    savePolicyUserMustHasHozoor : newOtherPolicy.savePolicyUserMustHasHozoor
+}
+},{}],3:[function(require,module,exports){
+
+var service = (function () {
+
+    const moduleData = {};
+
+    function init(common) {
+        moduleData.common = common;
+    }
+
+
+
+    function savePolicy(policy, success_callBack, error_callBack) {
+		$.ajax({
+			type: "Post",
+			url: "/api/timesheetPlicy/SaveEditPolicy",
+			contentType: "application/json; charset=utf-8",
+			dataType: "json",
+			data: JSON.stringify(policy),
+			success: success_callBack ? (response) => success_callBack(response) : () => { },
+			error: (error) => {
+				moduleData.common.loaderHide();
+				moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+				if (error_callBack) error_callBack();
+			}
+		});
+	}
+
+	function deletePolicy(id, success_callBack, error_callBack) {
+		$.ajax({
+			type: "DELETE",
+			url: "/api/timesheetPlicy/"+id,
+			contentType: "application/json; charset=utf-8",
+			dataType: "json",
+			success: success_callBack ? (response) => success_callBack(response) : () => { },
+			error: (error) => {
+				moduleData.common.loaderHide();
+				moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+				if (error_callBack) error_callBack();
+			}
+		});
+	}
+
+
+    return {
+        init: init,
+        savePolicy: savePolicy,
+		deletePolicy: deletePolicy
     };
 
 })();
@@ -383,14 +535,15 @@ var service = (function () {
 
 module.exports = {
     init: service.init,
-    openNewOtherPolicyWindow: service.openNewOtherPolicyWindow,
-    editPolicy: service.editPolicy,
-    deletePolicy: service.deletePolicy
+    savePolicy : service.savePolicy,
+	deletePolicy: service.deletePolicy
 }
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 const common = require('../common/common');
 const newOtherPolicy = require('./newOtherPolicy');
+const service = require('./service');
 
+const mainPolicyGridId="timesheetSystemDefualtPolicy_Grid";
 const otherPolicyGridId = "timesheetOtherPolicy_Grid";
 let selectedItemPolicy = null;
 let dialog = null;
@@ -398,7 +551,8 @@ let dialog = null;
 $("document").ready(function () {
 
   init();
-  newOtherPolicy.init(common);
+  service.init(common);
+  newOtherPolicy.init(common, service, refreshGrids);
 
 });
 
@@ -411,6 +565,11 @@ function init() {
   private_initOtherGrid();
 
   private_initConfirmDeleteDialog();
+}
+
+function refreshGrids(){
+  $("#"+mainPolicyGridId).data("kendoGrid").dataSource.read();
+  $("#"+otherPolicyGridId).data("kendoGrid").dataSource.read();
 }
 
 function private_initConfirmDeleteDialog() {
@@ -442,10 +601,11 @@ function private_intiTabs() {
 
 function private_initDefaultGrid() {
 
-  $("#timesheetSystemDefualtPolicy_Grid").kendoGrid({
+  $("#"+mainPolicyGridId).kendoGrid({
     dataSource: {
       transport: {
-        read: "/api/timesheetPlicy/" + common.version() + "/GetDefaultPoliciesList"
+        read: "/api/timesheetPlicy/" + common.version() + "/GetDefaultPoliciesList",
+        cache: false
       },
       schema: {
         model: {
@@ -478,30 +638,63 @@ function private_initDefaultGrid() {
         field: "isDeactivated",
         title: "غیر فعال",
         template: function (dataItem, b, c) {
-          let answer = "<input type='checkbox' class='forFound_approveCheckbox'" + (dataItem.isDeactivated=="true" ? "checked" : "") + "/>";
+          let answer = "<input type='checkbox' class='forFoundOnMainGrid_deactiveCheckbox'" + (dataItem.isDeactivated == "true" ? "checked" : "") + "/>";
           return answer;
         },
         width: 60,
         filterable: false,
         sortable: false,
-        editable: () => false
       },
-      
-      "userTitle",
-      "start",
-      "finish"
-      // {
-      //     field: "OrderDate",
-      //     title: "Order Date",
-      //     format: "{0:MM/dd/yyyy}"
-      // }, {
-      //     field: "ShipName",
-      //     title: "Ship Name"
-      // }, {
-      //     field: "ShipCity",
-      //     title: "Ship City"
-      // }
-    ]
+      {
+        field: "userTitle",
+        title: "نام کاربر",
+        filterable: true,
+        sortable: true
+      },
+      {
+        field: "validity",
+        title: "تاریخ اعتبار",
+        filterable: false,
+        sortable: true
+      },
+      {
+        field: "start",
+        title: "تاریخ شروع",
+        filterable: false,
+        sortable: true
+      },
+      {
+        field: "finish",
+        title: "تاریخ پایان",
+        filterable: false,
+        sortable: true
+      },
+
+      {
+        field: "isOpen",
+        title: "باز است",
+        template: function (dataItem, b, c) {
+          let answer = "<input type='checkbox' class='forFoundOnMainGrid_isOpenCheckbox'" + (dataItem.isOpen == "true" ? "checked" : "") + "/>";
+          return answer;
+        },
+        width: 60,
+        filterable: false,
+        sortable: false,
+      },
+      {
+        field: "userMustHasHozoor",
+        title: "نیاز به حضور",
+        template: function (dataItem, b, c) {
+          let answer = "<input type='checkbox' class='forFoundOnMainGrid_userMustHasHozoorCheckbox'" + (dataItem.userMustHasHozoor == "true" ? "checked" : "") + "/>";
+          return answer;
+        },
+        width: 80,
+        filterable: false,
+        sortable: false,
+      },
+
+    ],
+    dataBound: private_gridMainPolicyDataBound
   });
 }
 
@@ -511,6 +704,7 @@ function private_initOtherGrid() {
     dataSource: {
       transport: {
         read: "/api/timesheetPlicy/" + common.version() + "/GetOtherPoliciesList",
+        cache: false
       },
       schema: {
         model: {
@@ -539,29 +733,75 @@ function private_initOtherGrid() {
     filterable: true,
     sortable: true,
     pageable: false,
-    columns: [{
-      field: "isDeactivated",
-      title: "غیر فعال",
-      template: function (dataItem, b, c) {
-        let answer = "<input type='checkbox' class='forFound_approveCheckbox'" + (dataItem.isDeactivated=="true" ? "checked" : "") + "/>";
-        return answer;
+    columns: [
+      {
+        field: "isDeactivated",
+        title: "غیر فعال",
+        template: function (dataItem, b, c) {
+          let answer = "<input type='checkbox' class='forFound_deactiveCheckbox'" + (dataItem.isDeactivated == "true" ? "checked" : "") + "/>";
+          return answer;
+        },
+        width: 60,
+        filterable: false,
+        sortable: false,
+        editable: () => false
       },
-      width: 60,
-      filterable: false,
-      sortable: false,
-      editable: () => false
-    },
-      "userTitle",
-      "start",
-      "finish",
-    {
-      title: "عملیات",
-      template: function (dataItem, b, c) {
-        let answer = "<button type='button' style='margin-right:2px;' class='btn btn-success btn-sm forFound_EditPolicy'>ویرایش</button>";
-        answer += "<button type='button' style='margin-right:2px;' class='btn btn-danger btn-sm forFound_DeletePolicy'>حذف</button>";
-        return answer;
-      }
-    },
+      {
+        field: "userTitle",
+        title: "نام کاربر",
+        filterable: true,
+        sortable: true
+      },
+      {
+        field: "validity",
+        title: "تاریخ اعتبار",
+        filterable: false,
+        sortable: true
+      },
+      {
+        field: "start",
+        title: "تاریخ شروع",
+        filterable: false,
+        sortable: true
+      },
+      {
+        field: "finish",
+        title: "تاریخ پایان",
+        filterable: false,
+        sortable: true
+      },
+
+      {
+        field: "isOpen",
+        title: "باز است",
+        template: function (dataItem, b, c) {
+          let answer = "<input type='checkbox' class='forFound_isOpenCheckbox'" + (dataItem.isOpen == "true" ? "checked" : "") + "/>";
+          return answer;
+        },
+        width: 60,
+        filterable: false,
+        sortable: false,
+      },
+      {
+        field: "userMustHasHozoor",
+        title: "نیاز به حضور",
+        template: function (dataItem, b, c) {
+          let answer = "<input type='checkbox' class='forFound_userMustHasHozoorCheckbox'" + (dataItem.userMustHasHozoor == "true" ? "checked" : "") + "/>";
+          return answer;
+        },
+        width: 90,
+        filterable: false,
+        sortable: false,
+      },
+      {
+        title: "عملیات",
+        width: 140,
+        template: function (dataItem, b, c) {
+          let answer = "<button type='button' style='margin-right:2px;' class='btn btn-success btn-sm forFound_EditPolicy'>ویرایش</button>";
+          answer += "<button type='button' style='margin-right:2px;' class='btn btn-danger btn-sm forFound_DeletePolicy'>حذف</button>";
+          return answer;
+        }
+      },
       // {
       //     field: "OrderDate",
       //     title: "Order Date",
@@ -579,6 +819,33 @@ function private_initOtherGrid() {
 
 }
 
+function private_gridMainPolicyDataBound() {
+
+  $('.forFoundOnMainGrid_deactiveCheckbox').off().on('change', function () {
+    var grid = $("#" + mainPolicyGridId).data("kendoGrid");
+    var dataItem = grid.dataItem($(this).closest("tr"));
+    selectedItemPolicy = dataItem;
+
+    newOtherPolicy.savePolicyDeactivation(dataItem, this.checked);
+  });
+
+  $('.forFoundOnMainGrid_isOpenCheckbox').off().on('change', function () {
+    var grid = $("#" + mainPolicyGridId).data("kendoGrid");
+    var dataItem = grid.dataItem($(this).closest("tr"));
+    selectedItemPolicy = dataItem;
+
+    newOtherPolicy.savePolicyIsOpen(dataItem, this.checked);
+  });
+
+  $('.forFoundOnMainGrid_userMustHasHozoorCheckbox').off().on('change', function () {
+    var grid = $("#" + mainPolicyGridId).data("kendoGrid");
+    var dataItem = grid.dataItem($(this).closest("tr"));
+    selectedItemPolicy = dataItem;
+
+    newOtherPolicy.savePolicyUserMustHasHozoor(dataItem, this.checked);
+  });
+}
+
 function private_gridOtherPolicyDataBound() {
   $('#btnAddNewPolicy').off().on('click', () => newOtherPolicy.openNewOtherPolicyWindow());
 
@@ -594,6 +861,30 @@ function private_gridOtherPolicyDataBound() {
     selectedItemPolicy = dataItem;
     dialog.data("kendoDialog").open();
   });
+
+  $('.forFound_deactiveCheckbox').off().on('change', function () {
+    var grid = $("#" + otherPolicyGridId).data("kendoGrid");
+    var dataItem = grid.dataItem($(this).closest("tr"));
+    selectedItemPolicy = dataItem;
+
+    newOtherPolicy.savePolicyDeactivation(dataItem, this.checked);
+  });
+
+  $('.forFound_isOpenCheckbox').off().on('change', function () {
+    var grid = $("#" + otherPolicyGridId).data("kendoGrid");
+    var dataItem = grid.dataItem($(this).closest("tr"));
+    selectedItemPolicy = dataItem;
+
+    newOtherPolicy.savePolicyIsOpen(dataItem, this.checked);
+  });
+
+  $('.forFound_userMustHasHozoorCheckbox').off().on('change', function () {
+    var grid = $("#" + otherPolicyGridId).data("kendoGrid");
+    var dataItem = grid.dataItem($(this).closest("tr"));
+    selectedItemPolicy = dataItem;
+
+    newOtherPolicy.savePolicyUserMustHasHozoor(dataItem, this.checked);
+  });
 }
 
 function private_deleteSelectedPolicy() {
@@ -602,4 +893,4 @@ function private_deleteSelectedPolicy() {
 
 
 
-},{"../common/common":1,"./newOtherPolicy":2}]},{},[3]);
+},{"../common/common":1,"./newOtherPolicy":2,"./service":3}]},{},[4]);

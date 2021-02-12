@@ -22,7 +22,7 @@ namespace KP.TimeSheets.MVC
 
 
         [HttpGet("{ver}/[action]")]
-        [ProducesResponseType(typeof(List<vmGetTimeSheetResualt>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<vmTimesheetPolicy>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult GetDefaultPoliciesList(string ver)
         {
@@ -65,12 +65,12 @@ namespace KP.TimeSheets.MVC
             }
             catch (Exception ex)
             {
-                return this.ReturnError(ex, "خطا در دریافت اطلاعات تایم شیت");
+                return this.ReturnError(ex, "خطا در دریافت اطلاعات قانون های اصلی سیستم");
             }
         }
 
         [HttpGet("{ver}/[action]")]
-        [ProducesResponseType(typeof(List<vmGetTimeSheetResualt>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<vmTimesheetPolicy>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult GetOtherPoliciesList(string ver)
         {
@@ -111,10 +111,100 @@ namespace KP.TimeSheets.MVC
             }
             catch (Exception ex)
             {
-                return this.ReturnError(ex, "خطا در دریافت اطلاعات تایم شیت");
+                return this.ReturnError(ex, "خطا در دریافت اطلاعات سایر قانون های سیستم");
             }
         }
 
+
+        [HttpPost("[action]")]
+        [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult SaveEditPolicy(vmTimesheetPolicy request)
+        {
+            try
+            {
+                if (request == null) throw new Exception("اطلاعات ارسال نشده است");
+                if (string.IsNullOrEmpty(request.start)) throw new Exception("تاریخ شروع باید وارد شده باشد");
+                if (string.IsNullOrEmpty(request.finish)) throw new Exception("تاریخ پایان باید وارد شده باشد");
+                if (string.IsNullOrEmpty(request.validity)) throw new Exception("تاریخ اعتبار باید وارد شده باشد");
+
+                if (!request.userId.HasValue) throw new Exception("انتخاب کاربر ضروری است");
+
+                TimesheetPolicy policy = null;
+
+                if (request.id == Guid.Empty)
+                {
+                    policy = new TimesheetPolicy()
+                    {
+                        Id = Guid.NewGuid(),
+                        IsDefault = false
+                    };
+                    this.DBContext.TimesheetPolicies.Add(policy);
+                }
+                else
+                {
+                    policy = this.DBContext.TimesheetPolicies.FirstOrDefault(p => p.Id == request.id);
+                    if (policy == null) throw new Exception("قانون با آی دی خواسته شده یافت نشد");
+                }
+
+
+                policy.CreateDate = DateTime.Now;
+                policy.isDeactivated = request.isDeactivated;
+
+                policy.UserMustHasHozoor = request.userMustHasHozoor;
+                policy.IsOpen = request.isOpen;
+
+                if (policy.IsDefault)
+                {
+                    this.DBContext.SaveChanges();
+                    return Ok(true);//قانون اصلی را فقط می توان غیر فعال کرد
+                }
+
+
+
+                policy.Start = DateUtility.GetMiladiDate(request.start);
+                policy.Finish = DateUtility.GetMiladiDate(request.finish);
+                policy.Validity = DateUtility.GetMiladiDate(request.validity);
+
+                if (policy.Start > policy.Finish) throw new Exception("تاریخ شروع نمی تواند بزرگتر از تاریخ پایان باشد");
+                if (policy.Validity.Date < DateTime.Now.Date) throw new Exception("تاریخ اعتبار نمی تواند کوچکتر از امروز باشد");
+
+
+                policy.UserId = request.userId;
+
+
+                this.DBContext.SaveChanges();
+
+                return Ok(true);
+            }
+            catch (Exception ex)
+            {
+                return this.ReturnError(ex, "خطا در ثبت قانون جدید");
+            }
+        }
+
+
+        [HttpDelete("{id}")]
+        [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult DeletePolicy(Guid id)
+        {
+            try
+            {
+                var policy = this.DBContext.TimesheetPolicies.FirstOrDefault(p => p.Id == id);
+                if(policy == null) throw new Exception("قانون با آی دی ارسال شده یافت نشد");
+                if(policy.IsDefault) throw new Exception("امکان حذف قانون پیش فرض نیست");
+
+                this.DBContext.Entry(policy).State=EntityState.Deleted;
+                this.DBContext.SaveChanges();
+
+                return Ok(true);
+            }
+            catch (Exception ex)
+            {
+                return this.ReturnError(ex, "خطا در ثبت قانون جدید");
+            }
+        }
 
 
 

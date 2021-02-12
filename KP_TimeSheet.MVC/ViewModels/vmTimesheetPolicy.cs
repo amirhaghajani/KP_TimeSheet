@@ -5,7 +5,7 @@ namespace KP.TimeSheets.MVC.ViewModels
 {
     public class vmTimesheetPolicy
     {
-        public Guid id { get; set; }
+        public Guid id{get;set;}
         public bool isDeactivated{get;set;}
         public string userTitle { get; set; }
         public Guid? userId { get; set; }

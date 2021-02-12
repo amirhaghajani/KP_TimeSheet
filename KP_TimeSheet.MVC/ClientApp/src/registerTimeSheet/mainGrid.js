@@ -325,7 +325,6 @@ const myMainGrid = (function () {
     $('.forFound_wndSendWorkHour_OnInit').off().on('click', function () {
       var sendId = $(this).data("dayIndex");
 
-      debugger;
       var timeSheetData = moduleData.data.timeSheetData_get();
       var thisDayMainInfo = timeSheetData[0].values[sendId];
       if(thisDayMainInfo.mustHaveHozoor){

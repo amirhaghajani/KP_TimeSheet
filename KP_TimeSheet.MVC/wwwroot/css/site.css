@@ -113,7 +113,7 @@ textarea {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 100;
+  z-index: 9999999;
   opacity: 0.5;
   background: #d0d0d0;
 }
@@ -450,7 +450,7 @@ select[multiple]{
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 100;
+  z-index: 999999999;
   opacity: 0.5;
   background: #d0d0d0;
 }
