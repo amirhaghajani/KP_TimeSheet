@@ -166,6 +166,54 @@ namespace KP.TimeSheets.MVC
             return pc.ToDateTime(year, month, DDLDay, 0, 0, 0, 0);
         }
 
+        internal static DateTime GetCompanyStartDate()
+        {
+            PersianCalendar pc = new PersianCalendar();
+            var now = DateTime.Now;
+            var year = pc.GetYear(now);
+            var month = pc.GetMonth(now);
+            var day = pc.GetDayOfMonth(now);
+
+            if (day > 25)
+            {
+                day = 26;
+                return pc.ToDateTime(year, month, day, 0, 0, 0, 0);
+            }
+
+            month--;
+            if (month < 1)
+            {
+                month = 12;
+                year--;
+            }
+            day = 26;
+            return pc.ToDateTime(year, month, day, 0, 0, 0, 0);
+        }
+
+        internal static DateTime GetCompanyEndDate()
+        {
+            PersianCalendar pc = new PersianCalendar();
+            var now = DateTime.Now;
+            var year = pc.GetYear(now);
+            var month = pc.GetMonth(now);
+            var day = pc.GetDayOfMonth(now);
+
+            if (day < 26)
+            {
+                day = 25;
+                return pc.ToDateTime(year, month, day, 0, 0, 0, 0);
+            }
+
+            month++;
+            if (month > 12)
+            {
+                month = 1;
+                year++;
+            }
+            day = 25;
+            return pc.ToDateTime(year, month, day, 0, 0, 0, 0);
+        }
+
 
 
     }

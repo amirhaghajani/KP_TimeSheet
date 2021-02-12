@@ -88,11 +88,11 @@ namespace KP.TimeSheets.MVC
                 {
                     date = gg.Key.Value,
                     isOpen = gg.FirstOrDefault().IsOpen,
-                    mustHaveHozoor = true,
+                    mustHaveHozoor = gg.First().UserMustHasHozoor,
                     dayTimeString = gg.FirstOrDefault().DayTimeString,
                     date_persian = gg.First().PersianDate,
                     day_persian = days[gg.First().DayOfWeek.Value],
-                    hozoor = 360,// gg.First().Hozoor,
+                    hozoor = gg.First().Hozoor,
                     projects = gg.Where(p => p.Type == "Work" && p.ProjectId.HasValue)
                     .GroupBy(p => p.ProjectId).Select(pp => new vmGetTimeSheetResualt_Project
                     {
@@ -125,11 +125,38 @@ namespace KP.TimeSheets.MVC
 
                 }).ToList();
 
-                if(mustCheckDefaultTimeSheetPolocy && !answer.First(a => a.date.Value.Date == now.Date).isOpen.HasValue){
+                if (mustCheckDefaultTimeSheetPolocy && !answer.First(a => a.date.Value.Date == now.Date).isOpen.HasValue)
+                {
                     //default policy must check maybe is deactivated
                     //if isnot created, must create and today is open beacuase friday is checked in query
                     //اگر زمانش گذشته باید تمدید بشه که با تاریخ های امروز یکسان بشه
-                    var aa = 1;
+                    var userDefaultPolicy = this.DBContext.TimesheetPolicies.FirstOrDefault(p => p.IsDefault && p.UserId == currentUser.ID);
+                    if (userDefaultPolicy == null)
+                    {
+                        userDefaultPolicy = new TimesheetPolicy()
+                        {
+                            Id = Guid.NewGuid(),
+                            IsDefault = true,
+                            isDeactivated = false,
+                            IsOpen = true,
+                            UserMustHasHozoor = true,
+                            UserId = currentUser.ID,
+                        };
+                        this.DBContext.TimesheetPolicies.Add(userDefaultPolicy);
+                    }
+
+                    userDefaultPolicy.Start = DateUtility.GetCompanyStartDate();
+                    userDefaultPolicy.Finish = DateUtility.GetCompanyEndDate();
+                    userDefaultPolicy.Validity = DateUtility.GetCompanyEndDate();
+                    userDefaultPolicy.CreateDate = DateTime.Now;
+
+                    foreach (var item in answer)
+                    {
+                        item.isOpen = userDefaultPolicy.IsOpen;
+                        item.mustHaveHozoor = userDefaultPolicy.UserMustHasHozoor;
+                    }
+
+                    this.DBContext.SaveChanges();
                 }
 
                 return Ok(answer);
