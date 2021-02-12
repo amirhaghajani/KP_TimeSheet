@@ -8,7 +8,8 @@ namespace KP.TimeSheets.MVC.ViewModels
     {
 
         public DateTime? date { get; set; }
-        public bool isOpen { get; set; }
+        public bool? isOpen { get; set; }
+        public bool mustHaveHozoor{get;set;}
         public string dayTimeString { get; set; }
         public string date_persian { get; set; }
         public string day_persian { get; set; }

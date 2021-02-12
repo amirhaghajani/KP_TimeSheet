@@ -172,88 +172,182 @@ module.exports = {
 };
 
 },{}],2:[function(require,module,exports){
-const common = require("../common/common");
 
-const sideBar = (function () {
+var service = (function () {
 
-  function init() {
-    $('#onclickOpenName').off().on('click', openNav);
-    $('#div_ShowAndHideUserMenu').off().on('click', ShowAndHideUserMenu);
+    const moduleData = {};
 
-    $(".sidebar-dropdown > a").click(function () {
-
-      $(".sidebar-submenu").slideUp(200);
-      if (
-        $(this)
-          .parent()
-          .hasClass("active")
-      ) {
-        $(".sidebar-dropdown").removeClass("active");
-        $(this)
-          .parent()
-          .removeClass("active");
-      } else {
-        $(".sidebar-dropdown").removeClass("active");
-        $(this)
-          .next(".sidebar-submenu")
-          .slideDown(200);
-        $(this)
-          .parent()
-          .addClass("active");
-      }
-    });
-
-    $("#close-sidebar").click(function () {
-      $(".page-wrapper").removeClass("toggled");
-    });
-    $("#show-sidebar").click(function () {
-      $(".page-wrapper").addClass("toggled");
-    });
-
-  }
-
-  init();
-
-
-  function openNav() {
-    const marginRight = "-235px";
-
-    if ($("#mySidebar").css('marginRight') == marginRight) {
-      $(".panel-collapse").collapse("hide");
-      $(".ras-sidebar-left-logo").fadeOut(100);
-      $("#mySidebar").css({ "margin-right": "0px" });
-      var width = $(window).width();
-      $(".content-body").css({ "margin-right": "300px" });
-      $('.content-body').css({ 'width': width - 300 + "px" });
-      
-      $(".menu-item span").show();
-
-    } else {
-      $(".ras-sidebar-left-logo").fadeIn(100);
-      $('.panel-collapse').collapse('hide');
-      var width = $(window).width();
-      $("#mySidebar").css({ "margin-right": marginRight });
-      $(".content-body").css({ "margin-right": "50px" });
-      $('.content-body').css({ 'width': width - 50 + "px" });
-
-      $(".menu-item span").hide();
+    function init(common) {
+        moduleData.common = common;
     }
-  }
 
-
-  function ShowAndHideUserMenu() {
-    if ($('.ras-dropdown-content').is(':visible')) {
-      $(".ras-dropdown-content").fadeOut(300);
-    } else {
-      $(".ras-dropdown-content").fadeIn(300);
+    function openNewOtherPolicyWindow(){
+        moduleData.common.openWindow('WNDEditAndAddOtherPolicy');
     }
-  }
 
 
-
-
+    return {
+        init: init,
+        openNewOtherPolicyWindow: openNewOtherPolicyWindow
+    };
 
 })();
 
 
-},{"../common/common":1}]},{},[2]);
+
+module.exports = {
+    init: service.init,
+    openNewOtherPolicyWindow : service.openNewOtherPolicyWindow
+}
+},{}],3:[function(require,module,exports){
+const common = require('../common/common');
+const newOtherPolicy = require('./newOtherPolicy');
+
+$("document").ready(function () {
+
+  init();
+  newOtherPolicy.init(common);
+
+});
+
+
+function init() {
+
+  private_intiTabs();
+  private_initDefaultGrid();
+  private_initOtherGrid();
+
+}
+
+function private_intiTabs() {
+
+  $("#tabstrip").kendoTabStrip({
+    animation: {
+      open: {
+        effects: "fadeIn"
+      }
+    }
+  });
+
+  $("#tabstrip").show().css({ paddingTop: '10px', paddingRight: '10px', paddingLeft: '10px', height: '100%' });
+
+}
+
+function private_initDefaultGrid(){
+
+  $("#timesheetSystemDefualtPolicy_Grid").kendoGrid({
+    dataSource: {
+      transport: {
+        read: "/api/timesheetPlicy/" + common.version() + "/GetDefaultPoliciesList"
+      },
+      schema: {
+        model: {
+          fields: {
+            id: { type: "string" },
+            userTitle: { type: "string" },
+            userId: { type: "string" },
+
+            start: { type: "string" },
+            finish: { type: "string" },
+            validity: { type: "string" },
+
+            isDeactivated: { type: "string" },
+            isOpen: { type: "string" },
+            userMustHasHozoor: { type: "string" },
+          }
+        }
+      },
+      pageSize: 20,
+      serverPaging: false,
+      serverFiltering: false,
+      serverSorting: false
+    },
+    height: 550,
+    filterable: true,
+    sortable: true,
+    pageable: false,
+    columns: [{
+      field: "isDeactivated",
+      filterable: false
+    },
+      "userTitle",
+      "start",
+      "finish"
+      // {
+      //     field: "OrderDate",
+      //     title: "Order Date",
+      //     format: "{0:MM/dd/yyyy}"
+      // }, {
+      //     field: "ShipName",
+      //     title: "Ship Name"
+      // }, {
+      //     field: "ShipCity",
+      //     title: "Ship City"
+      // }
+    ]
+  });
+}
+
+function private_initOtherGrid(){
+
+  $("#timesheetOtherPolicy_Grid").kendoGrid({
+    dataSource: {
+      transport: {
+        read: "/api/timesheetPlicy/" + common.version() + "/GetOtherPoliciesList"
+      },
+      schema: {
+        model: {
+          fields: {
+            id: { type: "string" },
+            userTitle: { type: "string" },
+            userId: { type: "string" },
+
+            start: { type: "string" },
+            finish: { type: "string" },
+            validity: { type: "string" },
+
+            isDeactivated: { type: "string" },
+            isOpen: { type: "string" },
+            userMustHasHozoor: { type: "string" },
+          }
+        }
+      },
+      pageSize: 20,
+      serverPaging: false,
+      serverFiltering: false,
+      serverSorting: false
+    },
+    toolbar: "<a class='btn btn-info' id='btnAddNewPolicy' >افزودن قانون جدید</a> ",
+    height: 550,
+    filterable: true,
+    sortable: true,
+    pageable: false,
+    columns: [{
+      field: "isDeactivated",
+      filterable: false
+    },
+      "userTitle",
+      "start",
+      "finish"
+      // {
+      //     field: "OrderDate",
+      //     title: "Order Date",
+      //     format: "{0:MM/dd/yyyy}"
+      // }, {
+      //     field: "ShipName",
+      //     title: "Ship Name"
+      // }, {
+      //     field: "ShipCity",
+      //     title: "Ship City"
+      // }
+    ],
+    dataBound: private_gridOtherPolicyDataBound
+  });
+
+}
+
+function private_gridOtherPolicyDataBound(){
+    $('#btnAddNewPolicy').off().on('click',()=> newOtherPolicy.openNewOtherPolicyWindow());
+}
+
+},{"../common/common":1,"./newOtherPolicy":2}]},{},[3]);

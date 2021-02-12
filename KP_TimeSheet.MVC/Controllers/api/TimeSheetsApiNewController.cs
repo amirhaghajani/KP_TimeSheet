@@ -55,6 +55,10 @@ namespace KP.TimeSheets.MVC
                     }
                 }
 
+                var mustCheckDefaultTimeSheetPolocy = false;
+                var now = DateTime.Now;
+                mustCheckDefaultTimeSheetPolocy = now >= fromDate && now <= toDate;
+
                 IQueryable<Persistance.QueryEntities.EmployeeTimeSheetFromDB> query = null;
 
                 if (isWantingApprove)
@@ -83,11 +87,12 @@ namespace KP.TimeSheets.MVC
                 .Select(gg => new vmGetTimeSheetResualt
                 {
                     date = gg.Key.Value,
-                    isOpen = gg.FirstOrDefault().IsOpen ?? false,
+                    isOpen = gg.FirstOrDefault().IsOpen,
+                    mustHaveHozoor = true,
                     dayTimeString = gg.FirstOrDefault().DayTimeString,
                     date_persian = gg.First().PersianDate,
                     day_persian = days[gg.First().DayOfWeek.Value],
-                    hozoor = gg.First().Hozoor,
+                    hozoor = 360,// gg.First().Hozoor,
                     projects = gg.Where(p => p.Type == "Work" && p.ProjectId.HasValue)
                     .GroupBy(p => p.ProjectId).Select(pp => new vmGetTimeSheetResualt_Project
                     {
@@ -119,6 +124,13 @@ namespace KP.TimeSheets.MVC
                     }).ToList()
 
                 }).ToList();
+
+                if(mustCheckDefaultTimeSheetPolocy && !answer.First(a => a.date.Value.Date == now.Date).isOpen.HasValue){
+                    //default policy must check maybe is deactivated
+                    //if isnot created, must create and today is open beacuase friday is checked in query
+                    //اگر زمانش گذشته باید تمدید بشه که با تاریخ های امروز یکسان بشه
+                    var aa = 1;
+                }
 
                 return Ok(answer);
             }
@@ -541,7 +553,7 @@ namespace KP.TimeSheets.MVC
         }
 
 
-//--------------------------------------------------------------------------------------
+        //--------------------------------------------------------------------------------------
         private void approveDenyHourlyMission(bool isApprove, Domain.User currentUser, TimeSheetManager timeSheetManager, HourlyMissionManager dlm, HourlyMission dailyLeave, string userDescription)
         {
             if (dailyLeave.WorkflowStage.Type == "Final") throw new Exception("هم اکنون تایید نهایی می باشد");

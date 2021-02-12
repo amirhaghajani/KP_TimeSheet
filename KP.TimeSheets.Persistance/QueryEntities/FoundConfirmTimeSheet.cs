@@ -17,6 +17,7 @@ namespace KP.TimeSheets.Persistance.QueryEntities
         public string State { get; set; }
         public bool? IsOpen { get; set; }
         public string DayTimeString { get; set; }
+        public bool? UserMustHasHozoor {get;set;}
     }
 
 }

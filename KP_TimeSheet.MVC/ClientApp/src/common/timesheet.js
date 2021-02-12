@@ -188,7 +188,10 @@ const timeSheet = (function () {
         persianDate: hozoorTodayTime.persianDate,
         persianDay: hozoorTodayTime.persianDay,
         title: hozoorTodayTime.persianDate,
-        value: { isOpen: hozoorTodayTime.isOpen, has_NotSendData: !!nosendTodayTime.minute, hasKarkard: !!mainKarkardTodayTime.minute }
+        isOpen: hozoorTodayTime.isOpen,
+        mustHaveHozoor: hozoorTodayTime.mustHaveHozoor,
+        has_NotSendData: !!nosendTodayTime.minute,
+        hasKarkard: !!mainKarkardTodayTime.minute
       });
     }
   }
@@ -418,7 +421,8 @@ const timeSheet = (function () {
         title: cTime.persianDate,
         value: convertMinutsToTime(dbTime.hozoor),
         minute: dbTime.hozoor,
-        isOpen: dbTime.isOpen
+        isOpen: dbTime.isOpen,
+        mustHaveHozoor: dbTime.mustHaveHozoor
       });
       if (hozoorDetail) hozoorDetail.values.push({
         date: cTime.date,

@@ -83,7 +83,20 @@
                                 <i class="ti-home"></i> <span>خانه</span>
 
                             </a>
-                            <div class="menu-item">
+                            <a style="color:white" class="ras-sidebar-ul" href="@Url.Action("Register","TimeSheets")">
+                                <i title="ثبت برگه زمانی" class="ti-alarm-clock pull-left ras-sidebar-left-logo" 
+                                                                style="font-size:24px ; margin-left:-15px;color:white"></i>
+                                <i class="ti-alarm-clock"></i> <span>ثبت برگه زمانی</span>
+
+                            </a>
+                            <a style="color:white" class="ras-sidebar-ul" href="@Url.Action("Confirmation","TimeSheets")">
+                                <i title="تایید برگه زمانی" class="ti-pencil pull-left ras-sidebar-left-logo" 
+                                                                style="font-size:24px ; margin-left:-15px;color:white"></i>
+                                <i class="ti-pencil"></i> <span>تایید برگه زمانی</span>
+
+                            </a>
+
+                            @* <div class="menu-item">
                                 <a style="color:white" class="ras-sidebar-ul" data-toggle="collapse" data-parent="#accordion" href="#collapse1">
                                     <i title="برگه زمانی" class="ti-alarm-clock pull-left ras-sidebar-left-logo" style="font-size:24px ; margin-left:-15px;color:white"></i>
                                     <i class="ti-alarm-clock"></i>
@@ -113,7 +126,7 @@
                                     </a>
 
                                 </div>
-                            </div>
+                            </div> *@
                             @* <div class="menu-item">
                                 <a style="color:white" class="ras-sidebar-ul" data-toggle="collapse" data-parent="#accordion" href="#collapse3">
                                     <i title="ثبت مرخصی و ماموریت" class="ti-car pull-left ras-sidebar-left-logo" style="font-size:24px ; margin-left:-15px;color:white"></i>
@@ -178,15 +191,23 @@
                                         <span style="display: none;">تقویم سازمانی</span>
                                     </a> *@
                                     <a style="color:white" class="ras-sidebar-li" href="@Url.Action("Departments","Settings")">
-                                        <i title="واحدهای سازمانی" class="ti-face-smile pull-left ras-sidebar-left-logo" style="font-size:18px ; margin-left:-15px;color:#808080"></i>
-                                        <i class="ti-face-smile" style="font-size:16px;"></i>
+                                        <i title="واحدهای سازمانی" class="ti-layout-tab pull-left ras-sidebar-left-logo" style="font-size:18px ; margin-left:-15px;color:#808080"></i>
+                                        <i class="ti-layout-tab" style="font-size:16px;"></i>
                                         <span style="display: none;">واحد های سازمانی</span>
                                     </a>
                                     <a style="color:white" class="ras-sidebar-li" href="@Url.Action("Sync","Home")">
-                                        <i title="همگام سازی" class="ti-upload pull-left ras-sidebar-left-logo" style="font-size:18px ; margin-left:-15px;color:#808080"></i>
-                                        <i class="ti-upload" style="font-size:16px;"></i>
+                                        <i title="همگام سازی" class="ti-loop pull-left ras-sidebar-left-logo" style="font-size:18px ; margin-left:-15px;color:#808080"></i>
+                                        <i class="ti-loop" style="font-size:16px;"></i>
                                         <span style="display: none;">همگام سازی PWA</span>
                                     </a>
+
+                                    <a style="color:white" class="ras-sidebar-li" href="@Url.Action("Index","TimesheetPolicy")">
+                                        <i title="Timesheet Policy" class="ti-dribbble pull-left ras-sidebar-left-logo" 
+                                            style="font-size:18px ; margin-left:-15px;color:#808080"></i>
+                                        <i class="ti-dribbble" style="font-size:16px;"></i>
+                                        <span style="display: none;">Timesheet Policy</span>
+                                    </a>
+
                                 </div>
                             </div>
 

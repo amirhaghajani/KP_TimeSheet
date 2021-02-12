@@ -9,10 +9,6 @@ namespace KP.TimeSheets.Persistance
 {
     internal class TaskRepository : ITaskRepository
     {
-
-      
-
-     
         string _PWAConnString;
         RASContext _RASContext;
        

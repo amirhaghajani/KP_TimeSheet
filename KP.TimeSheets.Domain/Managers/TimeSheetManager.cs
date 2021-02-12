@@ -18,6 +18,19 @@ namespace KP.TimeSheets.Domain
             return _UOW.WorkHourRepository.GetByID(id);
         }
 
+        public bool IsOpen(Guid? currentUser, DateTime date){
+            return true;
+        }
+        public bool MustUserHasHozoor(Guid? currentUser, DateTime date){
+            return true;
+        }
+        public int GetThisDateRegisteredWorkhour(Guid? currentUser, DateTime date){
+            return 0;
+        }
+        public int GetHozoor(Guid? currentUser, DateTime date){
+            return 0;
+        }
+
         public IEnumerable<WorkHour> GetByProjectID(Guid projectId)
         {
             return _UOW.WorkHourRepository.GetByProjectID(projectId);

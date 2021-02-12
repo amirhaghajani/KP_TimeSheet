@@ -51,16 +51,35 @@ namespace KP.TimeSheets.Domain
             return result;
         }
 
-        public List<string> ValidateSendrWorkHour(WorkHour workHour)
+        public List<string> ValidateSendrWorkHour(WorkHour workHour, bool isOpen, bool mustHaveHozoor, int registeredWorkhourMinuteThisDate, int? hozoor)
         {
-
             List<string> result = new List<string>();
+
             if (workHour == null)
                 result.Add("کارکرد خالی میباشد");
-            if (workHour.Minutes <= 0)
-                result.Add("ساعت کارکرد خالی میباشد");
+
             if (workHour.Date == DateTime.MinValue)
                 result.Add("تاریخ کارکرد خالی میباشد");
+
+            if(result.Count>0) return result;
+
+            if (!isOpen)
+            {
+                result.Add($"تایم شیت در این تاریخ {DateUtility.GetPersianDate(workHour.Date)} بسته است. امکان تغییر نمی باشد");
+            }
+            else
+            {
+                if (mustHaveHozoor)
+                {
+                    if (!hozoor.HasValue && hozoor == 0) result.Add($"در این تاریخ {DateUtility.GetPersianDate(workHour.Date)} حضور یافت نشد. امکان ارسال کارکرد نمی باشد");
+                    if (hozoor.HasValue && registeredWorkhourMinuteThisDate > hozoor) result.Add("کارکرد بیش از حضور. امکان ارسال کارکرد نمی باشد");
+                }
+            }
+            if(result.Count>0) return result;
+
+
+            if (workHour.Minutes <= 0)
+                result.Add("ساعت کارکرد خالی میباشد");
             if (workHour.EmployeeID == Guid.Empty)
                 result.Add("کاربر خالی میباشد");
             if (workHour.WorkflowStageID == Guid.Empty)
@@ -69,7 +88,6 @@ namespace KP.TimeSheets.Domain
                 result.Add("وظیفه کارکرد خالی میباشد");
             if (workHour.ProjectId == Guid.Empty)
                 result.Add("پروژه کارکرد خالی میباشد");
-           
 
             return result;
         }

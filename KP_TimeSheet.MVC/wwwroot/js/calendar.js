@@ -626,6 +626,7 @@ const common = (function () {
 	}
 
 	function notify(messege, type) {
+		//types:primary,secondary,success,danger,warning,info,light,dark"
 		$.notify({
 			//icon: 'glyphicon glyphicon-warning-sign',
 			//title: 'Bootstrap notify',

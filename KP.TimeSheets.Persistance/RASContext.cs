@@ -48,6 +48,9 @@ namespace KP.TimeSheets.Persistance
         public virtual DbSet<HourlyMission> HourlyMissions { get; set; }
 
 
+        public virtual DbSet<TimesheetPolicy> TimesheetPolicies{get;set;}
+
+
         public DbSet<EmployeeTimeSheetFromDB> spFoundConfirmTimeSheet { get; set; }
         public System.FormattableString spFoundConfirmTimeSheet_str(Guid approver_userId,Guid? userId, DateTime? startDate,DateTime? endDate, int onlyWantSumOfAllWaitingForApproveTime=0)
         {

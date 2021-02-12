@@ -324,7 +324,7 @@ namespace KP.TimeSheets.MVC
                 Validations validate = new Validations();
                 User currUser = new UserHelper().GetCurrent(this._uow, this.UserName);
                 WorkHour workHour = workHourJson.ToWorkHour();
-                
+
                 workHour.Task = taskManager.GetByID(workHour.TaskID);
                 workHour.TaskID = workHour.Task.ID;
                 workHour.Project = prjManager.GetByID(workHourJson.ProjectID);
@@ -343,28 +343,33 @@ namespace KP.TimeSheets.MVC
             {
                 return this.ReturnError(ex, "خطا در ثبت ساعت کاری");
             }
-            
+
         }
 
         [HttpPost("[action]")]
         public List<string> SendWorkHour(WorkHourJson workHourJson)//JObject jsonObject
         {
             UserManager userManager = new UserManager(this._uow);
-            TimeSheetManager WHM = new TimeSheetManager(this._uow);
+            TimeSheetManager timeSheetManager = new TimeSheetManager(this._uow);
             User currUser = new UserHelper().GetCurrent(this._uow, this.UserName);
             Validations validate = new Validations();
 
+            var isOpen = timeSheetManager.IsOpen(currUser.ID, workHourJson.Date);
+            var mustHaveHozoor = timeSheetManager.MustUserHasHozoor(currUser.ID, workHourJson.Date);
+            var registeredMinutes = timeSheetManager.GetThisDateRegisteredWorkhour(currUser.ID, workHourJson.Date);
+            var hozoor = timeSheetManager.GetHozoor(currUser.ID, workHourJson.Date);
+
             if (!workHourJson.ID.HasValue) workHourJson.ID = Guid.Empty;
 
-            var WorkHour = WHM.GetByID(workHourJson.ID.Value);
+            var WorkHour = timeSheetManager.GetByID(workHourJson.ID.Value);
             List<string> result = new List<string>();
-            result = validate.ValidateRegisterWorkHour(WorkHour);
+            result = validate.ValidateSendrWorkHour(WorkHour, isOpen, mustHaveHozoor, registeredMinutes, hozoor);
 
             if (result.Count() == 0)
             {
                 if (WorkHour.WorkflowStage.IsFirst)
                 {
-                    WHM.SendWorkHour(WorkHour);
+                    timeSheetManager.SendWorkHour(WorkHour);
                     HistoryUtilities.RegisterSendHistory(WorkHour, this._uow, currUser);
                     result.Add("ارسال کارکرد با موفقیت انجام گردید");
                 }
@@ -377,21 +382,28 @@ namespace KP.TimeSheets.MVC
         public List<string> SendWorkHours(WorkHourJson workHourJson)//JObject jsonObject
         {
             UserManager userManager = new UserManager(this._uow);
-            TimeSheetManager WHM = new TimeSheetManager(this._uow);
+            TimeSheetManager timeSheetManager = new TimeSheetManager(this._uow);
             User currUser = new UserHelper().GetCurrent(this._uow, this.UserName);
             Validations validate = new Validations();
-            var WorkHours = WHM.GetBydateAndUserId(workHourJson.Date, currUser.ID);
+            var WorkHours = timeSheetManager.GetBydateAndUserId(workHourJson.Date, currUser.ID);
             List<string> result = new List<string>();
+
+            var isOpen = timeSheetManager.IsOpen(currUser.ID, workHourJson.Date);
+            var mustHaveHozoor = timeSheetManager.MustUserHasHozoor(currUser.ID, workHourJson.Date);
+            var hozoor = timeSheetManager.GetHozoor(currUser.ID, workHourJson.Date);
+            var registeredMinutes = timeSheetManager.GetThisDateRegisteredWorkhour(currUser.ID, workHourJson.Date);
 
             foreach (var wh in WorkHours.ToList())
             {
+                if (!workHourJson.ID.HasValue) workHourJson.ID = Guid.Empty;
+
                 if (wh.WorkflowStage.IsFirst)
                 {
-                    result = validate.ValidateRegisterWorkHour(wh);
+                    result = validate.ValidateSendrWorkHour(wh, isOpen, mustHaveHozoor, registeredMinutes, hozoor);
                     if (result.Count() > 0)
                         return result;
 
-                    WHM.SendWorkHour(wh);
+                    timeSheetManager.SendWorkHour(wh);
                     HistoryUtilities.RegisterSendHistory(wh, this._uow, currUser);
                     result.Add("عملیات ارسال کارکرد ها با موفقیت انجام گردید");
                 }
@@ -415,7 +427,7 @@ namespace KP.TimeSheets.MVC
             User currUser = new UserHelper().GetCurrent(this._uow, this.UserName);
             var answer = WHM.GetPresenceHourByUserIdAndDate(currUser.ID, workHourJson.Date);
 
-            var answer2 = new { date = workHourJson.Date, minutes = answer!=null ? answer.Minutes : 0 };
+            var answer2 = new { date = workHourJson.Date, minutes = answer != null ? answer.Minutes : 0 };
 
             return answer2;
         }
@@ -451,17 +463,17 @@ namespace KP.TimeSheets.MVC
         {
             try
             {
-                if(!this.MainChecks(ver,out string error)) throw new Exception(error);
+                if (!this.MainChecks(ver, out string error)) throw new Exception(error);
                 TimeSheetManager timesheetManager = new Domain.TimeSheetManager(this._uow);
                 User currUser = new UserHelper().GetCurrent(this._uow, this.UserName);
-                if(currUser==null) throw new Exception($"کاربر یافت نشد {this.UserName}");
+                if (currUser == null) throw new Exception($"کاربر یافت نشد {this.UserName}");
                 var presenceour = timesheetManager.GetyesterdayPresencHoursByUserId(currUser.ID);
                 var workours = timesheetManager.GetyesterdayworkHoursByUserId(currUser.ID);
-                return Ok( new HomeEntityAssembler().ToJson(presenceour, workours, User.Identity.Name));
+                return Ok(new HomeEntityAssembler().ToJson(presenceour, workours, User.Identity.Name));
             }
             catch (Exception ex)
             {
-               return this.ReturnError(ex, "خطا در سرویس دریافت اطلاعات دیروز");
+                return this.ReturnError(ex, "خطا در سرویس دریافت اطلاعات دیروز");
             }
         }
 
@@ -474,24 +486,24 @@ namespace KP.TimeSheets.MVC
             {
                 TimeSheetManager timesheetManager = new Domain.TimeSheetManager(this._uow);
                 User currUser = new UserHelper().GetCurrent(this._uow, this.UserName);
-                if(currUser==null) throw new Exception($"کاربر یافت نشد {this.UserName}");
+                if (currUser == null) throw new Exception($"کاربر یافت نشد {this.UserName}");
 
-            var query = this.DBContext.spFoundConfirmTimeSheet.FromSqlInterpolated(this.DBContext.spFoundConfirmTimeSheet_str(
-                    currUser.ID,
-                    null,
-                    null,
-                    null,
-                    1
-                ));
+                var query = this.DBContext.spFoundConfirmTimeSheet.FromSqlInterpolated(this.DBContext.spFoundConfirmTimeSheet_str(
+                        currUser.ID,
+                        null,
+                        null,
+                        null,
+                        1
+                    ));
                 var item = await query.ToListAsync();
 
                 // var presenceour = timesheetManager.GetyesterdayPresencHoursByUserId(currUser.ID);
                 // var workours = timesheetManager.GetyesterdayworkHoursByUserId(currUser.ID);
-                return Ok(new {minutes= item[0].Minutes } );
+                return Ok(new { minutes = item[0].Minutes });
             }
             catch (Exception ex)
             {
-               return this.ReturnError(ex, "خطا در سرویس دریافت اطلاعات دیروز");
+                return this.ReturnError(ex, "خطا در سرویس دریافت اطلاعات دیروز");
             }
         }
 

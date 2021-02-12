@@ -467,12 +467,17 @@ function EditOrganUnit(e) {
 
 function AddNewUserToUnit(e) {
 
+    if(!SelectedUser.id){
+        common.notify("کاربر انتخاب نشده است", "danger");
+        return;
+    }
+
     if (IsExistInList(OrganUnit.users, SelectedUser.id)) {
-        Notify("کاربر در این واحد میباشد", "danger");
+        common.notify("کاربر در این واحد میباشد", "danger");
     } else {
         OrganUnit.users.push(SelectedUser);
         $("#GRDOrganUsers").data("kendoGrid").dataSource.read();
-        Notify("کاربر به واحد مربوطه افزوده شد", "success");
+        common.notify("کاربر به واحد مربوطه افزوده شد", "success");
     }
 
 }

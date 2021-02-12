@@ -267,28 +267,27 @@ const myMainGrid = (function () {
       colDate.title = tsDate.title;
       colDate.headerTemplate = "<h6 style='text-align:center'><b>" + tsDate.persianDate + "</b></h6><h6 style='text-align:center'>" + tsDate.persianDay + "</h6>";
 
-      var inner = tsDate.value;
 
       colDate.headerTemplate += "<div style='text-align:center'>";
 
-      if (!inner.isOpen && !inner.has_NotSendData && !inner.hasKarkard) {
+      if (!tsDate.isOpen && !tsDate.has_NotSendData && !tsDate.hasKarkard) {
         colDate.headerTemplate += "<label title=' ' class='text-warning' ><i class='glyphicon glyphicon-ban-circle'></i> </label>"
       }
 
-      if (inner.isOpen) {
+      if (tsDate.isOpen) {
 
         colDate.headerTemplate += `<button title='ثبت ساعت کارکرد' 
                           class='btn btn-success btn-xs forFound_kwndSaveWHs_OnInit' style='width:10px;height:15px'
                           data-day-index='${i}'>+</button>`;
       }
-      if (inner.hasKarkard) {
+      if (tsDate.hasKarkard) {
 
         colDate.headerTemplate += `<button title='نمایش کارکردهای این روز'   
               class='btn btn-info btn-xs forFound_ShowCurrentDaySendWorkHours' style='width:10px;height:15px;margin-right:5px;' 
               data-day-index='${i}'><i class="glyphicon glyphicon-exclamation-sign"></i></button>`;
       }
 
-      if (inner.has_NotSendData) {
+      if (tsDate.has_NotSendData) {
 
         colDate.headerTemplate += `<button title='ارسال ساعت کارکرد'
               class='btn btn-warning btn-xs forFound_wndSendWorkHour_OnInit' style='width:10px;height:15px;margin-right:5px;'
@@ -324,8 +323,26 @@ const myMainGrid = (function () {
     });
 
     $('.forFound_wndSendWorkHour_OnInit').off().on('click', function () {
-      var semlId = $(this).data("dayIndex");
-      moduleData.sendWorkHour.wndSendWorkHour_OnInit(semlId);
+      var sendId = $(this).data("dayIndex");
+
+      debugger;
+      var timeSheetData = moduleData.data.timeSheetData_get();
+      var thisDayMainInfo = timeSheetData[0].values[sendId];
+      if(thisDayMainInfo.mustHaveHozoor){
+        var hozoor = timeSheetData[1].values[sendId].minute;
+        if(!hozoor){
+          moduleData.common.notify("بدون حضور، امکان ارسال تایم شیت نمی باشد","danger");
+          return;
+        }else {
+          const karkard = timeSheetData[3].values[sendId].minute;
+          if(karkard>hozoor){
+            moduleData.common.notify("کارکرد نمی تواند بیش از حضور باشد","danger");
+            return;
+          }
+        }
+      }
+
+      moduleData.sendWorkHour.wndSendWorkHour_OnInit(sendId);
     });
   }
 
