@@ -1,6 +1,10 @@
 const common = require('../common/common');
 const newOtherPolicy = require('./newOtherPolicy');
 
+const otherPolicyGridId = "timesheetOtherPolicy_Grid";
+let selectedItemPolicy = null;
+let dialog = null;
+
 $("document").ready(function () {
 
   init();
@@ -10,11 +14,26 @@ $("document").ready(function () {
 
 
 function init() {
+  dialog = $("#dialog");
 
   private_intiTabs();
   private_initDefaultGrid();
   private_initOtherGrid();
 
+  private_initConfirmDeleteDialog();
+}
+
+function private_initConfirmDeleteDialog() {
+  dialog.kendoDialog({
+    title: false,
+    closable: false,
+    modal: false,
+    content: "آیا از حذف این قانون اطمینان دارید؟",
+    actions: [
+      { text: 'بله', action: private_deleteSelectedPolicy },
+      { text: 'خیر', primary: true }
+    ],
+  });
 }
 
 function private_intiTabs() {
@@ -31,7 +50,7 @@ function private_intiTabs() {
 
 }
 
-function private_initDefaultGrid(){
+function private_initDefaultGrid() {
 
   $("#timesheetSystemDefualtPolicy_Grid").kendoGrid({
     dataSource: {
@@ -64,10 +83,20 @@ function private_initDefaultGrid(){
     filterable: true,
     sortable: true,
     pageable: false,
-    columns: [{
-      field: "isDeactivated",
-      filterable: false
-    },
+    columns: [
+      {
+        field: "isDeactivated",
+        title: "غیر فعال",
+        template: function (dataItem, b, c) {
+          let answer = "<input type='checkbox' class='forFound_approveCheckbox'" + (dataItem.isDeactivated=="true" ? "checked" : "") + "/>";
+          return answer;
+        },
+        width: 60,
+        filterable: false,
+        sortable: false,
+        editable: () => false
+      },
+      
       "userTitle",
       "start",
       "finish"
@@ -86,12 +115,12 @@ function private_initDefaultGrid(){
   });
 }
 
-function private_initOtherGrid(){
+function private_initOtherGrid() {
 
-  $("#timesheetOtherPolicy_Grid").kendoGrid({
+  $("#" + otherPolicyGridId).kendoGrid({
     dataSource: {
       transport: {
-        read: "/api/timesheetPlicy/" + common.version() + "/GetOtherPoliciesList"
+        read: "/api/timesheetPlicy/" + common.version() + "/GetOtherPoliciesList",
       },
       schema: {
         model: {
@@ -122,11 +151,27 @@ function private_initOtherGrid(){
     pageable: false,
     columns: [{
       field: "isDeactivated",
-      filterable: false
+      title: "غیر فعال",
+      template: function (dataItem, b, c) {
+        let answer = "<input type='checkbox' class='forFound_approveCheckbox'" + (dataItem.isDeactivated=="true" ? "checked" : "") + "/>";
+        return answer;
+      },
+      width: 60,
+      filterable: false,
+      sortable: false,
+      editable: () => false
     },
       "userTitle",
       "start",
-      "finish"
+      "finish",
+    {
+      title: "عملیات",
+      template: function (dataItem, b, c) {
+        let answer = "<button type='button' style='margin-right:2px;' class='btn btn-success btn-sm forFound_EditPolicy'>ویرایش</button>";
+        answer += "<button type='button' style='margin-right:2px;' class='btn btn-danger btn-sm forFound_DeletePolicy'>حذف</button>";
+        return answer;
+      }
+    },
       // {
       //     field: "OrderDate",
       //     title: "Order Date",
@@ -144,6 +189,25 @@ function private_initOtherGrid(){
 
 }
 
-function private_gridOtherPolicyDataBound(){
-    $('#btnAddNewPolicy').off().on('click',()=> newOtherPolicy.openNewOtherPolicyWindow());
+function private_gridOtherPolicyDataBound() {
+  $('#btnAddNewPolicy').off().on('click', () => newOtherPolicy.openNewOtherPolicyWindow());
+
+  $('.forFound_EditPolicy').off().on('click', function () {
+    var grid = $("#" + otherPolicyGridId).data("kendoGrid");
+    var dataItem = grid.dataItem($(this).closest("tr"));
+    newOtherPolicy.editPolicy(dataItem);
+  });
+
+  $('.forFound_DeletePolicy').off().on('click', function () {
+    var grid = $("#" + otherPolicyGridId).data("kendoGrid");
+    var dataItem = grid.dataItem($(this).closest("tr"));
+    selectedItemPolicy = dataItem;
+    dialog.data("kendoDialog").open();
+  });
 }
+
+function private_deleteSelectedPolicy() {
+  newOtherPolicy.deletePolicy(selectedItemPolicy);
+}
+
+
