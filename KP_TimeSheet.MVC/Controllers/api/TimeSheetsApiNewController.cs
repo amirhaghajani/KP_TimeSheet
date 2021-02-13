@@ -59,6 +59,12 @@ namespace KP.TimeSheets.MVC
                 var now = DateTime.Now;
                 mustCheckDefaultTimeSheetPolocy = now >= fromDate && now <= toDate;
 
+                var numberOfReset = -1;
+
+            labelForReset:
+
+                numberOfReset++;
+
                 IQueryable<Persistance.QueryEntities.EmployeeTimeSheetFromDB> query = null;
 
                 if (isWantingApprove)
@@ -150,13 +156,11 @@ namespace KP.TimeSheets.MVC
                     userDefaultPolicy.Validity = DateUtility.GetCompanyEndDate();
                     userDefaultPolicy.CreateDate = DateTime.Now;
 
-                    foreach (var item in answer)
-                    {
-                        item.isOpen = userDefaultPolicy.IsOpen;
-                        item.mustHaveHozoor = userDefaultPolicy.UserMustHasHozoor;
-                    }
+
 
                     this.DBContext.SaveChanges();
+
+                    if(numberOfReset<1) goto labelForReset;
                 }
 
                 return Ok(answer);
