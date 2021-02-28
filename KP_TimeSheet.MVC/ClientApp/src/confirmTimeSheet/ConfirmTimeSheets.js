@@ -27,6 +27,10 @@ $(document).ready(function () {
 
   GetUsers();
 
+  $('#btnRefreshSubUsers').off().on('click', function () {
+    GetUsers();
+  });
+
   $('#btnpreviousPeriodconfirm').off().on('click', function () {
     GetPreviousNextPeriodconfirm('previous');
   });
@@ -112,7 +116,7 @@ function removeAndRecreateTreelisConfirmDiv() {
 }
 function GetUsers() {
 
-  service.getUsersInCurrentUserOrganisation((response) => {
+  service.getSubUsersForApprove((response) => {
     $("#kddlUsers").kendoDropDownList({
       dataTextField: "fullName",
       dataValueField: "id",

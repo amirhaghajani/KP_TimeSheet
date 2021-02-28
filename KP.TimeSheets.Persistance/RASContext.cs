@@ -83,6 +83,12 @@ namespace KP.TimeSheets.Persistance
                         ,@userId={userId},@startDate={startDate},@endDate={endDate}";
         }
 
+        public DbSet<GetSubUsers> spGetSubUsers { get; set; }
+        public System.FormattableString spGetSubUsers_str(Guid approver_userId)
+        {         
+            return $@"exec spGetSubUsers @approver_userId={approver_userId}";
+        }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -91,6 +97,7 @@ namespace KP.TimeSheets.Persistance
             modelBuilder.Entity<EmployeeTimeSheetFromDB>().HasNoKey();
             modelBuilder.Entity<WaitingForApproveWorkHourDetail>().HasNoKey();
             modelBuilder.Entity<WaitingForApproveLeaveMissionDetail>().HasNoKey();
+            modelBuilder.Entity<GetSubUsers>().HasNoKey();
 
             
 

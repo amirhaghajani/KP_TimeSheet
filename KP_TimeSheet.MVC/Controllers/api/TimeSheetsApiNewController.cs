@@ -387,6 +387,36 @@ namespace KP.TimeSheets.MVC
             }
         }
 
+
+        [HttpGet("[action]")]
+        [ProducesResponseType(typeof(List<object>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetWaitingForApproveUsers()
+        {
+            try
+            {
+                var currentUser = new UserHelper().GetCurrent(this._uow, this.UserName);
+
+                var query = this.DBContext.spGetSubUsers.FromSqlInterpolated(
+                        this.DBContext.spGetSubUsers_str(currentUser.ID));
+
+
+                var items = await query.ToListAsync();
+                var answer = items.Select(i => new
+                {
+                    id=i.UserId,
+                    fullName = i.UserTitle +  (i.Minutes.HasValue ? (" "+DateUtility.ConvertToTimeSpan(i.Minutes.Value)): "") 
+                }).ToList();
+
+                return Ok(answer);
+
+            }
+            catch (Exception ex)
+            {
+                return this.ReturnError(ex, "خطا در دریافت لیست کاربران منتظر تایید");
+            }
+        }
+
         [HttpGet("waitingApprove/{wantedUserId}/{startDate}/{endDate}/{projectId?}/{taskId?}")]
         [ProducesResponseType(typeof(List<vmGetWaitingForApproveWorkhourDetail>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

@@ -730,11 +730,11 @@ const service = (function () {
 
 	}
 
-	function getUsersInCurrentUserOrganisation(success_callBack, error_callBack) {
+	function getSubUsersForApprove(success_callBack, error_callBack) {
 
 		$.ajax({
 			type: "Get",
-			url: "/api/TimeSheetsAPI/GetUsersInCurrentUserOrganisation",
+			url: "/api/timesheetsNew/GetWaitingForApproveUsers",
 			contentType: "application/json; charset=utf-8",
 			dataType: "json",
 			success: function (response) {
@@ -1029,7 +1029,7 @@ const service = (function () {
 	return {
 		init: init,
 		getTimeSheetsByUserId: getTimeSheetsByUserId,
-		getUsersInCurrentUserOrganisation: getUsersInCurrentUserOrganisation,
+		getSubUsersForApprove: getSubUsersForApprove,
 		getTimeSheetsByUserIdForFirstTime: getTimeSheetsByUserIdForFirstTime,
 		approveWorkHour: approveWorkHour,
 		denyWorkHour: denyWorkHour,
@@ -1051,7 +1051,7 @@ const service = (function () {
 module.exports = {
 	init: service.init,
 	getTimeSheetsByUserId: service.getTimeSheetsByUserId,
-	getUsersInCurrentUserOrganisation: service.getUsersInCurrentUserOrganisation,
+	getSubUsersForApprove: service.getSubUsersForApprove,
 	getTimeSheetsByUserIdForFirstTime: service.getTimeSheetsByUserIdForFirstTime,
 	approveWorkHour: service.approveWorkHour,
 	denyWorkHour: service.denyWorkHour,

@@ -312,9 +312,10 @@ function GRDOrganisationUnits_OnInit() {
             { field: "managerFullName", title: "مدیر", width: 50 },
 
             {
-                title: "ویرایش ",
-                template: "<button type='button' class='btn btn-warning btn-sm edit forFoundBtnEdit' name='info' title='ویرایش' > ویرایش</button>",
-                headerTemplate: "<label class='text-center'> ویرایش </label>",
+                title: "عملیات",
+                template: "<button type='button' class='btn btn-info btn-sm edit forFoundBtnEdit'  title='ویرایش' name='info'>ویرایش</button>" + 
+                "<button type='button' class='btn btn-warning btn-sm edit forFoundBtnDelete' title='حذف' name='info' style='margin-right:5px' > حذف</button>",
+                headerTemplate: "<label class='text-center'> عملیات </label>",
                 filterable: false,
                 sortable: false,
                 width: 30
@@ -331,6 +332,7 @@ function GRDOrganisationUnits_OnInit() {
 function dataBoundOrganisationUnits() {
     $("#btnAddNewUnit").off().on('click', function () { AddNewUnit(); });
     $(".forFoundBtnEdit").off().on('click', function () { EditOrganUnit(this); });
+    $(".forFoundBtnDelete").off().on('click', function () { DeleteOrganUnit(this); });
 }
 
 function AddNewUnit() {
@@ -463,6 +465,45 @@ function EditOrganUnit(e) {
     FillFormEditUnit();
     WNDEditAndAddOrgan_OnOpen();
 
+}
+
+function DeleteOrganUnit(e){
+    var grid = $("#GRDOrganisationUnits").data("kendoGrid");
+    var dataItem = grid.dataItem($(e).closest("tr"));
+
+    $("#DeleteDialog").kendoDialog({
+        visible: true,
+        width: "450px",
+        title: "حذف تقویم انتخاب شده",
+        closable: true,
+        modal: true,
+        content: "<p>آیا از خذف  <strong>" + dataItem.title + "</strong> اطمینان دارید?<p>",
+        actions: [
+            { text: 'بله', action: function () { DeleteOrganUnit_Implement(dataItem.id) } },
+            { text: 'خیر', action: function () { } },
+        ],
+        close: function () {
+
+        }
+    });
+
+    
+}
+function DeleteOrganUnit_Implement(organId){
+    $.ajax({
+        type: "Delete",
+        url: "/api/SettingApi/"+organId,
+        contentType: "application/json; charset=utf-8",
+        success: function (response) {
+            
+            common.notify("واحد سازمانی حذف گردید", "success");
+            RefreshGRDOrganUnits();
+
+        },
+        error: function (e) {
+
+        }
+    });
 }
 
 function AddNewUserToUnit(e) {

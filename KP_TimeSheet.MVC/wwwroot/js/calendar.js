@@ -201,6 +201,7 @@ function LoadModal(e) {
     var dataItem = grid.dataItem($(e).closest("tr"));
   _SelectedCalendar= dataItem.ID;
   $("#DeleteDialog").kendoDialog({
+            visible: true,
             width: "450px",
             title: "حذف تقویم انتخاب شده",
             closable: true,
