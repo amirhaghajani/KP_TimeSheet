@@ -21,6 +21,8 @@ const dataM = (function () {
 
         moduleData._UserProjects=[];
         moduleData._Users=[];
+
+        moduleData._history_sentWorkHour_data={};
     };
 
     return {
@@ -62,5 +64,6 @@ module.exports = {
     'users_get': function () { return dataM.moduleData._Users; },
     'users_set': function (data) { dataM.moduleData._Users = data; },
 
-    
+    'history_sentWorkHour_data_get':function(){return dataM.moduleData._history_sentWorkHour_data;},
+    'history_sentWorkHour_data_set':function(data){ dataM.moduleData._history_sentWorkHour_data= data;},
 }

@@ -15,27 +15,26 @@
 
     <div class="main-wrapper">
         <div class="header-section navbar navbar-fixed-top">
-            <div class="row">
-                <div class="col-xs-5 ">
-                    <div class="row">
-                        <div class="col-xs-5" style="margin-top:15px">
+            <div>
+                <div class="pull-right">
+                    <div>
+                        <div>
                             <a href="@Url.Action("Index","Home")" title="خانه">
-                                <img src="~/Images/KPE/KPE.png" style="height:50px;display:inline-block;margin-right:30px"
+                                <img src="~/Images/KPE/KPE.png" style="height:50px;display:inline-block;margin-right:30px;margin-top:-20px"
                                      class="image img-responsive" />
                             </a>
                             <a id="onclickOpenName" title="منوی اصلی" class="ras-pointer" style="color:white; background-color:transparent;margin-right :20px;margin-top:15px; font-size:30px;display:inline-block;"><i class="ti-view-list"></i></a>
                         </div>
-                        <div class="col-xs-6">
-                        </div>
+
                     </div>
                 </div>
-                <div class="col-xs-4"></div>
-                <div class="col-xs-2" style="text-align:left;">
-                    <div id="div_ShowAndHideUserMenu11111" style="top:20px;" class="ras-dropdown ras-border-menu">
+
+                <div class="pull-left" style="text-align:left; padding-left:20px" dir="ltr">
+                    <div id="div_ShowAndHideUserMenu11111" style="top:10px;" class="ras-dropdown ras-border-menu">
                         <div style="color:white;" class="form-inline">
-                            <img class="image img-circle img-responsive " style="max-height:30px;left:-50px ;position:absolute" 
+                            <img class="image img-circle " style="max-height:30px;" 
                                     src="~/Images/User.png" />
-                            <div style="margin-top:6px"><b>کاربر: </b><b style="font-size:15px">@ViewBag.CurrentUserTitle</b></div>
+                            <b>کاربر: </b><b style="font-size:15px">@ViewBag.CurrentUserTitle</b>
                         </div>
 
                         <div class="ras-dropdown-content" style="margin-left:5px;">

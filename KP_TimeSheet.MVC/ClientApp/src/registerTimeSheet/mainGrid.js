@@ -100,7 +100,7 @@ const myMainGrid = (function () {
           parentId: "parentId"
         }
       },
-      height: 400,
+      height: moduleData.common.getAvailabelSpace("ktrlTimeSheets"),
       width: 'auto',
       columns: ktrlTSColumns,
       scrollable: true,

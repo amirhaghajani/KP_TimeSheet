@@ -8,14 +8,15 @@ const hisotrSentWorkHour = (function () {
 
 	const moduleData = {};
 
-	function init(common, common_register, hisotory_workHour, data, common_timeSheet, createNewWorkHour) {
-
+	function init(mainGrid, common, common_register, hisotory_workHour, data, common_timeSheet, createNewWorkHour, service) {
+		moduleData.mainGrid = mainGrid;
 		moduleData.data = data;
 		moduleData.common = common;
 		moduleData.common_register = common_register;
 		moduleData.hisotory_workHour = hisotory_workHour;
 		moduleData.common_timeSheet = common_timeSheet;
 		moduleData.createNewWorkHour = createNewWorkHour;
+		moduleData.service = service;
 
 		$('#btnMonitorSent').off().on('click', function () {
 			GetWorkHours_MonitorSentWorkHour();
@@ -33,6 +34,8 @@ const hisotrSentWorkHour = (function () {
 	}
 
 	function GetWorkHours_MonitorSentWorkHour() {
+		moduleData.data.history_sentWorkHour_data_set({type: 'history'});
+
 		$('#headerText_MonitorSendWorkHours').text('نمایش کارکردهای ارسال شده');
 		var prmData = JSON.stringify(moduleData.data.timeSheetData_get()[0].values);
 
@@ -77,6 +80,9 @@ const hisotrSentWorkHour = (function () {
 						$('.forFound_EditWorkhoure').off().on('click', function () {
 							editWorkout(this);
 						});
+						$('.forFound_DeleteWorkhoure').off().on('click', function () {
+							deleteWorkHourEditGrid(this);
+						});
 					}
 				},
 				pageSize: 10
@@ -113,13 +119,14 @@ const hisotrSentWorkHour = (function () {
 					let answer = "<button type='button' class='btn btn-info btn-sm forFound_Init_GRDHistory' title='نمایش تاریخچه' name='info'>تاریخچه</button>";
 					if(dataItem.workFlowStageType=='Resource'){
 						answer+="<button type='button' style='margin-right:2px;' class='btn btn-success btn-sm forFound_EditWorkhoure'>ویرایش</button>"
+						answer+="<button type='button' style='margin-right:5px;' class='btn btn-danger btn-sm forFound_DeleteWorkhoure'>حذف</button>"
 					}
 					return answer;
 				},
 				headerTemplate: "<label class='text-center'> نمایش تاریخچه </label>",
 				filterable: false,
 				sortable: false,
-				width: 140
+				width: 200
 			}
 			]
 
@@ -131,8 +138,23 @@ const hisotrSentWorkHour = (function () {
 	function editWorkout(e){
 		var grid = $("#GrdMonitorSentWorkHour").data("kendoGrid");
 		var dataItem = grid.dataItem($(e).closest("tr"));
+
 		moduleData.createNewWorkHour.kwndSaveWHs_OnInit_ForEdit(moduleData.data.selDate_get(), 
 			dataItem.projectID, dataItem.taskID, dataItem.time, dataItem.id);
+	}
+
+	function deleteWorkHourEditGrid(e) {
+
+		var grid = $("#GrdMonitorSentWorkHour").data("kendoGrid");
+		var dataItem = grid.dataItem($(e).closest("tr"));
+
+
+		moduleData.common.loaderShow();
+
+		moduleData.service.deleteWorkHour(dataItem.id,()=>{
+				moduleData.mainGrid.RefreshTimeSheet();
+				moduleData.common.loaderHide();
+		});
 	}
 
 	function ShowDataOnGrid(data, headerTitle) {
@@ -143,6 +165,13 @@ const hisotrSentWorkHour = (function () {
 	}
 
 	function Refresh_GrdMonitorSentWorkHour() {
+
+		var data = moduleData.data.history_sentWorkHour_data_get();
+		if(data.type !='history' && data.payload){
+			ShowCurrentDaySendWorkHours(data.payload.dayTime , data.payload.headerTitle, true);
+			return;
+		}
+
 		var prmData = JSON.stringify(moduleData.data.timeSheetData_get()[0].values);
 		$.ajax({
 			type: "Post",
@@ -167,13 +196,13 @@ const hisotrSentWorkHour = (function () {
 		});
 	}
 
-	function ShowCurrentDaySendWorkHours(dayTime, headerTitle) {
+	function ShowCurrentDaySendWorkHours(dayTime, headerTitle, dontInit) {
+
+		moduleData.data.history_sentWorkHour_data_set({type: 'currentDay', payload:{dayTime: dayTime , headerTitle: headerTitle}});
 
 		if(headerTitle) $('#headerText_MonitorSendWorkHours').text(headerTitle);
 
 		moduleData.common.loaderShow();
-		moduleData.hisotory_workHour.Create_GrdHistory();
-
 		moduleData.data.selDate_set(dayTime);
 
 		var workHourJson = {
@@ -197,7 +226,7 @@ const hisotrSentWorkHour = (function () {
 				}
 				
 				_MonitorSentWorkHours = response;
-				Init_GrdMonitorSentWorkHour();
+				if(!dontInit) Init_GrdMonitorSentWorkHour();
 				$("#GrdMonitorSentWorkHour").data("kendoGrid").dataSource.read();
 				Open_WndMonitorSentWorkHours();
 

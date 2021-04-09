@@ -93,6 +93,8 @@ function RefreshTimeSheetConfirm() {
 
 function private_Refresh(response) {
 
+  $("#ExportNavConfirm").show();
+
   var treeList = $("#ktrlTimeSheetsConfirm").data("kendoTreeList");
   expandedRows = common_timeSheet.foundExpandedTreeListTitle(treeList);
 
@@ -103,7 +105,7 @@ function private_Refresh(response) {
   InitPeriodlyByProjectsGridConfirm();
   $("#DownSideTabsConfirm").show();
   $("#PeriodPanle").show();
-  $("#ExportNavConfirm").show();
+  
   common.loaderHide();
 }
 
@@ -176,7 +178,7 @@ function Init_TimeSheetTreeListConfirm(data) {
     expanded: true,
     selectable: true,
     scrollable: true,
-    height: 400,
+    height: common.getAvailabelSpace("ktrlTimeSheetsConfirm"),
     columns: ktrlTSColumnsConfirm,
     dataBound: ktrlTimeSheetsConfirm_dataBound
   });

@@ -212,7 +212,7 @@ textarea {
   background-image: url('../Images/SideBar-Back.jpg');
   background-size: 100% 100%;
   background-repeat: no-repeat;
-  height: calc(100vh - 110px);
+  height: calc(100vh - 70px);
 }
 
 .header-section {
@@ -549,7 +549,7 @@ select[multiple]{
 }
 
 .header-section {
-  height: 100px;
+  height: 60px;
   background-image: url('../../Images/HeaderBar.jpg');
   background-size: 100% 100%;
   background-repeat: no-repeat;
@@ -750,8 +750,8 @@ body {
 }
 
 .content-body {
-  margin-top:110px;
-  padding: 30px;
+  margin-top:70px;
+  padding: 0 30px 10px 10px;
   -webkit-transition: all 0.3s ease 0s;
   -o-transition: all 0.3s ease 0s;
   transition: all 0.3s ease 0s;

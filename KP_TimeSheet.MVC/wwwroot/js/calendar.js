@@ -611,7 +611,7 @@ function adjustSize() {
 },{"../common/common":2}],2:[function(require,module,exports){
 const common = (function () {
 
-	function version(){return "0.0.0.7";}
+	function version(){return "0.0.0.8";}
 
 	function doExport(selector, params) {
 		var options = {
@@ -743,6 +743,11 @@ const common = (function () {
 		  $(`#${id}`).data("kendoWindow").center().open();
 	}
 
+	function getAvailabelSpace(id){
+		console.log($( window ).height() - $("#"+id).position().top - 10);
+		return $( window ).height() - $("#"+id).position().top - 10;
+	}
+
 	return {
 		loaderShow: loaderShow,
 		loaderHide: loaderHide,
@@ -756,6 +761,8 @@ const common = (function () {
 
 		addNoScrollToBody: addNoScrollToBody,
 		removeNoScrollToBody: removeNoScrollToBody,
+
+		getAvailabelSpace: getAvailabelSpace,
 
 		version: version
 
@@ -777,6 +784,8 @@ module.exports = {
 
 	addNoScrollToBody: common.addNoScrollToBody,
 	removeNoScrollToBody: common.removeNoScrollToBody,
+
+	getAvailabelSpace: common.getAvailabelSpace,
 
 	version:common.version
 };

@@ -1,7 +1,7 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 const common = (function () {
 
-	function version(){return "0.0.0.7";}
+	function version(){return "0.0.0.8";}
 
 	function doExport(selector, params) {
 		var options = {
@@ -133,6 +133,11 @@ const common = (function () {
 		  $(`#${id}`).data("kendoWindow").center().open();
 	}
 
+	function getAvailabelSpace(id){
+		console.log($( window ).height() - $("#"+id).position().top - 10);
+		return $( window ).height() - $("#"+id).position().top - 10;
+	}
+
 	return {
 		loaderShow: loaderShow,
 		loaderHide: loaderHide,
@@ -146,6 +151,8 @@ const common = (function () {
 
 		addNoScrollToBody: addNoScrollToBody,
 		removeNoScrollToBody: removeNoScrollToBody,
+
+		getAvailabelSpace: getAvailabelSpace,
 
 		version: version
 
@@ -167,6 +174,8 @@ module.exports = {
 
 	addNoScrollToBody: common.addNoScrollToBody,
 	removeNoScrollToBody: common.removeNoScrollToBody,
+
+	getAvailabelSpace: common.getAvailabelSpace,
 
 	version:common.version
 };
@@ -334,7 +343,7 @@ const timeSheet = (function () {
 
 
     const otherId = data.length;
-    const karkard_other = new timeSheet_Row(otherId, null, "سایر", "Other", "10101010-d37d-1001-0000-e1f4a753bee5", []);
+    const karkard_other = new timeSheet_Row(otherId, null, "مرخصی/ماموریت", "Other", "10101010-d37d-1001-0000-e1f4a753bee5", []);
     data.push(karkard_other);
 
     const projects_other = [];
@@ -409,7 +418,7 @@ const timeSheet = (function () {
 
     //----------------------------------------------------------------------------
     const otherId = data.length;
-    const karkard_other = new timeSheet_Row(otherId, null, "سایر", "-", "eb96abcb-d37d-1005-0000-e1f4a753bee5", []);
+    const karkard_other = new timeSheet_Row(otherId, null, "مرخصی/ماموریت", "-", "eb96abcb-d37d-1005-0000-e1f4a753bee5", []);
     data.push(karkard_other);
 
     const projects_ohter = [];
@@ -794,6 +803,8 @@ function RefreshTimeSheetConfirm() {
 
 function private_Refresh(response) {
 
+  $("#ExportNavConfirm").show();
+
   var treeList = $("#ktrlTimeSheetsConfirm").data("kendoTreeList");
   expandedRows = common_timeSheet.foundExpandedTreeListTitle(treeList);
 
@@ -804,7 +815,7 @@ function private_Refresh(response) {
   InitPeriodlyByProjectsGridConfirm();
   $("#DownSideTabsConfirm").show();
   $("#PeriodPanle").show();
-  $("#ExportNavConfirm").show();
+  
   common.loaderHide();
 }
 
@@ -877,7 +888,7 @@ function Init_TimeSheetTreeListConfirm(data) {
     expanded: true,
     selectable: true,
     scrollable: true,
-    height: 400,
+    height: common.getAvailabelSpace("ktrlTimeSheetsConfirm"),
     columns: ktrlTSColumnsConfirm,
     dataBound: ktrlTimeSheetsConfirm_dataBound
   });
@@ -1695,7 +1706,7 @@ const approveWindow = (function () {
 		
 		$.ajax({
 			type: "Get",
-			url: `/api/timesheetsNew/GetHistoryWorkHour/${dataItem.workHourId ? dataItem.workHourId : workHourId.id}`,
+			url: `/api/timesheetsNew/GetHistoryWorkHour/${dataItem.workHourId ? dataItem.workHourId : dataItem.id}`,
 			contentType: "application/json; charset=utf-8",
 			dataType: "json",
 			success: function (response) {
@@ -2261,7 +2272,7 @@ const myMainGrid = (function () {
           parentId: "parentId"
         }
       },
-      height: 400,
+      height: moduleData.common.getAvailabelSpace("ktrlTimeSheets"),
       width: 'auto',
       columns: ktrlTSColumns,
       scrollable: true,

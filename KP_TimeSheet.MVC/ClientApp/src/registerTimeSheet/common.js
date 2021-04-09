@@ -6,6 +6,8 @@ function removeAndRecreateTreelisDiv() {
     $("#KTLContainer").append("<div id='ktrlTimeSheets'></div>");
 }
 
+
+
 module.exports={
     'removeAndRecreateTreelisDiv':removeAndRecreateTreelisDiv
 }

@@ -28,30 +28,36 @@
 
 
 <nav class="navbar navbar-default text-center" style="margin-top:5px;justify-content:center;align-content:center">
-    <div class="col-md-8" style="margin-top:5px;">
-        <nav class="form-inline">
-            <button id="btnEditWorkHour" class="btn btn-warning " style="margin-right:5px;" title="ویرایش ساعات کاری وارد شده">ویرایش دوره جاری <i class="glyphicon glyphicon-edit"></i></button>
-            <button id="btnMonitorSent" class="btn btn-success " style="margin-right:5px;" title="مشاهده ساعات کاری ارسال شده">ارسال شده دوره جاری <i style="margin-right:10px" class="fa fa-tv"></i></button>
-        </nav>
-    </div>
-    <div class="pull-left" style="margin-top:5px;">
-        <nav class="form-inline">
+    <div  style="margin-top:5px;">
 
-            <div class="dropdown">
-                <button class="btn btn-info inline dropbtn"><i class="glyphicon glyphicon-menu-hamburger"></i></button>
-                <div class="dropdown-content">
-                    <a href="#" id="btnNewHourlyMission"><i style="margin-left: 6px;font-size: 16px;" class="glyphicon glyphicon-plane"></i>ماموریت ساعتی</a>
-                    <a href="#" id="btnNewHourlyLeave"><i style="margin-left: 6px;font-size: 16px;" class="glyphicon glyphicon-time"></i>مرخصی ساعتی</a>
-                    <a href="#" id="btnNewDailyLeave"><i style="margin-left: 6px;font-size: 16px;" class="glyphicon glyphicon-inbox"></i>مرخصی روزانه</a>
+        <div class="pull-right">
+            <nav class="form-inline">
+                <button id="btnEditWorkHour" class="btn btn-warning " style="margin-right:5px;" title="ویرایش ساعات کاری وارد شده">ویرایش دوره جاری <i class="glyphicon glyphicon-edit"></i></button>
+                <button id="btnMonitorSent" class="btn btn-success " style="margin-right:5px;" title="مشاهده ساعات کاری ارسال شده">ارسال شده دوره جاری <i style="margin-right:10px" class="fa fa-tv"></i></button>
+            </nav>
+        </div>
+        
+
+        <div class="pull-left" style="padding-left: 5px;">
+            <nav class="form-inline">
+
+                <div class="dropdown">
+                    <button class="btn btn-info inline dropbtn"><i class="glyphicon glyphicon-menu-hamburger"></i></button>
+                    <div class="dropdown-content">
+                        <a href="#" id="btnNewHourlyMission"><i style="margin-left: 6px;font-size: 16px;" class="glyphicon glyphicon-plane"></i>ماموریت ساعتی</a>
+                        <a href="#" id="btnNewHourlyLeave"><i style="margin-left: 6px;font-size: 16px;" class="glyphicon glyphicon-time"></i>مرخصی ساعتی</a>
+                        <a href="#" id="btnNewDailyLeave"><i style="margin-left: 6px;font-size: 16px;" class="glyphicon glyphicon-inbox"></i>مرخصی روزانه</a>
+                    </div>
                 </div>
-            </div>
-                   
-            <button id="btnpreviousPeriod" class="btn btn-info inline" style="margin-left:5px" title="دوره قبلی"><i class="glyphicon glyphicon-forward"></i></button>
-            <button id="btnSelectPeriod" class="btn btn-primary inline" title="اتخاب دوره" style="margin-left:5px" > انتخاب دوره</button>
-            <button id="btnNextPeriod" class="btn btn-info inline" style="margin-right:5px" title="دوره بعدی"> <i class="glyphicon glyphicon-backward"></i></button>
-      
-        </nav>
+                    
+                <button id="btnpreviousPeriod" class="btn btn-info inline" style="margin-left:5px" title="دوره قبلی"><i class="glyphicon glyphicon-forward"></i></button>
+                <button id="btnSelectPeriod" class="btn btn-primary inline" title="اتخاب دوره" style="margin-left:5px" > انتخاب دوره</button>
+                <button id="btnNextPeriod" class="btn btn-info inline" style="margin-right:5px" title="دوره بعدی"> <i class="glyphicon glyphicon-backward"></i></button>
+        
+            </nav>
+        </div>
     </div>
+    
 </nav>
 
 <div id="divMainContent" class="container-fluid" style="padding-top:4px;margin-top:-5px">
@@ -100,7 +106,7 @@
         </div>
         <div id="PanelMonitorWorkHour">
             <div id="GrdMonitorSentWorkHour" style="margin-top:10px"></div>
-            <button class="btn btn-danger" id="GrdMonitorSentWorkHour_Hide" style="margin-top:5px;">انصراف</button>
+            <button class="btn btn-danger" id="GrdMonitorSentWorkHour_Hide" style="margin-top:5px;">بستن</button>
         </div>
         <div id="PanelHistory" sytle="height:450px;">
             <div id="WorkHourHistory" style="margin-top:10px"></div>

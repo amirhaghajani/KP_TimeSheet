@@ -160,7 +160,7 @@ const timeSheet = (function () {
 
 
     const otherId = data.length;
-    const karkard_other = new timeSheet_Row(otherId, null, "سایر", "Other", "10101010-d37d-1001-0000-e1f4a753bee5", []);
+    const karkard_other = new timeSheet_Row(otherId, null, "مرخصی/ماموریت", "Other", "10101010-d37d-1001-0000-e1f4a753bee5", []);
     data.push(karkard_other);
 
     const projects_other = [];
@@ -235,7 +235,7 @@ const timeSheet = (function () {
 
     //----------------------------------------------------------------------------
     const otherId = data.length;
-    const karkard_other = new timeSheet_Row(otherId, null, "سایر", "-", "eb96abcb-d37d-1005-0000-e1f4a753bee5", []);
+    const karkard_other = new timeSheet_Row(otherId, null, "مرخصی/ماموریت", "-", "eb96abcb-d37d-1005-0000-e1f4a753bee5", []);
     data.push(karkard_other);
 
     const projects_ohter = [];

@@ -7,13 +7,14 @@ const editWorkHour = (function () {
 
 	const moduleData = {};
 
-	function init(mainGrid, common, common_register, data, common_timeSheet, service) {
+	function init(mainGrid, common, common_register, data, common_timeSheet, service, createNewWorkHour) {
 		moduleData.mainGrid = mainGrid;
 		moduleData.common = common;
 		moduleData.common_register = common_register;
 		moduleData.data = data;
 		moduleData.common_timeSheet = common_timeSheet;
 		moduleData.service = service;
+		moduleData.createNewWorkHour = createNewWorkHour;
 
 		$('#btnEditWorkHour').off().on('click', function () {
 			WndEditWorkHours_OnInit();
@@ -35,7 +36,7 @@ const editWorkHour = (function () {
 		$("#WndEditWorkHours").data("kendoWindow").close()
 	}
 
-	function GetWorkHours_GrdEditWorkHour() {
+	function GetWorkHours_GrdEditWorkHour(dontInit) {
 
 		var prmData = JSON.stringify(moduleData.data.timeSheetData_get()[0].values);
 
@@ -51,7 +52,13 @@ const editWorkHour = (function () {
 					item.time = moduleData.common_timeSheet.convertMinutsToTime(item.minutes);
 				}
 				moduleData.data.workHours_set(response);
-				Init_GrdEditWorkHour();
+
+				if(!dontInit){
+					Init_GrdEditWorkHour();
+				}else{
+					var g = $("#GrdEditWorkHour").data("kendoGrid");
+					if (g) g.dataSource.read();
+				}
 			},
 			error: function (e) {
 
@@ -65,7 +72,8 @@ const editWorkHour = (function () {
 			dataSource: {
 				transport: {
 					read: function (e) {
-						e.success(moduleData.data.workHours_get())
+						var data  = moduleData.data.workHours_get();
+						e.success(moduleData.data.workHours_get());
 					}
 				},
 				pageSize: 10
@@ -94,11 +102,12 @@ const editWorkHour = (function () {
 
 			{
 				title: "حذف ",
-				template: "<button  type='button' class='btn btn-danger btn-sm forFound_DeleteWorkHourEditGrid' name='info' title='حذف' > حذف</button>",
+				template: "<button  type='button' class='btn btn-success btn-sm forFound_EditWorkHourEditGrid' title='حذف' name='edit' >ویرایش</button> "+
+						"<button style='margin-right: 2px;'  type='button' class='btn btn-danger btn-sm forFound_DeleteWorkHourEditGrid' title='حذف' name='delete' >حذف</button>",
 				headerTemplate: "<label class='text-center'> حذف </label>",
 				filterable: false,
 				sortable: false,
-				width: 100
+				width: 140
 			},
 			],
 			dataBound: GrdEditWorkHour_DataBound
@@ -106,9 +115,16 @@ const editWorkHour = (function () {
 		});
 	}
 
+	
+
+
 	function GrdEditWorkHour_DataBound(e) {
 		$('.forFound_DeleteWorkHourEditGrid').off().on('click', function () {
 			DeleteWorkHourEditGrid(this);
+		});
+
+		$('.forFound_EditWorkHourEditGrid').off().on('click', function () {
+			editWorkout(this);
 		});
 	}
 
@@ -121,31 +137,35 @@ const editWorkHour = (function () {
 		moduleData.common.loaderShow();
 
 		moduleData.service.deleteWorkHour(dataItem.id,()=>{
-			Refresh_GrdEditWorkHour();
-
 				moduleData.mainGrid.RefreshTimeSheet();
 				moduleData.common.loaderHide();
 		});
+	}
 
-		
+	function editWorkout(e){
+		var grid = $("#GrdEditWorkHour").data("kendoGrid");
+		var dataItem = grid.dataItem($(e).closest("tr"));
+
+		var dayTime;
+
+		var timeSheetData = moduleData.data.timeSheetData_get();
+		for(var key in timeSheetData[0].values){
+			var time = timeSheetData[0].values[key];
+			if(time.persianDate == dataItem.persianDate){
+					dayTime = time;
+					break;
+			}
+		}
+
+		debugger;
+
+		moduleData.createNewWorkHour.kwndSaveWHs_OnInit_ForEdit(
+			dayTime, 
+			dataItem.projectID, dataItem.taskID, dataItem.time, dataItem.id);
 	}
 
 	function Refresh_GrdEditWorkHour() {
-		var prmData = JSON.stringify(moduleData.data.timeSheetData_get()[0].values);
-		$.ajax({
-			type: "Post",
-			url: "/api/TimeSheetsAPI/GetRegistereCurrentPerioddWorkHours",
-			contentType: "application/json; charset=utf-8",
-			dataType: "json",
-			data: prmData,
-			success: function (response) {
-				moduleData.data.workHours_set(response);
-				var g = $("#GrdEditWorkHour").data("kendoGrid");
-				if (g) g.dataSource.read();
-			},
-			error: function (e) {
-			}
-		});
+		GetWorkHours_GrdEditWorkHour(true);
 	}
 
 	return {

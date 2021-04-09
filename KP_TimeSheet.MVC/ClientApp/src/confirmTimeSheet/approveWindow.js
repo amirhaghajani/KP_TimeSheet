@@ -430,7 +430,7 @@ const approveWindow = (function () {
 		
 		$.ajax({
 			type: "Get",
-			url: `/api/timesheetsNew/GetHistoryWorkHour/${dataItem.workHourId ? dataItem.workHourId : workHourId.id}`,
+			url: `/api/timesheetsNew/GetHistoryWorkHour/${dataItem.workHourId ? dataItem.workHourId : dataItem.id}`,
 			contentType: "application/json; charset=utf-8",
 			dataType: "json",
 			success: function (response) {

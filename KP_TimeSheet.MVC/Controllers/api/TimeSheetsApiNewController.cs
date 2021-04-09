@@ -57,7 +57,7 @@ namespace KP.TimeSheets.MVC
 
                 var mustCheckDefaultTimeSheetPolocy = false;
                 var now = DateTime.Now;
-                mustCheckDefaultTimeSheetPolocy = now >= fromDate && now <= toDate;
+                mustCheckDefaultTimeSheetPolocy = now.Date >= fromDate.Value.Date && now.Date <= toDate.Value.Date; //سعی شده پالیسی فقط دفعه اول چک شود و وقتی عقب جلو می رویم چک نشود چون همان است
 
                 var numberOfReset = -1;
 
@@ -301,13 +301,24 @@ namespace KP.TimeSheets.MVC
 
                 if (dailyLeave.ID == Guid.Empty)
                 {
-
                     dlm.Add(dailyLeave);
                 }
                 else
                 {
                     dlm.Edit(dailyLeave);
                 }
+
+                var data = new ApproveAndDenyJson()
+                    {
+                        id = dailyLeave.ID.ToString(),
+                        date = DateTime.Now,
+                        description = "",
+                        workflowStageID = dailyLeave.WorkflowStageID
+                        
+                    };
+
+
+                    HistoryUtilities.RegisterApproveHistory(data, this._uow, currentUser);
 
                 return Ok(true);
 
@@ -344,6 +355,18 @@ namespace KP.TimeSheets.MVC
                     hm.Edit(hourlyLeave);
                 }
 
+                var data = new ApproveAndDenyJson()
+                    {
+                        id = hourlyLeave.ID.ToString(),
+                        date = DateTime.Now,
+                        description = "",
+                        workflowStageID = hourlyLeave.WorkflowStageID
+                        
+                    };
+
+
+                    HistoryUtilities.RegisterApproveHistory(data, this._uow, currentUser);
+
                 return Ok(true);
 
             }
@@ -377,6 +400,18 @@ namespace KP.TimeSheets.MVC
                 {
                     hm.Edit(hourlyMission);
                 }
+
+                var data = new ApproveAndDenyJson()
+                    {
+                        id = hourlyMission.ID.ToString(),
+                        date = DateTime.Now,
+                        description = "",
+                        workflowStageID = hourlyMission.WorkflowStageID
+                        
+                    };
+
+
+                    HistoryUtilities.RegisterApproveHistory(data, this._uow, currentUser);
 
                 return Ok(true);
 

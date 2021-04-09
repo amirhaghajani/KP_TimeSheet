@@ -1,7 +1,7 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 const common = (function () {
 
-	function version(){return "0.0.0.7";}
+	function version(){return "0.0.0.8";}
 
 	function doExport(selector, params) {
 		var options = {
@@ -133,6 +133,11 @@ const common = (function () {
 		  $(`#${id}`).data("kendoWindow").center().open();
 	}
 
+	function getAvailabelSpace(id){
+		console.log($( window ).height() - $("#"+id).position().top - 10);
+		return $( window ).height() - $("#"+id).position().top - 10;
+	}
+
 	return {
 		loaderShow: loaderShow,
 		loaderHide: loaderHide,
@@ -146,6 +151,8 @@ const common = (function () {
 
 		addNoScrollToBody: addNoScrollToBody,
 		removeNoScrollToBody: removeNoScrollToBody,
+
+		getAvailabelSpace: getAvailabelSpace,
 
 		version: version
 
@@ -167,6 +174,8 @@ module.exports = {
 
 	addNoScrollToBody: common.addNoScrollToBody,
 	removeNoScrollToBody: common.removeNoScrollToBody,
+
+	getAvailabelSpace: common.getAvailabelSpace,
 
 	version:common.version
 };
@@ -334,7 +343,7 @@ const timeSheet = (function () {
 
 
     const otherId = data.length;
-    const karkard_other = new timeSheet_Row(otherId, null, "سایر", "Other", "10101010-d37d-1001-0000-e1f4a753bee5", []);
+    const karkard_other = new timeSheet_Row(otherId, null, "مرخصی/ماموریت", "Other", "10101010-d37d-1001-0000-e1f4a753bee5", []);
     data.push(karkard_other);
 
     const projects_other = [];
@@ -409,7 +418,7 @@ const timeSheet = (function () {
 
     //----------------------------------------------------------------------------
     const otherId = data.length;
-    const karkard_other = new timeSheet_Row(otherId, null, "سایر", "-", "eb96abcb-d37d-1005-0000-e1f4a753bee5", []);
+    const karkard_other = new timeSheet_Row(otherId, null, "مرخصی/ماموریت", "-", "eb96abcb-d37d-1005-0000-e1f4a753bee5", []);
     data.push(karkard_other);
 
     const projects_ohter = [];
@@ -1113,8 +1122,8 @@ $(document).ready(function () {
         common.doExport('#ktrlTimeSheets', { type: 'doc' });
     });
 
-    editWindow.init(mainGrid, common, common_register, data, common_timeSheet, service);
-    history_sentWorkHour.init(common, common_register, history_workHour, data, common_timeSheet, createNewWorkHour);
+    editWindow.init(mainGrid, common, common_register, data, common_timeSheet, service, createNewWorkHour);
+    history_sentWorkHour.init(mainGrid, common, common_register, history_workHour, data, common_timeSheet, createNewWorkHour, service);
 
     mainGrid.init(common, common_register, common_timeSheet, createNewWorkHour, history_sentWorkHour, sendWorkHour, data,
         service, editWindow, history_sentWorkHour, bottomPage_priodlyGrid, bottomPage_monthlyGrid);
@@ -1376,6 +1385,8 @@ function removeAndRecreateTreelisDiv() {
     $("#ktrlTimeSheets").remove();
     $("#KTLContainer").append("<div id='ktrlTimeSheets'></div>");
 }
+
+
 
 module.exports={
     'removeAndRecreateTreelisDiv':removeAndRecreateTreelisDiv
@@ -1681,6 +1692,8 @@ const dataM = (function () {
 
         moduleData._UserProjects=[];
         moduleData._Users=[];
+
+        moduleData._history_sentWorkHour_data={};
     };
 
     return {
@@ -1722,7 +1735,8 @@ module.exports = {
     'users_get': function () { return dataM.moduleData._Users; },
     'users_set': function (data) { dataM.moduleData._Users = data; },
 
-    
+    'history_sentWorkHour_data_get':function(){return dataM.moduleData._history_sentWorkHour_data;},
+    'history_sentWorkHour_data_set':function(data){ dataM.moduleData._history_sentWorkHour_data= data;},
 }
 },{}],10:[function(require,module,exports){
 // const data = require('./data');
@@ -1734,13 +1748,14 @@ const editWorkHour = (function () {
 
 	const moduleData = {};
 
-	function init(mainGrid, common, common_register, data, common_timeSheet, service) {
+	function init(mainGrid, common, common_register, data, common_timeSheet, service, createNewWorkHour) {
 		moduleData.mainGrid = mainGrid;
 		moduleData.common = common;
 		moduleData.common_register = common_register;
 		moduleData.data = data;
 		moduleData.common_timeSheet = common_timeSheet;
 		moduleData.service = service;
+		moduleData.createNewWorkHour = createNewWorkHour;
 
 		$('#btnEditWorkHour').off().on('click', function () {
 			WndEditWorkHours_OnInit();
@@ -1762,7 +1777,7 @@ const editWorkHour = (function () {
 		$("#WndEditWorkHours").data("kendoWindow").close()
 	}
 
-	function GetWorkHours_GrdEditWorkHour() {
+	function GetWorkHours_GrdEditWorkHour(dontInit) {
 
 		var prmData = JSON.stringify(moduleData.data.timeSheetData_get()[0].values);
 
@@ -1778,7 +1793,13 @@ const editWorkHour = (function () {
 					item.time = moduleData.common_timeSheet.convertMinutsToTime(item.minutes);
 				}
 				moduleData.data.workHours_set(response);
-				Init_GrdEditWorkHour();
+
+				if(!dontInit){
+					Init_GrdEditWorkHour();
+				}else{
+					var g = $("#GrdEditWorkHour").data("kendoGrid");
+					if (g) g.dataSource.read();
+				}
 			},
 			error: function (e) {
 
@@ -1792,7 +1813,8 @@ const editWorkHour = (function () {
 			dataSource: {
 				transport: {
 					read: function (e) {
-						e.success(moduleData.data.workHours_get())
+						var data  = moduleData.data.workHours_get();
+						e.success(moduleData.data.workHours_get());
 					}
 				},
 				pageSize: 10
@@ -1821,11 +1843,12 @@ const editWorkHour = (function () {
 
 			{
 				title: "حذف ",
-				template: "<button  type='button' class='btn btn-danger btn-sm forFound_DeleteWorkHourEditGrid' name='info' title='حذف' > حذف</button>",
+				template: "<button  type='button' class='btn btn-success btn-sm forFound_EditWorkHourEditGrid' title='حذف' name='edit' >ویرایش</button> "+
+						"<button style='margin-right: 2px;'  type='button' class='btn btn-danger btn-sm forFound_DeleteWorkHourEditGrid' title='حذف' name='delete' >حذف</button>",
 				headerTemplate: "<label class='text-center'> حذف </label>",
 				filterable: false,
 				sortable: false,
-				width: 100
+				width: 140
 			},
 			],
 			dataBound: GrdEditWorkHour_DataBound
@@ -1833,9 +1856,16 @@ const editWorkHour = (function () {
 		});
 	}
 
+	
+
+
 	function GrdEditWorkHour_DataBound(e) {
 		$('.forFound_DeleteWorkHourEditGrid').off().on('click', function () {
 			DeleteWorkHourEditGrid(this);
+		});
+
+		$('.forFound_EditWorkHourEditGrid').off().on('click', function () {
+			editWorkout(this);
 		});
 	}
 
@@ -1848,31 +1878,35 @@ const editWorkHour = (function () {
 		moduleData.common.loaderShow();
 
 		moduleData.service.deleteWorkHour(dataItem.id,()=>{
-			Refresh_GrdEditWorkHour();
-
 				moduleData.mainGrid.RefreshTimeSheet();
 				moduleData.common.loaderHide();
 		});
+	}
 
-		
+	function editWorkout(e){
+		var grid = $("#GrdEditWorkHour").data("kendoGrid");
+		var dataItem = grid.dataItem($(e).closest("tr"));
+
+		var dayTime;
+
+		var timeSheetData = moduleData.data.timeSheetData_get();
+		for(var key in timeSheetData[0].values){
+			var time = timeSheetData[0].values[key];
+			if(time.persianDate == dataItem.persianDate){
+					dayTime = time;
+					break;
+			}
+		}
+
+		debugger;
+
+		moduleData.createNewWorkHour.kwndSaveWHs_OnInit_ForEdit(
+			dayTime, 
+			dataItem.projectID, dataItem.taskID, dataItem.time, dataItem.id);
 	}
 
 	function Refresh_GrdEditWorkHour() {
-		var prmData = JSON.stringify(moduleData.data.timeSheetData_get()[0].values);
-		$.ajax({
-			type: "Post",
-			url: "/api/TimeSheetsAPI/GetRegistereCurrentPerioddWorkHours",
-			contentType: "application/json; charset=utf-8",
-			dataType: "json",
-			data: prmData,
-			success: function (response) {
-				moduleData.data.workHours_set(response);
-				var g = $("#GrdEditWorkHour").data("kendoGrid");
-				if (g) g.dataSource.read();
-			},
-			error: function (e) {
-			}
-		});
+		GetWorkHours_GrdEditWorkHour(true);
 	}
 
 	return {
@@ -2024,14 +2058,15 @@ const hisotrSentWorkHour = (function () {
 
 	const moduleData = {};
 
-	function init(common, common_register, hisotory_workHour, data, common_timeSheet, createNewWorkHour) {
-
+	function init(mainGrid, common, common_register, hisotory_workHour, data, common_timeSheet, createNewWorkHour, service) {
+		moduleData.mainGrid = mainGrid;
 		moduleData.data = data;
 		moduleData.common = common;
 		moduleData.common_register = common_register;
 		moduleData.hisotory_workHour = hisotory_workHour;
 		moduleData.common_timeSheet = common_timeSheet;
 		moduleData.createNewWorkHour = createNewWorkHour;
+		moduleData.service = service;
 
 		$('#btnMonitorSent').off().on('click', function () {
 			GetWorkHours_MonitorSentWorkHour();
@@ -2049,6 +2084,8 @@ const hisotrSentWorkHour = (function () {
 	}
 
 	function GetWorkHours_MonitorSentWorkHour() {
+		moduleData.data.history_sentWorkHour_data_set({type: 'history'});
+
 		$('#headerText_MonitorSendWorkHours').text('نمایش کارکردهای ارسال شده');
 		var prmData = JSON.stringify(moduleData.data.timeSheetData_get()[0].values);
 
@@ -2093,6 +2130,9 @@ const hisotrSentWorkHour = (function () {
 						$('.forFound_EditWorkhoure').off().on('click', function () {
 							editWorkout(this);
 						});
+						$('.forFound_DeleteWorkhoure').off().on('click', function () {
+							deleteWorkHourEditGrid(this);
+						});
 					}
 				},
 				pageSize: 10
@@ -2129,13 +2169,14 @@ const hisotrSentWorkHour = (function () {
 					let answer = "<button type='button' class='btn btn-info btn-sm forFound_Init_GRDHistory' title='نمایش تاریخچه' name='info'>تاریخچه</button>";
 					if(dataItem.workFlowStageType=='Resource'){
 						answer+="<button type='button' style='margin-right:2px;' class='btn btn-success btn-sm forFound_EditWorkhoure'>ویرایش</button>"
+						answer+="<button type='button' style='margin-right:5px;' class='btn btn-danger btn-sm forFound_DeleteWorkhoure'>حذف</button>"
 					}
 					return answer;
 				},
 				headerTemplate: "<label class='text-center'> نمایش تاریخچه </label>",
 				filterable: false,
 				sortable: false,
-				width: 140
+				width: 200
 			}
 			]
 
@@ -2147,8 +2188,23 @@ const hisotrSentWorkHour = (function () {
 	function editWorkout(e){
 		var grid = $("#GrdMonitorSentWorkHour").data("kendoGrid");
 		var dataItem = grid.dataItem($(e).closest("tr"));
+
 		moduleData.createNewWorkHour.kwndSaveWHs_OnInit_ForEdit(moduleData.data.selDate_get(), 
 			dataItem.projectID, dataItem.taskID, dataItem.time, dataItem.id);
+	}
+
+	function deleteWorkHourEditGrid(e) {
+
+		var grid = $("#GrdMonitorSentWorkHour").data("kendoGrid");
+		var dataItem = grid.dataItem($(e).closest("tr"));
+
+
+		moduleData.common.loaderShow();
+
+		moduleData.service.deleteWorkHour(dataItem.id,()=>{
+				moduleData.mainGrid.RefreshTimeSheet();
+				moduleData.common.loaderHide();
+		});
 	}
 
 	function ShowDataOnGrid(data, headerTitle) {
@@ -2159,6 +2215,13 @@ const hisotrSentWorkHour = (function () {
 	}
 
 	function Refresh_GrdMonitorSentWorkHour() {
+
+		var data = moduleData.data.history_sentWorkHour_data_get();
+		if(data.type !='history' && data.payload){
+			ShowCurrentDaySendWorkHours(data.payload.dayTime , data.payload.headerTitle, true);
+			return;
+		}
+
 		var prmData = JSON.stringify(moduleData.data.timeSheetData_get()[0].values);
 		$.ajax({
 			type: "Post",
@@ -2183,13 +2246,13 @@ const hisotrSentWorkHour = (function () {
 		});
 	}
 
-	function ShowCurrentDaySendWorkHours(dayTime, headerTitle) {
+	function ShowCurrentDaySendWorkHours(dayTime, headerTitle, dontInit) {
+
+		moduleData.data.history_sentWorkHour_data_set({type: 'currentDay', payload:{dayTime: dayTime , headerTitle: headerTitle}});
 
 		if(headerTitle) $('#headerText_MonitorSendWorkHours').text(headerTitle);
 
 		moduleData.common.loaderShow();
-		moduleData.hisotory_workHour.Create_GrdHistory();
-
 		moduleData.data.selDate_set(dayTime);
 
 		var workHourJson = {
@@ -2213,7 +2276,7 @@ const hisotrSentWorkHour = (function () {
 				}
 				
 				_MonitorSentWorkHours = response;
-				Init_GrdMonitorSentWorkHour();
+				if(!dontInit) Init_GrdMonitorSentWorkHour();
 				$("#GrdMonitorSentWorkHour").data("kendoGrid").dataSource.read();
 				Open_WndMonitorSentWorkHours();
 
@@ -2761,7 +2824,7 @@ const myMainGrid = (function () {
           parentId: "parentId"
         }
       },
-      height: 400,
+      height: moduleData.common.getAvailabelSpace("ktrlTimeSheets"),
       width: 'auto',
       columns: ktrlTSColumns,
       scrollable: true,
