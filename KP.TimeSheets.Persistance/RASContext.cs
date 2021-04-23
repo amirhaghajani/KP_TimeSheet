@@ -49,6 +49,7 @@ namespace KP.TimeSheets.Persistance
 
 
         public virtual DbSet<TimesheetPolicy> TimesheetPolicies{get;set;}
+        public virtual DbSet<TimeSheetConfig> TimeSheetConfig{get;set;}
 
 
         public DbSet<EmployeeTimeSheetFromDB> spFoundConfirmTimeSheet { get; set; }

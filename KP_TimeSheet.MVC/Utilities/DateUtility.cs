@@ -215,6 +215,22 @@ namespace KP.TimeSheets.MVC
         }
 
 
+        internal static DateTime GetWeekStartDate(int weekNumber){
+            var now = DateTime.Now;
+            
+            var dayOfWeek =(int) now.DayOfWeek + 1; //یک روز که آنها از یکشنبه ما از شنبه
+            if(dayOfWeek>6) dayOfWeek =0; //شنبه آخرین روز آنها میشه برای ما اولین روز
+            var startDate = now.AddDays(dayOfWeek * -1);
+            return startDate.AddDays((weekNumber - 1) * 7 * -1);
+        }
+
+        internal static DateTime GetWeekEndtDate(){
+            var now = DateTime.Now;
+            var dayOfWeek =(int) now.DayOfWeek + 1; //یک روز که آنها از یکشنبه ما از شنبه
+            if(dayOfWeek>6) dayOfWeek =0; //شنبه آخرین روز آنها میشه برای ما اولین روز
+            var endDate = now.AddDays(6 - dayOfWeek);
+            return endDate;
+        }
 
     }
 }

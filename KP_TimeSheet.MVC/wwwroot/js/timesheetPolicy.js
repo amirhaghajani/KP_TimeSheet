@@ -531,11 +531,46 @@ var service = (function () {
 		});
 	}
 
+	function getDefualtConfigData(success_callBack, error_callBack) {
+		$.ajax({
+			type: "GET",
+			url: "/api/timesheetPlicy/GetDefualtConfigData/",
+			contentType: "application/json; charset=utf-8",
+			dataType: "json",
+			success: success_callBack ? (response) => success_callBack(response) : () => { },
+			error: (error) => {
+				moduleData.common.loaderHide();
+				moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+				if (error_callBack) error_callBack();
+			}
+		});
+	}
+
+	function saveDefualtConfigData(defualtPolicy, success_callBack, error_callBack) {
+		$.ajax({
+			type: "Post",
+			url: "/api/timesheetPlicy/SaveDefualtConfigData",
+			contentType: "application/json; charset=utf-8",
+			dataType: "json",
+			data: JSON.stringify(defualtPolicy),
+			success: success_callBack ? (response) => success_callBack(response) : () => { },
+			error: (error) => {
+				moduleData.common.loaderHide();
+				moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+				if (error_callBack) error_callBack();
+			}
+		});
+	}
+
+
+
 
     return {
         init: init,
         savePolicy: savePolicy,
-		deletePolicy: deletePolicy
+		deletePolicy: deletePolicy,
+		getDefualtConfigData: getDefualtConfigData,
+		saveDefualtConfigData: saveDefualtConfigData
     };
 
 })();
@@ -545,14 +580,17 @@ var service = (function () {
 module.exports = {
     init: service.init,
     savePolicy : service.savePolicy,
-	deletePolicy: service.deletePolicy
+	deletePolicy: service.deletePolicy,
+
+	getDefualtConfigData: service.getDefualtConfigData,
+	saveDefualtConfigData: service.saveDefualtConfigData
 }
 },{}],4:[function(require,module,exports){
 const common = require('../common/common');
 const newOtherPolicy = require('./newOtherPolicy');
 const service = require('./service');
 
-const mainPolicyGridId="timesheetSystemDefualtPolicy_Grid";
+const mainPolicyGridId = "timesheetSystemDefualtPolicy_Grid";
 const otherPolicyGridId = "timesheetOtherPolicy_Grid";
 let selectedItemPolicy = null;
 let dialog = null;
@@ -569,6 +607,8 @@ $("document").ready(function () {
 function init() {
   dialog = $("#dialog");
 
+  private_initTimeSheetMainConfig();
+
   private_intiTabs();
   private_initDefaultGrid();
   private_initOtherGrid();
@@ -576,9 +616,58 @@ function init() {
   private_initConfirmDeleteDialog();
 }
 
-function refreshGrids(){
-  $("#"+mainPolicyGridId).data("kendoGrid").dataSource.read();
-  $("#"+otherPolicyGridId).data("kendoGrid").dataSource.read();
+function private_initTimeSheetMainConfig() {
+
+  service.getDefualtConfigData((conf)=>{
+    if(!conf) return;
+
+    $('#timesheetLockTime').daterangepicker({
+      clearLabel: 'Clear',
+      autoApply: true,
+      opens: 'left',
+      singleDatePicker: true,
+      showDropdowns: true,
+      jalaali: true,
+      language: 'fa'
+    }).on('apply.daterangepicker', function () {
+      $('.tooltip').hide();
+      $('.date-select').text($(this).val());
+    });
+
+    $("#timesheetLockTime").val(conf.timeSheetLockDate);
+    $("#defualtOpenWeek").val(conf.defualtOpenTimeSheetWeeks);
+
+  });
+
+  $("#btnSaveDefualtConfig").off().on("click",()=>{
+    var conf = {};
+    conf.timeSheetLockDate = $("#timesheetLockTime").val();
+    conf.defualtOpenTimeSheetWeeks = $("#defualtOpenWeek").val();
+
+    if(!conf.timeSheetLockDate){
+      alert("تاریخ قفل سیستم نمی تواند خالی باشد");
+      return;
+    }
+    
+    if(!conf.defualtOpenTimeSheetWeeks){
+      alert("هفته پیش فرض نمی تواند خالی باشد");
+      return;
+    }
+
+
+    service.saveDefualtConfigData(conf, ()=>{
+      common.notify("ثبت تنظیمات پیش فرض با موفقیت انجام شد", "success");
+    });
+
+
+
+  });
+
+}
+
+function refreshGrids() {
+  $("#" + mainPolicyGridId).data("kendoGrid").dataSource.read();
+  $("#" + otherPolicyGridId).data("kendoGrid").dataSource.read();
 }
 
 function private_initConfirmDeleteDialog() {
@@ -604,13 +693,13 @@ function private_intiTabs() {
     }
   });
 
-  $("#tabstrip").show().css({ paddingTop: '10px', paddingRight: '10px', paddingLeft: '10px', height: '100%' });
+  $("#tabstrip").show().css({ paddingTop: '40px', paddingRight: '10px', paddingLeft: '10px', height: '100%' });
 
 }
 
 function private_initDefaultGrid() {
 
-  $("#"+mainPolicyGridId).kendoGrid({
+  $("#" + mainPolicyGridId).kendoGrid({
     dataSource: {
       transport: {
         read: "/api/timesheetPlicy/" + common.version() + "/GetDefaultPoliciesList",

@@ -133,34 +133,9 @@ namespace KP.TimeSheets.MVC
 
                 if (mustCheckDefaultTimeSheetPolocy && !answer.First(a => a.date.Value.Date == now.Date).isOpen.HasValue)
                 {
-                    //default policy must check maybe is deactivated
-                    //if isnot created, must create and today is open beacuase friday is checked in query
-                    //اگر زمانش گذشته باید تمدید بشه که با تاریخ های امروز یکسان بشه
-                    var userDefaultPolicy = this.DBContext.TimesheetPolicies.FirstOrDefault(p => p.IsDefault && p.UserId == currentUser.ID);
-                    if (userDefaultPolicy == null)
-                    {
-                        userDefaultPolicy = new TimesheetPolicy()
-                        {
-                            Id = Guid.NewGuid(),
-                            IsDefault = true,
-                            isDeactivated = false,
-                            IsOpen = true,
-                            UserMustHasHozoor = true,
-                            UserId = currentUser.ID,
-                        };
-                        this.DBContext.TimesheetPolicies.Add(userDefaultPolicy);
-                    }
 
-                    userDefaultPolicy.Start = DateUtility.GetCompanyStartDate();
-                    userDefaultPolicy.Finish = DateUtility.GetCompanyEndDate();
-                    userDefaultPolicy.Validity = DateUtility.GetCompanyEndDate();
-                    userDefaultPolicy.CreateDate = DateTime.Now;
-
-
-
-                    this.DBContext.SaveChanges();
-
-                    if(numberOfReset<1) goto labelForReset;
+                    createPolicyForUser(currentUser.ID);
+                    if (numberOfReset < 1) goto labelForReset;
                 }
 
                 return Ok(answer);
@@ -169,6 +144,45 @@ namespace KP.TimeSheets.MVC
             {
                 return this.ReturnError(ex, "خطا در دریافت اطلاعات تایم شیت");
             }
+        }
+
+        private void createPolicyForUser(Guid currentUserId)
+        {
+            //default policy must check maybe is deactivated
+            //if isnot created, must create and today is open beacuase friday is checked in query
+            //اگر زمانش گذشته باید تمدید بشه که با تاریخ های امروز یکسان بشه
+            var userDefaultPolicy = this.DBContext.TimesheetPolicies.FirstOrDefault(p => p.IsDefault && p.UserId == currentUserId);
+            var timeSheetConfig = this.DBContext.TimeSheetConfig.FirstOrDefault();
+            if (timeSheetConfig == null)
+            {
+                timeSheetConfig = new TimeSheetConfig(){
+                    DefualtOpenTimeSheetWeeks = 1,
+                    TimeSheetLockDate = DateTime.Today
+                };
+                this.DBContext.TimeSheetConfig.Add(timeSheetConfig);
+            }
+
+            if (userDefaultPolicy == null)
+            {
+                userDefaultPolicy = new TimesheetPolicy()
+                {
+                    Id = Guid.NewGuid(),
+                    IsDefault = true,
+                    isDeactivated = false,
+                    IsOpen = true,
+                    UserMustHasHozoor = true,
+                    UserId = currentUserId,
+                };
+                this.DBContext.TimesheetPolicies.Add(userDefaultPolicy);
+            }
+
+            userDefaultPolicy.Start = DateUtility.GetWeekStartDate(timeSheetConfig.DefualtOpenTimeSheetWeeks);
+            userDefaultPolicy.Finish = DateUtility.GetWeekEndtDate();
+            userDefaultPolicy.Validity = DateUtility.GetWeekEndtDate();
+            userDefaultPolicy.CreateDate = DateTime.Now;
+
+
+            this.DBContext.SaveChanges();
         }
 
         [HttpGet("{ver}/{type}/{userId}/{date}"), HttpGet("{ver}/employee/{type}/{date}")]
@@ -309,16 +323,16 @@ namespace KP.TimeSheets.MVC
                 }
 
                 var data = new ApproveAndDenyJson()
-                    {
-                        id = dailyLeave.ID.ToString(),
-                        date = DateTime.Now,
-                        description = "",
-                        workflowStageID = dailyLeave.WorkflowStageID
-                        
-                    };
+                {
+                    id = dailyLeave.ID.ToString(),
+                    date = DateTime.Now,
+                    description = "",
+                    workflowStageID = dailyLeave.WorkflowStageID
+
+                };
 
 
-                    HistoryUtilities.RegisterApproveHistory(data, this._uow, currentUser);
+                HistoryUtilities.RegisterApproveHistory(data, this._uow, currentUser);
 
                 return Ok(true);
 
@@ -356,16 +370,16 @@ namespace KP.TimeSheets.MVC
                 }
 
                 var data = new ApproveAndDenyJson()
-                    {
-                        id = hourlyLeave.ID.ToString(),
-                        date = DateTime.Now,
-                        description = "",
-                        workflowStageID = hourlyLeave.WorkflowStageID
-                        
-                    };
+                {
+                    id = hourlyLeave.ID.ToString(),
+                    date = DateTime.Now,
+                    description = "",
+                    workflowStageID = hourlyLeave.WorkflowStageID
+
+                };
 
 
-                    HistoryUtilities.RegisterApproveHistory(data, this._uow, currentUser);
+                HistoryUtilities.RegisterApproveHistory(data, this._uow, currentUser);
 
                 return Ok(true);
 
@@ -402,16 +416,16 @@ namespace KP.TimeSheets.MVC
                 }
 
                 var data = new ApproveAndDenyJson()
-                    {
-                        id = hourlyMission.ID.ToString(),
-                        date = DateTime.Now,
-                        description = "",
-                        workflowStageID = hourlyMission.WorkflowStageID
-                        
-                    };
+                {
+                    id = hourlyMission.ID.ToString(),
+                    date = DateTime.Now,
+                    description = "",
+                    workflowStageID = hourlyMission.WorkflowStageID
+
+                };
 
 
-                    HistoryUtilities.RegisterApproveHistory(data, this._uow, currentUser);
+                HistoryUtilities.RegisterApproveHistory(data, this._uow, currentUser);
 
                 return Ok(true);
 
@@ -439,8 +453,8 @@ namespace KP.TimeSheets.MVC
                 var items = await query.ToListAsync();
                 var answer = items.Select(i => new
                 {
-                    id=i.UserId,
-                    fullName = i.UserTitle +  (i.Minutes.HasValue ? (" "+DateUtility.ConvertToTimeSpan(i.Minutes.Value)): "") 
+                    id = i.UserId,
+                    fullName = i.UserTitle + (i.Minutes.HasValue ? (" " + DateUtility.ConvertToTimeSpan(i.Minutes.Value)) : "")
                 }).ToList();
 
                 return Ok(answer);

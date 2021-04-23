@@ -40,11 +40,46 @@ var service = (function () {
 		});
 	}
 
+	function getDefualtConfigData(success_callBack, error_callBack) {
+		$.ajax({
+			type: "GET",
+			url: "/api/timesheetPlicy/GetDefualtConfigData/",
+			contentType: "application/json; charset=utf-8",
+			dataType: "json",
+			success: success_callBack ? (response) => success_callBack(response) : () => { },
+			error: (error) => {
+				moduleData.common.loaderHide();
+				moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+				if (error_callBack) error_callBack();
+			}
+		});
+	}
+
+	function saveDefualtConfigData(defualtPolicy, success_callBack, error_callBack) {
+		$.ajax({
+			type: "Post",
+			url: "/api/timesheetPlicy/SaveDefualtConfigData",
+			contentType: "application/json; charset=utf-8",
+			dataType: "json",
+			data: JSON.stringify(defualtPolicy),
+			success: success_callBack ? (response) => success_callBack(response) : () => { },
+			error: (error) => {
+				moduleData.common.loaderHide();
+				moduleData.common.notify(error.responseText ? error.responseText : JSON.stringify(error), 'danger');
+				if (error_callBack) error_callBack();
+			}
+		});
+	}
+
+
+
 
     return {
         init: init,
         savePolicy: savePolicy,
-		deletePolicy: deletePolicy
+		deletePolicy: deletePolicy,
+		getDefualtConfigData: getDefualtConfigData,
+		saveDefualtConfigData: saveDefualtConfigData
     };
 
 })();
@@ -54,5 +89,8 @@ var service = (function () {
 module.exports = {
     init: service.init,
     savePolicy : service.savePolicy,
-	deletePolicy: service.deletePolicy
+	deletePolicy: service.deletePolicy,
+
+	getDefualtConfigData: service.getDefualtConfigData,
+	saveDefualtConfigData: service.saveDefualtConfigData
 }

@@ -192,10 +192,10 @@ namespace KP.TimeSheets.MVC
             try
             {
                 var policy = this.DBContext.TimesheetPolicies.FirstOrDefault(p => p.Id == id);
-                if(policy == null) throw new Exception("قانون با آی دی ارسال شده یافت نشد");
-                if(policy.IsDefault) throw new Exception("امکان حذف قانون پیش فرض نیست");
+                if (policy == null) throw new Exception("قانون با آی دی ارسال شده یافت نشد");
+                if (policy.IsDefault) throw new Exception("امکان حذف قانون پیش فرض نیست");
 
-                this.DBContext.Entry(policy).State=EntityState.Deleted;
+                this.DBContext.Entry(policy).State = EntityState.Deleted;
                 this.DBContext.SaveChanges();
 
                 return Ok(true);
@@ -208,5 +208,84 @@ namespace KP.TimeSheets.MVC
 
 
 
+        //------------------------------------
+        [HttpGet("[action]")]
+        [ProducesResponseType(typeof(vmTimeSheetConfig), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult GetDefualtConfigData()
+        {
+            try
+            {
+                var conf = this.DBContext.TimeSheetConfig.FirstOrDefault();
+                if (conf == null)
+                {
+                    conf = new TimeSheetConfig()
+                    {
+                        DefualtOpenTimeSheetWeeks = 1,
+                        TimeSheetLockDate = DateTime.Today
+                    };
+                    this.DBContext.TimeSheetConfig.Add(conf);
+                }
+
+                return Ok(new vmTimeSheetConfig(){
+                    defualtOpenTimeSheetWeeks = conf.DefualtOpenTimeSheetWeeks,
+                    timeSheetLockDate =  DateUtility.GetPersianDate(conf.TimeSheetLockDate)
+                });
+            }
+            catch (Exception ex)
+            {
+                return this.ReturnError(ex, "خطا در دریافت اطلاعات پیش فرض سیستم");
+            }
+
+        }
+
+
+        [HttpPost("[action]")]
+        [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult SaveDefualtConfigData(vmTimeSheetConfig request)
+        {
+            try
+            {
+                if (request == null) throw new Exception("اطلاعات ارسال نشده است");
+                if (!request.defualtOpenTimeSheetWeeks.HasValue) throw new Exception("تعداد هفته پیش فرض نمی تواند خالی باشد");
+                if (string.IsNullOrEmpty(request.timeSheetLockDate)) throw new Exception("تاریخ پیش فرض نمی تواند خالی باشد");
+
+                var conf = this.DBContext.TimeSheetConfig.FirstOrDefault();
+                if (conf == null)
+                {
+                    conf = new TimeSheetConfig()
+                    {
+                        DefualtOpenTimeSheetWeeks = 1,
+                        TimeSheetLockDate = DateTime.Today
+                    };
+                    this.DBContext.TimeSheetConfig.Add(conf);
+                }
+
+                if (conf.DefualtOpenTimeSheetWeeks != request.defualtOpenTimeSheetWeeks)
+                {
+                    changeDefualtOpenTimeSheetWeeks(request.defualtOpenTimeSheetWeeks.Value);
+                }
+
+                conf.DefualtOpenTimeSheetWeeks = request.defualtOpenTimeSheetWeeks.Value;
+                conf.TimeSheetLockDate = DateUtility.GetMiladiDate((request.timeSheetLockDate));
+                this.DBContext.SaveChanges();
+
+                return Ok(true);
+            }
+            catch (Exception ex)
+            {
+                return this.ReturnError(ex, "خطا در ثبت اطلاعات پیش فرض سیستم");
+            }
+        }
+
+        private void changeDefualtOpenTimeSheetWeeks(int defualtOpenTimeSheetWeeks)
+        {
+            var items = this.DBContext.TimesheetPolicies.Where(p=> !p.isDeactivated && p.IsDefault).ToList();
+
+            foreach(var item in items){
+                this.DBContext.Entry(item).State = EntityState.Deleted;
+            }
+        }
     }
 }

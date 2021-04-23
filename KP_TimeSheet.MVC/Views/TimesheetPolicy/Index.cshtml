@@ -24,6 +24,23 @@
         }
 </style>
 
+<div style="position:relative;">
+    <div style="position: absolute;top:10px;left:5px;z-index:9;">
+        <div style="direction:ltr; text-align: left;">
+            <label style="min-width: 260px;">تعداد هفته های باز بودن تایم شیت (پیش فرض)</label>
+            <input style="width:100px" id="defualtOpenWeek" type="text" />
+        </div>
+
+        <div style="direction:ltr; text-align: left;margin-top:3px;">
+            <label style="min-width: 260px;">تاریخ قفل بودن تایم شیت (از این تاریخ به قبل)</label>
+            <input style="width:100px" id="timesheetLockTime" type="text" />
+            <button id="btnSaveDefualtConfig" type="button" class="btn btn-success btn-sm" style="width: 50px;">ثبت</button>
+        </div>
+    </div>
+</div>
+
+
+
 <div class="demo-section k-content k-rtl">
   <div id="tabstrip" style="display: none;">
       <ul>
