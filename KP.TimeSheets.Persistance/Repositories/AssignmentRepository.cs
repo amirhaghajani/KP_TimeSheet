@@ -105,6 +105,13 @@ namespace KP.TimeSheets.Persistance
         {
            
                 string commandText = @"
+                update [Assignments] set isdeactivated=1
+                    where id not in
+                    (
+                        Select AssignmentUID
+                                        From 
+                                            ProjectWebApp.dbo.MSP_EpmAssignment_UserView 
+                    );
                    Select 
 	                    AssignmentUID, ProjectUID, ResourceUID, TaskUID
                     From 
@@ -120,6 +127,8 @@ namespace KP.TimeSheets.Persistance
                         Add(entity);
 
                 });
+
+                //IsDeactivated
            
         }
 

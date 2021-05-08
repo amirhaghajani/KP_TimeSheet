@@ -68,7 +68,7 @@ namespace KP.TimeSheets.Persistance
 	                    Inner Join dbo.Tasks Tasks On Assinments.TaskID = Tasks.ID
 	                    Inner Join dbo.Projects Projects On Tasks.ProjectID = Projects.ID
                     Where
-	                    Assinments.ResourceID=@ResourceID";
+	                    isnull(IsDeactivated,0)=0 and Assinments.ResourceID=@ResourceID";
                 SqlParameter sqlpResourceID = new SqlParameter("@ResourceID", user.ID);
                 result = _RASContext.Projects.FromSqlRaw(cmdText, sqlpResourceID).ToList();
            
