@@ -1,6 +1,6 @@
 const common = (function () {
 
-	function version(){return "0.0.0.8";}
+	function version(){return "0.0.0.9";}
 
 	function doExport(selector, params) {
 		var options = {

@@ -46,7 +46,7 @@ const module_createNewRorkHour = (function () {
 
     }
 
-    function kwndSaveWHs_OnInit_ForEdit(dayTime, projectId, taskId_nullable, time_nullable, workoutId) {
+    function kwndSaveWHs_OnInit_ForEdit(dayTime, projectId, taskId_nullable, time_nullable, workoutId, description) {
 
         $('#btnDeleteCurrentWorkhour').hide();
         if (workoutId) $('#btnDeleteCurrentWorkhour').show();
@@ -82,6 +82,9 @@ const module_createNewRorkHour = (function () {
         });
 
         if (time_nullable) $("#ktpWorkHour").val(time_nullable);
+
+        $("#txtDescription").val(description);
+
     }
 
     function kwndSaveWHs_OnInit(dayIndex) {

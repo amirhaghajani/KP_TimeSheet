@@ -1,7 +1,7 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 const common = (function () {
 
-	function version(){return "0.0.0.8";}
+	function version(){return "0.0.0.9";}
 
 	function doExport(selector, params) {
 		var options = {
@@ -1440,7 +1440,7 @@ const module_createNewRorkHour = (function () {
 
     }
 
-    function kwndSaveWHs_OnInit_ForEdit(dayTime, projectId, taskId_nullable, time_nullable, workoutId) {
+    function kwndSaveWHs_OnInit_ForEdit(dayTime, projectId, taskId_nullable, time_nullable, workoutId, description) {
 
         $('#btnDeleteCurrentWorkhour').hide();
         if (workoutId) $('#btnDeleteCurrentWorkhour').show();
@@ -1476,6 +1476,9 @@ const module_createNewRorkHour = (function () {
         });
 
         if (time_nullable) $("#ktpWorkHour").val(time_nullable);
+
+        $("#txtDescription").val(description);
+
     }
 
     function kwndSaveWHs_OnInit(dayIndex) {
@@ -1902,7 +1905,7 @@ const editWorkHour = (function () {
 
 		moduleData.createNewWorkHour.kwndSaveWHs_OnInit_ForEdit(
 			dayTime, 
-			dataItem.projectID, dataItem.taskID, dataItem.time, dataItem.id);
+			dataItem.projectID, dataItem.taskID, dataItem.time, dataItem.id, dataItem.description);
 	}
 
 	function Refresh_GrdEditWorkHour() {
@@ -2190,7 +2193,7 @@ const hisotrSentWorkHour = (function () {
 		var dataItem = grid.dataItem($(e).closest("tr"));
 
 		moduleData.createNewWorkHour.kwndSaveWHs_OnInit_ForEdit(moduleData.data.selDate_get(), 
-			dataItem.projectID, dataItem.taskID, dataItem.time, dataItem.id);
+			dataItem.projectID, dataItem.taskID, dataItem.time, dataItem.id, dataItem.description);
 	}
 
 	function deleteWorkHourEditGrid(e) {
@@ -2895,7 +2898,7 @@ const myMainGrid = (function () {
 
               if (response && response.length == 1 && response[0].workFlowStageType=='Resource') {
                 moduleData.createNewWorkHour.kwndSaveWHs_OnInit_ForEdit(dayTime, 
-                  projectId, taskId, moduleData.common_timeSheet.convertMinutsToTime(response[0].minutes), response[0].id);
+                  projectId, taskId, moduleData.common_timeSheet.convertMinutsToTime(response[0].minutes), response[0].id, response[0].description);
 
               } else {
 

@@ -140,7 +140,7 @@ const hisotrSentWorkHour = (function () {
 		var dataItem = grid.dataItem($(e).closest("tr"));
 
 		moduleData.createNewWorkHour.kwndSaveWHs_OnInit_ForEdit(moduleData.data.selDate_get(), 
-			dataItem.projectID, dataItem.taskID, dataItem.time, dataItem.id);
+			dataItem.projectID, dataItem.taskID, dataItem.time, dataItem.id, dataItem.description);
 	}
 
 	function deleteWorkHourEditGrid(e) {

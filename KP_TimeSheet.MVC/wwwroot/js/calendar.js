@@ -611,7 +611,7 @@ function adjustSize() {
 },{"../common/common":2}],2:[function(require,module,exports){
 const common = (function () {
 
-	function version(){return "0.0.0.8";}
+	function version(){return "0.0.0.9";}
 
 	function doExport(selector, params) {
 		var options = {

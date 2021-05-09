@@ -171,7 +171,7 @@ const myMainGrid = (function () {
 
               if (response && response.length == 1 && response[0].workFlowStageType=='Resource') {
                 moduleData.createNewWorkHour.kwndSaveWHs_OnInit_ForEdit(dayTime, 
-                  projectId, taskId, moduleData.common_timeSheet.convertMinutsToTime(response[0].minutes), response[0].id);
+                  projectId, taskId, moduleData.common_timeSheet.convertMinutsToTime(response[0].minutes), response[0].id, response[0].description);
 
               } else {
 

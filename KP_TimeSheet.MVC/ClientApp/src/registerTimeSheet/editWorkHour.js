@@ -161,7 +161,7 @@ const editWorkHour = (function () {
 
 		moduleData.createNewWorkHour.kwndSaveWHs_OnInit_ForEdit(
 			dayTime, 
-			dataItem.projectID, dataItem.taskID, dataItem.time, dataItem.id);
+			dataItem.projectID, dataItem.taskID, dataItem.time, dataItem.id, dataItem.description);
 	}
 
 	function Refresh_GrdEditWorkHour() {
