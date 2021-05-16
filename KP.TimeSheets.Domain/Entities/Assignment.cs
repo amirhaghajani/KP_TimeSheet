@@ -41,6 +41,9 @@ namespace KP.TimeSheets.Domain
         /// </summary>
         public User Resource { get; set; }
 
+
+        public bool? isdeactivated{get;set;}
+
         #endregion
 
     }

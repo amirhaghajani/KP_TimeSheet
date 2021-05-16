@@ -57,6 +57,7 @@ namespace KP.TimeSheets.Persistance
                     result  = (from assignment in _RASContext.Assignments
                              join task in _RASContext.Tasks on assignment.TaskID equals task.ID
                              where assignment.ProjectID == project.ID && assignment.ResourceID == user.ID
+                             && (!assignment.isdeactivated.HasValue || !assignment.isdeactivated.Value)
                              select new { ID = task.ID, Title = task.Title }).ToList()
                              .Select(x => new Task { ID = x.ID, Title = x.Title });
                 else
