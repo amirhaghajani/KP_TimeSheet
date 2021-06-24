@@ -499,7 +499,10 @@ namespace KP.TimeSheets.MVC
 
                 // var presenceour = timesheetManager.GetyesterdayPresencHoursByUserId(currUser.ID);
                 // var workours = timesheetManager.GetyesterdayworkHoursByUserId(currUser.ID);
-                return Ok(new { minutes = item[0].Minutes });
+                return Ok(new { minutes = item[0].Minutes, 
+                    minutes_hourlyMission = item[1].Minutes,
+                    minutes_hourlyLeave = item[2].Minutes,
+                    minutes_dailyLeave = item[3].Minutes });
             }
             catch (Exception ex)
             {

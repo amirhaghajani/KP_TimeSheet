@@ -92,25 +92,33 @@ const hisotrSentWorkHour = (function () {
 			filterable: true,
 			selectable: true,
 
-			columns: [{
+			columns: [
+				{
 				field: "persianDate",
 				title: "تاریخ",
-				width: 100
+				width: 90
 			},
 			{
 				field: "projectTitle",
-				title: "پروژه"
+				title: "پروژه",
+				width: 150
 			}, {
 				field: "taskTitle",
-				title: "وظیفه"
+				title: "وظیفه",
+				width: 150
 			}, {
 				field: "time",
-				title: "ساعت کار",
-				width: 80
+				title: "مدت",
+				width: 60
 
 			}, {
 				field: "workFlowStageTitle",
-				title: "عنوان مرحله",
+				title: "مرحله",
+				width: 90
+			},
+			{
+				field: "description",
+				title: "توضیحات",
 				width: 200
 			}
 				, {
@@ -126,7 +134,7 @@ const hisotrSentWorkHour = (function () {
 				headerTemplate: "<label class='text-center'> نمایش تاریخچه </label>",
 				filterable: false,
 				sortable: false,
-				width: 200
+				width: 190
 			}
 			]
 

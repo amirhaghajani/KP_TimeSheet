@@ -81,7 +81,7 @@ const historyWorkHour = (function () {
 
 			}, {
 				field: "description",
-				title: "توضیحات",
+				title: "توضیحات مرحله",
 				width: 400
 
 			}

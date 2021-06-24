@@ -98,7 +98,14 @@ function Page_OnInitWaitApprove(response) {
     const items = [response.minutes];
     const v1 = commonTimesheet.calcPercent(items, response.minutes);
 
+    const s = response.minutes_hourlyMission + response.minutes_hourlyLeave + response.minutes_dailyLeave;
+    const items2 = [s];
+    const v2 = commonTimesheet.calcPercent(items2, s);
+
     $("#hoursWaitingToApprove").text(commonTimesheet.convertMinutsToTime(response.minutes));
     $("#hoursWaitingToApprovePercent").css('width', v1 + '%').attr('aria-valuenow', v1);
+
+    $("#leave_duty_hoursWaitingToApprove").text(commonTimesheet.convertMinutsToTime(s));
+    $("#leave_duty_hoursWaitingToApprovePercent").css('width', v2 + '%').attr('aria-valuenow', v2);
 
 }

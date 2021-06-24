@@ -100,19 +100,27 @@ const sendWorkHour = (function () {
 					pageable: true,
 					columns: [{
 						field: "persianDate",
-						title: "تاریخ"
+						title: "تاریخ",
+						width: 60
 					},
 					{
 						field: "projectTitle",
-						title: "پروژه"
+						title: "پروژه",
+						width: 100
 					}, {
 						field: "taskTitle",
-						title: "وظیفه"
+						title: "وظیفه",
+						width: 100
 					}, {
 						field: "time",
-						title: "ساعت کار ثبت شده    "
+						title: "زمان",
+						width: 40
 					},
-
+					{
+						field: "description",
+						title: "توضیحات",
+						width: 200
+					},
 
 					{
 						title: "ارسال ",
@@ -120,7 +128,7 @@ const sendWorkHour = (function () {
 						headerTemplate: "<label class='text-center'> ارسال </label>",
 						filterable: false,
 						sortable: false,
-						width: 100
+						width: 45
 					},
 					{
 						title: "حذف ",
@@ -128,7 +136,7 @@ const sendWorkHour = (function () {
 						headerTemplate: "<label class='text-center'> حذف </label>",
 						filterable: false,
 						sortable: false,
-						width: 100
+						width: 45
 					},
 					],
 					dataBound: GRDSendWorkHours_DataBound

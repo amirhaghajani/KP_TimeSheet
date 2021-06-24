@@ -1830,19 +1830,27 @@ const editWorkHour = (function () {
 
 			columns: [{
 				field: "persianDate",
-				title: "تاریخ"
+				title: "تاریخ",
+				width:60
 			},
 			{
 				field: "projectTitle",
-				title: "پروژه"
+				title: "پروژه",
+				width:100
 			}, {
 				field: "taskTitle",
-				title: "وظیفه"
+				title: "وظیفه",
+				width:100
 			}, {
 				field: "time",
-				title: "ساعت کار ثبت شده    "
+				title: "مدت",
+				width:40
 			},
-
+			{
+				field: "description",
+				title: "توضیحات",
+				width:150
+			},
 
 			{
 				title: "حذف ",
@@ -1851,7 +1859,7 @@ const editWorkHour = (function () {
 				headerTemplate: "<label class='text-center'> حذف </label>",
 				filterable: false,
 				sortable: false,
-				width: 140
+				width: 80
 			},
 			],
 			dataBound: GrdEditWorkHour_DataBound
@@ -2010,7 +2018,7 @@ const historyWorkHour = (function () {
 
 			}, {
 				field: "description",
-				title: "توضیحات",
+				title: "توضیحات مرحله",
 				width: 400
 
 			}
@@ -2145,25 +2153,33 @@ const hisotrSentWorkHour = (function () {
 			filterable: true,
 			selectable: true,
 
-			columns: [{
+			columns: [
+				{
 				field: "persianDate",
 				title: "تاریخ",
-				width: 100
+				width: 90
 			},
 			{
 				field: "projectTitle",
-				title: "پروژه"
+				title: "پروژه",
+				width: 150
 			}, {
 				field: "taskTitle",
-				title: "وظیفه"
+				title: "وظیفه",
+				width: 150
 			}, {
 				field: "time",
-				title: "ساعت کار",
-				width: 80
+				title: "مدت",
+				width: 60
 
 			}, {
 				field: "workFlowStageTitle",
-				title: "عنوان مرحله",
+				title: "مرحله",
+				width: 90
+			},
+			{
+				field: "description",
+				title: "توضیحات",
 				width: 200
 			}
 				, {
@@ -2179,7 +2195,7 @@ const hisotrSentWorkHour = (function () {
 				headerTemplate: "<label class='text-center'> نمایش تاریخچه </label>",
 				filterable: false,
 				sortable: false,
-				width: 200
+				width: 190
 			}
 			]
 
@@ -3508,19 +3524,27 @@ const sendWorkHour = (function () {
 					pageable: true,
 					columns: [{
 						field: "persianDate",
-						title: "تاریخ"
+						title: "تاریخ",
+						width: 60
 					},
 					{
 						field: "projectTitle",
-						title: "پروژه"
+						title: "پروژه",
+						width: 100
 					}, {
 						field: "taskTitle",
-						title: "وظیفه"
+						title: "وظیفه",
+						width: 100
 					}, {
 						field: "time",
-						title: "ساعت کار ثبت شده    "
+						title: "زمان",
+						width: 40
 					},
-
+					{
+						field: "description",
+						title: "توضیحات",
+						width: 200
+					},
 
 					{
 						title: "ارسال ",
@@ -3528,7 +3552,7 @@ const sendWorkHour = (function () {
 						headerTemplate: "<label class='text-center'> ارسال </label>",
 						filterable: false,
 						sortable: false,
-						width: 100
+						width: 45
 					},
 					{
 						title: "حذف ",
@@ -3536,7 +3560,7 @@ const sendWorkHour = (function () {
 						headerTemplate: "<label class='text-center'> حذف </label>",
 						filterable: false,
 						sortable: false,
-						width: 100
+						width: 45
 					},
 					],
 					dataBound: GRDSendWorkHours_DataBound

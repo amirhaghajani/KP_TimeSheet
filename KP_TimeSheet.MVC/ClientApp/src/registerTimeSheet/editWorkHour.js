@@ -86,19 +86,27 @@ const editWorkHour = (function () {
 
 			columns: [{
 				field: "persianDate",
-				title: "تاریخ"
+				title: "تاریخ",
+				width:60
 			},
 			{
 				field: "projectTitle",
-				title: "پروژه"
+				title: "پروژه",
+				width:100
 			}, {
 				field: "taskTitle",
-				title: "وظیفه"
+				title: "وظیفه",
+				width:100
 			}, {
 				field: "time",
-				title: "ساعت کار ثبت شده    "
+				title: "مدت",
+				width:40
 			},
-
+			{
+				field: "description",
+				title: "توضیحات",
+				width:150
+			},
 
 			{
 				title: "حذف ",
@@ -107,7 +115,7 @@ const editWorkHour = (function () {
 				headerTemplate: "<label class='text-center'> حذف </label>",
 				filterable: false,
 				sortable: false,
-				width: 140
+				width: 80
 			},
 			],
 			dataBound: GrdEditWorkHour_DataBound
