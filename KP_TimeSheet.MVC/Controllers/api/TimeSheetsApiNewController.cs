@@ -454,7 +454,7 @@ namespace KP.TimeSheets.MVC
                 var answer = items.Select(i => new
                 {
                     id = i.UserId,
-                    fullName = i.UserTitle + (i.Minutes.HasValue ? (" " + DateUtility.ConvertToTimeSpan(i.Minutes.Value)) : "")
+                    fullName = i.UserTitle + (i.Minutes.HasValue ? (" " + DateUtility.ConvertToTimeSpan(i.Minutes.Value)) : "") + (i.Minutes_Leave_Mission.HasValue ? (" م: " + DateUtility.ConvertToTimeSpan(i.Minutes_Leave_Mission.Value)) : "")
                 }).ToList();
 
                 return Ok(answer);
