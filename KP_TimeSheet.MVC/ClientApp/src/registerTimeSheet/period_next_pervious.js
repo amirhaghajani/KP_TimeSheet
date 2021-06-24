@@ -91,31 +91,6 @@ const period_next_pervious = (function () {
 
         moduleData.mainGrid.RefreshTimeSheet(false);
 
-        // moduleData.common.loaderShow();
-
-        // var prmData = JSON.stringify(moduleData.data.timeSheetData_get()[0].values);
-
-        // $.ajax({
-        //     type: "Post",
-        //     url: "/api/TimeSheetsAPI/GetCurrentPeriod",
-        //     contentType: "application/json; charset=utf-8",
-        //     dataType: "json",
-        //     data: prmData,
-        //     success: function (response) {
-
-        //         moduleData.data.timeSheetData_set(response);
-        //         moduleData.common_register.removeAndRecreateTreelisDiv();
-        //         moduleData.mainGrid.Init_TimeSheetTreeList();
-        //         moduleData.editWindow.Refresh_GrdEditWorkHour();
-        //         moduleData.history_sentWorkHour.Refresh_GrdMonitorSentWorkHour();
-        //         moduleData.priodlyGrid.InitPeriodlyByProjectsGrid();
-        //         moduleData.monthlyGrid.InitMonthlyByProjectsGrid();
-        //         moduleData.common.loaderHide();
-        //     },
-        //     error: function (e) {
-
-        //     }
-        // });
     }
 
     function kwndSelectPeriod_OnClose() {

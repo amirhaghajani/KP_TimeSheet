@@ -149,7 +149,7 @@ const dl = (function () {
 			showDropdowns: true,
 			jalaali: true,
 			language: 'fa'
-		}).on('apply.daterangepicker', function () {
+		}).off().on('apply.daterangepicker', function () {
 			$('.tooltip').hide();
 			$('.date-select').text($(this).val());
 		});
@@ -163,7 +163,7 @@ const dl = (function () {
 			showDropdowns: true,
 			jalaali: true,
 			language: 'fa'
-		}).on('apply.daterangepicker', function () {
+		}).off().on('apply.daterangepicker', function () {
 			$('.tooltip').hide();
 			$('.date-select').text($(this).val());
 		});

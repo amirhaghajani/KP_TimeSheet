@@ -2219,34 +2219,34 @@ const hisotrSentWorkHour = (function () {
 
 	function Refresh_GrdMonitorSentWorkHour() {
 
-		var data = moduleData.data.history_sentWorkHour_data_get();
-		if(data.type !='history' && data.payload){
-			ShowCurrentDaySendWorkHours(data.payload.dayTime , data.payload.headerTitle, true);
-			return;
-		}
+		// var data = moduleData.data.history_sentWorkHour_data_get();
+		// if(data.type !='history' && data.payload){
+		// 	ShowCurrentDaySendWorkHours(data.payload.dayTime , data.payload.headerTitle, true);
+		// 	return;
+		// }
 
-		var prmData = JSON.stringify(moduleData.data.timeSheetData_get()[0].values);
-		$.ajax({
-			type: "Post",
-			url: "/api/TimeSheetsAPI/GetRegistereCurrentPerioddWorkHours",
-			contentType: "application/json; charset=utf-8",
-			dataType: "json",
-			data: prmData,
-			success: function (response) {
+		// var prmData = JSON.stringify(moduleData.data.timeSheetData_get()[0].values);
+		// $.ajax({
+		// 	type: "Post",
+		// 	url: "/api/TimeSheetsAPI/GetRegistereCurrentPerioddWorkHours",
+		// 	contentType: "application/json; charset=utf-8",
+		// 	dataType: "json",
+		// 	data: prmData,
+		// 	success: function (response) {
 
-				for (var k in response) {
-					const item = response[k];
-					item.time = moduleData.common_timeSheet.convertMinutsToTime(item.minutes);
-				}
+		// 		for (var k in response) {
+		// 			const item = response[k];
+		// 			item.time = moduleData.common_timeSheet.convertMinutsToTime(item.minutes);
+		// 		}
 
-				_MonitorSentWorkHours = response;
-				var g = $("#GrdMonitorSentWorkHour").data("kendoGrid");
+		// 		_MonitorSentWorkHours = response;
+		// 		var g = $("#GrdMonitorSentWorkHour").data("kendoGrid");
 
-				if (g) g.dataSource.read();
-			},
-			error: function (e) {
-			}
-		});
+		// 		if (g) g.dataSource.read();
+		// 	},
+		// 	error: function (e) {
+		// 	}
+		// });
 	}
 
 	function ShowCurrentDaySendWorkHours(dayTime, headerTitle, dontInit) {
@@ -2467,7 +2467,7 @@ const dl = (function () {
 			showDropdowns: true,
 			jalaali: true,
 			language: 'fa'
-		}).on('apply.daterangepicker', function () {
+		}).off().on('apply.daterangepicker', function () {
 			$('.tooltip').hide();
 			$('.date-select').text($(this).val());
 		});
@@ -2481,7 +2481,7 @@ const dl = (function () {
 			showDropdowns: true,
 			jalaali: true,
 			language: 'fa'
-		}).on('apply.daterangepicker', function () {
+		}).off().on('apply.daterangepicker', function () {
 			$('.tooltip').hide();
 			$('.date-select').text($(this).val());
 		});
@@ -2643,7 +2643,7 @@ const hl = (function () {
       showDropdowns: true,
       jalaali: true,
       language: 'fa'
-    }).on('apply.daterangepicker', function () {
+    }).off().on('apply.daterangepicker', function () {
       $('.tooltip').hide();
       $('.date-select').text($(this).val());
     });
@@ -2854,7 +2854,7 @@ const myMainGrid = (function () {
     //   }
     // }).data("kendoTooltip");
 
-    $("#ktrlTimeSheets tbody").on("dblclick", "td", function (e) {
+    $("#ktrlTimeSheets tbody").off().on("dblclick", "td", function (e) {
 
       var cell = $(e.currentTarget);
       var cellIndex = cell[0].cellIndex;
@@ -3181,7 +3181,7 @@ const hm = (function () {
       showDropdowns: true,
       jalaali: true,
       language: 'fa'
-    }).on('apply.daterangepicker', function () {
+    }).off().on('apply.daterangepicker', function () {
       $('.tooltip').hide();
       $('.date-select').text($(this).val());
     });
@@ -3356,31 +3356,6 @@ const period_next_pervious = (function () {
 
         moduleData.mainGrid.RefreshTimeSheet(false);
 
-        // moduleData.common.loaderShow();
-
-        // var prmData = JSON.stringify(moduleData.data.timeSheetData_get()[0].values);
-
-        // $.ajax({
-        //     type: "Post",
-        //     url: "/api/TimeSheetsAPI/GetCurrentPeriod",
-        //     contentType: "application/json; charset=utf-8",
-        //     dataType: "json",
-        //     data: prmData,
-        //     success: function (response) {
-
-        //         moduleData.data.timeSheetData_set(response);
-        //         moduleData.common_register.removeAndRecreateTreelisDiv();
-        //         moduleData.mainGrid.Init_TimeSheetTreeList();
-        //         moduleData.editWindow.Refresh_GrdEditWorkHour();
-        //         moduleData.history_sentWorkHour.Refresh_GrdMonitorSentWorkHour();
-        //         moduleData.priodlyGrid.InitPeriodlyByProjectsGrid();
-        //         moduleData.monthlyGrid.InitMonthlyByProjectsGrid();
-        //         moduleData.common.loaderHide();
-        //     },
-        //     error: function (e) {
-
-        //     }
-        // });
     }
 
     function kwndSelectPeriod_OnClose() {

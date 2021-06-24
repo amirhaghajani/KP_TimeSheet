@@ -943,7 +943,7 @@ const myMainGrid = (function () {
     //   }
     // }).data("kendoTooltip");
 
-    $("#ktrlTimeSheets tbody").on("dblclick", "td", function (e) {
+    $("#ktrlTimeSheets tbody").off().on("dblclick", "td", function (e) {
 
       var cell = $(e.currentTarget);
       var cellIndex = cell[0].cellIndex;

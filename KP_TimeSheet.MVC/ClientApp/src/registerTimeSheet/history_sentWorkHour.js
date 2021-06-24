@@ -166,34 +166,34 @@ const hisotrSentWorkHour = (function () {
 
 	function Refresh_GrdMonitorSentWorkHour() {
 
-		var data = moduleData.data.history_sentWorkHour_data_get();
-		if(data.type !='history' && data.payload){
-			ShowCurrentDaySendWorkHours(data.payload.dayTime , data.payload.headerTitle, true);
-			return;
-		}
+		// var data = moduleData.data.history_sentWorkHour_data_get();
+		// if(data.type !='history' && data.payload){
+		// 	ShowCurrentDaySendWorkHours(data.payload.dayTime , data.payload.headerTitle, true);
+		// 	return;
+		// }
 
-		var prmData = JSON.stringify(moduleData.data.timeSheetData_get()[0].values);
-		$.ajax({
-			type: "Post",
-			url: "/api/TimeSheetsAPI/GetRegistereCurrentPerioddWorkHours",
-			contentType: "application/json; charset=utf-8",
-			dataType: "json",
-			data: prmData,
-			success: function (response) {
+		// var prmData = JSON.stringify(moduleData.data.timeSheetData_get()[0].values);
+		// $.ajax({
+		// 	type: "Post",
+		// 	url: "/api/TimeSheetsAPI/GetRegistereCurrentPerioddWorkHours",
+		// 	contentType: "application/json; charset=utf-8",
+		// 	dataType: "json",
+		// 	data: prmData,
+		// 	success: function (response) {
 
-				for (var k in response) {
-					const item = response[k];
-					item.time = moduleData.common_timeSheet.convertMinutsToTime(item.minutes);
-				}
+		// 		for (var k in response) {
+		// 			const item = response[k];
+		// 			item.time = moduleData.common_timeSheet.convertMinutsToTime(item.minutes);
+		// 		}
 
-				_MonitorSentWorkHours = response;
-				var g = $("#GrdMonitorSentWorkHour").data("kendoGrid");
+		// 		_MonitorSentWorkHours = response;
+		// 		var g = $("#GrdMonitorSentWorkHour").data("kendoGrid");
 
-				if (g) g.dataSource.read();
-			},
-			error: function (e) {
-			}
-		});
+		// 		if (g) g.dataSource.read();
+		// 	},
+		// 	error: function (e) {
+		// 	}
+		// });
 	}
 
 	function ShowCurrentDaySendWorkHours(dayTime, headerTitle, dontInit) {
