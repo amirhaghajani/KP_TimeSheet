@@ -34,9 +34,9 @@ const hl = (function () {
 
     $("#leave_headerDiv").text("ثبت مرخصی ساعتی");
 
-    moduleData.service.getUserProjects((response) => {
-      private_projectComboInit(response);
-    });
+    // moduleData.service.getUserProjects((response) => {
+    //   private_projectComboInit(response);
+    // });
 
     moduleData.common.openWindow('kwndHourlyLeave',()=>private_setDatepicker(),reset);
 
@@ -101,8 +101,8 @@ const hl = (function () {
     $('#leave_hourFinish').val('');
 
 
-    var item = $("#leave_selectProject").data("kendoDropDownList");
-    if (item && item.select) item.select(0);
+    // var item = $("#leave_selectProject").data("kendoDropDownList");
+    // if (item && item.select) item.select(0);
 
     resetErrors();
   }
@@ -121,7 +121,7 @@ const hl = (function () {
       persianLeaveDate: $('#leave_date').val(),
       persianTimeFrom: $('#leave_hourStart').val(),
       persianTimeTo: $('#leave_hourFinish').val(),
-      projectID: $("#leave_selectProject").data("kendoDropDownList").value(),
+      //projectID: $("#leave_selectProject").data("kendoDropDownList").value(),
     };
 
 
@@ -139,7 +139,7 @@ const hl = (function () {
     }
 
 
-    if (!mission.projectID.length) mission.projectID = "00000000-0000-0000-0000-000000000000";
+    //if (!mission.projectID.length) mission.projectID = "00000000-0000-0000-0000-000000000000";
 
     moduleData.service.saveHourlyLeave(mission, () => {
 

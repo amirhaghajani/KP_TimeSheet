@@ -358,7 +358,8 @@ namespace KP.TimeSheets.MVC
                 hourlyLeave.UserId = currentUser.ID;
                 hourlyLeave.OrganisationId = currentUser.OrganizationUnitID;
 
-                if (hourlyLeave.ProjectID == Guid.Empty) hourlyLeave.ProjectID = null;
+                //if (hourlyLeave.ProjectID == Guid.Empty) 
+                hourlyLeave.ProjectID = null;
 
                 if (hourlyLeave.ID == Guid.Empty)
                 {
@@ -399,12 +400,13 @@ namespace KP.TimeSheets.MVC
                 var currentUser = new UserHelper().GetCurrent(this._uow, this.UserName);
 
                 HourlyMissionManager hm = new HourlyMissionManager(this._uow);
-                ProjectManager pm = new ProjectManager(this._uow);
-                UserManager um = new UserManager(this._uow);
+                //ProjectManager pm = new ProjectManager(this._uow);
+                //UserManager um = new UserManager(this._uow);
                 hourlyMission.UserID = currentUser.ID;
                 hourlyMission.OrganisationId = currentUser.OrganizationUnitID;
 
-                if (hourlyMission.ProjectID == Guid.Empty) hourlyMission.ProjectID = null;
+                //if (hourlyMission.ProjectID == Guid.Empty) 
+                hourlyMission.ProjectID = null;
 
                 if (hourlyMission.ID == Guid.Empty)
                 {
@@ -421,8 +423,8 @@ namespace KP.TimeSheets.MVC
                     date = DateTime.Now,
                     description = "",
                     workflowStageID = hourlyMission.WorkflowStageID
-
                 };
+
 
 
                 HistoryUtilities.RegisterApproveHistory(data, this._uow, currentUser);

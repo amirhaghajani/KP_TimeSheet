@@ -48,5 +48,8 @@ namespace KP.TimeSheets.Domain
         public WorkflowStage WorkflowStage { get ; set ; }
         public Guid WorkflowStageID { get ; set ; }
         public Guid? PreviousStage { get ; set; }
+
+        public string Location{get;set;}
+        public string Subject{get;set;}
     }
 }

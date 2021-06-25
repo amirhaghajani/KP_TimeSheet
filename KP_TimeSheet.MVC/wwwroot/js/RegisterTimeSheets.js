@@ -1,7 +1,7 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 const common = (function () {
 
-	function version(){return "0.0.0.9";}
+	function version(){return "0.0.0.10";}
 
 	function doExport(selector, params) {
 		var options = {
@@ -2615,9 +2615,9 @@ const hl = (function () {
 
     $("#leave_headerDiv").text("ثبت مرخصی ساعتی");
 
-    moduleData.service.getUserProjects((response) => {
-      private_projectComboInit(response);
-    });
+    // moduleData.service.getUserProjects((response) => {
+    //   private_projectComboInit(response);
+    // });
 
     moduleData.common.openWindow('kwndHourlyLeave',()=>private_setDatepicker(),reset);
 
@@ -2682,8 +2682,8 @@ const hl = (function () {
     $('#leave_hourFinish').val('');
 
 
-    var item = $("#leave_selectProject").data("kendoDropDownList");
-    if (item && item.select) item.select(0);
+    // var item = $("#leave_selectProject").data("kendoDropDownList");
+    // if (item && item.select) item.select(0);
 
     resetErrors();
   }
@@ -2702,7 +2702,7 @@ const hl = (function () {
       persianLeaveDate: $('#leave_date').val(),
       persianTimeFrom: $('#leave_hourStart').val(),
       persianTimeTo: $('#leave_hourFinish').val(),
-      projectID: $("#leave_selectProject").data("kendoDropDownList").value(),
+      //projectID: $("#leave_selectProject").data("kendoDropDownList").value(),
     };
 
 
@@ -2720,7 +2720,7 @@ const hl = (function () {
     }
 
 
-    if (!mission.projectID.length) mission.projectID = "00000000-0000-0000-0000-000000000000";
+    //if (!mission.projectID.length) mission.projectID = "00000000-0000-0000-0000-000000000000";
 
     moduleData.service.saveHourlyLeave(mission, () => {
 
@@ -3153,9 +3153,9 @@ const hm = (function () {
 
     $("#mission_headerDiv").text("ثبت ماموریت ساعتی");
 
-    moduleData.service.getUserProjects((response) => {
-      private_projectComboInit(response);
-    });
+    // moduleData.service.getUserProjects((response) => {
+    //   private_projectComboInit(response);
+    // });
 
     moduleData.common.openWindow('kwndHourlyMission',()=>private_setDatepicker(),reset);
 
@@ -3219,9 +3219,12 @@ const hm = (function () {
     $('#mission_hourStart').val('');
     $('#mission_hourFinish').val('');
 
+    $('#mission_location').val('');
+    $('#mission_subject').val('');
 
-		var item = $("#mission_selectProject").data("kendoDropDownList");
-		if (item && item.select) item.select(0);
+
+		// var item = $("#mission_selectProject").data("kendoDropDownList");
+		// if (item && item.select) item.select(0);
 
 		resetErrors();
 	}
@@ -3230,6 +3233,9 @@ const hm = (function () {
 		$("span[for='mission_date']").text("");
 		$("span[for='mission_hourStart']").text("");
 		$("span[for='mission_hourFinish']").text("");
+
+    $("span[for='mission_location']").text("");
+    $("span[for='mission_subject']").text("");
   }
   
   function save() {
@@ -3241,13 +3247,26 @@ const hm = (function () {
 			persianMissionDate: $('#mission_date').val(),
 			persianTimeFrom: $('#mission_hourStart').val(),
 			persianTimeTo: $('#mission_hourFinish').val(),
-			projectID: $("#mission_selectProject").data("kendoDropDownList").value(),
+			// projectID: $("#mission_selectProject").data("kendoDropDownList").value(),
+      location: $('#mission_location').val(),
+      subject: $('#mission_subject').val(),
 		};
 
 		if (!mission.persianMissionDate.length) {
 			$("span[for='mission_date']").text("تاریخ ضروری است");
 			return;
 		}
+
+    if (!mission.location.length) {
+			$("span[for='mission_location']").text("محل ماموریت ضروری است");
+			return;
+		}
+
+    if (!mission.subject.length) {
+			$("span[for='mission_subject']").text("موضوع ماموریت ضروری است");
+			return;
+		}
+    
 		if (!mission.persianTimeFrom.length) {
 			$("span[for='mission_hourStart']").text("ساعت شروع ضروری است");
 			return;
@@ -3257,8 +3276,10 @@ const hm = (function () {
 			return;
 		}
 
+    
 
-		if (!mission.projectID.length) mission.projectID = "00000000-0000-0000-0000-000000000000";
+
+		// if (!mission.projectID.length) mission.projectID = "00000000-0000-0000-0000-000000000000";
 
 		moduleData.service.saveHourlyMission(mission, () => {
 
