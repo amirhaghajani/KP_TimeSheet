@@ -77,7 +77,7 @@ const hm = (function () {
       showDropdowns: true,
       jalaali: true,
       language: 'fa'
-    }).off().on('apply.daterangepicker', function () {
+    }).on('apply.daterangepicker', function () {
       $('.tooltip').hide();
       $('.date-select').text($(this).val());
     });
