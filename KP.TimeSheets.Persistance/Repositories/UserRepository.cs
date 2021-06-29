@@ -43,7 +43,7 @@ namespace KP.TimeSheets.Persistance
         public IEnumerable<User> GetByOrganisationID(Guid? OrganId)
         {
 
-            return _RASContext.Users.Where(item => item.OrganizationUnitID== OrganId);
+            return _RASContext.Users.Where(item => item.OrganizationUnitID== OrganId && !String.IsNullOrWhiteSpace(item.UserName));
 
         }
 
@@ -58,7 +58,7 @@ namespace KP.TimeSheets.Persistance
 
         public IEnumerable<User> GetAll()
         {
-            return _RASContext.Users;
+            return _RASContext.Users.Where(u =>!String.IsNullOrWhiteSpace(u.UserName));
         }
 
 
@@ -106,10 +106,13 @@ namespace KP.TimeSheets.Persistance
         {
            
                 string commandText = string.Format(@"
+                delete [ProjectWebApp].[pub].[MSP_RESOURCES]
+                    where WRES_ACCOUNT is null and RES_NAME<>'unknown';
+                    
                     Select 
 	                    ResourceUID, ResourceName, ResourceNTAccount,EmployeeCode
                     From 
-	                    ProjectWebApp..MSP_EpmResource_UserView");
+	                    ProjectWebApp..MSP_EpmResource_UserView where ResourceNTAccount is not null");
                 SqlCommand sqlCommand = new SqlCommand(commandText, new SqlConnection(_PWAConnString));
                 var dataTable = SqlQueryExecute.GetDataTable(commandText, _PWAConnString);
                 List<User> users = PWATranslator.ToUsers(dataTable,_RASContext.Users.ToList());

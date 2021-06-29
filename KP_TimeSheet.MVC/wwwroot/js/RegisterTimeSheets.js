@@ -1,7 +1,7 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 const common = (function () {
 
-	function version(){return "0.0.0.10";}
+	function version(){return "0.0.0.11";}
 
 	function doExport(selector, params) {
 		var options = {
@@ -2529,6 +2529,9 @@ const dl = (function () {
 	}
 
 	function save() {
+
+		moduleData.common.loaderShow();
+
 		resetErrors();
 
 		var dailyLeave = {
@@ -2542,14 +2545,17 @@ const dl = (function () {
 
 
 		if (!dailyLeave.persianDateFrom.length) {
+			moduleData.common.loaderHide();
 			$("span[for='dailyLeave_dateStart']").text("تاریخ شروع ضروری است");
 			return;
 		}
 		if (!dailyLeave.persianDateTo.length) {
+			moduleData.common.loaderHide();
 			$("span[for='dailyLeave_dateFinish']").text("تاریخ پایان ضروری است");
 			return;
 		}
 		if (!dailyLeave.type.length) {
+			moduleData.common.loaderHide();
 			$("span[for='dailyLeave_type']").text("نوع مرخصی ضروری است");
 			return;
 		}
@@ -2562,6 +2568,7 @@ const dl = (function () {
 
 			moduleData.period_next_pervious.GetCurrentPeriod();
 			private_closeWindow();
+			moduleData.common.loaderHide();
 			moduleData.common.notify("ثبت مرخصی روزانه با موفقیت انجام شد", "success");
 
 		});
@@ -2695,6 +2702,9 @@ const hl = (function () {
   }
 
   function save() {
+
+    moduleData.common.loaderShow();
+
     resetErrors();
 
     var mission = {
@@ -2707,18 +2717,22 @@ const hl = (function () {
 
 
     if (!mission.persianLeaveDate.length) {
+      moduleData.common.loaderHide();
       $("span[for='leave_date']").text("تاریخ ضروری است");
       return;
     }
     if (!mission.persianTimeFrom.length) {
+      moduleData.common.loaderHide();
       $("span[for='leave_hourStart']").text("ساعت شروع ضروری است");
       return;
     }
     if (!mission.persianTimeTo.length) {
+      moduleData.common.loaderHide();
       $("span[for='leave_hourFinish']").text("ساعت پایان ضروری است");
       return;
     }
 
+    
 
     //if (!mission.projectID.length) mission.projectID = "00000000-0000-0000-0000-000000000000";
 
@@ -2726,6 +2740,7 @@ const hl = (function () {
 
       moduleData.period_next_pervious.GetCurrentPeriod();
 			private_closeWindow();
+      moduleData.common.loaderHide();
 			moduleData.common.notify("ثبت مرخصی ساعتی با موفقیت انجام شد", "success");
 
     });
@@ -3239,6 +3254,9 @@ const hm = (function () {
   }
   
   function save() {
+
+    moduleData.common.loaderShow();
+
     resetErrors();
 
 
@@ -3253,38 +3271,41 @@ const hm = (function () {
 		};
 
 		if (!mission.persianMissionDate.length) {
+      moduleData.common.loaderHide();
 			$("span[for='mission_date']").text("تاریخ ضروری است");
 			return;
 		}
 
     if (!mission.location.length) {
+      moduleData.common.loaderHide();
 			$("span[for='mission_location']").text("محل ماموریت ضروری است");
 			return;
 		}
 
     if (!mission.subject.length) {
+      moduleData.common.loaderHide();
 			$("span[for='mission_subject']").text("موضوع ماموریت ضروری است");
 			return;
 		}
     
 		if (!mission.persianTimeFrom.length) {
+      moduleData.common.loaderHide();
 			$("span[for='mission_hourStart']").text("ساعت شروع ضروری است");
 			return;
     }
     if (!mission.persianTimeTo.length) {
+      moduleData.common.loaderHide();
 			$("span[for='mission_hourFinish']").text("ساعت پایان ضروری است");
 			return;
 		}
-
-    
-
 
 		// if (!mission.projectID.length) mission.projectID = "00000000-0000-0000-0000-000000000000";
 
 		moduleData.service.saveHourlyMission(mission, () => {
 
       moduleData.period_next_pervious.GetCurrentPeriod();
-			private_closeWindow();
+			moduleData.common.loaderHide();
+      private_closeWindow();
       moduleData.common.notify("ثبت ماموریت ساعتی با موفقیت انجام شد", "success");
       
 		});

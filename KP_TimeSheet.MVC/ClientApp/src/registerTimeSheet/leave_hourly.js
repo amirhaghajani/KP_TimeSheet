@@ -114,6 +114,9 @@ const hl = (function () {
   }
 
   function save() {
+
+    moduleData.common.loaderShow();
+
     resetErrors();
 
     var mission = {
@@ -126,18 +129,22 @@ const hl = (function () {
 
 
     if (!mission.persianLeaveDate.length) {
+      moduleData.common.loaderHide();
       $("span[for='leave_date']").text("تاریخ ضروری است");
       return;
     }
     if (!mission.persianTimeFrom.length) {
+      moduleData.common.loaderHide();
       $("span[for='leave_hourStart']").text("ساعت شروع ضروری است");
       return;
     }
     if (!mission.persianTimeTo.length) {
+      moduleData.common.loaderHide();
       $("span[for='leave_hourFinish']").text("ساعت پایان ضروری است");
       return;
     }
 
+    
 
     //if (!mission.projectID.length) mission.projectID = "00000000-0000-0000-0000-000000000000";
 
@@ -145,6 +152,7 @@ const hl = (function () {
 
       moduleData.period_next_pervious.GetCurrentPeriod();
 			private_closeWindow();
+      moduleData.common.loaderHide();
 			moduleData.common.notify("ثبت مرخصی ساعتی با موفقیت انجام شد", "success");
 
     });

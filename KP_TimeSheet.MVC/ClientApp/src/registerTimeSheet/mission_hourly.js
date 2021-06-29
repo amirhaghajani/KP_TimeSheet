@@ -119,6 +119,9 @@ const hm = (function () {
   }
   
   function save() {
+
+    moduleData.common.loaderShow();
+
     resetErrors();
 
 
@@ -133,38 +136,41 @@ const hm = (function () {
 		};
 
 		if (!mission.persianMissionDate.length) {
+      moduleData.common.loaderHide();
 			$("span[for='mission_date']").text("تاریخ ضروری است");
 			return;
 		}
 
     if (!mission.location.length) {
+      moduleData.common.loaderHide();
 			$("span[for='mission_location']").text("محل ماموریت ضروری است");
 			return;
 		}
 
     if (!mission.subject.length) {
+      moduleData.common.loaderHide();
 			$("span[for='mission_subject']").text("موضوع ماموریت ضروری است");
 			return;
 		}
     
 		if (!mission.persianTimeFrom.length) {
+      moduleData.common.loaderHide();
 			$("span[for='mission_hourStart']").text("ساعت شروع ضروری است");
 			return;
     }
     if (!mission.persianTimeTo.length) {
+      moduleData.common.loaderHide();
 			$("span[for='mission_hourFinish']").text("ساعت پایان ضروری است");
 			return;
 		}
-
-    
-
 
 		// if (!mission.projectID.length) mission.projectID = "00000000-0000-0000-0000-000000000000";
 
 		moduleData.service.saveHourlyMission(mission, () => {
 
       moduleData.period_next_pervious.GetCurrentPeriod();
-			private_closeWindow();
+			moduleData.common.loaderHide();
+      private_closeWindow();
       moduleData.common.notify("ثبت ماموریت ساعتی با موفقیت انجام شد", "success");
       
 		});

@@ -73,7 +73,7 @@ namespace KP.TimeSheets.Persistance
         public bool CheckDontHasLeaveOnDuration(Guid userId, DateTime start, DateTime end)
         {
             return _RASContext.DailyLeaves
-            .Where(d => d.UserID == userId && ((d.To > start && d.To < end) || (d.From > start && d.To < end))).Count() == 0;
+            .Where(d => d.UserID == userId && ((d.To > start && d.To < end) || (d.From > start && d.To < end) || (d.From == start && d.To == end))).Count() == 0;
         }
 
 

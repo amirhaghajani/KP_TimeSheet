@@ -80,7 +80,7 @@ namespace KP.TimeSheets.MVC
 
                 var now = DateTime.Now.Date;
                 var answer = this.DBContext.TimesheetPolicies
-                            .Where(p => !p.IsDefault && p.Validity.Date >= now && p.UserId.HasValue)
+                            .Where(p => !p.IsDefault && p.Validity.Date >= now && p.UserId.HasValue && !String.IsNullOrWhiteSpace(p.User.UserName))
                             .OrderByDescending(p => p.CreateDate)
                             .Select(p => new
                             {

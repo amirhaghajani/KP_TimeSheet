@@ -195,6 +195,9 @@ const dl = (function () {
 	}
 
 	function save() {
+
+		moduleData.common.loaderShow();
+
 		resetErrors();
 
 		var dailyLeave = {
@@ -208,14 +211,17 @@ const dl = (function () {
 
 
 		if (!dailyLeave.persianDateFrom.length) {
+			moduleData.common.loaderHide();
 			$("span[for='dailyLeave_dateStart']").text("تاریخ شروع ضروری است");
 			return;
 		}
 		if (!dailyLeave.persianDateTo.length) {
+			moduleData.common.loaderHide();
 			$("span[for='dailyLeave_dateFinish']").text("تاریخ پایان ضروری است");
 			return;
 		}
 		if (!dailyLeave.type.length) {
+			moduleData.common.loaderHide();
 			$("span[for='dailyLeave_type']").text("نوع مرخصی ضروری است");
 			return;
 		}
@@ -228,6 +234,7 @@ const dl = (function () {
 
 			moduleData.period_next_pervious.GetCurrentPeriod();
 			private_closeWindow();
+			moduleData.common.loaderHide();
 			moduleData.common.notify("ثبت مرخصی روزانه با موفقیت انجام شد", "success");
 
 		});
