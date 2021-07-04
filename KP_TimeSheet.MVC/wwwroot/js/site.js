@@ -1,7 +1,7 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 const common = (function () {
 
-	function version(){return "0.0.0.11";}
+	function version(){return "0.0.0.12";}
 
 	function doExport(selector, params) {
 		var options = {
@@ -391,7 +391,7 @@ const timeSheet = (function () {
     const hozoorDetail = new timeSheet_Row(2, 1, "جزئیات", "-", "eb96abcb-d37d-4aa1-1001-e1f4a753bee5", []);
     data.push(hozoorDetail);
 
-    const karkard = new timeSheet_Row(3, null, "کارکرد", "-", "eb96abcb-d37d-4aa1-1002-e1f4a753bee5", []);
+    const karkard = new timeSheet_Row(3, null, "کارکرد", "Karkard", "eb96abcb-d37d-4aa1-1002-e1f4a753bee5", []);
     data.push(karkard);
 
     const projects = [];
@@ -1048,9 +1048,6 @@ const myMainGrid = (function () {
 
       //alert("Satr: " + dataItem.title + " - Sotoon: " + dataItem.values[cellIndex - 3].title + " - type: "+dataItem.type);
     });
-
-
-
   }
 
   function ktrlTimeSheets_OnInitColumns(response) {

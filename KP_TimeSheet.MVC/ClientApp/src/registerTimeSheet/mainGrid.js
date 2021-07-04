@@ -225,9 +225,6 @@ const myMainGrid = (function () {
 
       //alert("Satr: " + dataItem.title + " - Sotoon: " + dataItem.values[cellIndex - 3].title + " - type: "+dataItem.type);
     });
-
-
-
   }
 
   function ktrlTimeSheets_OnInitColumns(response) {

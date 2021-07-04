@@ -4,6 +4,8 @@ const dataService = require('./data');
 const common_timeSheet = require('../common/timesheet');
 const approveWindow = require('./approveWindow');
 
+const history_sentWorkHour = require('../registerTimeSheet/history_sentWorkHour');
+
 let fnlastRefreshCommand=RefreshTimeSheetConfirm;
 let expandedRows = [];
 
@@ -182,6 +184,163 @@ function Init_TimeSheetTreeListConfirm(data) {
     columns: ktrlTSColumnsConfirm,
     dataBound: ktrlTimeSheetsConfirm_dataBound
   });
+
+
+  $("#ktrlTimeSheetsConfirm tbody").off().on("dblclick", "td", function (e) {
+
+    var cell = $(e.currentTarget);
+    var cellIndex = cell[0].cellIndex;
+    var grid = $("#ktrlTimeSheetsConfirm").data("kendoTreeList");
+    var column = grid.columns[cellIndex];
+    var dataItem = grid.dataItem(cell.closest("tr"));
+
+
+    if (dataItem.type != 'Karkard' && dataItem.type != 'Project' && dataItem.type != 'Workout') return;
+
+    if (cellIndex<3 || !dataItem.values) return;
+    var sotoon = dataItem.values[cellIndex - 3];
+
+    var timeSheetData = dataService.timeSheetDataConfirm_get();
+    var dayTime = timeSheetData[0].values[cellIndex - 3];
+    //moduleData.data.selDate_set(dayTime);
+
+
+    if (dataItem.type == 'Workout') {
+
+      const items = [];
+      const item = {};
+      const taskId = dataItem.uuiidd;
+
+      var parent = grid.dataSource.parentNode(dataItem);
+      var projectId = parent.uuiidd;
+      item.projectTitle = parent.title;
+
+      if (sotoon.value.indexOf('0:00') == 0) {
+        //moduleData.createNewWorkHour.kwndSaveWHs_OnInit_ForEdit(dayTime, projectId, taskId, null);
+        return;
+      } else {
+
+        $.ajax({
+          type: "Post",
+          url: "/api/TimeSheetsAPI/GetWorkHoursByDate",
+          contentType: "application/json; charset=utf-8",
+          dataType: "json",
+          data: JSON.stringify({ date: sotoon.date, taskId: taskId, userId: dataService.userId_get() }),
+          success: function (response) {
+
+              for (var k in response) {
+                const item = response[k];
+                item.time = common_timeSheet.convertMinutsToTime(item.minutes);
+              }
+              ShowKarkar(response, 'کارکردهای '+ dataItem.title + ' در ' + sotoon.persianDate);
+
+          },
+          error: function (e) {
+            var a = e;
+          }
+        });
+
+      }
+      return;
+    }
+
+    // if (dataItem.type == 'Project') {
+
+    //   $.ajax({
+    //     type: "Post",
+    //     url: "/api/TimeSheetsAPI/GetWorkHoursByDate",
+    //     contentType: "application/json; charset=utf-8",
+    //     dataType: "json",
+    //     data: JSON.stringify({ date: sotoon.date, projectId: dataItem.uuiidd }),
+    //     success: function (response) {
+
+    //       for (var k in response) {
+    //         const item = response[k];
+    //         item.time = moduleData.common_timeSheet.convertMinutsToTime(item.minutes);
+    //       }
+          
+    //       moduleData.history_sentWorkHour.ShowDataOnGrid(response, 'کارکردهای ' + dataItem.title + ' در ' + sotoon.persianDate);
+
+    //     },
+    //     error: function (e) {
+    //       var a = e;
+    //     }
+    //   });
+
+    //   return;
+    // }
+
+    // if (dataItem.type == 'Karkard') {
+    //   moduleData.history_sentWorkHour.ShowCurrentDaySendWorkHours(dayTime, 'کارکردها در ' + sotoon.persianDate);
+    //   return;
+    // }
+
+    //alert("Satr: " + dataItem.title + " - Sotoon: " + dataItem.values[cellIndex - 3].title + " - type: "+dataItem.type);
+  });
+
+}
+
+function ShowKarkar(data, headerTitle) {
+  if(headerTitle) $('#headerText_Karkard').text(headerTitle);
+  _Init_GrdMonitorSentWorkHour(data);
+}
+
+function _Init_GrdMonitorSentWorkHour(data) {
+
+  $('#GrdMonitorSentWorkHour_Hide').off().on('click', function () {
+    $("#WndMonitorSentWorkHours").data("kendoWindow").close();
+  });
+
+  common.openWindow('WndMonitorSentWorkHours');
+
+  $("#GrdMonitorSentWorkHour").kendoGrid({
+    dataSource: {
+      transport: {
+        read: function (e) {
+          e.success(data);
+        }
+      },
+      pageSize: 10
+    },
+    height: 450,
+    pageable: true,
+    filterable: true,
+    selectable: true,
+
+    columns: [
+      {
+      field: "persianDate",
+      title: "تاریخ",
+      width: 90
+    },
+    {
+      field: "projectTitle",
+      title: "پروژه",
+      width: 150
+    }, {
+      field: "taskTitle",
+      title: "وظیفه",
+      width: 150
+    }, {
+      field: "time",
+      title: "مدت",
+      width: 60
+
+    }, {
+      field: "workFlowStageTitle",
+      title: "مرحله",
+      width: 90
+    },
+    {
+      field: "description",
+      title: "توضیحات",
+      width: 200
+    }
+
+    ]
+
+  });
+
 
 }
 

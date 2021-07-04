@@ -90,8 +90,17 @@ namespace KP.TimeSheets.MVC
             var result = new List<WorkHourJson>();
             UserManager userManager = new UserManager(this._uow);
             TimeSheetManager timeSheetManager = new TimeSheetManager(this._uow);
-            User currUser = new UserHelper().GetCurrent(this._uow, this.UserName);
-            result = new WorkHourAssembler().ToJsons(timeSheetManager.GetWorkHoursByUser(currUser, WorkHourJson.date, WorkHourJson.date, WorkHourJson.projectId, WorkHourJson.taskId)).ToList();
+
+            User wantedUser = null;
+
+            if(WorkHourJson.userId.HasValue){
+                wantedUser = userManager.GetByID(WorkHourJson.userId.Value);
+            }else
+            {
+                wantedUser = new UserHelper().GetCurrent(this._uow, this.UserName);
+            }
+            
+            result = new WorkHourAssembler().ToJsons(timeSheetManager.GetWorkHoursByUser(wantedUser, WorkHourJson.date, WorkHourJson.date, WorkHourJson.projectId, WorkHourJson.taskId)).ToList();
             return result;
         }
 

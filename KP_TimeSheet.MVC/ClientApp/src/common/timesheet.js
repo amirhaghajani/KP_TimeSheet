@@ -208,7 +208,7 @@ const timeSheet = (function () {
     const hozoorDetail = new timeSheet_Row(2, 1, "جزئیات", "-", "eb96abcb-d37d-4aa1-1001-e1f4a753bee5", []);
     data.push(hozoorDetail);
 
-    const karkard = new timeSheet_Row(3, null, "کارکرد", "-", "eb96abcb-d37d-4aa1-1002-e1f4a753bee5", []);
+    const karkard = new timeSheet_Row(3, null, "کارکرد", "Karkard", "eb96abcb-d37d-4aa1-1002-e1f4a753bee5", []);
     data.push(karkard);
 
     const projects = [];
