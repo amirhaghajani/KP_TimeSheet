@@ -115,7 +115,9 @@ namespace KP.TimeSheets.Persistance
                    Select 
 	                    AssignmentUID, ProjectUID, ResourceUID, TaskUID
                     From 
-	                    ProjectWebApp.dbo.MSP_EpmAssignment_UserView";
+	                    ProjectWebApp.dbo.MSP_EpmAssignment_UserView a
+                        left join [Users] u on a.ResourceUID=u.ID
+						where u.ID is not null";
                 SqlCommand sqlCommand = new SqlCommand(commandText, new SqlConnection(_PWAConnString));
                 var dataTable = SqlQueryExecute.GetDataTable(commandText, _PWAConnString);
                 List<Assignment> assignments = PWATranslator.ToAssignments(dataTable);
