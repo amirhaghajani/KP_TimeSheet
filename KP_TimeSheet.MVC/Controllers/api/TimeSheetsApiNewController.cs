@@ -177,8 +177,8 @@ namespace KP.TimeSheets.MVC
             }
 
             userDefaultPolicy.Start = DateUtility.GetWeekStartDate(timeSheetConfig.DefualtOpenTimeSheetWeeks);
-            userDefaultPolicy.Finish = DateUtility.GetWeekEndtDate();
-            userDefaultPolicy.Validity = DateUtility.GetWeekEndtDate();
+            userDefaultPolicy.Finish = DateUtility.GetWeekEndtDate().AddDays(1);
+            userDefaultPolicy.Validity = userDefaultPolicy.Finish;
             userDefaultPolicy.CreateDate = DateTime.Now;
 
 
